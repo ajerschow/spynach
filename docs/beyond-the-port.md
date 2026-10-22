@@ -167,5 +167,5 @@ powder_pars = {"spins": ["1H"], "offset": 0.0, "sweep": 2e4, "npoints": 64, "gri
 powder_fid = spynach.powder(csa_system, spynach.acquire, powder_pars, "nmr")
 ```
 
-The page was contributed by mzaiss (MRsources). It runs in a single thread,
+The page was contributed by Moritz Zaiss (MRsources). It runs in a single thread,
 so it suits guide-sized examples rather than full-size calculations.

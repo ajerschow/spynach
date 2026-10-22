@@ -206,6 +206,7 @@ footer { border-top: 1px solid var(--line); padding-block: 1.6rem; font-size: 0.
       <li><b>Interactive figures.</b> Plotly figures from every plotting function, FID and time-series plots with no Spinach equivalent, and <code>figure_png</code> for static copies.</li>
       <li><b>Verification tooling.</b> <code>compare</code> checks any result against a Spinach run; the parity page is regenerated from the test suite; the comparison protocol times and profiles both sides into one report.</li>
       <li><b>Executable documentation.</b> Guides whose code runs in the tests, notebooks generated with outputs, a Colab quick start, contributed notebooks.</li>
+      <li><b>Browser-based execution.</b> The <a href="try.html">playground</a> runs Spynach and <code>ctps</code> in the browser through Pyodide, with nothing to install: edit one of the guides' examples, run it, and see its spectrum, FID or 2D contour plot (contributed by Moritz Zaiss).</li>
     </ul>
     <p>All of it, with an example for each entry, is in the guide <a href="https://github.com/ajerschow/spynach/blob/main/docs/beyond-the-port.md">Beyond the port</a>.</p>
   </div>
@@ -236,7 +237,7 @@ fid = spynach.liquid(spin_system, spynach.acquire, pars, "nmr")
 fid = spynach.apodisation(fid, [("exp", 6)])
 spectrum = np.fft.fftshift(np.fft.fft(fid, 4096))</code></pre>
     <p>A caveat for containers: when the CPU quota is below the number of cores the container can see, OpenBLAS oversubscribes the quota and dense LAPACK calls slow down badly. Set <code>OPENBLAS_NUM_THREADS</code> to the quota there; on an ordinary machine nothing needs to be set.</p>
-    <p>To try the example without installing anything, run it in the browser, where Spynach runs in <a href="https://pyodide.org/">Pyodide</a> (contributed by <a href="https://github.com/mzaiss">mzaiss</a>, MRsources), or open it as a Colab notebook that installs Spynach and plots the spectrum:</p>
+    <p>To try the example without installing anything, run it in the browser, where Spynach runs in <a href="https://pyodide.org/">Pyodide</a> (contributed by <a href="https://github.com/mzaiss">Moritz Zaiss</a>, MRsources), or open it as a Colab notebook that installs Spynach and plots the spectrum:</p>
     <div class="actions">
       <a class="btn" href="try.html">Try it in the browser</a>
       <a class="btn" href="https://colab.research.google.com/github/ajerschow/spynach/blob/main/docs/colab/quick-start.ipynb">Open in Google Colab</a>
@@ -343,7 +344,7 @@ spectrum = np.fft.fftshift(np.fft.fft(fid, 4096))</code></pre>
   <header><span class="eyebrow">Credits</span><h2>With thanks</h2></header>
   <div>
     <p>Grateful to Claude for the amazing work, and to Ilya for encouragement and for suggesting the catchy name!</p>
-    <p>Contributors: Florin Teleanu, for the Spinach scripts in <a href="https://github.com/ajerschow/spynach/tree/main/user_ml">user_ml/</a> (7Li exchange, ZULF PF<sub>6</sub><sup>&minus;</sup>) that became two of the comparison cases, and for the figure at the top of this page; <a href="https://github.com/mzaiss">mzaiss</a> (MRsources), for the <a href="try.html">in-browser playground</a> that runs Spynach in Pyodide. The list is kept in the <a href="https://github.com/ajerschow/spynach#contributors">README</a>.</p>
+    <p>Contributors: Florin Teleanu, for the Spinach scripts in <a href="https://github.com/ajerschow/spynach/tree/main/user_ml">user_ml/</a> (7Li exchange, ZULF PF<sub>6</sub><sup>&minus;</sup>) that became two of the comparison cases, and for the figure at the top of this page; <a href="https://github.com/mzaiss">Moritz Zaiss</a> (MRsources), for the <a href="try.html">in-browser playground</a> that runs Spynach in Pyodide. The list is kept in the <a href="https://github.com/ajerschow/spynach#contributors">README</a>.</p>
   </div>
 </section>
 

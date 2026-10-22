@@ -10,7 +10,7 @@ guides, the notebooks (rendered by nbviewer) and the Spinach comparison reports,
 has an "Open in Google Colab" button that runs the quick-start example without a local
 install ([`docs/colab/quick-start.ipynb`](docs/colab/quick-start.ipynb)), and a page that
 runs Spynach in the browser through Pyodide
-([try.html](https://ajerschow.github.io/spynach/try.html), contributed by mzaiss). See `HANDOFF.md` for goals and design decisions, and
+([try.html](https://ajerschow.github.io/spynach/try.html), contributed by Moritz Zaiss). See `HANDOFF.md` for goals and design decisions, and
 `oracle/README.md` for the reference-data ("fixture") harness.
 
 ## Status
@@ -118,6 +118,10 @@ Add-ons originating here, with no Spinach counterpart, each with an example in t
 - **Executable documentation**: guides whose code runs in the tests, notebooks
   generated with outputs, a Colab quick start, and contributed notebooks in
   `user_py/`.
+- **Browser-based execution**: [try.html](https://ajerschow.github.io/spynach/try.html)
+  runs Spynach and `ctps` in the browser through Pyodide, with nothing
+  installed, and plots spectra, FIDs and 2D contours from an editor
+  preloaded with the guides' examples (contributed by Moritz Zaiss).
 
 ## Accuracy notes
 
@@ -222,7 +226,7 @@ container.
   (two-site 7Li exchange at equilibrium, zero- to ultralow-field PF6⁻
   spectrum), translated in `examples/user_ml/` and used as comparison cases,
   and the project page's hero figure (`assets/Spynoza.jpg`).
-- [mzaiss](https://github.com/mzaiss) (MRsources): the in-browser playground
+- [Moritz Zaiss](https://github.com/mzaiss) (MRsources): the in-browser playground
   (`try.html`, `worker.js`, Spynach in Pyodide) and the orientation
   `progress` callback of `powder` and `singlerot` (pull request #1).
 

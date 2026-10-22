@@ -4,7 +4,7 @@ Releases are tagged `vX.Y.Z` on GitHub; the version is `spynach.__version__`.
 
 ## Unreleased
 
-- Spynach in the browser (contributed by mzaiss, MRsources): `try.html` runs
+- Spynach in the browser (contributed by Moritz Zaiss, MRsources): `try.html` runs
   the kernel in Pyodide in a web worker (`worker.js`), with no install, and
   draws spectra, FIDs and 2D contours from an editor (`show_spectrum`,
   `show_fid`, `show_image`). GitHub Pages serves it beside the project page.
