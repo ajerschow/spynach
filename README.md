@@ -8,7 +8,9 @@ guide has a runnable Jupyter notebook in [`docs/notebooks/`](docs/notebooks/). T
 page at [ajerschow.github.io/spynach](https://ajerschow.github.io/spynach/) links the
 guides, the notebooks (rendered by nbviewer) and the Spinach comparison reports, and
 has an "Open in Google Colab" button that runs the quick-start example without a local
-install ([`docs/colab/quick-start.ipynb`](docs/colab/quick-start.ipynb)). See `HANDOFF.md` for goals and design decisions, and
+install ([`docs/colab/quick-start.ipynb`](docs/colab/quick-start.ipynb)), and a page that
+runs Spynach in the browser through Pyodide
+([try.html](https://ajerschow.github.io/spynach/try.html), contributed by mzaiss). See `HANDOFF.md` for goals and design decisions, and
 `oracle/README.md` for the reference-data ("fixture") harness.
 
 ## Status
@@ -187,7 +189,10 @@ editing a guide, regenerate its notebook with
 `python docs/build_notebooks.py`; `tests/docs/` fails if it is stale.
 
 `index.html` at the repository root is the landing page served by GitHub
-Pages from the root of `main` (Settings > Pages > Deploy from a branch >
+Pages from the root of `main`, and `try.html` beside it runs Spynach in the
+browser: `worker.js` loads Pyodide in a web worker and fetches the Python
+sources from its hard-coded `SOURCE` list (a test keeps that list equal to
+`src/spynach` and `src/ctps`). Both pages are served (Settings > Pages > Deploy from a branch >
 `main`, `/ (root)`; `.nojekyll` keeps Pages from preprocessing the tree).
 It is hand-maintained: when a guide or a comparison case is added, add
 its row or card there. Reports are linked relatively, so they are served

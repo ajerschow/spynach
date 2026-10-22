@@ -37,7 +37,9 @@ it installs Spynach from GitHub and runs the project page's two-spin
 example with a plot. It is the one hand-written notebook (it is not
 generated from a guide and is saved without outputs, since Colab runs it);
 keep its example in step with the quick start on `index.html` and in the
-README.
+README. `try.html` at the repository root runs Spynach in the browser
+(Pyodide, `worker.js`) with the guides' examples in an editor; see the guide
+[Beyond the port](beyond-the-port.md#spynach-in-the-browser).
 
 To experiment, copy a notebook into `playground/` at the repository root
 (ignored by git except for its README) and work on the copy; it uses the

@@ -107,6 +107,7 @@ footer { border-top: 1px solid var(--line); padding-block: 1.6rem; font-size: 0.
   <a class="brand" href="#">Spynach</a>
   <a href="#beyond">Beyond the port</a>
   <a href="#quick-start">Quick start</a>
+  <a href="try.html">Try in the browser</a>
   <a href="#docs">Documentation</a>
   <a href="#examples">Examples</a>
   <a href="#reports">Parity and timing</a>
@@ -121,6 +122,7 @@ footer { border-top: 1px solid var(--line); padding-block: 1.6rem; font-size: 0.
     <p class="lede">A Python reimplementation of the Spinach spin dynamics kernel, verified stage by stage against the MATLAB original.</p>
     <div class="actions">
       <a class="btn primary" href="#quick-start">Quick start</a>
+      <a class="btn" href="try.html">Try it in the browser</a>
       <a class="btn" href="https://github.com/ajerschow/spynach/blob/main/docs/hilbert-space.md">Read the first guide</a>
     </div>
   </div>
@@ -234,8 +236,9 @@ fid = spynach.liquid(spin_system, spynach.acquire, pars, "nmr")
 fid = spynach.apodisation(fid, [("exp", 6)])
 spectrum = np.fft.fftshift(np.fft.fft(fid, 4096))</code></pre>
     <p>A caveat for containers: when the CPU quota is below the number of cores the container can see, OpenBLAS oversubscribes the quota and dense LAPACK calls slow down badly. Set <code>OPENBLAS_NUM_THREADS</code> to the quota there; on an ordinary machine nothing needs to be set.</p>
-    <p>To try the example without installing anything, open it as a notebook that installs Spynach and plots the spectrum:</p>
+    <p>To try the example without installing anything, run it in the browser, where Spynach runs in <a href="https://pyodide.org/">Pyodide</a> (contributed by <a href="https://github.com/mzaiss">mzaiss</a>, MRsources), or open it as a Colab notebook that installs Spynach and plots the spectrum:</p>
     <div class="actions">
+      <a class="btn" href="try.html">Try it in the browser</a>
       <a class="btn" href="https://colab.research.google.com/github/ajerschow/spynach/blob/main/docs/colab/quick-start.ipynb">Open in Google Colab</a>
     </div>
   </div>

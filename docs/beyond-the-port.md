@@ -14,6 +14,7 @@ notebook is [`notebooks/beyond-the-port.ipynb`](notebooks/beyond-the-port.ipynb)
 3. [Interactive figures and static copies](#interactive-figures-and-static-copies)
 4. [Checking results: `compare`, the parity page, timed reports](#checking-results-compare-the-parity-page-timed-reports)
 5. [Executable documentation, Colab, contributed notebooks](#executable-documentation-colab-contributed-notebooks)
+6. [Spynach in the browser](#spynach-in-the-browser)
 
 ## Coherence transfer pathway selection: `ctps`
 
@@ -141,3 +142,30 @@ in Google Colab and runs the quick-start example in the browser. `user_py/`
 holds contributed notebooks, such as the triple-quantum build-up of a 23Na
 spin under quadrupolar relaxation, beside the contributed Spinach scripts in
 `user_ml/` and their translations in `examples/user_ml/`.
+
+## Spynach in the browser
+
+[`try.html`](https://ajerschow.github.io/spynach/try.html) on the project site
+runs Spynach and `ctps` with nothing installed. The page loads
+[Pyodide](https://pyodide.org/) (Python compiled to WebAssembly) with NumPy,
+SciPy and h5py in a web worker, fetches the sources from the repository, and
+runs the code in its editor; the first load takes a few seconds. The guides'
+examples are there to start from. Results are drawn with `show_spectrum(y,
+x)`, `show_fid(fid, sweep)` and `show_image(z, x, y)` (2D contours, high ppm at
+the left and bottom as in `plot_2d`). Without these calls, a variable named
+`spectrum` (with `axis`) or `fid` with `sweep` is plotted at the end. Powder and
+magic-angle-spinning runs print their orientation count as they go, through
+the optional `parameters["progress"]` callback of `powder` and `singlerot`,
+which works the same way outside the browser:
+
+```python
+csa_system = spynach.create({"isotopes": ["1H"], "magnet": 14.1}, {"zeeman": {"eigs": [[-2, -2, 4]], "euler": [[0, 0, 0]]}})
+csa_system = spynach.basis(csa_system, {"formalism": "sphten-liouv", "approximation": "none"})
+powder_pars = {"spins": ["1H"], "offset": 0.0, "sweep": 2e4, "npoints": 64, "grid": "leb_2ang_rank_11",
+               "rho0": spynach.state(csa_system, "L+", "1H"), "coil": spynach.state(csa_system, "L+", "1H"),
+               "progress": lambda done, total: print(f"orientation {done}/{total}") if done % 10 == 0 else None}
+powder_fid = spynach.powder(csa_system, spynach.acquire, powder_pars, "nmr")
+```
+
+The page was contributed by mzaiss (MRsources). It runs in a single thread,
+so it suits guide-sized examples rather than full-size calculations.

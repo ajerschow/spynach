@@ -138,3 +138,15 @@ def test_fokker_planck_layout_and_inputs():
     )
     with pytest.raises(NotImplementedError, match="sphten-liouv"):
         spynach.singlerot(spin_system_hilb, grab, {**p, "rho0": None, "coil": None}, "nmr")
+
+
+def test_singlerot_reports_progress_after_each_orientation():
+    spin_system = csa_pair()
+    p = pars(spin_system, rate=5000.0, max_rank=3, npoints=8)
+    calls = []
+    fid = spynach.singlerot(spin_system, spynach.acquire, {**p, "progress": lambda *args: calls.append(args)}, "nmr")
+    n = spynach.load_grid("leb_2ang_rank_11")["weights"].size
+    assert calls == [(k, n) for k in range(1, n + 1)]
+    np.testing.assert_array_equal(fid, spynach.singlerot(spin_system, spynach.acquire, p, "nmr"))
+    with pytest.raises(TypeError, match="progress"):
+        spynach.singlerot(spin_system, spynach.acquire, {**p, "progress": "yes"}, "nmr")

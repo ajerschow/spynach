@@ -218,3 +218,32 @@ def test_liouville_and_hilbert_q_agree():
         H = hamiltonian_at(spin_system_hilb, angles)
         L = hamiltonian_at(spin_system_liouv, angles)
         np.testing.assert_allclose(L, reference_superop(B, H, "comm"), rtol=0, atol=1e-6)
+
+
+def test_powder_reports_progress_after_each_orientation():
+    spin_system = spynach.basis(
+        spynach.create({"isotopes": ["1H"], "magnet": 14.1}, {"zeeman": {"eigs": [[-2, -2, 4]], "euler": [[0, 0, 0]]}}),
+        LIOUV,
+    )
+    pars = {
+        "spins": ["1H"],
+        "offset": 0.0,
+        "sweep": 20000.0,
+        "npoints": 16,
+        "grid": "leb_2ang_rank_11",
+        "rho0": spynach.state(spin_system, "L+", "1H"),
+        "coil": spynach.state(spin_system, "L+", "1H"),
+    }
+    calls, keys = [], []
+
+    def acquire(spin_system, parameters, H, R, K):
+        keys.append(set(parameters))
+        return spynach.acquire(spin_system, parameters, H, R, K)
+
+    fid = spynach.powder(spin_system, acquire, {**pars, "progress": lambda *args: calls.append(args)}, "nmr")
+    n = spynach.load_grid("leb_2ang_rank_11")["weights"].size
+    assert calls == [(k, n) for k in range(1, n + 1)]
+    assert not any("progress" in seen for seen in keys)  # the sequence never sees the hook
+    assert_matches(fid, spynach.powder(spin_system, spynach.acquire, pars, "nmr"), rtol=1e-14, atol=0)
+    with pytest.raises(TypeError, match="progress"):
+        spynach.powder(spin_system, spynach.acquire, {**pars, "progress": 1}, "nmr")
