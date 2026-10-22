@@ -1,0 +1,1147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Spynach</title>
+<meta name="description" content="Run Spynach in the browser. Simulations use Pyodide in a web worker.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root {
+  --bg: #f6f7f5;
+  --surface: #ffffff;
+  --fg: #1c2024;
+  --muted: #5c6670;
+  --line: #d9ded8;
+  --accent: #0f6e63;
+  --accent-ink: #0a5047;
+  --code-bg: #eef1ee;
+  --sans: "Instrument Sans", "Helvetica Neue", Arial, sans-serif;
+  --mono: "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15191c; --surface: #1d2226; --fg: #e6e9e4; --muted: #9aa5ad; --line: #2f373d;
+    --accent: #5fc4b4; --accent-ink: #8ad8cb; --code-bg: #101417;
+    color-scheme: dark;
+  }
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--fg);
+  font-family: var(--sans); line-height: 1.5; font-size: 1rem;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--accent-ink); }
+button, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+button:focus-visible, select:focus-visible, textarea:focus-visible, a:focus-visible {
+  outline: 2px solid var(--accent); outline-offset: 2px;
+}
+.wrap { height: 100%; display: flex; flex-direction: column; max-width: 88rem; margin: 0 auto; padding: 0 16px 12px; }
+nav.top {
+  display: flex; flex-wrap: wrap; gap: 0.45rem 1.2rem; align-items: baseline;
+  padding-block: 0.85rem; border-bottom: 1px solid var(--line); font-size: 0.95rem;
+}
+nav.top .brand { font-family: var(--mono); font-weight: 500; color: var(--fg); text-decoration: none; margin-right: auto; }
+nav.top a:not(.brand) { color: var(--muted); text-decoration: none; }
+nav.top a:not(.brand):hover { color: var(--accent-ink); }
+.head { display: flex; flex-wrap: wrap; gap: 0.4rem 1.2rem; align-items: baseline; padding: 0.85rem 0 0.2rem; }
+.head h1 { margin: 0; font-size: 1.7rem; font-weight: 650; letter-spacing: -0.03em; }
+.head p { margin: 0; color: var(--muted); flex: 1 1 16rem; }
+#status {
+  font-family: var(--mono); font-size: 0.78rem; line-height: 1.4; color: var(--accent-ink);
+  min-height: 1.4em; margin: 0 0 0.55rem;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.app {
+  flex: 1; min-height: 0; display: grid;
+  grid-template-columns: minmax(18rem, 0.9fr) minmax(0, 1.2fr);
+  grid-template-rows: minmax(0, 1fr) auto;
+  column-gap: 14px;
+}
+.pane {
+  min-height: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 8px;
+  display: flex; flex-direction: column;
+}
+.editor { grid-column: 1; grid-row: 1 / -1; }
+.toolbar { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; padding: 0.65rem 0.75rem; border-bottom: 1px solid var(--line); }
+label.field { display: flex; flex-direction: column; gap: 0.15rem; font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); flex: 1; }
+select, textarea { background: var(--bg); border: 1px solid var(--line); border-radius: 6px; }
+select { padding: 0.4rem 0.5rem; text-transform: none; letter-spacing: 0; font-size: 0.95rem; color: var(--fg); }
+textarea {
+  flex: 1; min-height: 12rem; resize: none; border: 0; border-radius: 0; padding: 0.8rem 0.9rem;
+  font-family: var(--mono); font-size: 0.82rem; line-height: 1.45; background: var(--code-bg);
+}
+.actions { display: flex; gap: 0.45rem; margin-left: auto; }
+.btn { border: 1px solid var(--accent); background: transparent; color: var(--accent-ink); border-radius: 6px; padding: 0.45rem 0.85rem; font-weight: 550; }
+.btn.primary { background: var(--accent); color: var(--bg); }
+.btn:disabled { opacity: 0.45; cursor: default; }
+.hint { margin: 0; padding: 0.45rem 0.8rem 0.6rem; color: var(--muted); font-size: 0.82rem; }
+.hint code { font-family: var(--mono); font-size: 0.85em; background: var(--code-bg); padding: 0.05em 0.3em; border-radius: 3px; }
+#plots {
+  grid-column: 2; grid-row: 1; min-height: 8rem; overflow: auto;
+  padding: 0.6rem 0.7rem 0.2rem; display: grid; gap: 0.8rem; align-content: start;
+  background: var(--surface); border: 1px solid var(--line); border-bottom: 0; border-radius: 8px 8px 0 0;
+}
+#plots .empty { color: var(--muted); margin: 0.4rem 0.2rem; }
+figure.plot { margin: 0; }
+figure.plot canvas { width: 100%; height: auto; display: block; }
+figcaption { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); min-height: 1.1em; margin-top: 0.2rem; }
+#console {
+  grid-column: 2; grid-row: 2;
+  height: 9.5rem; margin: 0; overflow: auto; padding: 0.6rem 0.75rem;
+  border: 1px solid var(--line); border-radius: 0 0 8px 8px;
+  background: var(--code-bg); font-family: var(--mono); font-size: 0.78rem; line-height: 1.45; white-space: pre-wrap;
+}
+#console .err { color: #a33b32; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) #console .err { color: #f0a8a2; }
+}
+.banner {
+  margin: 0.7rem 0 0; padding: 0.6rem 0.75rem; border: 1px solid var(--line); border-radius: 6px;
+  background: var(--surface); color: var(--muted); font-size: 0.92rem;
+}
+@media (max-width: 860px) {
+  .app { grid-template-columns: 1fr; grid-template-rows: auto auto auto; row-gap: 14px; align-content: start; overflow: auto; }
+  .wrap { height: auto; min-height: 100%; }
+  textarea { min-height: 16rem; }
+  #plots { order: 1; grid-column: auto; grid-row: auto; border-bottom: 1px solid var(--line); border-radius: 8px; }
+  .editor { order: 2; grid-column: auto; grid-row: auto; }
+  #console { order: 3; grid-column: auto; grid-row: auto; border-radius: 8px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav class="top" aria-label="Site">
+  <a class="brand" href="#">Spynach</a>
+  <a href="index_orig.html">Project page</a>
+  <a href="https://github.com/ajerschow/spynach">GitHub</a>
+  <a href="https://spindynamics.org">Spinach</a>
+</nav>
+<header class="head">
+  <h1>Spynach</h1>
+  <p>The spin-dynamics kernel running in Pyodide. Every calculation goes to a web worker, so the page stays responsive.</p>
+</header>
+<div id="status" data-phase="loading">Starting…</div>
+<p class="banner" id="file-warn" hidden>This page needs a web server rooted at the repository, not a file:// address, so the worker can load <code>src/</code>.</p>
+<div class="app">
+  <section class="pane editor" aria-label="Editor">
+    <div class="toolbar">
+      <label class="field">Example
+        <select id="example"></select>
+      </label>
+      <div class="actions">
+        <button class="btn primary" id="run" type="button" disabled>Run</button>
+        <button class="btn" id="stop" type="button" disabled>Stop</button>
+      </div>
+    </div>
+    <textarea id="editor" spellcheck="false" aria-label="Python source"></textarea>
+    <p class="hint">Ctrl+Enter runs. <code>show_spectrum</code>, <code>show_fid</code> and <code>show_image</code> draw on the right. The 12800-orientation powder is the slow one, about a minute. The 1600-point powder and magic-angle spinning take a few seconds. Grid names such as <code>leb_2ang_rank_17</code> are loaded from <code>src/spynach/grids</code>.</p>
+  </section>
+  <div id="plots"><p class="empty">The spectrum will land here.</p></div>
+  <div id="console" role="log" aria-live="polite"></div>
+</div>
+</div>
+
+<script type="text/plain" class="example" id="ex-ab" data-title="Two coupled protons">
+import numpy as np
+import spynach
+from spynach.plotting import axis_1d
+
+spin_system = spynach.create(
+    {"isotopes": ["1H", "1H"], "magnet": 14.1},
+    {"zeeman": {"scalar": [1.00, 1.10]}, "coupling": {"scalar": [[0, 12.0], [0, 0]]}},
+)
+spin_system = spynach.basis(spin_system, {"formalism": "zeeman-hilb", "approximation": "none"})
+pars = {
+    "spins": ["1H"],
+    "offset": 630,
+    "sweep": 200,
+    "npoints": 1024,
+    "zerofill": 4096,
+    "axis_units": "ppm",
+    "rho0": spynach.state(spin_system, "L+", "1H"),
+    "coil": spynach.state(spin_system, "L+", "1H"),
+}
+fid = spynach.liquid(spin_system, spynach.acquire, pars, "nmr")
+fid = spynach.apodisation(fid, [("exp", 6)])
+spectrum = np.fft.fftshift(np.fft.fft(fid, pars["zerofill"]))
+axis, xlabel = axis_1d(spin_system, pars)
+peaks = axis[spectrum.real > 0.5 * spectrum.real.max()]
+print(f"{spin_system.basis.nstates} Hilbert states")
+print(f"{xlabel}: lines between {peaks.min():.2f} and {peaks.max():.2f}")
+show_spectrum(spectrum, axis, title="Two coupled protons at 14.1 T", xlabel=xlabel)
+show_fid(fid, pars["sweep"], title="Apodised free induction decay")
+</script>
+
+<script type="text/plain" class="example" id="ex-pulse" data-title="90° pulse from Lz">
+import numpy as np
+import spynach
+from spynach.plotting import axis_1d
+
+spin_system = spynach.create(
+    {"isotopes": ["1H", "13C"], "magnet": 14.1},
+    {"zeeman": {"scalar": [2.00, 30.0]}, "coupling": {"scalar": [[0, 145.0], [0, 0]]}},
+)
+spin_system = spynach.basis(spin_system, {"formalism": "zeeman-hilb", "approximation": "none"})
+
+def pulse_acquire(spin_system, parameters, H, R, K):
+    L = H + 1j * R + 1j * K
+    Ly = spynach.operator(spin_system, "Ly", parameters["spins"][0])
+    pulse = spynach.propagator(spin_system, Ly, np.pi / 2)
+    rho = pulse @ parameters["rho0"] @ pulse.conj().T
+    return spynach.evolution(
+        spin_system, L, rho, 1 / parameters["sweep"], parameters["npoints"] - 1, "observable",
+        coil=parameters["coil"],
+    )
+
+pars = {
+    "spins": ["1H"], "offset": 1200, "sweep": 500, "npoints": 1024, "zerofill": 4096,
+    "axis_units": "Hz",
+    "rho0": spynach.state(spin_system, "Lz", "1H"),
+    "coil": spynach.state(spin_system, "L+", "1H"),
+}
+fid_pulse = spynach.liquid(spin_system, pulse_acquire, pars, "nmr")
+fid_direct = spynach.liquid(
+    spin_system, spynach.acquire, {**pars, "rho0": spynach.state(spin_system, "L+", "1H")}, "nmr",
+)
+window = np.exp(-np.arange(pars["npoints"]) / 256)
+spectra = [np.fft.fftshift(np.fft.fft(f * window, pars["zerofill"])).real for f in (fid_direct, fid_pulse)]
+axis, xlabel = axis_1d(spin_system, pars)
+print(f"peak height ratio {spectra[1].max() / spectra[0].max():.2f}")
+show_spectrum(spectra, axis, title="1H spectrum of a 1H–13C pair", xlabel=xlabel, names=["acquire from L+", "90° pulse from Lz"])
+</script>
+
+<script type="text/plain" class="example" id="ex-exchange" data-title="Two-site exchange">
+import numpy as np
+import spynach
+from spynach.plotting import axis_1d
+
+spin_system = spynach.create(
+    {"isotopes": ["1H", "1H"], "magnet": 14.1},
+    {"zeeman": {"scalar": [0.0, 3.0]},
+     "chem": {"parts": [[0], [1]], "rates": [[-2e3, 2e3], [2e3, -2e3]], "concs": [1.0, 1.0]}},
+)
+spin_system = spynach.basis(spin_system, {"formalism": "sphten-liouv", "approximation": "none"})
+pars = {
+    "spins": ["1H"], "offset": 900.0, "sweep": 5000.0, "npoints": 512, "zerofill": 1024,
+    "axis_units": "ppm",
+    "rho0": spynach.state(spin_system, "L+", "1H", "chem"),
+    "coil": spynach.state(spin_system, "L+", "1H"),
+}
+fid = spynach.liquid(spin_system, spynach.acquire, pars, "nmr")
+fid = fid * np.exp(-6 * np.arange(pars["npoints"]) / pars["npoints"])
+spectrum = np.fft.fftshift(np.fft.fft(fid, pars["zerofill"]))
+axis, xlabel = axis_1d(spin_system, pars)
+print(f"{spin_system.basis.nstates} Liouville states")
+show_spectrum(spectrum, axis, title="Two-site exchange near coalescence", xlabel=xlabel)
+</script>
+
+<script type="text/plain" class="example" id="ex-crystal" data-title="Single-crystal CSA">
+import numpy as np
+import spynach
+from spynach.plotting import axis_1d
+
+spin_system = spynach.create(
+    {"isotopes": ["1H", "1H"], "magnet": 14.1},
+    {"zeeman": {"eigs": [[-7, -7, -1], [4, 2, 9]], "euler": [[0, 0, 0], [0.3, 0.9, 1.2]]}},
+)
+spin_system = spynach.basis(
+    spin_system, {"formalism": "sphten-liouv", "approximation": "none", "projections": [[1]]},
+)
+pars = {
+    "spins": ["1H"], "offset": 0.0, "sweep": 15000.0, "npoints": 128, "zerofill": 512,
+    "axis_units": "ppm", "orientation": [0.3, 0.9, 1.2],
+    "rho0": spynach.state(spin_system, "L+", "1H"),
+    "coil": spynach.state(spin_system, "L+", "1H"),
+}
+fid = spynach.crystal(spin_system, spynach.acquire, pars, "nmr")
+fid = fid * np.exp(-6 * np.arange(pars["npoints"]) / pars["npoints"])
+spectrum = np.fft.fftshift(np.fft.fft(fid, pars["zerofill"]))
+axis, xlabel = axis_1d(spin_system, pars)
+print(f"{spin_system.basis.nstates} Liouville states, one orientation")
+show_spectrum(spectrum, axis, title="Single-crystal CSA", xlabel=xlabel)
+</script>
+
+<script type="text/plain" class="example" id="ex-powder" data-title="Powder CSA (100 orientations)">
+import numpy as np
+import spynach
+from spynach.plotting import axis_1d
+
+spin_system = spynach.create(
+    {"isotopes": ["1H", "1H"], "magnet": 14.1},
+    {"zeeman": {"eigs": [[-7, -7, -1], [4, 2, 9]], "euler": [[0, 0, 0], [0.3, 0.9, 1.2]]}},
+)
+spin_system = spynach.basis(
+    spin_system, {"formalism": "sphten-liouv", "approximation": "none", "projections": [[1]]},
+)
+pars = {
+    "spins": ["1H"], "offset": 0.0, "sweep": 15000.0, "npoints": 64, "zerofill": 256,
+    "axis_units": "ppm", "grid": "rep_2ang_100pts_sph",
+    "rho0": spynach.state(spin_system, "L+", "1H"),
+    "coil": spynach.state(spin_system, "L+", "1H"),
+}
+print("averaging 100 orientations…")
+fid = spynach.powder(spin_system, spynach.acquire, pars, "nmr")
+fid = fid * np.exp(-6 * np.arange(pars["npoints"]) / pars["npoints"])
+spectrum = np.fft.fftshift(np.fft.fft(fid, pars["zerofill"]))
+axis, xlabel = axis_1d(spin_system, pars)
+show_spectrum(spectrum, axis, title="CSA powder, rep_2ang_100pts_sph", xlabel=xlabel)
+</script>
+
+<script type="text/plain" class="example" id="ex-cosy" data-title="COSY-90">
+import numpy as np
+import spynach
+from spynach.plotting import axis_1d
+
+spin_system = spynach.create(
+    {"isotopes": ["1H", "1H"], "magnet": 14.1},
+    {"zeeman": {"scalar": [1.00, 1.10]}, "coupling": {"scalar": [[0, 12.0], [0, 0]]}},
+)
+spin_system = spynach.basis(spin_system, {"formalism": "sphten-liouv", "approximation": "none"})
+pars = {
+    "angle": np.pi / 2, "offset": 630.0, "sweep": 200.0,
+    "npoints": [64, 64], "zerofill": [256, 256], "spins": ["1H"], "axis_units": "ppm",
+}
+fid = spynach.liquid(spin_system, spynach.cosy, pars, "nmr")
+fid = spynach.apodisation(fid, [("sqcos",), ("sqcos",)])
+spectrum = np.fft.fftshift(np.fft.fft2(fid, pars["zerofill"]))
+axis, xlabel = axis_1d(spin_system, {**pars, "zerofill": pars["zerofill"][0]})
+print(f"{spin_system.basis.nstates} Liouville states, FID {fid.shape}, spectrum {spectrum.shape}")
+show_image(spectrum.real.T, axis, axis, title="COSY-90", xlabel="F2: " + xlabel, ylabel="F1: " + xlabel)
+</script>
+
+<script type="text/plain" class="example" id="ex-ctps" data-title="Pathway selection">
+import ctps
+from ctps import AllowedOrders, Nucleus, Period, PhaseCycle, Pulse, Sequence, simulate
+
+proton = Nucleus("1H")
+sequence = Sequence(
+    nuclei=(proton,),
+    pulses=(Pulse("1H", label="90"), Pulse("1H", label="180"), Pulse("1H", label="90")),
+    periods=(Period(), Period(), Period(), Period()),
+    allowed={"1H": AllowedOrders.standard(2, 4, start=[0], end=[-1])},
+)
+cycle = PhaseCycle.explicit(
+    phases=[[0, 1, 2, 3], [0], [0, 3, 2, 1]],
+    receiver=[0, 2, 0, 2],
+    base=4,
+)
+result = simulate(sequence, cycle, epsilon=1e-9, cutoff=0)
+print(f"ctps {ctps.__version__}: {result.n_enumerated} pathways enumerated, {len(result)} kept")
+for row in result.table()[:8]:
+    path = " ".join(f"{p:+d}" for p in row["pathway"])
+    print(f"{row['rank']:2d}  {path}   total {row['total']:.4f}  pc {row['pc']:.3f}")
+</script>
+
+<script type="text/plain" class="example" id="ex-powder-fine" data-title="Powder CSA, 1600 orientations">
+import numpy as np
+import spynach
+from spynach.plotting import axis_1d
+
+spin_system = spynach.create(
+    {"isotopes": ["1H", "1H"], "magnet": 14.1},
+    {"zeeman": {"eigs": [[-7, -7, -1], [4, 2, 9]], "euler": [[0, 0, 0], [0.3, 0.9, 1.2]]}},
+)
+spin_system = spynach.basis(
+    spin_system, {"formalism": "sphten-liouv", "approximation": "none", "projections": [[1]]},
+)
+pars = {
+    "spins": ["1H"], "offset": 0.0, "sweep": 15000.0, "npoints": 128, "zerofill": 512,
+    "axis_units": "ppm", "grid": "rep_2ang_1600pts_sph",
+    "rho0": spynach.state(spin_system, "L+", "1H"),
+    "coil": spynach.state(spin_system, "L+", "1H"),
+}
+print(f"{spin_system.basis.nstates} Liouville states, averaging 1600 orientations")
+fid = spynach.powder(spin_system, spynach.acquire, pars, "nmr")
+fid = fid * np.exp(-6 * np.arange(pars["npoints"]) / pars["npoints"])
+spectrum = np.fft.fftshift(np.fft.fft(fid, pars["zerofill"]))
+axis, xlabel = axis_1d(spin_system, pars)
+show_spectrum(spectrum, axis, title="CSA powder, rep_2ang_1600pts_sph", xlabel=xlabel)
+</script>
+
+<script type="text/plain" class="example" id="ex-mas" data-title="MAS sidebands (110 orientations)">
+import numpy as np
+import spynach
+from spynach.plotting import axis_1d
+
+spin_system = spynach.create(
+    {"isotopes": ["1H", "1H"], "magnet": 14.1},
+    {"zeeman": {"eigs": [[-7, -7, -1], [4, 2, 9]], "euler": [[0, 0, 0], [0, 0, 0]]}},
+)
+spin_system = spynach.basis(
+    spin_system, {"formalism": "sphten-liouv", "approximation": "none", "projections": [[1]]},
+)
+pars = {
+    "spins": ["1H"], "offset": 0.0, "rate": 500.0, "axis": [1, 1, 1], "max_rank": 17,
+    "grid": "leb_2ang_rank_17", "sweep": 2e4, "npoints": 256, "zerofill": 1024,
+    "axis_units": "ppm",
+    "rho0": spynach.state(spin_system, "L+", "1H"),
+    "coil": spynach.state(spin_system, "L+", "1H"),
+}
+print(f"{spin_system.basis.nstates} spin states × 35 rotor phases, 110 orientations at 500 Hz")
+fid = spynach.singlerot(spin_system, spynach.acquire, pars, "nmr")
+fid = fid * np.exp(-6 * np.arange(pars["npoints"]) / pars["npoints"])
+spectrum = np.fft.fftshift(np.fft.fft(fid, pars["zerofill"]))
+axis, xlabel = axis_1d(spin_system, pars)
+show_spectrum(spectrum, axis, title="Magic-angle spinning, 500 Hz", xlabel=xlabel)
+</script>
+
+<script type="text/plain" class="example" id="ex-cosy3" data-title="COSY-90, three spins">
+import numpy as np
+import spynach
+from spynach.plotting import axis_1d
+
+spin_system = spynach.create(
+    {"isotopes": ["1H", "1H", "1H"], "magnet": 16.1},
+    {"zeeman": {"scalar": [3.70, 3.92, 4.50]},
+     "coupling": {"scalar": [[0, 10, 4], [0, 0, 12], [0, 0, 0]]}},
+)
+spin_system = spynach.basis(spin_system, {"formalism": "sphten-liouv", "approximation": "none"})
+pars = {
+    "angle": np.pi / 2, "offset": 2800.0, "sweep": 700.0,
+    "npoints": [64, 64], "zerofill": [256, 256], "spins": ["1H"], "axis_units": "ppm",
+}
+print(f"{spin_system.basis.nstates} Liouville states, 64 × 64 COSY")
+fid = spynach.liquid(spin_system, spynach.cosy, pars, "nmr")
+fid = spynach.apodisation(fid, [("sqcos",), ("sqcos",)])
+spectrum = np.fft.fftshift(np.fft.fft2(fid, pars["zerofill"]))
+axis, xlabel = axis_1d(spin_system, {**pars, "zerofill": pars["zerofill"][0]})
+print(f"FID {fid.shape}, spectrum {spectrum.shape}")
+show_image(spectrum.real.T, axis, axis, title="COSY-90, Derome three-spin system", xlabel="F2: " + xlabel, ylabel="F1: " + xlabel)
+</script>
+
+<script type="text/plain" class="example" id="ex-noesy" data-title="NOESY, Redfield relaxation">
+import numpy as np
+import spynach
+from spynach.plotting import axis_1d
+
+spin_system = spynach.create(
+    {"isotopes": ["1H", "1H"], "magnet": 14.1},
+    {"zeeman": {"scalar": [1.0, 3.0]}, "coordinates": [[0, 0, 0], [0, 0, 2.5]],
+     "relaxation": ["redfield"], "equilibrium": "IME", "rlx_keep": "kite",
+     "temperature": 298, "tau_c": [[2e-9]]},
+)
+spin_system = spynach.basis(spin_system, {"formalism": "sphten-liouv", "approximation": "none"})
+pars = {
+    "tmix": 0.3, "offset": 1200.0, "sweep": [2000.0, 2000.0],
+    "npoints": [64, 64], "spins": ["1H"], "needs": ["rho_eq"], "axis_units": "ppm",
+}
+print(f"{spin_system.basis.nstates} Liouville states; building the Redfield superoperator, then a 64 × 64 NOESY")
+fid = spynach.liquid(spin_system, spynach.noesy, pars, "nmr")
+cos = spynach.apodisation(fid["cos"], [("sqcos",), ("sqcos",)])
+sin = spynach.apodisation(fid["sin"], [("sqcos",), ("sqcos",)])
+zf = 256
+f1_cos = np.real(np.fft.fftshift(np.fft.fft(cos, zf, axis=0), axes=0))
+f1_sin = np.real(np.fft.fftshift(np.fft.fft(sin, zf, axis=0), axes=0))
+spectrum = np.fft.fftshift(np.fft.fft(f1_cos - 1j * f1_sin, zf, axis=1), axes=1)
+axis, xlabel = axis_1d(spin_system, {**pars, "sweep": pars["sweep"][0], "zerofill": zf})
+print(f"spectrum {spectrum.shape}")
+show_image(-spectrum.real.T, axis, axis, title="NOESY, 300 ms, Redfield", xlabel="F2: " + xlabel, ylabel="F1: " + xlabel)
+</script>
+
+<script type="text/plain" class="example" id="ex-chain" data-title="12-proton chain, IK-2">
+import numpy as np
+import spynach
+from spynach.plotting import axis_1d
+
+n = 12
+coupling = np.zeros((n, n))
+for i in range(n - 1):
+    coupling[i, i + 1] = 8.0
+spin_system = spynach.create(
+    {"isotopes": ["1H"] * n, "magnet": 14.1},
+    {"zeeman": {"scalar": np.linspace(1.0, 4.5, n).tolist()}, "coupling": {"scalar": coupling.tolist()}},
+)
+spin_system = spynach.basis(
+    spin_system,
+    {"formalism": "sphten-liouv", "approximation": "IK-2", "connectivity": "scalar_couplings", "prox_level": 1},
+)
+pars = {
+    "spins": ["1H"], "offset": 1650.0, "sweep": 2800.0, "npoints": 1024, "zerofill": 4096,
+    "axis_units": "ppm",
+    "rho0": spynach.state(spin_system, "L+", "1H"),
+    "coil": spynach.state(spin_system, "L+", "1H"),
+}
+print(f"{n} protons, {spin_system.basis.nstates} Liouville states (IK-2)")
+fid = spynach.liquid(spin_system, spynach.acquire, pars, "nmr")
+fid = spynach.apodisation(fid, [("exp", 4)])
+spectrum = np.fft.fftshift(np.fft.fft(fid, pars["zerofill"]))
+axis, xlabel = axis_1d(spin_system, pars)
+show_spectrum(spectrum, axis, title="12-proton chain, nearest-neighbour J, IK-2", xlabel=xlabel)
+</script>
+
+<script type="text/plain" class="example" id="ex-powder-12k" data-title="Powder CSA, 12800 orientations">
+import numpy as np
+import spynach
+from spynach.plotting import axis_1d
+
+spin_system = spynach.create(
+    {"isotopes": ["1H", "1H"], "magnet": 14.1},
+    {"zeeman": {"eigs": [[-7, -7, -1], [4, 2, 9]], "euler": [[0, 0, 0], [0.3, 0.9, 1.2]]}},
+)
+spin_system = spynach.basis(
+    spin_system, {"formalism": "sphten-liouv", "approximation": "none", "projections": [[1]]},
+)
+pars = {
+    "spins": ["1H"], "offset": 0.0, "sweep": 15000.0, "npoints": 128, "zerofill": 512,
+    "axis_units": "ppm", "grid": "rep_2ang_12800pts_sph",
+    "rho0": spynach.state(spin_system, "L+", "1H"),
+    "coil": spynach.state(spin_system, "L+", "1H"),
+}
+print(f"{spin_system.basis.nstates} Liouville states, averaging 12800 orientations")
+fid = spynach.powder(spin_system, spynach.acquire, pars, "nmr")
+fid = fid * np.exp(-6 * np.arange(pars["npoints"]) / pars["npoints"])
+spectrum = np.fft.fftshift(np.fft.fft(fid, pars["zerofill"]))
+axis, xlabel = axis_1d(spin_system, pars)
+show_spectrum(spectrum, axis, title="CSA powder, rep_2ang_12800pts_sph", xlabel=xlabel)
+</script>
+
+<script>
+const statusEl = document.querySelector("#status");
+const editor = document.querySelector("#editor");
+const exampleSel = document.querySelector("#example");
+const runBtn = document.querySelector("#run");
+const stopBtn = document.querySelector("#stop");
+const plotsEl = document.querySelector("#plots");
+const consoleEl = document.querySelector("#console");
+const examples = [...document.querySelectorAll("script.example")];
+
+let worker = null;
+let runId = 0;
+let dirty = false;
+let autoRun = true;
+let lastPlots = null;
+let startedAt = 0;
+let versionNote = "";
+
+examples.forEach((node) => {
+  const option = document.createElement("option");
+  option.value = node.id;
+  option.textContent = node.dataset.title;
+  exampleSel.appendChild(option);
+});
+
+function exampleSource(id) {
+  const node = document.getElementById(id);
+  return node.textContent.replace(/^\n/, "").replace(/\s+$/, "");
+}
+
+function loadExample(id) {
+  editor.value = exampleSource(id);
+  dirty = false;
+}
+
+let clock = null;
+let progressNote = "";
+
+function progressText() {
+  const seconds = Math.max(0, Math.round((performance.now() - startedAt) / 1000));
+  return progressNote ? "Running… " + seconds + " s · " + progressNote : "Running… " + seconds + " s";
+}
+
+function showProgress() {
+  let line = document.querySelector("#progress-line");
+  if (!line) {
+    line = document.createElement("div");
+    line.id = "progress-line";
+    consoleEl.appendChild(line);
+  }
+  line.textContent = progressText();
+  consoleEl.scrollTop = consoleEl.scrollHeight;
+}
+
+function clearProgress() {
+  progressNote = "";
+  const line = document.querySelector("#progress-line");
+  if (line) line.remove();
+}
+
+function startClock() {
+  clearInterval(clock);
+  clock = setInterval(() => {
+    if (statusEl.dataset.phase === "running") showProgress();
+  }, 500);
+}
+
+function stopClock() {
+  clearInterval(clock);
+  clock = null;
+  clearProgress();
+}
+
+function setPhase(phase, text) {
+  statusEl.dataset.phase = phase;
+  statusEl.textContent = text;
+  const busy = phase === "loading" || phase === "running";
+  runBtn.disabled = busy || phase === "fatal";
+  stopBtn.disabled = phase !== "running";
+}
+
+function log(text, cls) {
+  if (!text) return;
+  const span = document.createElement("span");
+  if (cls) span.className = cls;
+  span.textContent = text;
+  const line = document.querySelector("#progress-line");
+  if (line) consoleEl.insertBefore(span, line);
+  else consoleEl.appendChild(span);
+  if (consoleEl.textContent.length > 200000) consoleEl.textContent = consoleEl.textContent.slice(-150000);
+  consoleEl.scrollTop = consoleEl.scrollHeight;
+}
+
+function bootWorker() {
+  if (worker) worker.terminate();
+  stopClock();
+  setPhase("loading", "Loading Pyodide…");
+  worker = new Worker("worker.js?v=2", { type: "module" });
+  worker.onmessage = onWorker;
+  worker.onerror = (event) => {
+    setPhase("fatal", "The worker failed to start");
+    log((event.message || "The worker failed to start") + "\n", "err");
+  };
+}
+
+function onWorker(event) {
+  const msg = event.data;
+  if (msg.type === "status") {
+    if (statusEl.dataset.phase === "loading") setPhase("loading", msg.text);
+    return;
+  }
+  if (msg.type === "ready") {
+    versionNote = "Python " + msg.python + " · spynach " + msg.spynach + " · ctps " + msg.ctps;
+    if (autoRun && !dirty) run();
+    else setPhase("ready", versionNote);
+    return;
+  }
+  if (msg.type === "progress") {
+    if (msg.id !== runId || statusEl.dataset.phase !== "running" || !msg.total) return;
+    const pct = Math.round(100 * msg.done / msg.total);
+    progressNote = msg.kind + " " + msg.done + "/" + msg.total + " (" + pct + "%)";
+    showProgress();
+    return;
+  }
+  if (msg.type === "stdout") { log(msg.text); return; }
+  if (msg.type === "stderr") { log(msg.text, "err"); return; }
+  if (msg.id !== runId) return;
+  stopClock();
+  if (msg.type === "result") {
+    const seconds = ((performance.now() - startedAt) / 1000).toFixed(1);
+    render(msg.plots || []);
+    if (msg.error) {
+      log(msg.error, "err");
+      setPhase("error", "Failed after " + seconds + " s");
+    } else {
+      log("\nFinished in " + seconds + " s.\n");
+      setPhase("done", "Finished in " + seconds + " s");
+    }
+    return;
+  }
+  if (msg.type === "error" || msg.type === "fatal") {
+    log((msg.message || "Simulation failed") + "\n", "err");
+    setPhase(msg.type === "fatal" ? "fatal" : "error", msg.type === "fatal" ? "Pyodide failed to start" : "The simulation failed");
+  }
+}
+
+function run() {
+  const phase = statusEl.dataset.phase;
+  if (!worker || phase === "fatal" || phase === "running") return;
+  runId += 1;
+  startedAt = performance.now();
+  progressNote = "";
+  consoleEl.textContent = "";
+  if (versionNote) log(versionNote + "\n");
+  plotsEl.replaceChildren();
+  lastPlots = null;
+  setPhase("running", "Running…");
+  startClock();
+  worker.postMessage({ type: "run", id: runId, code: editor.value });
+}
+
+function stop() {
+  autoRun = false;
+  runId += 1;
+  log("\nStopped.\n", "err");
+  bootWorker();
+}
+
+exampleSel.addEventListener("change", () => {
+  autoRun = false;
+  if (dirty && !window.confirm("Replace the editor contents with this example?")) {
+    exampleSel.value = exampleSel.dataset.current || examples[0].id;
+    return;
+  }
+  exampleSel.dataset.current = exampleSel.value;
+  loadExample(exampleSel.value);
+});
+editor.addEventListener("input", () => { dirty = true; autoRun = false; });
+editor.addEventListener("keydown", (event) => {
+  if (event.key === "Tab") {
+    event.preventDefault();
+    const start = editor.selectionStart;
+    const end = editor.selectionEnd;
+    editor.setRangeText("    ", start, end, "end");
+    dirty = true;
+  } else if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
+    event.preventDefault();
+    if (!runBtn.disabled) run();
+  }
+});
+runBtn.addEventListener("click", () => { autoRun = false; run(); });
+stopBtn.addEventListener("click", stop);
+window.addEventListener("resize", () => { if (lastPlots) render(lastPlots); });
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { if (lastPlots) render(lastPlots); });
+
+function css(name, fallback) {
+  const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  return value || fallback;
+}
+function palette() {
+  const dark = matchMedia("(prefers-color-scheme: dark)").matches;
+  return dark
+    ? ["#5fc4b4", "#e0a06a", "#8eb7ea", "#e0c36a", "#d58bc4"]
+    : ["#0f6e63", "#c45c26", "#2a78d6", "#8a6a00", "#8d3d7b"];
+}
+function extent(values) {
+  let lo = Infinity;
+  let hi = -Infinity;
+  for (let i = 0; i < values.length; i++) {
+    const v = values[i];
+    if (v < lo) lo = v;
+    if (v > hi) hi = v;
+  }
+  if (!Number.isFinite(lo) || !Number.isFinite(hi)) return [0, 1];
+  if (lo === hi) return [lo - 1, hi + 1];
+  return [lo, hi];
+}
+function ticks(min, max, count) {
+  const span = max - min;
+  if (!(span > 0)) return [min];
+  const rough = span / count;
+  const mag = 10 ** Math.floor(Math.log10(rough));
+  const err = rough / mag;
+  const step = (err >= 7.5 ? 10 : err >= 3.5 ? 5 : err >= 1.5 ? 2 : 1) * mag;
+  const out = [];
+  for (let v = Math.ceil(min / step) * step; v <= max + step * 1e-6; v += step) out.push(v);
+  return out;
+}
+function fmt(v) {
+  if (!Number.isFinite(v)) return "";
+  const a = Math.abs(v);
+  if (a !== 0 && (a < 0.01 || a >= 10000)) return v.toExponential(2);
+  const rounded = Math.round(v * 1000) / 1000;
+  return String(rounded);
+}
+
+function drawLine(canvas, plot) {
+  const colors = palette();
+  const fg = css("--fg", "#1c2024");
+  const muted = css("--muted", "#5c6670");
+  const grid = css("--line", "#d9ded8");
+  const dpr = window.devicePixelRatio || 1;
+  const width = canvas.clientWidth || 640;
+  const height = 300;
+  canvas.style.height = height + "px";
+  canvas.width = Math.round(width * dpr);
+  canvas.height = Math.round(height * dpr);
+  const ctx = canvas.getContext("2d");
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, width, height);
+  ctx.fillStyle = css("--surface", "#fff");
+  ctx.fillRect(0, 0, width, height);
+  const left = 58;
+  const right = width - 16;
+  const top = plot.title ? 28 : 14;
+  const bottom = height - 36;
+  const w = Math.max(1, right - left);
+  const h = Math.max(1, bottom - top);
+  const x = plot.x;
+  const series = (plot.series || []).filter((item) => item.y && item.y.length);
+  if (!x || !series.length) {
+    ctx.fillStyle = muted;
+    ctx.fillText("Nothing to plot.", left, top + 16);
+    return null;
+  }
+  const n = Math.min(x.length, ...series.map((item) => item.y.length));
+  let [xLo, xHi] = extent(x.subarray(0, n));
+  let yLo = Infinity;
+  let yHi = -Infinity;
+  for (const item of series) {
+    const [lo, hi] = extent(item.y.subarray(0, n));
+    if (lo < yLo) yLo = lo;
+    if (hi > yHi) yHi = hi;
+  }
+  const pad = (yHi - yLo) * 0.08 || 1;
+  yLo -= pad;
+  yHi += pad;
+  const xPix = (v) => {
+    const t = (v - xLo) / (xHi - xLo);
+    return plot.invert ? left + (1 - t) * w : left + t * w;
+  };
+  const yPix = (v) => bottom - ((v - yLo) / (yHi - yLo)) * h;
+  ctx.font = "11px " + cssFont();
+  ctx.lineWidth = 1;
+  ctx.strokeStyle = grid;
+  ctx.fillStyle = muted;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "top";
+  for (const tick of ticks(xLo, xHi, 5)) {
+    const px = xPix(tick);
+    ctx.beginPath();
+    ctx.moveTo(px, top);
+    ctx.lineTo(px, bottom);
+    ctx.stroke();
+    ctx.fillText(fmt(tick), px, bottom + 6);
+  }
+  ctx.textAlign = "right";
+  ctx.textBaseline = "middle";
+  for (const tick of ticks(yLo, yHi, 4)) {
+    const py = yPix(tick);
+    ctx.beginPath();
+    ctx.moveTo(left, py);
+    ctx.lineTo(right, py);
+    ctx.stroke();
+    ctx.fillText(fmt(tick), left - 6, py);
+  }
+  if (yLo < 0 && yHi > 0) {
+    ctx.strokeStyle = muted;
+    ctx.beginPath();
+    ctx.moveTo(left, yPix(0));
+    ctx.lineTo(right, yPix(0));
+    ctx.stroke();
+  }
+  ctx.strokeStyle = fg;
+  ctx.strokeRect(left, top, w, h);
+  series.forEach((item, index) => {
+    ctx.beginPath();
+    ctx.strokeStyle = colors[index % colors.length];
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash(item.name === "imag" ? [4, 3] : []);
+    let moved = false;
+    let column = null;
+    let minY = 0;
+    let maxY = 0;
+    const flush = () => {
+      if (column == null) return;
+      if (!moved) { ctx.moveTo(column, minY); moved = true; }
+      else ctx.lineTo(column, minY);
+      if (maxY !== minY) ctx.lineTo(column, maxY);
+    };
+    for (let i = 0; i < n; i++) {
+      const px = Math.round(xPix(x[i]));
+      const py = yPix(item.y[i]);
+      if (column !== px) { flush(); column = px; minY = maxY = py; }
+      else { if (py < minY) minY = py; if (py > maxY) maxY = py; }
+    }
+    flush();
+    ctx.stroke();
+  });
+  ctx.setLineDash([]);
+  if (plot.title) {
+    ctx.fillStyle = fg;
+    ctx.textAlign = "left";
+    ctx.textBaseline = "top";
+    ctx.font = "600 13px " + cssFont();
+    ctx.fillText(plot.title, left, 8);
+  }
+  ctx.font = "11px " + cssFont();
+  ctx.fillStyle = muted;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "bottom";
+  ctx.fillText(plot.xlabel || "", left + w / 2, height - 2);
+  const named = series.filter((item) => item.name);
+  if (named.length) {
+    ctx.textAlign = "left";
+    ctx.textBaseline = "top";
+    let lx = left + 8;
+    named.forEach((item, index) => {
+      const color = colors[series.indexOf(item) % colors.length];
+      ctx.strokeStyle = color;
+      ctx.beginPath();
+      ctx.moveTo(lx, top + 8);
+      ctx.lineTo(lx + 16, top + 8);
+      ctx.stroke();
+      ctx.fillStyle = fg;
+      ctx.fillText(item.name, lx + 20, top + 2);
+      lx += ctx.measureText(item.name).width + 36;
+    });
+  }
+  return { left, right, top, bottom, xLo, xHi, yLo, yHi, invert: plot.invert, x: x.subarray(0, n), series };
+}
+
+function contourLevels(zLo, zHi) {
+  const ncont = 12;
+  const levels = [];
+  for (let n = 0; n < ncont; n++) {
+    const g = (n / (ncont - 1)) ** 2;
+    const frac = 0.1 + 0.45 * g;
+    if (zHi > 0) levels.push({ value: zHi * frac, sign: 1, rank: n / (ncont - 1) });
+    if (zLo < 0) levels.push({ value: zLo * frac, sign: -1, rank: n / (ncont - 1) });
+  }
+  return levels;
+}
+
+function mixRgb(a, b, t) {
+  return "rgb(" + a.map((v, i) => Math.round(v + (b[i] - v) * t)).join(",") + ")";
+}
+
+function drawImage(canvas, plot) {
+  const fg = css("--fg", "#1c2024");
+  const muted = css("--muted", "#5c6670");
+  const gridColor = css("--line", "#d9ded8");
+  const dark = getComputedStyle(document.documentElement).colorScheme === "dark";
+  const pos = dark ? [[86, 140, 134], [143, 216, 203]] : [[176, 214, 206], [12, 99, 90]];
+  const neg = dark ? [[78, 96, 140], [158, 184, 242]] : [[186, 204, 234], [32, 68, 160]];
+  const dpr = window.devicePixelRatio || 1;
+  const width = canvas.clientWidth || 640;
+  const left = 64;
+  const legend = 86;
+  const top = plot.title ? 30 : 16;
+  const side = Math.max(240, Math.min(width - left - legend, 520));
+  const height = top + side + 40;
+  canvas.style.height = height + "px";
+  canvas.width = Math.round(width * dpr);
+  canvas.height = Math.round(height * dpr);
+  const ctx = canvas.getContext("2d");
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, width, height);
+  ctx.fillStyle = css("--surface", "#fff");
+  ctx.fillRect(0, 0, width, height);
+  const bottom = top + side;
+  const right = left + side;
+  const z = plot.z;
+  const nx = plot.cols;
+  const ny = plot.rows;
+  if (!z || nx < 2 || ny < 2 || z.length < nx * ny) {
+    ctx.fillStyle = muted;
+    ctx.fillText("Nothing to plot.", left, top + 16);
+    return null;
+  }
+  let zLo = Infinity;
+  let zHi = -Infinity;
+  for (let i = 0; i < nx * ny; i++) {
+    if (z[i] < zLo) zLo = z[i];
+    if (z[i] > zHi) zHi = z[i];
+  }
+  const xAxis = plot.x && plot.x.length === nx ? plot.x : null;
+  const yAxis = plot.y && plot.y.length === ny ? plot.y : null;
+  const [xLo, xHi] = extent(xAxis || [0, nx - 1]);
+  const [yLo, yHi] = extent(yAxis || [0, ny - 1]);
+  const xAt = (ix) => (xAxis ? xAxis[ix] : ix);
+  const yAt = (iy) => (yAxis ? yAxis[iy] : iy);
+  const xPix = (v) => {
+    const t = (v - xLo) / (xHi - xLo || 1);
+    return plot.invert ? left + (1 - t) * side : left + t * side;
+  };
+  const yPix = (v) => {
+    const t = (v - yLo) / (yHi - yLo || 1);
+    return plot.invert ? top + t * side : top + (1 - t) * side;
+  };
+  const labelOf = (values) => {
+    const step = values.length > 1 ? Math.abs(values[1] - values[0]) : 1;
+    const decimals = step >= 1 ? 0 : Math.min(3, Math.max(0, Math.ceil(-Math.log10(step) - 1e-9)));
+    return (v) => v.toFixed(decimals);
+  };
+  const xTicks = ticks(xLo, xHi, 4);
+  const yTicks = ticks(yLo, yHi, 4);
+  const xText = labelOf(xTicks);
+  const yText = labelOf(yTicks);
+  ctx.font = "11px " + cssFont();
+  ctx.lineWidth = 1;
+  ctx.strokeStyle = gridColor;
+  ctx.fillStyle = muted;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "top";
+  for (const tick of xTicks) {
+    const px = xPix(tick);
+    ctx.beginPath();
+    ctx.moveTo(px, top);
+    ctx.lineTo(px, bottom);
+    ctx.stroke();
+    ctx.fillText(xText(tick), px, bottom + 6);
+  }
+  ctx.textAlign = "right";
+  ctx.textBaseline = "middle";
+  for (const tick of yTicks) {
+    const py = yPix(tick);
+    ctx.beginPath();
+    ctx.moveTo(left, py);
+    ctx.lineTo(right, py);
+    ctx.stroke();
+    ctx.fillText(yText(tick), left - 6, py);
+  }
+  const edges = {
+    1: [["S", "W"]],
+    2: [["S", "E"]],
+    3: [["W", "E"]],
+    4: [["E", "N"]],
+    6: [["S", "N"]],
+    7: [["W", "N"]],
+    8: [["W", "N"]],
+    9: [["S", "N"]],
+    11: [["E", "N"]],
+    12: [["W", "E"]],
+    13: [["S", "E"]],
+    14: [["S", "W"]],
+  };
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(left, top, side, side);
+  ctx.clip();
+  ctx.lineJoin = "round";
+  ctx.lineWidth = 1.15;
+  for (const level of contourLevels(zLo, zHi)) {
+    const value = level.value;
+    ctx.beginPath();
+    ctx.strokeStyle = mixRgb(level.sign > 0 ? pos[0] : neg[0], level.sign > 0 ? pos[1] : neg[1], level.rank);
+    for (let iy = 0; iy < ny - 1; iy++) {
+      for (let ix = 0; ix < nx - 1; ix++) {
+        const z00 = z[iy * nx + ix];
+        const z10 = z[iy * nx + ix + 1];
+        const z11 = z[(iy + 1) * nx + ix + 1];
+        const z01 = z[(iy + 1) * nx + ix];
+        if (![z00, z10, z11, z01].every(Number.isFinite)) continue;
+        let code = 0;
+        if (z00 >= value) code |= 1;
+        if (z10 >= value) code |= 2;
+        if (z11 >= value) code |= 4;
+        if (z01 >= value) code |= 8;
+        let pairs = edges[code];
+        if (code === 5 || code === 10) {
+          const centerIn = (z00 + z10 + z11 + z01) / 4 >= value;
+          pairs = code === 5
+            ? (centerIn ? [["S", "W"], ["E", "N"]] : [["S", "E"], ["W", "N"]])
+            : (centerIn ? [["S", "E"], ["W", "N"]] : [["S", "W"], ["E", "N"]]);
+        }
+        if (!pairs) continue;
+        const x0 = xAt(ix);
+        const x1 = xAt(ix + 1);
+        const y0 = yAt(iy);
+        const y1 = yAt(iy + 1);
+        const point = (edge) => {
+          const frac = (za, zb) => Math.max(0, Math.min(1, (value - za) / (zb - za || 1e-12)));
+          if (edge === "S") return [xPix(x0 + frac(z00, z10) * (x1 - x0)), yPix(y0)];
+          if (edge === "N") return [xPix(x0 + frac(z01, z11) * (x1 - x0)), yPix(y1)];
+          if (edge === "W") return [xPix(x0), yPix(y0 + frac(z00, z01) * (y1 - y0))];
+          return [xPix(x1), yPix(y0 + frac(z10, z11) * (y1 - y0))];
+        };
+        for (const [a, b] of pairs) {
+          const p = point(a);
+          const q = point(b);
+          ctx.moveTo(p[0], p[1]);
+          ctx.lineTo(q[0], q[1]);
+        }
+      }
+    }
+    ctx.stroke();
+  }
+  ctx.restore();
+  ctx.strokeStyle = fg;
+  ctx.strokeRect(left, top, side, side);
+  const keyX = right + 16;
+  ctx.font = "11px " + cssFont();
+  ctx.textAlign = "left";
+  ctx.textBaseline = "middle";
+  [[pos[1], "positive"], [neg[1], "negative"]].forEach(([rgb, label], index) => {
+    if ((index === 0 && zHi <= 0) || (index === 1 && zLo >= 0)) return;
+    const ky = top + 8 + index * 18;
+    ctx.strokeStyle = "rgb(" + rgb.join(",") + ")";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(keyX, ky);
+    ctx.lineTo(keyX + 16, ky);
+    ctx.stroke();
+    ctx.fillStyle = muted;
+    ctx.fillText(label, keyX + 22, ky);
+  });
+  if (plot.title) {
+    ctx.fillStyle = fg;
+    ctx.font = "600 13px " + cssFont();
+    ctx.textAlign = "left";
+    ctx.textBaseline = "top";
+    ctx.fillText(plot.title, left, 8);
+  }
+  ctx.font = "11px " + cssFont();
+  ctx.fillStyle = muted;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "bottom";
+  ctx.fillText(plot.xlabel || "", left + side / 2, height - 2);
+  if (plot.ylabel) {
+    ctx.save();
+    ctx.translate(14, top + side / 2);
+    ctx.rotate(-Math.PI / 2);
+    ctx.textBaseline = "middle";
+    ctx.fillText(plot.ylabel, 0, 0);
+    ctx.restore();
+  }
+  return { left, right, top, bottom, xLo, xHi, yLo, yHi, invert: plot.invert, image: true, z, nx, ny };
+}
+
+function cssFont() {
+  return getComputedStyle(document.body).fontFamily || "sans-serif";
+}
+
+function render(plots) {
+  lastPlots = plots;
+  plotsEl.replaceChildren();
+  if (!plots.length) {
+    const empty = document.createElement("p");
+    empty.className = "empty";
+    empty.textContent = "No plot. Call show_spectrum, show_fid or show_image, or leave a spectrum variable.";
+    plotsEl.appendChild(empty);
+    return;
+  }
+  for (const plot of plots) {
+    const figure = document.createElement("figure");
+    figure.className = "plot";
+    const canvas = document.createElement("canvas");
+    const caption = document.createElement("figcaption");
+    figure.append(canvas, caption);
+    plotsEl.appendChild(figure);
+    const map = plot.kind === "image" ? drawImage(canvas, plot) : drawLine(canvas, plot);
+    canvas.addEventListener("mousemove", (event) => {
+      if (!map) return;
+      const rect = canvas.getBoundingClientRect();
+      const px = event.clientX - rect.left;
+      const py = event.clientY - rect.top;
+      if (px < map.left || px > map.right || py < map.top || py > map.bottom) { caption.textContent = ""; return; }
+      const tx = (px - map.left) / (map.right - map.left);
+      const xVal = map.invert ? map.xHi - tx * (map.xHi - map.xLo) : map.xLo + tx * (map.xHi - map.xLo);
+      const ty = (py - map.top) / (map.bottom - map.top);
+      const yVal = map.image && map.invert
+        ? map.yLo + ty * (map.yHi - map.yLo)
+        : map.yHi - ty * (map.yHi - map.yLo);
+      caption.textContent = map.image
+        ? fmt(xVal) + ", " + fmt(yVal)
+        : fmt(xVal) + "   " + fmt(nearest(map, xVal));
+    });
+    canvas.addEventListener("mouseleave", () => { caption.textContent = ""; });
+  }
+}
+
+function nearest(map, xVal) {
+  const x = map.x;
+  const y = map.series[0].y;
+  let best = 0;
+  let dist = Infinity;
+  const n = Math.min(x.length, y.length);
+  for (let i = 0; i < n; i++) {
+    const d = Math.abs(x[i] - xVal);
+    if (d < dist) { dist = d; best = i; }
+  }
+  return y[best];
+}
+
+if (location.protocol === "file:") document.querySelector("#file-warn").hidden = false;
+loadExample(examples[0].id);
+exampleSel.dataset.current = examples[0].id;
+bootWorker();
+</script>
+</body>
+</html>
