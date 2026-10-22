@@ -444,7 +444,7 @@ ignored by the simulation, as in Spinach.
 
 | Spinach | Spynach |
 |---|---|
-| contexts: `liquid`, `powder`, `crystal`, `singlerot`, `doublerot`, `floquet`, `gridfree`, `imaging`, ... | `liquid`, `crystal`, `powder`, `singlerot` (serial over the grid, same weighted sum; grids by their Spinach names; `singlerot` in Liouville space with the same `rate`, `axis`, `max_rank` parameters and the same Fokker-Planck layout) |
+| contexts: `liquid`, `powder`, `crystal`, `singlerot`, `doublerot`, `floquet`, `gridfree`, `imaging`, ... | `liquid`, `crystal`, `powder`, `singlerot` (serial over the grid, same weighted sum; grids by their Spinach names; `singlerot` in Liouville space with the same `rate`, `axis`, `max_rank` parameters and the same Fokker-Planck layout). `powder` and `singlerot` accept an optional `parameters["progress"](done, total)`, called after each orientation; Spinach has no equivalent |
 | pulse sequences in `experiments/`: `acquire`, `hsqc`, `cosy`, `noesy`, ... | `acquire` (with `decouple`, `dead_time`, `homodec_*`), `cosy`, `noesy`, `hsqc`; others: write them the same way (see the [pulse sequence guide](pulse-sequences.md)) |
 | `evolution` outputs `'observable'`, `'final'`, `'total'`, `'trajectory'`, `'refocus'`, `'multichannel'` | `'observable'` in Hilbert space; all but `'total'` in Liouville space |
 | `evolution(spin_system,L,coil,rho,dt,nsteps,output)` | `evolution(spin_system, L, rho, dt, nsteps, output, coil=coil)`: the detection state is a keyword, see [Keyword arguments](#keyword-arguments) |

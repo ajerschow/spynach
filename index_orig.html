@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Spynach</title>
+<meta name="description" content="A Python reimplementation of the Spinach spin dynamics kernel, verified stage by stage against the MATLAB original.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one 68rem column, section eyebrows in mono, a spectrum drawn to scale as the opener, cards only for the two reports. */
+:root {
+  --bg: #f6f7f5;
+  --surface: #ffffff;
+  --fg: #1c2024;
+  --muted: #5c6670;
+  --line: #d9ded8;
+  --accent: #0f6e63;
+  --accent-ink: #0a5047;
+  --code-bg: #eef1ee;
+  --sans: "Instrument Sans", "Helvetica Neue", Arial, sans-serif;
+  --mono: "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15191c; --surface: #1d2226; --fg: #e6e9e4; --muted: #9aa5ad; --line: #2f373d;
+    --accent: #5fc4b4; --accent-ink: #8ad8cb; --code-bg: #101417;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15191c; --surface: #1d2226; --fg: #e6e9e4; --muted: #9aa5ad; --line: #2f373d;
+  --accent: #5fc4b4; --accent-ink: #8ad8cb; --code-bg: #101417;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { font-size: 16px; }
+body {
+  margin: 0; background: var(--bg); color: var(--fg);
+  font-family: var(--sans); line-height: 1.55; font-size: 1.0625rem;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--accent-ink); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 2px; }
+a:hover { color: var(--accent); }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+code, pre { font-family: var(--mono); font-size: 0.875em; }
+code { background: var(--code-bg); padding: 0.08em 0.3em; border-radius: 3px; }
+pre { background: var(--code-bg); border: 1px solid var(--line); border-radius: 6px; padding: 0.9rem 1rem; overflow-x: auto; margin: 0; line-height: 1.5; }
+pre code { background: none; padding: 0; font-size: 1em; }
+.wrap { max-width: 68rem; margin: 0 auto; padding-inline: 16px; padding-block: 0 3rem; }
+h1, h2, h3 { text-wrap: balance; line-height: 1.15; margin: 0; font-weight: 600; letter-spacing: -0.01em; }
+h1 { font-size: clamp(2.4rem, 6vw, 3.6rem); font-weight: 700; letter-spacing: -0.03em; }
+h2 { font-size: 1.6rem; }
+h3 { font-size: 1.1rem; }
+p { margin: 0; max-width: 42rem; }
+.eyebrow { font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent-ink); }
+nav.top { display: flex; flex-wrap: wrap; gap: 0.5rem 1.4rem; align-items: baseline; padding-block: 1.1rem; border-bottom: 1px solid var(--line); font-size: 0.95rem; }
+nav.top .brand { font-family: var(--mono); font-weight: 500; color: var(--fg); text-decoration: none; margin-right: auto; }
+nav.top a:not(.brand) { color: var(--muted); text-decoration: none; }
+nav.top a:not(.brand):hover { color: var(--accent-ink); }
+.hero { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 2rem 3rem; align-items: center; padding-block: 3rem 2.5rem; }
+.hero p.lede { font-size: 1.25rem; color: var(--muted); margin-top: 1rem; }
+.actions { display: flex; flex-wrap: wrap; gap: 0.7rem; margin-top: 1.6rem; }
+.btn { display: inline-block; padding: 0.55rem 1rem; border-radius: 6px; text-decoration: none; font-weight: 500; border: 1px solid var(--accent); color: var(--accent-ink); }
+.btn.primary { background: var(--accent); color: var(--bg); }
+.btn.primary:hover { color: var(--bg); filter: brightness(1.08); }
+figure { margin: 0; min-width: 0; }
+figure svg { width: 100%; height: auto; display: block; }
+figure img { width: 100%; height: auto; display: block; border-radius: 6px; }
+figcaption { font-size: 0.85rem; color: var(--muted); margin-top: 0.5rem; font-family: var(--mono); }
+section { padding-block: 2.2rem; border-top: 1px solid var(--line); display: grid; grid-template-columns: 12rem minmax(0, 1fr); gap: 1rem 2.5rem; }
+section > header { display: grid; gap: 0.4rem; align-content: start; }
+section > header h2 { overflow-wrap: break-word; hyphens: auto; }
+section > div { min-width: 0; display: grid; gap: 1rem; }
+ul.plain { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.6rem; max-width: 46rem; }
+ul.plain li { padding-left: 1.1rem; position: relative; }
+ul.plain li::before { content: ""; position: absolute; left: 0; top: 0.68em; width: 0.45rem; height: 0.45rem; border-radius: 50%; background: var(--accent); }
+ul.plain b { font-weight: 600; }
+.two { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: 1.4rem; }
+table { border-collapse: collapse; width: 100%; font-size: 0.95rem; }
+.scroll { overflow-x: auto; }
+th, td { text-align: left; padding: 0.55rem 0.7rem 0.55rem 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-weight: 600; font-size: 0.8rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+td .links { white-space: nowrap; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr)); gap: 1.2rem; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 1.1rem 1.2rem; display: grid; gap: 0.7rem; align-content: start; min-width: 0; }
+.card h3 { font-family: var(--mono); font-weight: 500; font-size: 1rem; }
+.card dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 0.25rem 1rem; font-size: 0.92rem; }
+.card dt { color: var(--muted); }
+.card dd { margin: 0; font-variant-numeric: tabular-nums; }
+.card p { font-size: 0.92rem; color: var(--muted); }
+footer { border-top: 1px solid var(--line); padding-block: 1.6rem; font-size: 0.9rem; color: var(--muted); display: flex; flex-wrap: wrap; gap: 0.4rem 1.4rem; }
+@media (max-width: 720px) {
+  .hero { grid-template-columns: 1fr; }
+  section { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: no-preference) { a, .btn { transition: color 120ms ease, filter 120ms ease; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<nav class="top" aria-label="Site">
+  <a class="brand" href="#">Spynach</a>
+  <a href="#beyond">Beyond the port</a>
+  <a href="#quick-start">Quick start</a>
+  <a href="#docs">Documentation</a>
+  <a href="#examples">Examples</a>
+  <a href="#reports">Parity and timing</a>
+  <a href="#acknowledgements">Acknowledgements</a>
+  <a href="https://github.com/ajerschow/spynach">GitHub</a>
+  <a href="https://spindynamics.org">Spinach</a>
+</nav>
+
+<div class="hero">
+  <div>
+    <h1>Spynach</h1>
+    <p class="lede">A Python reimplementation of the Spinach spin dynamics kernel, verified stage by stage against the MATLAB original.</p>
+    <div class="actions">
+      <a class="btn primary" href="#quick-start">Quick start</a>
+      <a class="btn" href="https://github.com/ajerschow/spynach/blob/main/docs/hilbert-space.md">Read the first guide</a>
+    </div>
+  </div>
+  <figure>
+    <img src="assets/Spynoza.jpg" width="1397" height="1202" alt="Portrait of Spinoza rendered as a two-dimensional 1H-13C correlation spectrum: coloured cross peaks on a black background with the 1D projections along the top and right edges">
+    <figcaption>Any resemblance to living or dead personalities is purely accidental. Fig. credits to Florin Teleanu.</figcaption>
+  </figure>
+</div>
+
+<section id="goals">
+  <header><span class="eyebrow">Goals</span><h2>What the project is for</h2></header>
+  <div>
+    <ul class="plain">
+      <li><b>Python conveniences, no MATLAB licence.</b> Spynach is a pip-installable package that slots into the scientific Python stack: combine it with NumPy, SciPy, fitting and machine-learning libraries or your own code, run it on any machine with nothing to buy or activate, or open the <a href="https://colab.research.google.com/github/ajerschow/spynach/blob/main/docs/colab/quick-start.ipynb">quick-start notebook</a> in the browser, where it installs itself in a click.</li>
+      <li><b>A readable, maintainable kernel.</b> The Spinach algorithms in plain Python with NumPy and SciPy, with the same names and conventions wherever that is possible.</li>
+      <li><b>Verified, not eyeballed.</b> Every ported stage is compared with reference data computed by Spinach itself, with tolerances that are stated and explained.</li>
+      <li><b>Ready for accelerators.</b> The hot loops go through one backend adapter so that a GPU array library can be plugged in; that step is deferred until a target device is chosen.</li>
+      <li><b>Later: a differentiable engine</b> for optimal control and fitting, and possibly a tensor-train backend for chain-like coupling topologies.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="approach">
+  <header><span class="eyebrow">Approach</span><h2>How the port is done</h2></header>
+  <div>
+    <ul class="plain">
+      <li><b>An oracle harness.</b> MATLAB dump scripts write the intermediate results of a Spinach calculation to HDF5 fixtures; parity tests load them and compare the Python results at each stage (<a href="https://github.com/ajerschow/spynach/blob/main/oracle/README.md">oracle/README.md</a>).</li>
+      <li><b>Stage by stage.</b> Spin system, basis, operators, Hamiltonian, propagation, relaxation, contexts, pulse sequences: each lands with its fixtures, tests and documentation before the next starts (<a href="https://github.com/ajerschow/spynach/blob/main/porting/ROADMAP.md">roadmap</a>).</li>
+      <li><b>Two formalisms behind one basis abstraction.</b> Dense Zeeman-Hilbert space for small systems, the spherical-tensor Liouville space with state-space restriction (IK-0, IK-1, IK-2) for large liquid-state systems.</li>
+      <li><b>Nothing silently ignored.</b> Any Spinach option that is not yet ported raises an error rather than being dropped.</li>
+      <li><b>Executable documentation.</b> Every guide's code blocks run in the test suite and are rendered into notebooks with their outputs.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="spinach">
+  <header><span class="eyebrow">Spinach</span><h2>Relationship to the original</h2></header>
+  <div>
+    <p>Spynach derives from <a href="https://spindynamics.org">Spinach</a> 2.13, the spin dynamics package of Ilya Kuprov and co-workers, released under the MIT licence. The translation keeps the Spinach attribution and notice in <a href="https://github.com/ajerschow/spynach/blob/main/LICENSE">LICENSE</a>, and keeps Spinach's function names, parameter structures and tolerances so that an existing Spinach script maps onto Spynach line by line.</p>
+    <p>The deliberate differences are small: spin indices are 0-based, product and sum operators are told apart by the type of the first argument, spin system objects are immutable, and time series are 1-D arrays. The guide <a href="https://github.com/ajerschow/spynach/blob/main/docs/coming-from-spinach.md">Coming from Spinach</a> lists, feature by feature, what is the same, what differs and what is not yet ported.</p>
+    <p>The translation from MATLAB to Python was carried out largely by an AI coding agent working under the direction of Alexej Jerschow, who set the goals and reviewed the results; correctness rests on the test suite against Spinach reference data.</p>
+  </div>
+</section>
+
+<section id="scope">
+  <header><span class="eyebrow">Scope</span><h2>What is ported</h2></header>
+  <div>
+    <div class="two">
+      <div>
+        <h3>Available now</h3>
+        <ul class="plain" style="margin-top:0.6rem">
+          <li>Liquid-state pulse-acquire in Hilbert space (<code>zeeman-hilb</code>)</li>
+          <li>Liouville space (<code>sphten-liouv</code>): restricted basis, superoperators, states, propagation with zero track elimination and path tracing, chemical exchange</li>
+          <li>Anisotropic interactions with the <code>crystal</code> and <code>powder</code> contexts and Spinach's grids</li>
+          <li>Redfield relaxation, scalar relaxation of the first and second kind, T1/T2 and damping models, thermalisation</li>
+          <li>Magic angle spinning in Fokker-Planck form (<code>singlerot</code>)</li>
+          <li>COSY, NOESY, HSQC with isotopomer dilution, apodisation, 2D plotting</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Not yet</h3>
+        <ul class="plain" style="margin-top:0.6rem">
+          <li>Symmetry groups in the basis</li>
+          <li>The <code>zeeman-liouv</code> formalism</li>
+          <li>Decoupling inside the contexts</li>
+          <li>GPU execution (the entry points are marked)</li>
+          <li>ESR, DNP, imaging and optimal control modules</li>
+        </ul>
+        <p style="margin-top:0.8rem">The function-by-function table is in the <a href="https://github.com/ajerschow/spynach/blob/main/README.md#status">README</a>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="beyond">
+  <header><span class="eyebrow">Beyond the port</span><h2>Add-ons originating here</h2></header>
+  <div>
+    <ul class="plain">
+      <li><b>Coherence transfer pathway selection.</b> <code>ctps</code>, a separate module in the repository (<code>import ctps</code>, no dependency on <code>spynach</code>), ports the CCCP.m and CCCP++ programs: every pathway a sequence allows, weighted by phase cycle, gradients, diffusion and pulses, ranked and drawn in an interactive explorer that steps through the pathways with their factors (<a href="https://github.com/ajerschow/spynach/blob/main/docs/ctps.md">guide</a>, <a href="https://nbviewer.org/github/ajerschow/spynach/blob/main/docs/notebooks/ctps.ipynb">notebook</a>).</li>
+      <li><b>Non-ideal pulses and cogwheel search.</b> Each pulse is a perfect 180°, an imperfect 180° or a small-flip-angle pulse, with the leakage of every coherence transfer after <i>J. Chem. Phys.</i> 113, 979 (2000); cogwheel cycles are found by exact integer arithmetic, all winding numbers tested at once, and crusher schemes by the DOTCOPS objective.</li>
+      <li><b>Interactive figures.</b> Plotly figures from every plotting function, FID and time-series plots with no Spinach equivalent, and <code>figure_png</code> for static copies.</li>
+      <li><b>Verification tooling.</b> <code>compare</code> checks any result against a Spinach run; the parity page is regenerated from the test suite; the comparison protocol times and profiles both sides into one report.</li>
+      <li><b>Executable documentation.</b> Guides whose code runs in the tests, notebooks generated with outputs, a Colab quick start, contributed notebooks.</li>
+    </ul>
+    <p>All of it, with an example for each entry, is in the guide <a href="https://github.com/ajerschow/spynach/blob/main/docs/beyond-the-port.md">Beyond the port</a>.</p>
+  </div>
+</section>
+
+<section id="quick-start">
+  <header><span class="eyebrow">Quick start</span><h2>Install and run</h2></header>
+  <div>
+    <p>Python 3.11 or newer. Install from the repository, or clone it and install in editable mode with the <code>docs</code> extra to open the notebooks.</p>
+<pre><code>pip install "spynach @ git+https://github.com/ajerschow/spynach.git"
+
+# or, for the notebooks and tests
+git clone https://github.com/ajerschow/spynach.git
+cd spynach &amp;&amp; pip install -e ".[docs,test]"</code></pre>
+    <p>Two coupled protons at 14.1 T, pulse-acquire, exponential apodisation, two doublets:</p>
+<pre><code>import numpy as np
+import spynach
+
+spin_system = spynach.create(
+    {"isotopes": ["1H", "1H"], "magnet": 14.1},
+    {"zeeman": {"scalar": [1.00, 1.10]}, "coupling": {"scalar": [[0, 12.0], [0, 0]]}},
+)
+spin_system = spynach.basis(spin_system, {"formalism": "zeeman-hilb", "approximation": "none"})
+pars = {"spins": ["1H"], "offset": 630, "sweep": 200, "npoints": 1024,
+        "rho0": spynach.state(spin_system, "L+", "1H"),
+        "coil": spynach.state(spin_system, "L+", "1H")}
+fid = spynach.liquid(spin_system, spynach.acquire, pars, "nmr")
+fid = spynach.apodisation(fid, [("exp", 6)])
+spectrum = np.fft.fftshift(np.fft.fft(fid, 4096))</code></pre>
+    <p>A caveat for containers: when the CPU quota is below the number of cores the container can see, OpenBLAS oversubscribes the quota and dense LAPACK calls slow down badly. Set <code>OPENBLAS_NUM_THREADS</code> to the quota there; on an ordinary machine nothing needs to be set.</p>
+    <p>To try the example without installing anything, open it as a notebook that installs Spynach and plots the spectrum:</p>
+    <div class="actions">
+      <a class="btn" href="https://colab.research.google.com/github/ajerschow/spynach/blob/main/docs/colab/quick-start.ipynb">Open in Google Colab</a>
+    </div>
+  </div>
+</section>
+
+<section id="docs">
+  <header><span class="eyebrow">Documentation</span><h2>Guides and notebooks</h2></header>
+  <div>
+    <p>Each guide is a Markdown document whose code runs in the test suite, and a Jupyter notebook generated from it with its outputs and interactive plots. The notebook links open in nbviewer, which renders the Plotly figures interactively; GitHub's own viewer shows the static copies saved with them.</p>
+    <div class="scroll">
+    <table>
+      <thead><tr><th>Guide</th><th>Covers</th><th>Open</th></tr></thead>
+      <tbody>
+        <tr><td>Hilbert space</td><td>liquid-state NMR in Hilbert space: setup, the simulation pipeline, pulse sequences, tolerances, parity with Spinach</td><td class="links"><a href="https://github.com/ajerschow/spynach/blob/main/docs/hilbert-space.md">guide</a> · <a href="https://nbviewer.org/github/ajerschow/spynach/blob/main/docs/notebooks/hilbert-space.ipynb">notebook</a></td></tr>
+        <tr><td>Liouville space</td><td>the spherical-tensor formalism: basis descriptor, state-space restriction, filters, chemical subsystems</td><td class="links"><a href="https://github.com/ajerschow/spynach/blob/main/docs/liouville-space.md">guide</a> · <a href="https://nbviewer.org/github/ajerschow/spynach/blob/main/docs/notebooks/liouville-space.ipynb">notebook</a></td></tr>
+        <tr><td>Solid state</td><td>anisotropic interactions: tensors, dipolar couplings from coordinates, quadrupolar couplings, crystal and powder contexts, grids</td><td class="links"><a href="https://github.com/ajerschow/spynach/blob/main/docs/solid-state.md">guide</a> · <a href="https://nbviewer.org/github/ajerschow/spynach/blob/main/docs/notebooks/solid-state.ipynb">notebook</a></td></tr>
+        <tr><td>Relaxation</td><td>Redfield theory for rotational diffusion, T1/T2 and damping models, thermal equilibrium, transient NOE</td><td class="links"><a href="https://github.com/ajerschow/spynach/blob/main/docs/relaxation.md">guide</a> · <a href="https://nbviewer.org/github/ajerschow/spynach/blob/main/docs/notebooks/relaxation.ipynb">notebook</a></td></tr>
+        <tr><td>Magic angle spinning</td><td>the Fokker-Planck treatment of sample rotation: rotor phase grid, the singlerot context, sidebands, rotor echoes</td><td class="links"><a href="https://github.com/ajerschow/spynach/blob/main/docs/magic-angle-spinning.md">guide</a> · <a href="https://nbviewer.org/github/ajerschow/spynach/blob/main/docs/notebooks/magic-angle-spinning.ipynb">notebook</a></td></tr>
+        <tr><td>Pulse sequences</td><td>writing sequences, apodisation and 2D plots, decoupling and homospoil, COSY, NOESY, HSQC with isotopomer dilution</td><td class="links"><a href="https://github.com/ajerschow/spynach/blob/main/docs/pulse-sequences.md">guide</a> · <a href="https://nbviewer.org/github/ajerschow/spynach/blob/main/docs/notebooks/pulse-sequences.ipynb">notebook</a></td></tr>
+        <tr><td>Coherence transfer pathways: worked examples</td><td>a cookbook for ctps, from a double-quantum filter to MRS crushers, and every check of the module's tests as a runnable example</td><td class="links"><a href="https://github.com/ajerschow/spynach/blob/main/docs/ctps-examples.md">guide</a> · <a href="https://nbviewer.org/github/ajerschow/spynach/blob/main/docs/notebooks/ctps-examples.ipynb">notebook</a></td></tr>
+        <tr><td>Beyond the port</td><td>features with no Spinach counterpart, each with an example: ctps, non-ideal pulses and cogwheel search, interactive figures, compare and the parity page, executable documentation</td><td class="links"><a href="https://github.com/ajerschow/spynach/blob/main/docs/beyond-the-port.md">guide</a> · <a href="https://nbviewer.org/github/ajerschow/spynach/blob/main/docs/notebooks/beyond-the-port.ipynb">notebook</a></td></tr>
+        <tr><td>Coming from Spinach</td><td>what carries over from Spinach and what differs: spin systems, basis, operators, Hamiltonians, parameters, modalities, processing</td><td class="links"><a href="https://github.com/ajerschow/spynach/blob/main/docs/coming-from-spinach.md">guide</a> · <a href="https://nbviewer.org/github/ajerschow/spynach/blob/main/docs/notebooks/coming-from-spinach.ipynb">notebook</a></td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p>The <a href="https://github.com/ajerschow/spynach/blob/main/docs/README.md">documentation index</a> explains how the guides, notebooks and the <a href="#examples">examples</a> fit together.</p>
+  </div>
+</section>
+
+<section id="examples">
+  <header><span class="eyebrow">Examples</span><h2>Scripts and contributed notebooks</h2></header>
+  <div>
+    <p>The guides run reduced versions of Spinach examples in seconds. The scripts in <a href="https://github.com/ajerschow/spynach/tree/main/examples">examples/</a> are the same calculations at the Spinach size, for side-by-side comparison with MATLAB: each writes its results next to itself and can report the normwise error against a <code>.mat</code> file saved by the Spinach script. Python code contributed by users lives in <a href="https://github.com/ajerschow/spynach/tree/main/user_py">user_py/</a> as notebooks saved with their outputs.</p>
+    <div class="scroll">
+    <table>
+      <thead><tr><th>Example</th><th>What it calculates</th><th>Open</th></tr></thead>
+      <tbody>
+        <tr><td>23Na triple-quantum build-up</td><td>contributed notebook: one 23Na spin under quadrupolar Redfield relaxation towards thermal equilibrium (C<sub>q</sub> = 200 kHz, τ<sub>c</sub> = 1 ns, 14.1 T); from the pulsed thermal state, the rank-3 single-quantum tensor, the triple-quantum coherence after a second pulse and the longitudinal recovery over 10 ms, against the biexponential form of Jaccard, Wimperis and Bodenhausen</td><td class="links"><a href="https://nbviewer.org/github/ajerschow/spynach/blob/main/user_py/na23_tqf_buildup.ipynb">notebook</a> · <a href="https://github.com/ajerschow/spynach/blob/main/user_py/na23_tqf_buildup.ipynb">source</a></td></tr>
+        <tr><td>noesy_strychnine</td><td>Spinach's <code>examples/nmr_liquids/noesy_strychnine.m</code>: 22 protons, IK-2 basis, Redfield relaxation, 500 ms NOESY at 512 x 512 points</td><td class="links"><a href="https://github.com/ajerschow/spynach/blob/main/examples/nmr_liquids/noesy_strychnine.py">script</a></td></tr>
+        <tr><td>maz_noesy_2</td><td>Spinach's <code>examples/relaxation_theory/maz_noesy_2.m</code>: methylaziridine with CSA tensors, a 14N quadrupole and scalar relaxation of the first and second kind, 2 s NOESY</td><td class="links"><a href="https://github.com/ajerschow/spynach/blob/main/examples/relaxation_theory/maz_noesy_2.py">script</a></td></tr>
+        <tr><td>li_exchange_equilibrium</td><td>contributed Spinach script (Florin Teleanu): two-site 7Li exchange with quadrupolar and shift tensors, thermal state equilibrated under exchange, thermalised Redfield relaxation, 2 s trajectory analysed with <code>trajan</code> and <code>stateinfo</code></td><td class="links"><a href="https://github.com/ajerschow/spynach/blob/main/examples/user_ml/li_exchange_equilibrium.py">script</a> · <a href="https://github.com/ajerschow/spynach/blob/main/user_ml/Li_exchange_equilibrium.m">original</a></td></tr>
+        <tr><td>zulf_pf6_1d</td><td>contributed Spinach script (Florin Teleanu): PF<sub>6</sub><sup>&minus;</sup> at 2.7 µT, adiabatic-drop state from file, selective pulse, 16 384-point zero- to ultralow-field spectrum</td><td class="links"><a href="https://github.com/ajerschow/spynach/blob/main/examples/user_ml/zulf_pf6_1d.py">script</a> · <a href="https://github.com/ajerschow/spynach/blob/main/user_ml/ZULF_PF6_1D.m">original</a></td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p>The two full-size NOESY scripts and the two contributed scripts are also the cases of the timed <a href="#reports">parity and timing</a> reports. Contributions to <code>user_py/</code> keep their author's name in the file and in its <a href="https://github.com/ajerschow/spynach/blob/main/user_py/README.md">README</a>.</p>
+  </div>
+</section>
+
+<section id="reports">
+  <header><span class="eyebrow">Verification</span><h2>Parity and timing</h2></header>
+  <div>
+    <!-- parity-summary --><p>The parity suites compare Spynach with Spinach 2.13 fixtures at every stage of a calculation. Of the 540 tests, 323 are fixture comparisons over 45 fixture cases: Liouville-space setup (132), Liouville-space propagation (54), Hilbert-space pulse-acquire (64), anisotropic interactions (25), relaxation (20), scalar relaxation (9), magic angle spinning (16), pulse sequences (3). Comparisons are relative with zero absolute tolerance; the largest measured difference is 8e-11 for quantities compared at 1e-9 (time evolution and FIDs) and 9e-15 for everything compared at 1e-10 or tighter (operators, states, Hamiltonians, propagators). Every case, tolerance and measured difference is listed in <a href="https://github.com/ajerschow/spynach/blob/main/docs/parity.md">docs/parity.md</a> (regenerated from the suite by <code>oracle/parity_summary.py</code>).</p><!-- /parity-summary -->
+    <p>Two full-size calculations are run on both sides under a profiler, on the same machine, and summarised in an HTML report with the stage timings, the normwise difference of every saved array, the figures and the profiler tops. The stage timings below are wall clock for each implementation as shipped: Spinach with its parallel pool and multithreaded BLAS, Spynach as a single process with multithreaded BLAS inside dense calls.</p>
+    <div class="cards">
+      <div class="card">
+        <h3>noesy_strychnine</h3>
+        <p>22 protons, IK-2 basis (12 316 states), Redfield relaxation, 500 ms NOESY, 512 x 512 points.</p>
+        <dl>
+          <dt>FID agreement</dt><dd>2.2e-12 relative</dd>
+          <dt>liquid/noesy stage</dt><dd>93.3 s Spynach, 83.0 s Spinach</dd>
+          <dt>whole case</dt><dd>93.6 s Spynach, 110.9 s Spinach</dd>
+        </dl>
+        <a href="comparison/runs/noesy_strychnine/report.html">Open the report</a>
+      </div>
+      <div class="card">
+        <h3>zulf_pf6_1d</h3>
+        <p>31P and six 19F at 2.7 µT, complete basis (16 384 states), lab frame, selective pulse and 16 384-point acquisition.</p>
+        <dl>
+          <dt>FID agreement</dt><dd>1.5e-12 relative</dd>
+          <dt>acquisition stage</dt><dd>46.9 s Spynach, 40.0 s Spinach</dd>
+          <dt>whole case</dt><dd>47.1 s Spynach, 69.0 s Spinach</dd>
+        </dl>
+        <a href="comparison/runs/zulf_pf6_1d/report.html">Open the report</a>
+      </div>
+      <div class="card">
+        <h3>li_exchange_equilibrium</h3>
+        <p>Two 7Li sites with quadrupolar and shift tensors in chemical exchange: thermal state equilibrated under exchange, Redfield relaxation thermalised to it, a 2 s trajectory analysed by tensor projections and state classes.</p>
+        <dl>
+          <dt>trajectory agreement</dt><dd>4e-13 relative</dd>
+          <dt>states</dt><dd>1e-17 relative or better</dd>
+          <dt>size</dt><dd>31 states, seconds on both sides</dd>
+        </dl>
+        <a href="comparison/runs/li_exchange_equilibrium/report.html">Open the report</a>
+      </div>
+      <div class="card">
+        <h3>maz_noesy_2</h3>
+        <p>Methylaziridine, 7 protons + 14N with DFT shielding tensors and the 14N quadrupole: Redfield theory with scalar relaxation of the first and second kind, IK-2 basis (19 314 states), 2 s NOESY.</p>
+        <dl>
+          <dt>FID agreement</dt><dd>1.2e-10 relative</dd>
+          <dt>liquid/noesy stage</dt><dd>1702 s Spynach, 841 s Spinach</dd>
+          <dt>where the time goes</dt><dd>the SRFK integral: 26 squarings of a 38 628-dimensional sparse matrix</dd>
+        </dl>
+        <a href="comparison/runs/maz_noesy_2/report.html">Open the report</a>
+      </div>
+    </div>
+    <p>Both runs: Apple silicon Mac, 12 cores; MATLAB R2026b with an 11-worker pool; Python 3.12 with NumPy and SciPy on Accelerate. The protocol, including how to add a case, is in <a href="https://github.com/ajerschow/spynach/blob/main/comparison/README.md">comparison/README.md</a>.</p>
+  </div>
+</section>
+
+<section id="acknowledgements">
+  <header><span class="eyebrow">Credits</span><h2>With thanks</h2></header>
+  <div>
+    <p>Grateful to Claude for the amazing work, and to Ilya for encouragement and for suggesting the catchy name!</p>
+  </div>
+</section>
+
+<footer>
+  <span>MIT licence, with the Spinach notice.</span>
+  <span>Alexej Jerschow, New York University.</span>
+  <a href="https://github.com/ajerschow/spynach/blob/main/HANDOFF.md">Design decisions</a>
+  <a href="https://github.com/ajerschow/spynach/blob/main/porting/ROADMAP.md">Roadmap</a>
+  <a href="https://github.com/ajerschow/spynach">Source</a>
+</footer>
+
+</div>
+</body>
+</html>

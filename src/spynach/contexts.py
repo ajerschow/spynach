@@ -78,7 +78,8 @@ def powder(spin_system: SpinSystem, pulse_sequence: PulseSequence, parameters: d
     ...; see :func:`load_grid`). With ``parameters['sum_up']`` true (the
     default) the weighted sum over orientations is returned; otherwise the
     list of per-orientation results. Orientations run serially; Spinach
-    uses a parallel pool and computes the same sum.
+    uses a parallel pool and computes the same sum. ``parameters['progress']``,
+    if set, is called as ``progress(done, total)`` after each orientation.
     """
     parameters = _defaults(spin_system, parameters)
     parameters.setdefault("sum_up", True)
@@ -96,13 +97,18 @@ def powder(spin_system: SpinSystem, pulse_sequence: PulseSequence, parameters: d
         else sps.csr_array(I.shape, dtype=complex)
     )
     parameters["spc_dim"], parameters["spn_dim"] = 1, I.shape[0]
+    progress = _progress_hook(parameters)
+    n_orientations = len(grid["alphas"])
     results = []
-    for alpha, beta, gamma in zip(grid["alphas"], grid["betas"], grid["gammas"]):
+    for done, (alpha, beta, gamma) in enumerate(zip(grid["alphas"], grid["betas"], grid["gammas"]), start=1):
         local = dict(parameters)
+        local.pop("progress", None)
         local["current_angles"] = np.array([alpha, beta, gamma])
         H = _hermitise(I + orientation(Q, [alpha, beta, gamma]))
         R = relaxation(spin_system, [alpha, beta, gamma])
         results.append(pulse_sequence(spin_system, local, H, R, K))
+        if progress is not None:
+            progress(done, n_orientations)
     if not parameters["sum_up"]:
         return results
     answer = grid["weights"][0] * results[0]
@@ -128,6 +134,8 @@ def singlerot(
     over them (powder) or placed at phase zero (single crystal), ``coil``
     is replicated. Liouville space only; the sequence runs for every
     orientation and the results are weighted and summed (``'sum_up'``).
+    ``parameters['progress']``, if set, is called as ``progress(done, total)``
+    after each orientation.
     """
     parameters = _defaults(spin_system, parameters)
     parameters.setdefault("sum_up", True)
@@ -172,8 +180,10 @@ def singlerot(
 
     D_lab2rot = [wigner(rank, rotor_phi, rotor_theta, 0) for rank in (1, 2)]
     D_rotor = [[wigner(rank, 0, 0, phase) for rank in (1, 2)] for phase in rotor_phases]
+    progress = _progress_hook(parameters)
+    n_orientations = len(grid["alphas"])
     results = []
-    for alpha, beta, gamma in zip(grid["alphas"], grid["betas"], grid["gammas"]):
+    for done, (alpha, beta, gamma) in enumerate(zip(grid["alphas"], grid["betas"], grid["gammas"]), start=1):
         D_mol2rot = [wigner(rank, alpha, beta, gamma) for rank in (1, 2)]
         blocks = []
         for n in range(spc_dim):
@@ -187,7 +197,11 @@ def singlerot(
                             H = H + D[k, m] * block
             blocks.append(sps.csr_array(H))
         G = clean_up(spin_system.tols, sps.block_diag(blocks, format="csr") + 1j * M, spin_system.tols.liouv_zero)
-        results.append(pulse_sequence(spin_system, dict(parameters), G, R_fp, K_fp))
+        local = dict(parameters)
+        local.pop("progress", None)
+        results.append(pulse_sequence(spin_system, local, G, R_fp, K_fp))
+        if progress is not None:
+            progress(done, n_orientations)
     if not parameters["sum_up"]:
         return results
     answer = grid["weights"][0] * results[0]
@@ -258,6 +272,16 @@ def load_grid(name: str) -> dict[str, np.ndarray]:
         raise ValueError(f"unknown spherical grid {name!r}; see spynach/grids for the available names.")
     with resources.as_file(path) as file, np.load(file) as data:
         return {key: np.array(data[key]) for key in ("alphas", "betas", "gammas", "weights")}
+
+
+def _progress_hook(parameters: dict[str, Any]):
+    """Return ``parameters['progress']`` when it is a ``progress(done, total)`` callable."""
+    progress = parameters.get("progress")
+    if progress is None:
+        return None
+    if not callable(progress):
+        raise TypeError("parameters['progress'] must be a callable, progress(done, total).")
+    return progress
 
 
 def _defaults(spin_system: SpinSystem, parameters: dict[str, Any]) -> dict[str, Any]:

@@ -67,7 +67,9 @@ grid it composes three rotations for every rotor phase, molecule → rotor
 contracts the `Q` components with the composed Wigner matrices, assembles
 the generator, replicates `R` and `K` over the phases, averages the
 initial state over the rotor phase (a powder has every rotor phase at
-`t = 0`), replicates the coil, and runs the sequence. Spinach's
+`t = 0`), replicates the coil, and runs the sequence. The same optional
+`parameters["progress"](done, total)` callback as `powder` runs after each
+orientation. Spinach's
 `examples/nmr_solids/mas_powder_csa_fplanck.m` with a coarser grid:
 
 ```python

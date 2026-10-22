@@ -178,7 +178,8 @@ fid_crystal = spynach.crystal(spin_system, spynach.acquire, {**pars, "orientatio
 `powder(spin_system, sequence, parameters, assumptions)` runs the sequence at every
 orientation of the spherical grid `parameters["grid"]` and returns the
 weighted sum (`parameters["sum_up"] = False` returns the list of
-per-orientation results instead). The grids are Spinach's, shipped with
+per-orientation results instead). `parameters["progress"]`, if given, is
+called as `progress(done, total)` after each orientation. The grids are Spinach's, shipped with
 Spynach as `spynach/grids/*.npz` and loaded by name with `load_grid`:
 Lebedev grids `leb_2ang_rank_<n>` (two angles, exact to spherical rank
 `n`), repulsion grids `rep_2ang_<points>pts_sph` (`_hem`, `_oct` for
