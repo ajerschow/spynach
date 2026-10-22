@@ -216,6 +216,20 @@ proximity level 3): basis 0.04 s, Hamiltonian 0.1 s, Redfield
 relaxation 2.4 s, pulse-acquire 2.1 s, COSY 32 x 64 3.3 s in this
 container.
 
+## Contributors
+
+- Florin Teleanu: Spinach scripts in `user_ml/`
+  (two-site 7Li exchange at equilibrium, zero- to ultralow-field PF6⁻
+  spectrum), translated in `examples/user_ml/` and used as comparison cases,
+  and the project page's hero figure (`assets/Spynoza.jpg`).
+- [mzaiss](https://github.com/mzaiss) (MRsources): the in-browser playground
+  (`try.html`, `worker.js`, Spynach in Pyodide) and the orientation
+  `progress` callback of `powder` and `singlerot` (pull request #1).
+
+New contributors are added here and in the "With thanks" section of
+`index.html` when their first contribution is merged; the CHANGELOG names
+them in the release entry.
+
 ## Licence and attribution
 
 Spynach is released under the MIT licence (`LICENSE`). It is derived from
