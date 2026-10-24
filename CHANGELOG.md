@@ -40,6 +40,14 @@ Releases are tagged `vX.Y.Z` on GitHub; the version is `spynach.__version__`.
   helpers `rescaledata`, `basecorr`, `deriv`, `addnoise`, and several
   component systems in `pepper` and `garlic` (`Sys.weight`); verified
   against EasySpin on 33 fits of the same data.
+- `epreasy` ENDOR and magnetometry: `endorfrq` (matrix diagonalisation
+  with transition pre-selection, hyperfine enhancement, orientation
+  selection, populations, flip angles), `endorfrq_perturb` (Iwasaki's
+  first and second order), `orisel`, `anisosubsys`, `salt` (powder and
+  crystal ENDOR spectra) and `curry` (magnetic moments and
+  susceptibilities in SI and CGS by the operator or partition-function
+  method); verified against EasySpin on 14 `endorfrq`, 23 `salt` and 14
+  `curry` cases.
 - Spynach in the browser (contributed by Moritz Zaiss, MRsources): `try.html` runs
   the kernel in Pyodide in a web worker (`worker.js`), with no install, and
   draws spectra, FIDs and 2D contours from an editor (`show_spectrum`,

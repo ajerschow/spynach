@@ -182,8 +182,9 @@ names, fields in mT, energies in MHz, 1-based spin numbers. It depends on
 `spynach` and changes nothing in it. It has the foundation (`validatespinsys`,
 `sop`, `stev`, `ham` with the split `H = H0 - B·mu` that makes field sweeps
 cheap, `levels`), `resfields` and the line shapes, the cw simulators
-`pepper` (powders and crystals) and `garlic` (solutions) and least-squares
-fitting with `esfit`, all verified
+`pepper` (powders and crystals) and `garlic` (solutions), least-squares
+fitting with `esfit`, ENDOR with `salt` and magnetometry with `curry`, all
+verified
 against EasySpin 6.0.15 ([EPR spin systems with `epreasy`](epreasy.md),
 [Coming from EasySpin](coming-from-easyspin.md)):
 

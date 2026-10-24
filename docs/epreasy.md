@@ -9,7 +9,8 @@ numbers are 1-based. This guide covers the foundation (spin systems, spin
 operators, the spin Hamiltonian and its field split, energy levels,
 rotations, units and nuclear data), the resonance-field layer, the first
 two simulators (`pepper` for powders and crystals, `garlic` for isotropic
-solutions) and least-squares fitting with `esfit`. The companion notebook is [`notebooks/epreasy.ipynb`](notebooks/epreasy.ipynb)
+solutions), least-squares fitting with `esfit`, ENDOR with `salt` and
+magnetometry with `curry`. The companion notebook is [`notebooks/epreasy.ipynb`](notebooks/epreasy.ipynb)
 ([interactive figures on nbviewer](https://nbviewer.org/github/ajerschow/spynach/blob/main/docs/notebooks/epreasy.ipynb)).
 
 `epreasy` depends on `spynach` and changes nothing in it; the Spinach port
@@ -28,7 +29,9 @@ what differs, see [Coming from EasySpin](coming-from-easyspin.md).
 8. [Powder and crystal spectra: `pepper`](#powder-and-crystal-spectra-pepper)
 9. [Solution spectra: `garlic`](#solution-spectra-garlic)
 10. [Fitting spectra: `esfit`](#fitting-spectra-esfit)
-11. [What is checked, and what is pending](#what-is-checked-and-what-is-pending)
+11. [ENDOR: `endorfrq` and `salt`](#endor-endorfrq-and-salt)
+12. [Magnetometry: `curry`](#magnetometry-curry)
+13. [What is checked, and what is pending](#what-is-checked-and-what-is-pending)
 
 ## A spin system
 
@@ -491,10 +494,92 @@ corrected, baseline = es.basecorr(data, 1, 1, region=np.abs(x - 350) > 35)  # fi
 print("baseline removed:", np.abs(corrected - model([350, 7])).max() < 1e-4)
 ```
 
+## ENDOR: `endorfrq` and `salt`
+
+At a fixed field, the nuclear transitions of a spin system are the ENDOR
+lines. `endorfrq(spin_system, exp, opt)` diagonalises the Hamiltonian at
+`exp["Field"]` for each orientation, selects the NMR transitions by their
+nuclear Zeeman transition rates on a coarse grid (`Opt["Threshold"]`,
+`Opt["Nuclei"]`) and returns their frequencies (MHz) and intensities, with
+the hyperfine enhancement (`Opt["Enhancement"] = "on"` adds the electron
+Zeeman term to the detection operator), the orientation selection of a
+finite microwave excitation (`exp["ExciteWidth"]` in MHz together with
+`Sys["HStrain"]`: only orientations whose EPR transitions fall into the
+excitation window contribute, and `info["Selectivity"]` says how strongly),
+Boltzmann populations (`Temperature`) and pulse-ENDOR flip angles
+(`exp["rf"]`). `endorfrq_perturb` gives the same frequencies by Iwasaki's
+first- and second-order perturbation formulas, and `orisel` the
+orientation-selection weights alone. `salt(spin_system, exp, opt)` turns
+the resonances into the powder or crystal ENDOR spectrum with the grid,
+interpolation, projection and convolution machinery of `pepper`
+(`Sys["lwEndor"]` is the ENDOR line width, Gaussian and Lorentzian parts).
+
+```python
+proton = {"S": 1.5, "D": 200, "Nucs": "1H", "A": [3, 5], "lwEndor": 0.2}
+endor_exp = {"Field": 350, "mwFreq": 9.5, "Range": [5, 25]}
+res = es.endorfrq(proton, {"Field": 350, "SampleFrame": [0.3, 1.1, 0.7]})
+print("ENDOR lines of one orientation (MHz):", np.sort(res.pos.ravel()).round(3), " transitions:", res.trans.tolist())
+matrix = es.salt(proton, endor_exp)
+perturb = es.salt(proton, endor_exp, {"Method": "perturb2"})
+print("matrix and perturbation spectra differ by", f"{np.abs(matrix.spec - perturb.spec).max() / matrix.spec.max():.1%}")
+```
+
+```python
+import plotly.graph_objects as go
+
+nitrogen = {"Nucs": "14N", "g": [2.25, 2.25, 2], "A": [44, 49, 54], "Q": [0.84, 0.84, -1.68], "HStrain": [100, 100, 100], "lwEndor": 0.5}
+full = es.salt(nitrogen, {"Range": [16, 65], "Field": 326.5, "mwFreq": 9.7, "nPoints": 1001})
+selected = es.salt(nitrogen, {"Range": [16, 65], "Field": 326.5, "mwFreq": 9.7, "nPoints": 1001, "ExciteWidth": 50})
+fig = go.Figure()
+fig.add_trace(go.Scatter(x=full.x, y=full.spec / full.spec.max(), mode="lines", name="full excitation"))
+fig.add_trace(go.Scatter(x=selected.x, y=selected.spec / selected.spec.max(), mode="lines", name=f"50 MHz excitation (selectivity {selected.info['Selectivity']:.1f})"))
+fig.update_layout(title="14N ENDOR of an axial Cu(II)-like centre: orientation selection", xaxis_title="radiofrequency / MHz", yaxis_title="normalised intensity", width=700, height=420)
+fig
+```
+
+![14N powder ENDOR spectra with and without orientation selection](figures/epreasy-salt.png)
+
+## Magnetometry: `curry`
+
+`curry(spin_system, exp, opt)` computes the magnetic moment along the
+field and the static susceptibility for arrays of fields (`exp["Field"]`,
+mT) and temperatures (`exp["Temperature"]`, K), as (nFields, nTemperatures)
+arrays, averaged over a powder grid or for crystal orientations. By default
+the moment is the thermal average of the magnetic-moment operator over the
+eigenstates and the susceptibility its numerical field derivative
+(`Opt["Method"] = "partitionfunction"` differentiates the log of the
+partition function instead). `Opt["Output"]` picks the quantities: `mu`,
+`mumol`, `muBM` (Bohr magnetons), `muvec`, `chi`, `chimol`, `chimolT`,
+`1/chimol`, `mueff`, in SI or CGS-emu (`Opt["Units"]`); `Opt["Spins"]`
+restricts the moment to some electron spins, `Sys["TIP"]` adds a
+temperature-independent susceptibility.
+
+```python
+dimer = {"S": [0.5, 0.5], "g": [2, 2], "ee": 2 * 4 * 30e3}  # antiferromagnetic exchange, J = -4 cm^-1 as ee = -2J
+T = np.arange(1, 301.0)
+chimolT = es.curry(dimer, {"Temperature": T, "Field": 100}, {"Output": "chimolT"})
+curie = 2 * 0.5 * 1.5 * 4 * es.mu0 * es.bmagn**2 * es.avogadro / 3 / es.boltzm  # two uncoupled S = 1/2 at high temperature
+print("chimol*T at 1 K and 300 K (m^3 K/mol):", chimolT.ravel()[[0, -1]].round(8), " two free spins:", round(curie, 8))
+mu = es.curry({"S": 0.5, "g": 2.0}, {"Temperature": 2.0, "Field": [0, 2000, 5000, 10000]}, {"Output": "muBM"})
+print("S = 1/2 magnetisation at 2 K follows tanh:", mu.ravel().round(4), np.tanh(es.bmagn * np.array([0, 2, 5, 10]) / (es.boltzm * 2.0)).round(4))
+```
+
+```python
+import plotly.graph_objects as go
+
+fig = go.Figure()
+fig.add_trace(go.Scatter(x=T, y=chimolT.ravel() * 1e6, mode="lines", name="S = 1/2 dimer, J = -4 cm-1"))
+fig.add_trace(go.Scatter(x=[T[0], T[-1]], y=[curie * 1e6] * 2, mode="lines", line={"dash": "dash"}, name="two free spins"))
+fig.update_layout(title="Susceptibility of an antiferromagnetic dimer (curry)", xaxis_title="T / K", yaxis_title="chi_mol T / 1e-6 m^3 K mol^-1", width=700, height=420)
+fig
+```
+
+![Temperature dependence of chi T for an antiferromagnetically coupled dimer](figures/epreasy-curry.png)
+
 ## What is checked, and what is pending
 
 `tests/epreasy/test_foundation.py`, `tests/epreasy/test_resfields.py`,
-`tests/epreasy/test_pepper.py` and `tests/epreasy/test_fitting.py` check the closed forms (angular momentum algebra, Stevens operators against
+`tests/epreasy/test_pepper.py`, `tests/epreasy/test_fitting.py` and `tests/epreasy/test_endor.py` check the closed forms (angular momentum algebra, Stevens operators against
 their polynomial forms, the free-electron and proton Zeeman energies,
 first-order hyperfine splittings, the zero-field levels of a triplet, tensor
 frames; the free-electron resonance field and intensity, the spline method
@@ -509,11 +594,15 @@ fast-motion widths in the fast limit, field modulation against the
 derivative; the fitting algorithms on known minima, the parameter
 bookkeeping, scaling, baselines, masks and global fits, the uncertainty
 estimate against the linearised covariance, the Jacobian against analytic
-derivatives) and `tests/epreasy/test_parity.py`,
-`tests/epreasy/test_parity_resfields.py`, `tests/epreasy/test_parity_pepper.py`
-and `tests/epreasy/test_parity_esfit.py` compare every stage with EasySpin
-6.0.15 on the cases written by `oracle/matlab/easyspin/dumps/esdump_ham.m`,
-`esdump_resfields.m`, `esdump_pepper.m` and `esdump_esfit.m`: a nitroxide with tilted frames, a Cu(II) with two 14N, an S = 5/2 Mn(II) with
+derivatives; first-order ENDOR frequencies, the perturbation orders against
+diagonalisation, `salt`'s methods and options against each other,
+orientation selection, `curry` against the Curie law, the Brillouin function
+and its unit conversions) and `tests/epreasy/test_parity.py`,
+`tests/epreasy/test_parity_resfields.py`, `tests/epreasy/test_parity_pepper.py`,
+`tests/epreasy/test_parity_esfit.py` and `tests/epreasy/test_parity_endor.py`
+compare every stage with EasySpin 6.0.15 on the cases written by
+`oracle/matlab/easyspin/dumps/esdump_ham.m`, `esdump_resfields.m`,
+`esdump_pepper.m`, `esdump_esfit.m` and `esdump_endor.m`: a nitroxide with tilted frames, a Cu(II) with two 14N, an S = 5/2 Mn(II) with
 D, E and a rank-4 Stevens term, a radical pair with J, dipolar, antisymmetric
 and biquadratic exchange, a triplet with full g, D, A and Q matrices and two
 coupled nuclei; resonance fields of these in the matrix and hybrid methods,
@@ -530,12 +619,22 @@ Cu with 14N, fast motion, frequency sweeps), plus `fastmotion`, `hamsymm`,
 deterministic algorithm and target, with scaling, baselines and masks,
 global fits with weights, the confidence intervals of a noisy exponential,
 `pepper` spectra with one and two components and `initState`) on the very
-data EasySpin fitted, plus `rescaledata`, `basecorr` and `deriv`. The
-measured agreement is in
+data EasySpin fitted, plus `rescaledata`, `basecorr` and `deriv`; 14
+`endorfrq`/`endorfrq_perturb` cases on crystal orientations (enhancement,
+excitation width, temperature, range, flip angle, chosen nuclei and
+transitions, S = 3/2), `orisel`, 23 `salt` spectra (methods, interpolation,
+separate transitions, derivative, Lorentzian width, automatic range,
+enhancement and intensity switches, pre-selection, orientation selection at
+W band, isotropic systems with temperature, Cu with 14N, crystals, two
+components) and 14 `curry` cases (dimer magnetisation and susceptibility,
+effective moments in SI and CGS, spin-selective moments, crystal
+susceptibilities, every output keyword, the partition-function method,
+grid size, moment vectors, TIP). The measured agreement is in
 [`porting/EASYSPIN_FIXTURES.md`](../porting/EASYSPIN_FIXTURES.md). In
 `pepper`, frequency sweeps, isotope mixtures (`Nucs = "Cu"`), partial
 ordering (`Exp["Ordering"]`), sample rotations and `Opt["ImmediateBinning"]`
-are not ported yet; `esfit`'s window is not ported; `salt`, `curry`,
-`chili`, `saffron` and `spidyan` are the next phases; orbital angular momentum, higher-order Zeeman
+are not ported yet; `esfit`'s window is not ported; in `salt` and `curry`,
+partial ordering and sample rotations; `chili`, `saffron` and `spidyan` are
+the next phases; orbital angular momentum, higher-order Zeeman
 terms, tilted Stevens-operator frames and crystal symmetries beyond P1 are
 not ported.

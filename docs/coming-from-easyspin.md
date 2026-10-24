@@ -18,8 +18,10 @@ updated with every ported function. The companion notebook is
 8. [Powder and crystal spectra: pepper](#powder-and-crystal-spectra-pepper)
 9. [Solution spectra: garlic](#solution-spectra-garlic)
 10. [Fitting: esfit](#fitting-esfit)
-11. [Not ported](#not-ported)
-12. [Verification](#verification)
+11. [ENDOR: endorfrq, salt, orisel](#endor-endorfrq-salt-orisel)
+12. [Magnetometry: curry](#magnetometry-curry)
+13. [Not ported](#not-ported)
+14. [Verification](#verification)
 
 ## The rules
 
@@ -188,10 +190,45 @@ result = es.esfit(measured, es.pepper, [{"g": [2.01, 2.09], "lw": 1.2}, exp, {"F
 print(result.pnames, result.pfit.round(5), f"rmsd {result.rmsd:.1e}")
 ```
 
+## ENDOR: endorfrq, salt, orisel
+
+| EasySpin | epreasy |
+|---|---|
+| `[Pos,Int,Tra,Info] = endorfrq(Sys,Exp,Opt)`, intensities only with two or more outputs | `endorfrq(sys, exp, opt)` returns `EndorResonances(pos, int, trans, info)`; `int` is `None` with `Opt.Intensity = 'off'` |
+| `Exp.Field`, `mwFreq`, `ExciteWidth`, `Temperature`, `Range`, `rf`, `SampleFrame`, `MolFrame`; `Opt.Transitions`, `Threshold`, `Nuclei`, `Intensity`, `Enhancement`, `OriWeights`, `OriThreshold` | the same keys |
+| `endorfrq_perturb(Sys,Exp,Opt)` with `Opt.PerturbOrder` | the same; `trans` is empty, as in EasySpin |
+| `orisel(Sys,Exp)` returns the summed weights, `[Weights,Trans] = orisel(...)` one column per transition | `orisel(sys, exp, opt)` returns the summed weights; `per_transition=True` the pair `(weights, transitions)`; `Exp.Orientations` takes rows `[phi, theta]` (or the `2 x n` array) |
+| `anisosubsys` (private) | public |
+| `[rf,spec,info] = salt(Sys,Exp,Opt)`, a plot without outputs | `salt(sys, exp, opt)` returns `Spectrum(x, spec, info)`; `info` carries `Transitions`, `Selectivity`, `nOrientations` and, for strong orientation selection, a `warning` string instead of the printed warning |
+| `Exp.Ordering`, `SampleRotation`, crystal symmetries other than P1 | `NotImplementedError` |
+| `Sys.lwEndor`, `Opt.Method`, `GridSize`, `GridSymmetry`, `GridFrame`, `separate`, `OriPreSelect`, `OriWeights`, `Threshold`, `Nuclei`, `Intensity`, `Enhancement` | the same keys |
+| `salt({Sys1,Sys2},Exp)` | `salt([sys1, sys2], exp)` with `weight`; isotopologues are not expanded |
+
+```python
+proton = {"S": 1.5, "D": 200, "Nucs": "1H", "A": [3, 5], "lwEndor": 0.2}
+spectrum = es.salt(proton, {"Field": 350, "mwFreq": 9.5, "Range": [5, 25]})  # EasySpin: [rf,spc] = salt(Sys,Exp)
+print(spectrum.x.shape, spectrum.info["Transitions"].tolist())
+```
+
+## Magnetometry: curry
+
+| EasySpin | epreasy |
+|---|---|
+| `curry(Sys,Exp,Opt)` with outputs chosen by `Opt.Output` and `nargout` (`'muBM chimol'` for two outputs) | `curry(sys, exp, opt)`; `Opt.Output` defaults to `'muBM chimol'`; one keyword returns the array, several the tuple in that order; shapes are `(nFields, nTemperatures)` as in EasySpin |
+| `Exp.Field`, `Temperature`, `SampleFrame`, `MolFrame`, `CrystalSymmetry` (P1); `Sys.TIP`; `Opt.Output`, `Units`, `Method`, `GridSize`, `GridSymmetry`, `GridFrame`, `Spins`, `deltaB` | the same keys; `Exp.Ordering` and `SampleRotation` raise `NotImplementedError` |
+| `curry({Sys1,Sys2},...)` is an error | the same |
+| the plot without outputs | no plotting |
+
+```python
+chi = es.curry({"S": 0.5, "g": 2}, {"Temperature": [10, 100], "Field": 0}, {"Output": "chimol"})  # EasySpin: chi = curry(Sys,Exp,Opt)
+print(chi.shape, chi.round(12))
+```
+
 ## Not ported
 
-The simulators `salt`, `curry`, `chili`, `saffron` and `spidyan`: the next
-phases. `esfit`'s window and `eprconvert`. In `pepper` and `garlic`: frequency sweeps of
+The simulators `chili`, `saffron` and `spidyan`: the next phases. `esfit`'s
+window and `eprconvert`. In `salt` and `curry`: partial ordering, sample
+rotations. In `pepper` and `garlic`: frequency sweeps of
 powders, isotope mixtures, partial ordering, sample rotations, immediate
 binning. Not planned: orbital
 angular momentum (`Sys.L`, `soc`, `gL`, `CF*`), higher-order Zeeman terms
@@ -204,7 +241,7 @@ resonance-field functions, the GUIs, MD-trajectory methods (`cardamom`,
 
 Reference data are written by EasySpin itself: the dump scripts in
 `oracle/matlab/easyspin/dumps/` (`esdump_ham.m`, `esdump_resfields.m`,
-`esdump_pepper.m`, `esdump_esfit.m`) run in MATLAB with the installed EasySpin on the path
+`esdump_pepper.m`, `esdump_esfit.m`, `esdump_endor.m`) run in MATLAB with the installed EasySpin on the path
 (read-only) and write one case per spin system or spectrum to
 `$EPREASY_FIXTURES/<version>/<case>/`, with the inputs recorded in
 `meta.json` so that `tests/epreasy/test_parity*.py` rebuild each case from

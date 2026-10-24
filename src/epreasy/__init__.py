@@ -6,6 +6,7 @@ and ``docs/coming-from-easyspin.md``.
 """
 
 from .constants import amu, avogadro, bmagn, boltzm, clight, echarge, evolt, gfree, hbar, mu0, nmagn, planck
+from .endor import EndorResonances, anisosubsys, endorfrq, endorfrq_perturb, orisel, salt
 from .fitting import (
     FitResult,
     addnoise,
@@ -28,6 +29,7 @@ from .hamiltonian import ham, ham_ee, ham_ez, ham_hf, ham_nn, ham_nq, ham_nz, ha
 from .interp import esspline1d, esspline2d, gridinterp
 from .kernels import lisum1i, projecttriangles, projectzones
 from .lineshapes import convspec, gaussian, lorentzian, lshape, voigtian
+from .magnetometry import curry
 from .nucdata import isotopes, nucabund, nucdata, nucgval, nucqmom, nucspin, nucstring2list
 from .pepper import pepper
 from .perturb import resfields_perturb
@@ -45,6 +47,7 @@ __all__ = [
     "amu", "avogadro", "bmagn", "boltzm", "clight", "echarge", "evolt", "gfree", "hbar", "mu0", "nmagn", "planck",
     "ham", "ham_ee", "ham_ez", "ham_hf", "ham_nn", "ham_nq", "ham_nz", "ham_zf", "levels",
     "Spectrum", "equivcouple", "fastmotion", "garlic",
+    "EndorResonances", "anisosubsys", "endorfrq", "endorfrq_perturb", "orisel", "salt", "curry",
     "FitResult", "addnoise", "basecorr", "deriv", "esfit", "esfit_genetic", "esfit_grid", "esfit_levmar",
     "esfit_montecarlo", "esfit_simplex", "esfit_swarm", "hccm", "jacobianest", "rescaledata",
     "SphGrid", "gridparam", "sphgrid",

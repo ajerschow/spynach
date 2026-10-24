@@ -50,6 +50,13 @@ with EasySpin [`docs/coming-from-easyspin.md`](../../docs/coming-from-easyspin.m
   `esfit_genetic`, `esfit_grid`, `esfit_swarm` (and SciPy's least squares
   for `lsqnonlin`), `jacobianest`, `hccm`, and the data helpers
   `rescaledata`, `basecorr`, `deriv`, `addnoise`.
+- `epreasy.endor`: `endorfrq` (ENDOR frequencies and intensities by matrix
+  diagonalisation: transition pre-selection, enhancement, orientation
+  selection, populations, flip angles), `endorfrq_perturb` (Iwasaki's first
+  and second order), `orisel`, `anisosubsys`, and `salt` (powder and
+  crystal ENDOR spectra).
+- `epreasy.magnetometry`: `curry` (magnetic moments and susceptibilities,
+  SI and CGS, operator and partition-function methods).
 - `epreasy.rotations`: `erot`, `eulang`, `ang2vec`, `vec2ang`, `letter2vec`.
 - `epreasy.units`, `epreasy.constants`: `unitconvert`, `mt2mhz`, `mhz2mt`,
   the physical constants as module attributes.
@@ -60,10 +67,10 @@ with EasySpin [`docs/coming-from-easyspin.md`](../../docs/coming-from-easyspin.m
 
 ## Not here (yet, or on purpose)
 
-- The simulators `salt`, `chili`, `saffron`, `spidyan`, `curry`: the next
-  phases. In `pepper` and `garlic`: frequency sweeps of powders, isotope
-  mixtures, partial ordering, sample rotations, immediate binning. In
-  `esfit`: the window.
+- The simulators `chili`, `saffron`, `spidyan`: the next phases. In
+  `pepper` and `garlic`: frequency sweeps of powders, isotope mixtures,
+  partial ordering, sample rotations, immediate binning. In `salt` and
+  `curry`: partial ordering, sample rotations. In `esfit`: the window.
 - Orbital angular momentum (`Sys.L`, `soc`, `gL`, `CF*`; `ham_so`, `ham_cf`,
   `ham_oz`), higher-order Zeeman terms (`Sys.Ham...`, `ham_ezho`), tilted
   frames of Stevens-operator terms (`Sys.B?Frame`, needs `wignerd`), crystal
