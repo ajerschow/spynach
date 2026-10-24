@@ -25,17 +25,21 @@ for n=1:numel(cases)
     if isfolder(case_dir), fprintf('  skip %s (exists)\n',c.name); continue; end
     fprintf('  case %s\n',c.name); mkdir(case_dir);
     h5=fullfile(case_dir,'data.h5');
+    % wall clock of a second call (the first warms MATLAB up), for the timing table of the project page
     if strcmp(c.fn,'pepper')
-        [x,spec,info]=pepper(c.Sys,c.Exp,c.Opt);
+        pepper(c.Sys,c.Exp,c.Opt);
+        tic; [x,spec,info]=pepper(c.Sys,c.Exp,c.Opt); t=toc;
         oracle_write(h5,'/spec/x',x);
         oracle_write(h5,'/spec/spec',spec);
         if isfield(info,'Transitions'), oracle_write(h5,'/spec/transitions',info.Transitions); end
     else
-        [x,spec,info]=garlic(c.Sys,c.Exp,c.Opt);
+        garlic(c.Sys,c.Exp,c.Opt);
+        tic; [x,spec,info]=garlic(c.Sys,c.Exp,c.Opt); t=toc;
         oracle_write(h5,'/spec/x',x);
         oracle_write(h5,'/spec/spec',spec);
         oracle_write(h5,'/spec/resfields',info.resfields);
     end
+    oracle_write(h5,'/spec/seconds',t);
     es_meta(case_dir,dump_file,struct('fn',c.fn,'Sys',c.Sys,'Exp',c.Exp,'Opt',c.Opt));
 end
 

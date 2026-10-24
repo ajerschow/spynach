@@ -1,0 +1,174 @@
+{
+ "generated": "2026-10-24",
+ "repeats": 5,
+ "easyspin": {
+  "version": "6.0.15",
+  "matlab_version": "26.2.0.3386108 (R2026b)"
+ },
+ "epreasy": {
+  "version": "0.1.0",
+  "python": "3.12.5",
+  "numpy": "2.5.4",
+  "scipy": "1.18.1",
+  "numba": "0.68.0",
+  "blas": "accelerate",
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "cores": 12
+ },
+ "cases": [
+  {
+   "case": "pp_nitroxide_matrix",
+   "function": "pepper",
+   "description": "nitroxide powder at X band, matrix diagonalisation, 1024 points",
+   "example": "ex-epr-pepper",
+   "uses_kernels": true,
+   "easyspin_s": 0.136334,
+   "epreasy_numpy_s": 0.09892629203386605,
+   "epreasy_numba_s": 0.0815977081656456,
+   "rel_err": 4.4874118299913893e-13
+  },
+  {
+   "case": "pp_nitroxide_perturb2",
+   "function": "pepper",
+   "description": "the same spectrum by second-order perturbation theory",
+   "example": "ex-epr-pepper",
+   "uses_kernels": true,
+   "easyspin_s": 0.04188304166666667,
+   "epreasy_numpy_s": 0.011720458045601845,
+   "epreasy_numba_s": 0.010037499945610762,
+   "rel_err": 1.6411639457435707e-13
+  },
+  {
+   "case": "pp_cu4n_hybrid",
+   "function": "pepper",
+   "description": "Cu(II) with four 14N (648 states), hybrid method, 1024 points",
+   "example": "ex-epr-cu4n",
+   "uses_kernels": true,
+   "easyspin_s": 0.12277066666666667,
+   "epreasy_numpy_s": 0.17101716599427164,
+   "epreasy_numba_s": 0.13392683397978544,
+   "rel_err": 4.341500851863774e-13
+  },
+  {
+   "case": "pp_cu4n_perturb2",
+   "function": "pepper",
+   "description": "Cu(II) with four 14N, second-order perturbation theory",
+   "example": "ex-epr-cu4n",
+   "uses_kernels": true,
+   "easyspin_s": 0.04554483333333333,
+   "epreasy_numpy_s": 0.042867250042036176,
+   "epreasy_numba_s": 0.02930212509818375,
+   "rel_err": 6.822021245249172e-14
+  },
+  {
+   "case": "gl_nitroxide",
+   "function": "garlic",
+   "description": "isotropic nitroxide in solution, three lines",
+   "example": "ex-epr-garlic",
+   "uses_kernels": true,
+   "easyspin_s": 0.009905083333333333,
+   "epreasy_numpy_s": 0.0004946661647409201,
+   "epreasy_numba_s": 0.0004818749148398638,
+   "rel_err": 6.016492252711282e-16
+  },
+  {
+   "case": "gl_cu_n",
+   "function": "garlic",
+   "description": "Cu(II) with 14N in solution, Breit-Rabi line positions",
+   "example": null,
+   "uses_kernels": true,
+   "easyspin_s": 0.010292,
+   "epreasy_numpy_s": 0.0005435000639408827,
+   "epreasy_numba_s": 0.0005326659884303808,
+   "rel_err": 7.183499711552258e-16
+  },
+  {
+   "case": "ef_pepper_simplex",
+   "function": "esfit",
+   "description": "two g values of a noisy powder spectrum fitted by Nelder-Mead simplex",
+   "example": "ex-epr-esfit",
+   "uses_kernels": true,
+   "easyspin_s": 4.146102291666667,
+   "epreasy_numpy_s": 0.6376535000745207,
+   "epreasy_numba_s": 0.5144250830635428,
+   "rel_err": 0.0
+  },
+  {
+   "case": "sa_n14_enh_on",
+   "function": "salt",
+   "description": "14N ENDOR powder spectrum with hyperfine enhancement, 2001 points",
+   "example": "ex-epr-salt",
+   "uses_kernels": true,
+   "easyspin_s": 0.156434625,
+   "epreasy_numpy_s": 0.1661386250052601,
+   "epreasy_numba_s": 0.09358608396723866,
+   "rel_err": 1.3747701358051783e-11
+  },
+  {
+   "case": "cu_dimer_chi",
+   "function": "curry",
+   "description": "molar susceptibility of an exchange-coupled dimer at 100 temperatures",
+   "example": "ex-epr-curry",
+   "uses_kernels": false,
+   "easyspin_s": 0.010246791666666666,
+   "epreasy_numpy_s": 0.0077596670016646385,
+   "epreasy_numba_s": null,
+   "rel_err": 1.3405566024387614e-12
+  },
+  {
+   "case": "ch_nitroxide_1e-09",
+   "function": "chili",
+   "description": "slow-motion nitroxide, tcorr 1 ns, general Liouvillian, 512 points",
+   "example": "ex-epr-chili",
+   "uses_kernels": false,
+   "easyspin_s": 0.08148825,
+   "epreasy_numpy_s": 0.10889579216018319,
+   "epreasy_numba_s": null,
+   "rel_err": 7.641885891653835e-09
+  },
+  {
+   "case": "ch_nitroxide_1e-07",
+   "function": "chili",
+   "description": "slow-motion nitroxide, tcorr 100 ns",
+   "example": "ex-epr-chili",
+   "uses_kernels": false,
+   "easyspin_s": 0.052516291666666666,
+   "epreasy_numpy_s": 0.11057879100553691,
+   "epreasy_numba_s": null,
+   "rel_err": 1.5392877646718949e-10
+  },
+  {
+   "case": "ch_momd",
+   "function": "chili",
+   "description": "nitroxide with an ordering potential, MOMD over a director grid",
+   "example": null,
+   "uses_kernels": false,
+   "easyspin_s": 0.25344475,
+   "epreasy_numpy_s": 0.23348941700533032,
+   "epreasy_numba_s": null,
+   "rel_err": 6.18779768004932e-10
+  },
+  {
+   "case": "pu_3p_14n",
+   "function": "saffron",
+   "description": "three-pulse ESEEM of 14N, 200 points",
+   "example": "ex-epr-saffron",
+   "uses_kernels": false,
+   "easyspin_s": 0.018433291666666667,
+   "epreasy_numpy_s": 0.002019291976466775,
+   "epreasy_numba_s": null,
+   "rel_err": 3.17409307304978e-16
+  },
+  {
+   "case": "pu_hyscore_14n",
+   "function": "saffron",
+   "description": "HYSCORE of 14N, 48 x 48 points",
+   "example": "ex-epr-hyscore",
+   "uses_kernels": false,
+   "easyspin_s": 0.023648625,
+   "epreasy_numpy_s": 0.003077167086303234,
+   "epreasy_numba_s": null,
+   "rel_err": 5.889910708971062e-16
+  }
+ ]
+}

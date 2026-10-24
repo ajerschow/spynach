@@ -24,7 +24,8 @@ def test_lisum1i_reproduces_the_line_shape():
     assert kernels.lisum1i(template, x0T, wT, np.array([np.nan]), np.array([1.0]), np.array([1.0]), x).sum() == 0
     if kernels.HAVE_NUMBA:
         args = (template, x0T, wT, np.array([342.0, 351.3]), np.array([2.0, 1.0]), np.array([1.5, 0.4]), x)
-        np.testing.assert_allclose(kernels.lisum1i(*args), kernels.lisum1i_numpy(*args), rtol=1e-12)
+        # the compiled and the NumPy summation differ by roundoff (1e-14) in the tails of the lines
+        np.testing.assert_allclose(kernels.lisum1i(*args), kernels.lisum1i_numpy(*args), rtol=1e-12, atol=1e-13)
 
 
 def test_projection_kernels_conserve_weights():

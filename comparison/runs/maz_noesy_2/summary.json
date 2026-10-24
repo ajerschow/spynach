@@ -1,0 +1,84 @@
+{
+ "case": "maz_noesy_2",
+ "run": "maz_noesy_2",
+ "gpu": false,
+ "built_utc": "2026-10-24T22:04:16Z",
+ "stages": [
+  {
+   "label": "create",
+   "spinach": 1.2636935416666666,
+   "spynach": 0.005312916997354478
+  },
+  {
+   "label": "basis",
+   "spinach": 3.727274291666667,
+   "spynach": 0.043514917022548616
+  },
+  {
+   "label": "liquid/noesy",
+   "spinach": 840.808407,
+   "spynach": 1701.604523874994
+  },
+  {
+   "label": "processing",
+   "spinach": 0.011591625,
+   "spynach": 0.010430791997350752
+  },
+  {
+   "label": "plot",
+   "spinach": 0.14788370833333334,
+   "spynach": 0.18110970896668732
+  },
+  {
+   "label": "total (wall clock)",
+   "spinach": 846.1510452916667,
+   "spynach": 1701.8968153329915
+  }
+ ],
+ "arrays": [
+  {
+   "name": "fid_cos",
+   "rel": 1.1865572306874153e-10,
+   "max_abs": 1.4734713463138487e-10,
+   "note": ""
+  },
+  {
+   "name": "fid_sin",
+   "rel": 1.1047242857323827e-10,
+   "max_abs": 1.3164299251752722e-10,
+   "note": ""
+  },
+  {
+   "name": "spectrum",
+   "rel": 1.1143263693002526e-10,
+   "max_abs": 1.3438774858062066e-07,
+   "note": ""
+  }
+ ],
+ "provenance": {
+  "spinach": {
+   "created_utc": "2026-10-14T17:53:22Z",
+   "spinach_describe": "2.13",
+   "matlab_version": "26.2.0.3386108 (R2026b)",
+   "hostname": "MacBook-Pro-8.local",
+   "platform": "MACA64",
+   "cores": 12,
+   "blas": "Apple Accelerate BLAS (ILP64)",
+   "pool_workers": 11
+  },
+  "spynach": {
+   "created_utc": "2026-10-14T19:19:37Z",
+   "spynach_describe": "074f4d2-dirty",
+   "python_version": "3.12.5",
+   "numpy_version": "2.5.4",
+   "scipy_version": "1.18.1",
+   "hostname": "MacBook-Pro-8.local",
+   "platform": "macOS-26.6.2-arm64-arm-64bit",
+   "cores": 12,
+   "blas": {
+    "numpy": "accelerate",
+    "scipy": "Accelerate"
+   }
+  }
+ }
+}

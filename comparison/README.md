@@ -24,6 +24,7 @@ comparison/
   runs/<run>/spinach/            MATLAB outputs (git-ignored)
   runs/<run>/spynach/          spynach outputs (git-ignored)
   runs/<run>/report.html         the report
+  runs/<run>/summary.json        its timings, differences and provenance as data (the project site's table)
 ```
 
 **What is versioned.** `comparison/runs/` is committed except for the
@@ -97,7 +98,11 @@ holds:
    difference of every array (the oracle tests' metric; FIDs of ported
    sequences agree to about 1e-10), the figures next to each other, the
    profiler tops of both sides, and links to the console logs. Either side
-   may be missing; the report says so. The report embeds the PNGs, so it
+   may be missing; the report says so. Beside it, `summary.json` holds the
+   same timings, relative differences and provenance as data, from which
+   `scripts/build_site.py` renders the timing table of the project site;
+   the report inlines the site's stylesheet and carries its navigation, so
+   it opens from the site and standalone alike. The report embeds the PNGs, so it
    can be sent on its own.
 
 **CPU and GPU runs.** The default on both sides is CPU. `gpu=true` in

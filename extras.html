@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Spynach: extras</title>
+<meta name="description" content="What originated in Spynach beyond the two ports: coherence transfer pathway selection with ctps, non-ideal pulses and cogwheel cycles, verification tooling, executable documentation and the browser playground.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<div class="wrap">
+
+<!-- site:nav -->
+<nav class="top" aria-label="Site">
+  <a class="brand" href="index.html">Spynach</a>
+  <a href="spinach.html">Spinach port</a>
+  <a href="easyspin.html">EasySpin port</a>
+  <a href="extras.html" aria-current="page">Extras</a>
+  <a href="docs.html">Documentation</a>
+  <a href="try.html">Try it</a>
+  <a href="https://github.com/ajerschow/spynach">GitHub</a>
+</nav>
+<!-- /site:nav -->
+
+<div class="lede-page">
+  <span class="eyebrow">Extras</span>
+  <h1>Beyond the ports</h1>
+  <p class="lede">Most of the repository is a port, checked stage by stage against the original. These are the parts that originated here: a module for coherence transfer pathway selection, the tooling that verifies both ports, and the ways the code reaches you without an installation.</p>
+  <div class="actions">
+    <a class="btn primary" href="https://github.com/ajerschow/spynach/blob/main/docs/ctps.md">The ctps guide</a>
+    <a class="btn" href="https://github.com/ajerschow/spynach/blob/main/docs/beyond-the-port.md">Beyond the port, with examples</a>
+    <a class="btn" href="try.html#ex-ctps">Run a pathway selection in the browser</a>
+  </div>
+</div>
+
+<section id="ctps">
+  <header><span class="eyebrow">Pathways</span><h2>Coherence transfer pathway selection</h2></header>
+  <div>
+    <p><code>ctps</code> is a separate module (<code>import ctps</code>, no dependency on <code>spynach</code>) that ports the CCCP.m and CCCP++ programs: for a sequence of pulses and delays on one or several nuclei it enumerates every coherence transfer pathway the sequence allows, weights each by the phase cycle, the gradients, diffusion and the pulses, ranks them and draws them in an interactive explorer that steps through the pathways with their factors.</p>
+    <p>Phase cycles are given explicitly, by nested cycling, or as cogwheel cycles; gradients with their strengths, durations and the gyromagnetic ratios of the nuclei; diffusion by the Stejskal-Tanner attenuation. The <a href="https://github.com/ajerschow/spynach/blob/main/docs/ctps-examples.md">worked examples</a> go from a double-quantum filter and an imperfect spin echo to HSQC, MQMAS, multi-echo trains and MRS crusher schemes, and end with every check of the module's tests as a runnable example.</p>
+  </div>
+</section>
+
+<section id="pulses">
+  <header><span class="eyebrow">Pulses</span><h2>Non-ideal pulses and cogwheel search</h2></header>
+  <div>
+    <p>Each pulse is a perfect 180°, an imperfect 180° or a small-flip-angle pulse, with the leakage of every coherence transfer after <i>J. Chem. Phys.</i> 113, 979 (2000), so that the pathways an imperfect refocusing pulse lets through appear with their weights. Cogwheel cycles are found by exact integer arithmetic with all winding numbers tested at once, and crusher gradient schemes by the DOTCOPS objective.</p>
+  </div>
+</section>
+
+<section id="verification">
+  <header><span class="eyebrow">Verification</span><h2>Tooling behind both ports</h2></header>
+  <div>
+    <ul class="plain">
+      <li><b>Oracle harnesses.</b> MATLAB dump scripts write the intermediate results of a Spinach calculation, or the inputs and outputs of an EasySpin call, to HDF5 fixtures with their provenance; the parity tests rebuild each case and compare normwise with stated tolerances. <code>compare</code> checks any result of your own against a saved run.</li>
+      <li><b>The parity page.</b> Every fixture case, tolerance and measured difference of the Spinach suite, regenerated from a test run rather than typed (<a href="https://github.com/ajerschow/spynach/blob/main/docs/parity.md">docs/parity.md</a>); the EasySpin cases with their agreement in <a href="https://github.com/ajerschow/spynach/blob/main/porting/EASYSPIN_FIXTURES.md">porting/EASYSPIN_FIXTURES.md</a>.</li>
+      <li><b>Timed comparisons.</b> A protocol that runs a full-size calculation on both sides under a profiler, on the same machine, into one HTML report per case, and a timing script for the EasySpin fixtures; the tables on the <a href="spinach.html#timing">Spinach</a> and <a href="easyspin.html#timing">EasySpin</a> pages are generated from their output.</li>
+      <li><b>Interactive figures.</b> Plotly figures from every plotting function, FID and time-series plots with no Spinach equivalent, and <code>figure_png</code> for static copies.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="docs">
+  <header><span class="eyebrow">Documentation</span><h2>Executable guides, Colab, contributed notebooks</h2></header>
+  <div>
+    <p>Each guide is a Markdown document whose code blocks run in the test suite, and a notebook generated from it with its outputs and interactive figures; the <a href="https://colab.research.google.com/github/ajerschow/spynach/blob/main/docs/colab/quick-start.ipynb">Colab quick start</a> installs Spynach in the browser and runs the two-spin example. Contributed notebooks, such as the triple-quantum build-up of a 23Na spin under quadrupolar relaxation, live in <code>user_py/</code> beside the contributed Spinach scripts in <code>user_ml/</code> and their translations. All guides are on the <a href="docs.html">documentation page</a>.</p>
+  </div>
+</section>
+
+<section id="browser">
+  <header><span class="eyebrow">Browser</span><h2>The playground</h2></header>
+  <div>
+    <p><a href="try.html">try.html</a> runs <code>spynach</code>, <code>epreasy</code> and <code>ctps</code> in the browser through <a href="https://pyodide.org/">Pyodide</a> (Python compiled to WebAssembly) with NumPy and SciPy in a web worker, fetching the sources from the repository: nothing to install, the first load takes a few seconds. The examples are grouped by product, NMR, EPR and pathways; each prints a few numbers and draws its spectrum, FID or 2D contour plot, and the editor is yours to change. Deep links such as <code>try.html#ex-epr-hyscore</code> open and run one example. The page was contributed by <a href="https://github.com/mzaiss">Moritz Zaiss</a> (MRsources); it runs in a single thread, so it suits guide-sized examples rather than full-size calculations.</p>
+  </div>
+</section>
+
+<footer>
+  <span>MIT licence, with the Spinach and EasySpin notices.</span>
+  <span>Alexej Jerschow, New York University.</span>
+  <a href="https://github.com/ajerschow/spynach/blob/main/HANDOFF.md">Design decisions</a>
+  <a href="https://github.com/ajerschow/spynach/blob/main/porting/ROADMAP.md">Roadmap</a>
+  <a href="https://github.com/ajerschow/spynach">Source</a>
+</footer>
+
+</div>
+</body>
+</html>

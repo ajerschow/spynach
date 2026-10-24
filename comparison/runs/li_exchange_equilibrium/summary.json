@@ -1,0 +1,135 @@
+{
+ "case": "li_exchange_equilibrium",
+ "run": "li_exchange_equilibrium",
+ "gpu": false,
+ "built_utc": "2026-10-24T22:04:15Z",
+ "stages": [
+  {
+   "label": "create",
+   "spinach": 0.7043445416666667,
+   "spynach": 0.0005806249973829836
+  },
+  {
+   "label": "basis",
+   "spinach": 0.15423070833333333,
+   "spynach": 0.00154983099855599
+  },
+  {
+   "label": "hamiltonian",
+   "spinach": 0.2990816666666667,
+   "spynach": 0.014465438998740865
+  },
+  {
+   "label": "equilibrium",
+   "spinach": 0.026966791666666667,
+   "spynach": 0.003332619999127928
+  },
+  {
+   "label": "relaxation",
+   "spinach": 0.5886720833333333,
+   "spynach": 0.03708499300046242
+  },
+  {
+   "label": "trajectory",
+   "spinach": 0.06136841666666667,
+   "spynach": 0.18531317199813202
+  },
+  {
+   "label": "analysis",
+   "spinach": 0.16756308333333333,
+   "spynach": 0.09870199500073795
+  },
+  {
+   "label": "plot",
+   "spinach": 0.52204725,
+   "spynach": 0.24652959200102487
+  },
+  {
+   "label": "total (wall clock)",
+   "spinach": 2.57362875,
+   "spynach": 0.5921356770013517
+  }
+ ],
+ "arrays": [
+  {
+   "name": "coh_order",
+   "rel": 3.929665975029597e-13,
+   "max_abs": 1.1655173354219173e-17,
+   "note": ""
+  },
+  {
+   "name": "corr_order",
+   "rel": 3.929665975029302e-13,
+   "max_abs": 1.1655173354219173e-17,
+   "note": ""
+  },
+  {
+   "name": "rho_eq",
+   "rel": 1.1978854817791333e-21,
+   "max_abs": 8.470329472543003e-22,
+   "note": "compared after squeezing singleton dimensions"
+  },
+  {
+   "name": "rho_eq_ex",
+   "rel": 1.289216858537261e-19,
+   "max_abs": 1.2874900798265365e-19,
+   "note": "compared after squeezing singleton dimensions"
+  },
+  {
+   "name": "rho_final",
+   "rel": 9.543674226170828e-18,
+   "max_abs": 9.508791865876776e-18,
+   "note": "compared after squeezing singleton dimensions"
+  },
+  {
+   "name": "spin_total",
+   "rel": 3.9294502666205315e-13,
+   "max_abs": 1.1641620827063104e-17,
+   "note": ""
+  },
+  {
+   "name": "tensors",
+   "rel": 3.935003624395301e-13,
+   "max_abs": 1.3046001453610734e-17,
+   "note": ""
+  },
+  {
+   "name": "time_eq",
+   "rel": 1.0805933926139116e-16,
+   "max_abs": 1.1102230246251565e-16,
+   "note": "compared after squeezing singleton dimensions"
+  },
+  {
+   "name": "unit_population",
+   "rel": 0.0,
+   "max_abs": 0.0,
+   "note": "compared after squeezing singleton dimensions"
+  }
+ ],
+ "provenance": {
+  "spinach": {
+   "created_utc": "2026-10-14T17:53:28Z",
+   "spinach_describe": "2.13",
+   "matlab_version": "26.2.0.3386108 (R2026b)",
+   "hostname": "MacBook-Pro-8.local",
+   "platform": "MACA64",
+   "cores": 12,
+   "blas": "Apple Accelerate BLAS (ILP64)",
+   "pool_workers": 11
+  },
+  "spynach": {
+   "created_utc": "2026-10-14T17:59:29Z",
+   "spynach_describe": "b8f2e2f-dirty",
+   "python_version": "3.11.2",
+   "numpy_version": "2.4.6",
+   "scipy_version": "1.17.1",
+   "hostname": "claude-box",
+   "platform": "Linux-7.0.14-orbstack-00380-ga7e0a2dc9535-aarch64-with-glibc2.36",
+   "cores": 12,
+   "blas": {
+    "numpy": "scipy-openblas",
+    "scipy": "scipy-openblas"
+   }
+  }
+ }
+}

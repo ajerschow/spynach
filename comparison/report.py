@@ -5,7 +5,10 @@
 Writes comparison/runs/<run>/report.html: provenance of both sides, stage timings
 side by side, normwise differences of every array both sides saved, the figures,
 the profiler tops, and links to the console logs. A missing side is reported as
-such, so the report can be built after either half of the protocol.
+such, so the report can be built after either half of the protocol. Beside it,
+summary.json holds the same timings, differences and provenance as data, from
+which scripts/build_site.py renders the timing table of the project site. The
+report inlines the site's stylesheet (assets/site.css) and carries its navigation.
 """
 
 from __future__ import annotations
@@ -14,6 +17,7 @@ import base64
 import html
 import json
 import sys
+from datetime import UTC, datetime
 from pathlib import Path
 
 import numpy as np
@@ -95,23 +99,26 @@ def timing_rows(sides: dict) -> list[dict]:
 
 
 # ---------------------------------------------------------------- HTML
+SITE_CSS = ROOT / "assets" / "site.css"
+# The site's stylesheet is inlined so that a copied report still renders; these rules are the report's own.
 CSS = """
-:root { --bg:#ffffff; --ink:#1b1b1f; --ink2:#4b4b55; --line:#dcdce3; --accent:#1d4ed8; --surface:#f5f5f8; --warn:#b3261e; }
-@media (prefers-color-scheme: dark) { :root { --bg:#121216; --ink:#ececf1; --ink2:#b4b4c0; --line:#33333d; --accent:#8ab4ff; --surface:#1c1c22; --warn:#ff8a80; } }
-body { margin:0; padding:24px 16px 48px; background:var(--bg); color:var(--ink); font:15px/1.5 -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; }
-main { max-width:1200px; margin:0 auto; }
-h1 { font-size:24px; margin:0 0 4px; } h2 { font-size:18px; margin:36px 0 10px; border-bottom:1px solid var(--line); padding-bottom:4px; }
-h3 { font-size:14px; margin:14px 0 6px; color:var(--ink2); text-transform:uppercase; letter-spacing:.04em; }
-p.sub { color:var(--ink2); margin:0 0 20px; }
-table { border-collapse:collapse; width:100%; font-size:14px; margin:6px 0 14px; }
-th, td { text-align:left; padding:5px 10px; border-bottom:1px solid var(--line); vertical-align:top; }
-th { color:var(--ink2); font-weight:600; } td.num, th.num { text-align:right; font-variant-numeric:tabular-nums; }
-td.mono { font-family:ui-monospace, Menlo, Consolas, monospace; font-size:13px; word-break:break-all; }
-.cols { display:grid; grid-template-columns:1fr 1fr; gap:20px; } @media (max-width:800px) { .cols { grid-template-columns:1fr; } }
-.card { background:var(--surface); border:1px solid var(--line); border-radius:8px; padding:12px 14px; }
-.card img { width:100%; height:auto; border-radius:4px; background:#fff; }
-.missing { color:var(--warn); } .ok { color:var(--accent); }
-a { color:var(--accent); } .small { font-size:13px; color:var(--ink2); }
+:root { --warn: #b3261e; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --warn: #ff8a80; } }
+.wrap.report { max-width: 76rem; }
+main { padding-top: 1rem; }
+h1 { font-size: 1.7rem; margin: 0.6rem 0 0.2rem; }
+h2 { margin: 2.2rem 0 0.6rem; border-bottom: 1px solid var(--line); padding-bottom: 0.3rem; }
+h3 { font-size: 0.85rem; margin: 0; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+p { max-width: none; }
+p.sub { color: var(--muted); margin: 0 0 1.2rem; }
+table { margin: 0.4rem 0 0.9rem; }
+th, td { padding: 0.35rem 0.6rem 0.35rem 0; }
+td.mono, span.mono { font-family: var(--mono); font-size: 0.85em; word-break: break-all; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-bottom: 1.2rem; }
+@media (max-width: 800px) { .cols { grid-template-columns: 1fr; } }
+.card img { width: 100%; height: auto; border-radius: 4px; background: #fff; }
+.missing { color: var(--warn); } .ok { color: var(--accent-ink); }
+.small { font-size: 0.85rem; color: var(--muted); }
 """
 
 
@@ -302,22 +309,76 @@ def build_report(run_dir: Path) -> Path:
     failed = [side for side in present if sides[side]["meta"] and sides[side]["meta"].get("error")]
     if failed:
         status += "; " + ", ".join(f"{side} did not run ({sides[side]['meta']['error']})" for side in failed)
-    body = f"""<main>
+    timings = timing_rows(sides)
+    arrays = compare_arrays((sides["spinach"] or {}).get("data"), (sides["spynach"] or {}).get("data"))
+    nav = (
+        '<nav class="top" aria-label="Site"><a class="brand" href="../../../index.html">Spynach</a>'
+        '<a href="../../../spinach.html#timing">Parity and timing</a>'
+        '<a href="https://github.com/ajerschow/spynach/blob/main/comparison/README.md">Protocol</a></nav>'
+    )
+    body = f"""<div class="wrap report">{nav}<main>
 <h1>Spinach vs spynach: {esc(case)} ({accel})</h1>
 <p class="sub">run <span class="mono">{esc(run_dir.name)}</span>, {esc(status)}. Built by comparison/report.py; protocol in comparison/README.md.</p>
 <h2>Provenance</h2>{meta_table(sides)}
-<h2>Timings</h2>{timings_table(timing_rows(sides))}
-<h2>Data</h2>{data_table(compare_arrays((sides["spinach"] or {}).get("data"), (sides["spynach"] or {}).get("data")))}
+<h2>Timings</h2>{timings_table(timings)}
+<h2>Data</h2>{data_table(arrays)}
 <h2>Figures</h2>{figures_section(sides)}
 <h2>Profiles</h2>{profile_tables(sides)}
 <h2>Console logs</h2>{logs_section(sides, run_dir)}
-</main>"""
+</main></div>"""
+    site_css = SITE_CSS.read_text(encoding="utf-8") if SITE_CSS.exists() else ""
     page = (
         f'<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">'
-        f"<title>Spinach vs spynach: {esc(case)} ({accel})</title><style>{CSS}</style></head><body>{body}</body></html>"
+        f"<title>Spinach vs spynach: {esc(case)} ({accel})</title><style>{site_css}{CSS}</style></head><body>{body}</body></html>"
     )
+    write_summary(run_dir, case, gpu, sides, timings, arrays)
     out = run_dir / "report.html"
     out.write_text(page, encoding="utf-8")
+    return out
+
+
+PROVENANCE_KEYS = {
+    "spinach": (
+        "created_utc",
+        "spinach_describe",
+        "matlab_version",
+        "hostname",
+        "platform",
+        "cores",
+        "blas",
+        "pool_workers",
+    ),
+    "spynach": (
+        "created_utc",
+        "spynach_describe",
+        "python_version",
+        "numpy_version",
+        "scipy_version",
+        "hostname",
+        "platform",
+        "cores",
+        "blas",
+    ),
+}
+
+
+def write_summary(run_dir: Path, case: str, gpu: bool, sides: dict, timings: list[dict], arrays: list[dict]) -> Path:
+    """comparison/runs/<run>/summary.json: the numbers of the report, for the timing table of the project site."""
+    provenance = {}
+    for side in SIDES:
+        meta = ((sides.get(side) or {}).get("meta")) or {}
+        provenance[side] = {k: meta.get(k) for k in PROVENANCE_KEYS[side]}
+    summary = {
+        "case": case,
+        "run": run_dir.name,
+        "gpu": gpu,
+        "built_utc": datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "stages": timings,
+        "arrays": [{k: r[k] for k in ("name", "rel", "max_abs", "note")} for r in arrays],
+        "provenance": provenance,
+    }
+    out = run_dir / "summary.json"
+    out.write_text(json.dumps(summary, indent=1) + "\n", encoding="utf-8")
     return out
 
 

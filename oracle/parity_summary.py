@@ -7,9 +7,9 @@ lists the fixture cases on disk. It then writes
     oracle/parity_summary.json   counts and the largest measured difference per tolerance
     docs/parity.md               the tolerance policy, a summary table per family, and
                                  the full table (case, quantity, tolerance, measured error)
-    index.html                   the paragraph between <!-- parity-summary --> markers
+    spinach.html                 the paragraph between <!-- parity-summary --> markers
 
-so that the numbers on the landing page and in the documentation come from
+so that the numbers on the project site and in the documentation come from
 the suite rather than from a keyboard. It refuses to write when a parity
 test skipped, which means a fixture case was missing and the numbers would
 understate the suite.
@@ -41,7 +41,7 @@ sys.path.insert(0, str(ROOT / "src"))
 
 JSON = ROOT / "oracle" / "parity_summary.json"
 PARITY_MD = ROOT / "docs" / "parity.md"
-INDEX = ROOT / "index.html"
+PAGE = ROOT / "spinach.html"
 MARKERS = ("<!-- parity-summary -->", "<!-- /parity-summary -->")
 PARITY_TESTS = ["tests/slice", "tests/oracle/test_hilb_pa_fixtures.py"]
 
@@ -273,7 +273,7 @@ def render_markdown(summary: dict) -> str:
 
 
 def render_paragraph(summary: dict) -> str:
-    """The landing-page paragraph, between the markers."""
+    """The paragraph of the Spinach-port page, between the markers."""
     families = ", ".join(f"{f['label']} ({f['tests']})" for f in summary["families"])
     worst = {float(k): v for k, v in summary["worst_by_rtol"].items() if float(k) > 0}
     loose = max((v for k, v in worst.items() if k >= 1e-9), default=0.0)
@@ -295,7 +295,7 @@ def render_paragraph(summary: dict) -> str:
 def rendered_index(summary: dict, html: str) -> str:
     pattern = re.compile(re.escape(MARKERS[0]) + r".*?" + re.escape(MARKERS[1]), flags=re.S)
     if not pattern.search(html):
-        raise SystemExit(f"index.html has no {MARKERS[0]} ... {MARKERS[1]} span")
+        raise SystemExit(f"{PAGE.name} has no {MARKERS[0]} ... {MARKERS[1]} span")
     return pattern.sub(lambda _: render_paragraph(summary), html, count=1)
 
 
@@ -304,9 +304,9 @@ def stale(summary: dict) -> list[str]:
     out = []
     if PARITY_MD.read_text(encoding="utf-8") != render_markdown(summary):
         out.append(str(PARITY_MD.relative_to(ROOT)))
-    html = INDEX.read_text(encoding="utf-8")
+    html = PAGE.read_text(encoding="utf-8")
     if rendered_index(summary, html) != html:
-        out.append(str(INDEX.relative_to(ROOT)))
+        out.append(str(PAGE.relative_to(ROOT)))
     return out
 
 
@@ -336,12 +336,12 @@ def main(argv=None) -> int:
     summary = json.loads(JSON.read_text(encoding="utf-8")) if args.render else collect()
     JSON.write_text(json.dumps(summary, indent=1) + "\n", encoding="utf-8")
     PARITY_MD.write_text(render_markdown(summary), encoding="utf-8")
-    INDEX.write_text(rendered_index(summary, INDEX.read_text(encoding="utf-8")), encoding="utf-8")
+    PAGE.write_text(rendered_index(summary, PAGE.read_text(encoding="utf-8")), encoding="utf-8")
     print(f"{summary['tests']} tests, {summary['parity_tests']} parity tests, {summary['fixture_cases']} cases")
     for f in summary["families"]:
         print(f"  {f['label']}: {len(f['cases'])} cases, {f['tests']} tests, {f['comparisons']} comparisons")
     print("worst by tolerance:", summary["worst_by_rtol"])
-    print(f"wrote {JSON.relative_to(ROOT)}, {PARITY_MD.relative_to(ROOT)}, {INDEX.relative_to(ROOT)}")
+    print(f"wrote {JSON.relative_to(ROOT)}, {PARITY_MD.relative_to(ROOT)}, {PAGE.relative_to(ROOT)}")
     return 0
 
 

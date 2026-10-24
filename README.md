@@ -9,7 +9,7 @@ page at [ajerschow.github.io/spynach](https://ajerschow.github.io/spynach/) link
 guides, the notebooks (rendered by nbviewer) and the Spinach comparison reports, and
 has an "Open in Google Colab" button that runs the quick-start example without a local
 install ([`docs/colab/quick-start.ipynb`](docs/colab/quick-start.ipynb)), and a page that
-runs Spynach in the browser through Pyodide
+runs Spynach, `epreasy` and `ctps` in the browser through Pyodide
 ([try.html](https://ajerschow.github.io/spynach/try.html), contributed by Moritz Zaiss). See `HANDOFF.md` for goals and design decisions, and
 `oracle/README.md` for the reference-data ("fixture") harness.
 
@@ -119,9 +119,9 @@ Add-ons originating here, with no Spinach counterpart, each with an example in t
   generated with outputs, a Colab quick start, and contributed notebooks in
   `user_py/`.
 - **Browser-based execution**: [try.html](https://ajerschow.github.io/spynach/try.html)
-  runs Spynach and `ctps` in the browser through Pyodide, with nothing
-  installed, and plots spectra, FIDs and 2D contours from an editor
-  preloaded with the guides' examples (contributed by Moritz Zaiss).
+  runs Spynach, `epreasy` and `ctps` in the browser through Pyodide, with
+  nothing installed, and plots spectra, FIDs and 2D contours from an editor
+  preloaded with NMR, EPR and pathway examples (contributed by Moritz Zaiss).
 - **`epreasy`**, a separate package (`import epreasy`, depends on `spynach`,
   never the reverse) that ports [EasySpin](https://easyspin.org) to Python
   with EasySpin's interface: the foundation (spin systems, `sop`, `stev`,
@@ -204,20 +204,30 @@ commit; see [`docs/README.md`](docs/README.md) for the conventions. After
 editing a guide, regenerate its notebook with
 `python docs/build_notebooks.py`; `tests/docs/` fails if it is stale.
 
-`index.html` at the repository root is the landing page served by GitHub
-Pages from the root of `main`, and `try.html` beside it runs Spynach in the
-browser: `worker.js` loads Pyodide in a web worker and fetches the Python
-sources from its hard-coded `SOURCE` list (a test keeps that list equal to
-`src/spynach` and `src/ctps`). Both pages are served (Settings > Pages > Deploy from a branch >
-`main`, `/ (root)`; `.nojekyll` keeps Pages from preprocessing the tree).
-It is hand-maintained: when a guide or a comparison case is added, add
-its row or card there. Reports are linked relatively, so they are served
-by Pages; guides and notebooks link to GitHub and nbviewer. Its hero
-figure is `assets/Spynoza.jpg`. `assets/liouvillian-strychnine*.png`
-are sparsity patterns of the strychnine NOESY Liouvillian rendered by
+The project site is hand-written HTML at the repository root, served by
+GitHub Pages from the root of `main` (Settings > Pages > Deploy from a
+branch > `main`, `/ (root)`; `.nojekyll` keeps Pages from preprocessing the
+tree): `index.html` (landing page), `spinach.html`, `easyspin.html`,
+`extras.html`, `docs.html`, and `try.html`, the playground that runs
+Spynach, `epreasy` and `ctps` in the browser (`worker.js` loads Pyodide in a
+web worker and fetches the sources). They share `assets/site.css`. The parts
+that are data rather than prose sit between `<!-- site:... -->` markers and
+are written by `scripts/build_site.py`: the navigation, the guide tables of
+`docs.html` (from the table in `docs/README.md`, filed by package in the
+script's groups), the timing tables of `spinach.html` (from
+`comparison/runs/*/summary.json`, which `comparison/report.py` writes beside
+each report) and `easyspin.html` (from `comparison/easyspin/timings.json`,
+written by `scripts/easyspin-timings.py` from the EasySpin fixtures), and
+the `SOURCE` list of `worker.js`; `tests/unit/test_site.py` fails when a
+span is stale. The parity paragraph of `spinach.html` comes from
+`oracle/parity_summary.py`. Reports are linked relatively, so they are
+served by Pages; guides and notebooks link to GitHub and nbviewer. The
+playground's examples are written into `try.html` and run natively by
+`tests/unit/test_playground_examples.py`. The hero figure is
+`assets/Spynoza.jpg`; `assets/liouvillian-strychnine*.png` are sparsity
+patterns of the strychnine NOESY Liouvillian rendered by
 `scripts/landing-figure.py` (needs Pillow and Matplotlib, which the
-`compare` extra brings in), kept as alternatives; the script embeds the
-full-matrix mask into the page when the page carries its SVG mask element.
+`compare` extra brings in), kept as alternatives.
 
 `src/spynach/_isotope_data.py` is generated from Spinach's `spin.m` by
 `porting/tools/gen_isotopes.py`; do not edit it by hand.

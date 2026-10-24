@@ -1,4 +1,4 @@
-/* Spynach in Pyodide. Every simulation runs in this worker, off the page thread.
+/* Spynach, epreasy and ctps in Pyodide. Every simulation runs in this worker, off the page thread.
    Pyodide 314 refuses classic workers, so this file is loaded as a module.
    The page must be served over HTTP from the repository root so src/ can be fetched. */
 import { loadPyodide } from "https://cdn.jsdelivr.net/pyodide/v314.0.7/full/pyodide.mjs";
@@ -44,6 +44,32 @@ const SOURCE = [
   "src/ctps/optimize.py",
   "src/ctps/plot.py",
   "src/ctps/simulate.py",
+  "src/epreasy/__init__.py",
+  "src/epreasy/components.py",
+  "src/epreasy/constants.py",
+  "src/epreasy/data/isotopedata.txt",
+  "src/epreasy/endor.py",
+  "src/epreasy/fitting.py",
+  "src/epreasy/garlic.py",
+  "src/epreasy/grids.py",
+  "src/epreasy/hamiltonian.py",
+  "src/epreasy/interp.py",
+  "src/epreasy/kernels.py",
+  "src/epreasy/lineshapes.py",
+  "src/epreasy/magnetometry.py",
+  "src/epreasy/nucdata.py",
+  "src/epreasy/oracle.py",
+  "src/epreasy/pepper.py",
+  "src/epreasy/perturb.py",
+  "src/epreasy/processing.py",
+  "src/epreasy/pulsed.py",
+  "src/epreasy/resfields.py",
+  "src/epreasy/rotations.py",
+  "src/epreasy/slowmotion.py",
+  "src/epreasy/spinops.py",
+  "src/epreasy/spinsystem.py",
+  "src/epreasy/symmetry.py",
+  "src/epreasy/units.py",
 ];
 
 const RUNNER = `
@@ -53,6 +79,7 @@ import time
 import traceback
 
 import numpy as np
+import epreasy
 import spynach
 from js import addSeries, beginImage, beginLine, reportProgress, setImageZ
 from pyodide.http import pyfetch
@@ -85,9 +112,27 @@ async def prefetch(code):
 def f64(values):
     return np.ascontiguousarray(values, dtype=np.float64)
 
-def show_spectrum(y, x=None, *, title="", xlabel="", ylabel="intensity", invert=True, names=None):
+def _is_spectrum(obj):
+    """An epreasy Spectrum (x, spec, info): a named tuple, so it is tested before lists and tuples."""
+    return hasattr(obj, "spec") and hasattr(obj, "x") and hasattr(obj, "info")
+
+def show_spectrum(y, x=None, *, title="", xlabel="", ylabel="intensity", invert=None, names=None):
     state["called"] = True
     series = []
+    if _is_spectrum(y):
+        if x is None:
+            x = y.x
+        y = y.spec
+        if invert is None:
+            invert = False  # field, frequency and time axes of EPR run left to right
+    elif isinstance(y, (list, tuple)) and y and all(_is_spectrum(item) for item in y):
+        if x is None:
+            x = y[0].x
+        if invert is None:
+            invert = False
+        y = [item.spec for item in y]
+    if invert is None:
+        invert = True  # the NMR convention: high ppm at the left
     if isinstance(y, (list, tuple)):
         for i, yi in enumerate(y):
             label = names[i] if names and i < len(names) else f"series {i + 1}"
@@ -194,6 +239,32 @@ def _with_progress(fn, kind):
             parameters["progress"] = _orientation_hook(kind)
         return fn(spin_system, pulse_sequence, parameters, assumptions)
     return wrapped
+
+def _iteration_hook():
+    last = [0.0]
+    def report(info):
+        now = time.monotonic()
+        if now - last[0] < 0.3:
+            return False
+        last[0] = now
+        reportProgress(int(RUN_ID), "fit iteration", int(info.get("iter", 0)), 0)
+        return False
+    return report
+
+def _with_iterations(fn):
+    def wrapped(*args, **kwargs):
+        args = list(args)
+        if args and isinstance(args[-1], dict):
+            if args[-1].get("IterFcn") is None:
+                args[-1] = {**args[-1], "IterFcn": _iteration_hook()}
+        elif len(args) >= 4:
+            args.append({"IterFcn": _iteration_hook()})
+        return fn(*args, **kwargs)
+    return wrapped
+
+if not getattr(epreasy.esfit, "_counts_iterations", False):
+    epreasy.esfit = _with_iterations(epreasy.esfit)
+    epreasy.esfit._counts_iterations = True
 
 if not getattr(spynach.powder, "_counts_orientations", False):
     spynach.powder = _with_progress(spynach.powder, "powder")
@@ -328,7 +399,7 @@ async function mountSources() {
   async function next() {
     while (cursor < SOURCE.length) {
       const rel = SOURCE[cursor++];
-      const response = await fetch(new URL(rel, self.location.href));
+      const response = await fetch(new URL(rel + self.location.search, self.location.href));
       if (!response.ok) throw new Error("Could not fetch " + rel + " (" + response.status + "). Serve the repository root over HTTP.");
       const text = await response.text();
       const dest = "/repo/" + rel;
@@ -336,7 +407,7 @@ async function mountSources() {
       pyodide.FS.writeFile(dest, text);
       done += 1;
       if (done === SOURCE.length || done % 10 === 0) {
-        post({ type: "status", text: "Loading Spynach source (" + done + "/" + SOURCE.length + ")" });
+        post({ type: "status", text: "Loading the sources (" + done + "/" + SOURCE.length + ")" });
       }
     }
   }
@@ -357,17 +428,17 @@ async function boot() {
   });
   post({ type: "status", text: "Loading NumPy, SciPy, and h5py…" });
   await pyodide.loadPackage(["numpy", "scipy", "h5py"]);
-  post({ type: "status", text: "Loading Spynach source…" });
+  post({ type: "status", text: "Loading the sources…" });
   await mountSources();
   const raw = await pyodide.runPythonAsync(
-    'import sys\nsys.path.insert(0, "/repo/src")\nimport spynach, ctps\nspynach.__version__ + "|" + ctps.__version__ + "|" + sys.version.split()[0]\n',
+    'import sys\nsys.path.insert(0, "/repo/src")\nimport spynach, ctps, epreasy\nspynach.__version__ + "|" + ctps.__version__ + "|" + sys.version.split()[0] + "|" + epreasy.__version__\n',
     { dedent: false },
   );
   const text = String(raw);
   if (raw && typeof raw.destroy === "function") raw.destroy();
   const parts = text.split("|");
   booted = true;
-  post({ type: "ready", spynach: parts[0], ctps: parts[1], python: parts[2] });
+  post({ type: "ready", spynach: parts[0], ctps: parts[1], python: parts[2], epreasy: parts[3] });
   for (const message of waiting.splice(0)) handle(message);
 }
 

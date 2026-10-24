@@ -40,9 +40,14 @@ it installs Spynach from GitHub and runs the project page's two-spin
 example with a plot. It is the one hand-written notebook (it is not
 generated from a guide and is saved without outputs, since Colab runs it);
 keep its example in step with the quick start on `index.html` and in the
-README. `try.html` at the repository root runs Spynach in the browser
-(Pyodide, `worker.js`) with the guides' examples in an editor; see the guide
-[Beyond the port](beyond-the-port.md#spynach-in-the-browser).
+README. `try.html` at the repository root runs Spynach, `epreasy` and `ctps`
+in the browser (Pyodide, `worker.js`) with NMR, EPR and pathway examples in an
+editor, written into the page itself and run natively by
+`tests/unit/test_playground_examples.py`; see the guide
+[Beyond the port](beyond-the-port.md#spynach-in-the-browser). The project
+site lists the guides by package on its documentation page, generated from
+the table above by `scripts/build_site.py`, which files every guide under a
+package; a new guide needs a row here and an entry in that script's groups.
 
 To experiment, copy a notebook into `playground/` at the repository root
 (ignored by git except for its README) and work on the copy; it uses the

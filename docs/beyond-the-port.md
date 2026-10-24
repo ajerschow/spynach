@@ -147,17 +147,21 @@ spin under quadrupolar relaxation, beside the contributed Spinach scripts in
 ## Spynach in the browser
 
 [`try.html`](https://ajerschow.github.io/spynach/try.html) on the project site
-runs Spynach and `ctps` with nothing installed. The page loads
+runs Spynach, `epreasy` and `ctps` with nothing installed. The page loads
 [Pyodide](https://pyodide.org/) (Python compiled to WebAssembly) with NumPy,
 SciPy and h5py in a web worker, fetches the sources from the repository, and
-runs the code in its editor; the first load takes a few seconds. The guides'
-examples are there to start from. Results are drawn with `show_spectrum(y,
-x)`, `show_fid(fid, sweep)` and `show_image(z, x, y)` (2D contours, high ppm at
-the left and bottom as in `plot_2d`). Without these calls, a variable named
-`spectrum` (with `axis`) or `fid` with `sweep` is plotted at the end. Powder and
-magic-angle-spinning runs print their orientation count as they go, through
-the optional `parameters["progress"]` callback of `powder` and `singlerot`,
-which works the same way outside the browser:
+runs the code in its editor; the first load takes a few seconds. The examples
+are grouped by package, NMR, EPR and pathways, and a link such as
+`try.html#ex-epr-hyscore` opens and runs one of them. Results are drawn with
+`show_spectrum(y, x)`, `show_fid(fid, sweep)` and `show_image(z, x, y)` (2D
+contours, high ppm at the left and bottom as in `plot_2d`); an `epreasy`
+`Spectrum` can be passed as it is, and its field, frequency or time axis then
+runs left to right (`invert=False` does the same for plain arrays). Without
+these calls, a variable named `spectrum` (with `axis`) or `fid` with `sweep`
+is plotted at the end. Powder and magic-angle-spinning runs print their
+orientation count as they go, through the optional `parameters["progress"]`
+callback of `powder` and `singlerot`, and `esfit` its iteration count through
+`IterFcn`; the callback works the same way outside the browser:
 
 ```python
 csa_system = spynach.create({"isotopes": ["1H"], "magnet": 14.1}, {"zeeman": {"eigs": [[-2, -2, 4]], "euler": [[0, 0, 0]]}})

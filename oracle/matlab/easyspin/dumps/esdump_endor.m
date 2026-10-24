@@ -118,9 +118,11 @@ for n=1:numel(cases)
     if isfolder(case_dir), fprintf('  skip %s (exists)\n',c.name); continue; end
     fprintf('  case %s\n',c.name); mkdir(case_dir);
     h5=fullfile(case_dir,'data.h5');
-    [x,spec,info]=salt(c.Sys,c.Exp,c.Opt);
+    salt(c.Sys,c.Exp,c.Opt);  % warm-up; the second call is timed for the project page
+    tic; [x,spec,info]=salt(c.Sys,c.Exp,c.Opt); t=toc;
     oracle_write(h5,'/spec/x',x);
     oracle_write(h5,'/spec/spec',spec);
+    oracle_write(h5,'/spec/seconds',t);
     if isfield(info,'Transitions') && ~iscell(info.Transitions) && ~isempty(info.Transitions)
         oracle_write(h5,'/spec/transitions',info.Transitions);
     end
@@ -157,7 +159,9 @@ for n=1:numel(cases)
     h5=fullfile(case_dir,'data.h5');
     keywords=split(c.Opt.Output,' ');
     out=cell(1,numel(keywords));
-    [out{:}]=curry(c.Sys,c.Exp,c.Opt);
+    [out{:}]=curry(c.Sys,c.Exp,c.Opt);  % warm-up; the second call is timed for the project page
+    tic; [out{:}]=curry(c.Sys,c.Exp,c.Opt); t=toc;
+    oracle_write(h5,'/curry/seconds',t);
     for k=1:numel(keywords)
         oracle_write(h5,sprintf('/curry/out%d',k),out{k});
     end

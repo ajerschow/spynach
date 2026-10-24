@@ -132,11 +132,14 @@ if isfolder(case_dir), fprintf('  skip %s (exists)\n',name); return; end
 fprintf('  case %s\n',name); mkdir(case_dir);
 h5=fullfile(case_dir,'data.h5');
 FitOpt.Verbosity=0;
+tic;  % one call, timed for the project page (a fit is long enough for MATLAB's warm-up not to matter)
 if isempty(vary)
     result=esfit(data,fcn,p0,lb,ub,FitOpt);
 else
     result=esfit(data,fcn,p0,vary,FitOpt);
 end
+t=toc;
+oracle_write(h5,'/result/seconds',t);
 for k=1:numel(data)
     oracle_write(h5,sprintf('/input/data%d',k),data{k});
 end

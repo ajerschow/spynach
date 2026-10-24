@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Spynach: documentation</title>
+<meta name="description" content="The guides and notebooks of Spynach, epreasy and ctps: executable Markdown guides, notebooks with their outputs on nbviewer, the parity page, the Colab quick start and the example scripts.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<div class="wrap">
+
+<!-- site:nav -->
+<nav class="top" aria-label="Site">
+  <a class="brand" href="index.html">Spynach</a>
+  <a href="spinach.html">Spinach port</a>
+  <a href="easyspin.html">EasySpin port</a>
+  <a href="extras.html">Extras</a>
+  <a href="docs.html" aria-current="page">Documentation</a>
+  <a href="try.html">Try it</a>
+  <a href="https://github.com/ajerschow/spynach">GitHub</a>
+</nav>
+<!-- /site:nav -->
+
+<div class="lede-page">
+  <span class="eyebrow">Documentation</span>
+  <h1>Guides and notebooks</h1>
+  <p class="lede">Each guide is a Markdown document whose code runs in the test suite, and a Jupyter notebook generated from it with its outputs and interactive plots. The notebook links open in nbviewer, which renders the Plotly figures interactively; GitHub's own viewer shows the static copies saved with them. The tables are generated from the <a href="https://github.com/ajerschow/spynach/blob/main/docs/README.md">documentation index</a>.</p>
+</div>
+
+<section id="spinach">
+  <header><span class="eyebrow">Spinach port</span><h2>spynach</h2></header>
+  <div>
+    <p>Read in order for a tour: Hilbert space first, then Liouville space; the solid-state, relaxation and spinning guides each add one ingredient; the pulse-sequence guide puts them together. <a href="https://github.com/ajerschow/spynach/blob/main/docs/coming-from-spinach.md">Coming from Spinach</a> is the reference for what carries over and what differs.</p>
+    <!-- site:docs-spinach -->
+<div class="scroll"><table>
+<thead><tr><th>Guide</th><th>Covers</th><th>Open</th></tr></thead>
+<tbody>
+<tr><td>Hilbert space</td><td>liquid-state NMR in Hilbert space (<code>zeeman-hilb</code>): setup, the simulation pipeline, pulse sequences, tolerances, parity with Spinach</td><td class="links"><a href="https://github.com/ajerschow/spynach/blob/main/docs/hilbert-space.md">guide</a> · <a href="https://nbviewer.org/github/ajerschow/spynach/blob/main/docs/notebooks/hilbert-space.ipynb">notebook</a></td></tr>
+<tr><td>Liouville space</td><td>the spherical-tensor formalism (<code>sphten-liouv</code>): basis descriptor, state-space restriction (<code>IK-0/1/2</code>), filters, chemical subsystems</td><td class="links"><a href="https://github.com/ajerschow/spynach/blob/main/docs/liouville-space.md">guide</a> · <a href="https://nbviewer.org/github/ajerschow/spynach/blob/main/docs/notebooks/liouville-space.ipynb">notebook</a></td></tr>
+<tr><td>Solid state</td><td>anisotropic interactions: tensors from eigenvalues and Euler angles, dipolar couplings from coordinates, quadrupolar couplings, the <code>Q</code> components and <code>orientation</code>, <code>crystal</code> and <code>powder</code> contexts, grids, assumption sets</td><td class="links"><a href="https://github.com/ajerschow/spynach/blob/main/docs/solid-state.md">guide</a> · <a href="https://nbviewer.org/github/ajerschow/spynach/blob/main/docs/notebooks/solid-state.ipynb">notebook</a></td></tr>
+<tr><td>Relaxation</td><td>Redfield theory for rotational diffusion, T1/T2 and damping models, retention policies, thermal equilibrium and thermalisation, transient NOE</td><td class="links"><a href="https://github.com/ajerschow/spynach/blob/main/docs/relaxation.md">guide</a> · <a href="https://nbviewer.org/github/ajerschow/spynach/blob/main/docs/notebooks/relaxation.ipynb">notebook</a></td></tr>
+<tr><td>Magic angle spinning</td><td>the Fokker-Planck treatment of sample rotation: rotor phase grid and spectral derivative, the <code>singlerot</code> context, sidebands, rotor echoes</td><td class="links"><a href="https://github.com/ajerschow/spynach/blob/main/docs/magic-angle-spinning.md">guide</a> · <a href="https://nbviewer.org/github/ajerschow/spynach/blob/main/docs/notebooks/magic-angle-spinning.ipynb">notebook</a></td></tr>
+<tr><td>Pulse sequences</td><td>writing sequences, <code>apodisation</code> and <code>plot_2d</code>, decoupling and homospoil, COSY, NOESY, HSQC with isotopomer dilution</td><td class="links"><a href="https://github.com/ajerschow/spynach/blob/main/docs/pulse-sequences.md">guide</a> · <a href="https://nbviewer.org/github/ajerschow/spynach/blob/main/docs/notebooks/pulse-sequences.ipynb">notebook</a></td></tr>
+<tr><td>Coming from Spinach</td><td>what carries over from Spinach and what differs: spin systems, basis, operators, Hamiltonians, parameters, calculation modalities, processing</td><td class="links"><a href="https://github.com/ajerschow/spynach/blob/main/docs/coming-from-spinach.md">guide</a> · <a href="https://nbviewer.org/github/ajerschow/spynach/blob/main/docs/notebooks/coming-from-spinach.ipynb">notebook</a></td></tr>
+</tbody></table></div>
+<!-- /site:docs-spinach -->
+  </div>
+</section>
+
+<section id="easyspin">
+  <header><span class="eyebrow">EasySpin port</span><h2>epreasy</h2></header>
+  <div>
+    <p>The foundation guide covers spin systems, operators, Hamiltonians, energy levels, resonance fields, line shapes and grids; the simulators guide runs every simulator on a nitroxide and a few other systems. <a href="https://github.com/ajerschow/spynach/blob/main/docs/coming-from-easyspin.md">Coming from EasySpin</a> is the reference for what carries over, what differs and what is not ported.</p>
+    <!-- site:docs-easyspin -->
+<div class="scroll"><table>
+<thead><tr><th>Guide</th><th>Covers</th><th>Open</th></tr></thead>
+<tbody>
+<tr><td>EPR spin systems with <code>epreasy</code></td><td>the EasySpin port beside Spynach: spin systems as dicts with EasySpin&#x27;s fields, <code>sop</code> and <code>stev</code>, <code>ham</code> with the field split, <code>levels</code>, <code>resfields</code>, line shapes and grids</td><td class="links"><a href="https://github.com/ajerschow/spynach/blob/main/docs/epreasy.md">guide</a> · <a href="https://nbviewer.org/github/ajerschow/spynach/blob/main/docs/notebooks/epreasy.ipynb">notebook</a></td></tr>
+<tr><td>EPR simulations with <code>epreasy</code></td><td><code>pepper</code> for powders and crystals, <code>garlic</code> for solutions, <code>esfit</code> for fitting, <code>salt</code> for ENDOR, <code>curry</code> for magnetometry, <code>chili</code> for slow motion</td><td class="links"><a href="https://github.com/ajerschow/spynach/blob/main/docs/epreasy-simulators.md">guide</a> · <a href="https://nbviewer.org/github/ajerschow/spynach/blob/main/docs/notebooks/epreasy-simulators.ipynb">notebook</a></td></tr>
+<tr><td>Coming from EasySpin</td><td>what carries over from EasySpin to <code>epreasy</code>, what differs, and what is not ported</td><td class="links"><a href="https://github.com/ajerschow/spynach/blob/main/docs/coming-from-easyspin.md">guide</a> · <a href="https://nbviewer.org/github/ajerschow/spynach/blob/main/docs/notebooks/coming-from-easyspin.ipynb">notebook</a></td></tr>
+</tbody></table></div>
+<!-- /site:docs-easyspin -->
+  </div>
+</section>
+
+<section id="extras">
+  <header><span class="eyebrow">Extras</span><h2>ctps and what originated here</h2></header>
+  <div>
+    <!-- site:docs-extras -->
+<div class="scroll"><table>
+<thead><tr><th>Guide</th><th>Covers</th><th>Open</th></tr></thead>
+<tbody>
+<tr><td>Coherence transfer pathways</td><td>the separate <code>ctps</code> module: pathway enumeration, phase cycling, gradients, diffusion, non-ideal pulses, cogwheel cycle search, the pathway explorer</td><td class="links"><a href="https://github.com/ajerschow/spynach/blob/main/docs/ctps.md">guide</a> · <a href="https://nbviewer.org/github/ajerschow/spynach/blob/main/docs/notebooks/ctps.ipynb">notebook</a></td></tr>
+<tr><td>Coherence transfer pathways: worked examples</td><td>a cookbook for <code>ctps</code>: double-quantum filter, imperfect spin echo, stimulated echo, NOESY-sized enumeration, HSQC, MQMAS nested versus cogwheel, multi-echo trains, cogwheel plus gradients, MRS crushers; then every check of the module&#x27;s tests as a runnable example</td><td class="links"><a href="https://github.com/ajerschow/spynach/blob/main/docs/ctps-examples.md">guide</a> · <a href="https://nbviewer.org/github/ajerschow/spynach/blob/main/docs/notebooks/ctps-examples.ipynb">notebook</a></td></tr>
+<tr><td>Beyond the port</td><td>features with no Spinach counterpart, each with an example: <code>ctps</code>, non-ideal pulses and cogwheel search, interactive figures and <code>figure_png</code>, <code>compare</code> and the parity page, executable documentation</td><td class="links"><a href="https://github.com/ajerschow/spynach/blob/main/docs/beyond-the-port.md">guide</a> · <a href="https://nbviewer.org/github/ajerschow/spynach/blob/main/docs/notebooks/beyond-the-port.ipynb">notebook</a></td></tr>
+</tbody></table></div>
+<!-- /site:docs-extras -->
+  </div>
+</section>
+
+<section id="more">
+  <header><span class="eyebrow">More</span><h2>Parity page, Colab, example scripts</h2></header>
+  <div>
+    <ul class="plain">
+      <li><b><a href="https://github.com/ajerschow/spynach/blob/main/docs/parity.md">Parity with Spinach</a></b>: every fixture case, tolerance and measured difference of the Spinach suite, generated from a test run; <b><a href="https://github.com/ajerschow/spynach/blob/main/porting/EASYSPIN_FIXTURES.md">EasySpin fixtures</a></b>: the EasySpin cases and their measured agreement.</li>
+      <li><b><a href="https://colab.research.google.com/github/ajerschow/spynach/blob/main/docs/colab/quick-start.ipynb">Colab quick start</a></b>: installs Spynach from GitHub and plots the two-spin spectrum; the one hand-written notebook.</li>
+      <li><b><a href="https://github.com/ajerschow/spynach/tree/main/examples">Example scripts</a></b>: full-size translations of Spinach examples for side-by-side comparison with MATLAB, the cases of the timed reports on the <a href="spinach.html#examples">Spinach page</a>; <b><a href="https://github.com/ajerschow/spynach/tree/main/user_py">contributed notebooks</a></b> in <code>user_py/</code>.</li>
+      <li><b><a href="https://github.com/ajerschow/spynach/blob/main/comparison/README.md">Comparison protocol</a></b>: how a case is timed and profiled on both sides and reported; <b><a href="https://github.com/ajerschow/spynach/blob/main/oracle/README.md">oracle/README.md</a></b>: how fixtures are produced and loaded.</li>
+      <li><b><a href="https://github.com/ajerschow/spynach/blob/main/HANDOFF.md">Design decisions</a></b> and the <b><a href="https://github.com/ajerschow/spynach/blob/main/porting/ROADMAP.md">roadmap</a></b> for contributors; the conventions for guides are in the <a href="https://github.com/ajerschow/spynach/blob/main/docs/README.md#conventions-for-contributors">documentation index</a>.</li>
+    </ul>
+  </div>
+</section>
+
+<footer>
+  <span>MIT licence, with the Spinach and EasySpin notices.</span>
+  <span>Alexej Jerschow, New York University.</span>
+  <a href="https://github.com/ajerschow/spynach/blob/main/HANDOFF.md">Design decisions</a>
+  <a href="https://github.com/ajerschow/spynach/blob/main/porting/ROADMAP.md">Roadmap</a>
+  <a href="https://github.com/ajerschow/spynach">Source</a>
+</footer>
+
+</div>
+</body>
+</html>

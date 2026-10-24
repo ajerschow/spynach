@@ -4,52 +4,20 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Spynach in the browser</title>
-<meta name="description" content="Run Spynach in the browser. Simulations use Pyodide in a web worker.">
+<meta name="description" content="Run Spynach, epreasy and ctps in the browser: NMR, EPR and coherence-pathway examples in Pyodide, in a web worker, nothing to install.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/site.css">
 <style>
-:root {
-  --bg: #f6f7f5;
-  --surface: #ffffff;
-  --fg: #1c2024;
-  --muted: #5c6670;
-  --line: #d9ded8;
-  --accent: #0f6e63;
-  --accent-ink: #0a5047;
-  --code-bg: #eef1ee;
-  --sans: "Instrument Sans", "Helvetica Neue", Arial, sans-serif;
-  --mono: "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, monospace;
-  color-scheme: light;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #15191c; --surface: #1d2226; --fg: #e6e9e4; --muted: #9aa5ad; --line: #2f373d;
-    --accent: #5fc4b4; --accent-ink: #8ad8cb; --code-bg: #101417;
-    color-scheme: dark;
-  }
-}
-* { box-sizing: border-box; }
+/* The playground's own rules; the tokens, type and navigation come from assets/site.css. */
 html, body { height: 100%; }
-body {
-  margin: 0; background: var(--bg); color: var(--fg);
-  font-family: var(--sans); line-height: 1.5; font-size: 1rem;
-  -webkit-font-smoothing: antialiased;
-}
-a { color: var(--accent-ink); }
+body { line-height: 1.5; font-size: 1rem; }
 button, select, textarea { font: inherit; color: inherit; }
 button { cursor: pointer; }
-button:focus-visible, select:focus-visible, textarea:focus-visible, a:focus-visible {
-  outline: 2px solid var(--accent); outline-offset: 2px;
-}
+select:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .wrap { height: 100%; display: flex; flex-direction: column; max-width: 88rem; margin: 0 auto; padding: 0 16px 12px; }
-nav.top {
-  display: flex; flex-wrap: wrap; gap: 0.45rem 1.2rem; align-items: baseline;
-  padding-block: 0.85rem; border-bottom: 1px solid var(--line); font-size: 0.95rem;
-}
-nav.top .brand { font-family: var(--mono); font-weight: 500; color: var(--fg); text-decoration: none; margin-right: auto; }
-nav.top a:not(.brand) { color: var(--muted); text-decoration: none; }
-nav.top a:not(.brand):hover { color: var(--accent-ink); }
+nav.top { padding-block: 0.85rem; }
 .head { display: flex; flex-wrap: wrap; gap: 0.4rem 1.2rem; align-items: baseline; padding: 0.85rem 0 0.2rem; }
 .head h1 { margin: 0; font-size: 1.7rem; font-weight: 650; letter-spacing: -0.03em; }
 .head p { margin: 0; color: var(--muted); flex: 1 1 16rem; }
@@ -58,6 +26,7 @@ nav.top a:not(.brand):hover { color: var(--accent-ink); }
   min-height: 1.4em; margin: 0 0 0.55rem;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
+section.pane { padding-block: 0; border-top: 0; }
 .app {
   flex: 1; min-height: 0; display: grid;
   grid-template-columns: minmax(18rem, 0.9fr) minmax(0, 1.2fr);
@@ -77,7 +46,7 @@ textarea {
   flex: 1; min-height: 12rem; resize: none; border: 0; border-radius: 0; padding: 0.8rem 0.9rem;
   font-family: var(--mono); font-size: 0.82rem; line-height: 1.45; background: var(--code-bg);
 }
-.actions { display: flex; gap: 0.45rem; margin-left: auto; }
+.actions { display: flex; gap: 0.45rem; margin-left: auto; margin-top: 0; }
 .btn { border: 1px solid var(--accent); background: transparent; color: var(--accent-ink); border-radius: 6px; padding: 0.45rem 0.85rem; font-weight: 550; }
 .btn.primary { background: var(--accent); color: var(--bg); }
 .btn:disabled { opacity: 0.45; cursor: default; }
@@ -91,7 +60,7 @@ textarea {
 #plots .empty { color: var(--muted); margin: 0.4rem 0.2rem; }
 figure.plot { margin: 0; }
 figure.plot canvas { width: 100%; height: auto; display: block; }
-figcaption { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); min-height: 1.1em; margin-top: 0.2rem; }
+figure.plot figcaption { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); min-height: 1.1em; margin-top: 0.2rem; }
 #console {
   grid-column: 2; grid-row: 2;
   height: 9.5rem; margin: 0; overflow: auto; padding: 0.6rem 0.75rem;
@@ -104,8 +73,9 @@ figcaption { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); 
 }
 .banner {
   margin: 0.7rem 0 0; padding: 0.6rem 0.75rem; border: 1px solid var(--line); border-radius: 6px;
-  background: var(--surface); color: var(--muted); font-size: 0.92rem;
+  background: var(--surface); color: var(--muted); font-size: 0.92rem; max-width: none;
 }
+.head p, .hint { max-width: none; }
 @media (max-width: 860px) {
   .app { grid-template-columns: 1fr; grid-template-rows: auto auto auto; row-gap: 14px; align-content: start; overflow: auto; }
   .wrap { height: auto; min-height: 100%; }
@@ -118,15 +88,20 @@ figcaption { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); 
 </head>
 <body>
 <div class="wrap">
+<!-- site:nav -->
 <nav class="top" aria-label="Site">
-  <a class="brand" href="#">Spynach</a>
-  <a href="index.html">Project page</a>
+  <a class="brand" href="index.html">Spynach</a>
+  <a href="spinach.html">Spinach port</a>
+  <a href="easyspin.html">EasySpin port</a>
+  <a href="extras.html">Extras</a>
+  <a href="docs.html">Documentation</a>
+  <a href="try.html" aria-current="page">Try it</a>
   <a href="https://github.com/ajerschow/spynach">GitHub</a>
-  <a href="https://spindynamics.org">Spinach</a>
 </nav>
+<!-- /site:nav -->
 <header class="head">
-  <h1>Spynach</h1>
-  <p>The spin-dynamics kernel running in Pyodide. Every calculation goes to a web worker, so the page stays responsive.</p>
+  <h1>Try it</h1>
+  <p>Spynach, epreasy and ctps running in Pyodide. Pick an NMR, EPR or pathway example, edit it, run it. Every calculation goes to a web worker, so the page stays responsive.</p>
 </header>
 <div id="status" data-phase="loading">Starting…</div>
 <p class="banner" id="file-warn" hidden>This page needs a web server rooted at the repository, not a file:// address, so the worker can load <code>src/</code>.</p>
@@ -142,14 +117,14 @@ figcaption { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); 
       </div>
     </div>
     <textarea id="editor" spellcheck="false" aria-label="Python source"></textarea>
-    <p class="hint">Ctrl+Enter runs. <code>show_spectrum</code>, <code>show_fid</code> and <code>show_image</code> draw on the right. The 12800-orientation powder is the slow one, about a minute. The 1600-point powder and magic-angle spinning take a few seconds. Grid names such as <code>leb_2ang_rank_17</code> are loaded from <code>src/spynach/grids</code>.</p>
+    <p class="hint">Ctrl+Enter runs. <code>show_spectrum</code>, <code>show_fid</code> and <code>show_image</code> draw on the right; an <code>epreasy</code> spectrum can be passed as is, and EPR axes run left to right. The 12800-orientation powder is the slow one, about a minute; the 1600-point powder, magic-angle spinning and the fit take a few seconds. Grid names such as <code>leb_2ang_rank_17</code> are loaded from <code>src/spynach/grids</code>. A link such as <code>try.html#ex-epr-hyscore</code> opens and runs one example.</p>
   </section>
   <div id="plots"><p class="empty">The spectrum will land here.</p></div>
   <div id="console" role="log" aria-live="polite"></div>
 </div>
 </div>
 
-<script type="text/plain" class="example" id="ex-ab" data-title="Two coupled protons">
+<script type="text/plain" class="example" id="ex-ab" data-group="NMR (spynach)" data-title="Two coupled protons">
 import numpy as np
 import spynach
 from spynach.plotting import axis_1d
@@ -180,7 +155,7 @@ show_spectrum(spectrum, axis, title="Two coupled protons at 14.1 T", xlabel=xlab
 show_fid(fid, pars["sweep"], title="Apodised free induction decay")
 </script>
 
-<script type="text/plain" class="example" id="ex-pulse" data-title="90° pulse from Lz">
+<script type="text/plain" class="example" id="ex-pulse" data-group="NMR (spynach)" data-title="90° pulse from Lz">
 import numpy as np
 import spynach
 from spynach.plotting import axis_1d
@@ -218,7 +193,7 @@ print(f"peak height ratio {spectra[1].max() / spectra[0].max():.2f}")
 show_spectrum(spectra, axis, title="1H spectrum of a 1H–13C pair", xlabel=xlabel, names=["acquire from L+", "90° pulse from Lz"])
 </script>
 
-<script type="text/plain" class="example" id="ex-exchange" data-title="Two-site exchange">
+<script type="text/plain" class="example" id="ex-exchange" data-group="NMR (spynach)" data-title="Two-site exchange">
 import numpy as np
 import spynach
 from spynach.plotting import axis_1d
@@ -243,7 +218,7 @@ print(f"{spin_system.basis.nstates} Liouville states")
 show_spectrum(spectrum, axis, title="Two-site exchange near coalescence", xlabel=xlabel)
 </script>
 
-<script type="text/plain" class="example" id="ex-crystal" data-title="Single-crystal CSA">
+<script type="text/plain" class="example" id="ex-crystal" data-group="NMR (spynach)" data-title="Single-crystal CSA">
 import numpy as np
 import spynach
 from spynach.plotting import axis_1d
@@ -269,7 +244,7 @@ print(f"{spin_system.basis.nstates} Liouville states, one orientation")
 show_spectrum(spectrum, axis, title="Single-crystal CSA", xlabel=xlabel)
 </script>
 
-<script type="text/plain" class="example" id="ex-powder" data-title="Powder CSA (100 orientations)">
+<script type="text/plain" class="example" id="ex-powder" data-group="NMR (spynach)" data-title="Powder CSA (100 orientations)">
 import numpy as np
 import spynach
 from spynach.plotting import axis_1d
@@ -295,7 +270,7 @@ axis, xlabel = axis_1d(spin_system, pars)
 show_spectrum(spectrum, axis, title="CSA powder, rep_2ang_100pts_sph", xlabel=xlabel)
 </script>
 
-<script type="text/plain" class="example" id="ex-cosy" data-title="COSY-90">
+<script type="text/plain" class="example" id="ex-cosy" data-group="NMR (spynach)" data-title="COSY-90">
 import numpy as np
 import spynach
 from spynach.plotting import axis_1d
@@ -317,7 +292,175 @@ print(f"{spin_system.basis.nstates} Liouville states, FID {fid.shape}, spectrum 
 show_image(spectrum.real.T, axis, axis, title="COSY-90", xlabel="F2: " + xlabel, ylabel="F1: " + xlabel)
 </script>
 
-<script type="text/plain" class="example" id="ex-ctps" data-title="Pathway selection">
+<script type="text/plain" class="example" id="ex-epr-pepper" data-group="EPR (epreasy)" data-title="Nitroxide powder spectrum (pepper)">
+import numpy as np
+import epreasy as es
+
+nitroxide = {"g": [2.0088, 2.0061, 2.0027], "Nucs": "14N", "A": [16, 16, 86], "lwpp": 0.3}
+exp = {"mwFreq": 9.5, "Range": [330, 350], "nPoints": 1024}
+matrix = es.pepper(nitroxide, exp, {"FuzzLevel": 0})
+perturb = es.pepper(nitroxide, exp, {"FuzzLevel": 0, "Method": "perturb2"})
+print("transitions:", matrix.info["Transitions"].tolist(), " orientations:", matrix.info["nOrientations"])
+difference = np.abs(matrix.spec - perturb.spec).max() / np.abs(matrix.spec).max()
+print(f"matrix diagonalisation and second-order perturbation theory differ by {difference:.1%}")
+show_spectrum(
+    [matrix.spec, perturb.spec + 0.15 * matrix.spec.max()], matrix.x, invert=False,
+    title="Nitroxide powder spectrum at X band", xlabel="B / mT", ylabel="dA/dB",
+    names=["matrix diagonalisation", "2nd-order perturbation (offset)"],
+)
+</script>
+
+<script type="text/plain" class="example" id="ex-epr-garlic" data-group="EPR (epreasy)" data-title="Nitroxide in solution (garlic)">
+import numpy as np
+import epreasy as es
+
+solution = {"g": [2.0088, 2.0064, 2.0027], "Nucs": "14N", "A": es.unitconvert(np.array([7.59, 5.95, 31.76]) / 10, "mT->MHz"), "lwpp": 0.02}
+exp = {"mwFreq": 9.5, "Range": [336, 341], "nPoints": 2048}
+rigid = es.garlic({**solution, "tcorr": 1e-11}, exp)
+slow = es.garlic({**solution, "tcorr": 1e-9}, exp)
+widths, mI = es.fastmotion(solution, 340, 1e-9)
+print("fast-motion widths (mT) for mI =", mI.ravel().tolist(), ":", widths.round(4))
+print("line positions (mT):", np.sort(slow.info["resfields"]).round(3))
+show_spectrum(
+    [rigid.spec / np.abs(rigid.spec).max(), slow.spec / np.abs(slow.spec).max()], rigid.x, invert=False,
+    title="Nitroxide in solution: fast-motion broadening", xlabel="B / mT", ylabel="normalised dA/dB",
+    names=["tcorr = 10 ps", "tcorr = 1 ns"],
+)
+</script>
+
+<script type="text/plain" class="example" id="ex-epr-chili" data-group="EPR (epreasy)" data-title="Slow motion, four correlation times (chili)">
+import numpy as np
+import epreasy as es
+
+slow = {"g": [2.008, 2.0061, 2.0027], "Nucs": "14N", "A": [16, 16, 86], "lw": 0.1}
+sweep = {"mwFreq": 9.8, "Range": [344, 354], "nPoints": 512}
+spectra = {tc: es.chili({**slow, "tcorr": tc}, sweep) for tc in (1e-10, 1e-9, 1e-8, 1e-7)}
+print("stochastic Liouville equation in", spectra[1e-9].info["nBasis"], "basis functions per spectrum")
+offset = [s.spec / np.abs(s.spec).max() - 1.5 * k for k, s in enumerate(spectra.values())]
+show_spectrum(
+    offset, spectra[1e-9].x, invert=False,
+    title="Nitroxide from fast to slow tumbling", xlabel="B / mT", ylabel="normalised dA/dB (offset)",
+    names=[f"tcorr = {tc * 1e9:g} ns" for tc in spectra],
+)
+</script>
+
+<script type="text/plain" class="example" id="ex-epr-saffron" data-group="EPR (epreasy)" data-title="Three-pulse ESEEM (saffron)">
+import numpy as np
+import epreasy as es
+
+weak_n14 = {"Nucs": "14N", "A": [-1, -1, 2], "Q": [-1, -1, 2]}
+three_pulse = es.saffron(weak_n14, {"Field": 350, "Sequence": "3pESEEM", "dt": 0.01, "nPoints": 512, "tau": 0.1})
+nu_n = es.larmorfrq("14N", 350)[0, 0]
+print(f"time axis starts at tau + T = {three_pulse.x[0]:g} us; 14N Larmor frequency {nu_n:.3f} MHz")
+f = three_pulse.info["f"]
+spectrum = np.abs(three_pulse.info["fd"])
+print(f"modulation spectrum: {f.size} points from {f[0]:.1f} to {f[-1]:.1f} MHz, strongest line at {f[spectrum.argmax()]:.2f} MHz")
+show_spectrum(np.real(three_pulse.spec), three_pulse.x, invert=False, title="Three-pulse ESEEM of a weakly coupled 14N", xlabel="t / us", ylabel="echo modulation")
+show_spectrum(spectrum[f >= 0], f[f >= 0], invert=False, title="Modulation spectrum", xlabel="frequency / MHz", ylabel="|FT|")
+</script>
+
+<script type="text/plain" class="example" id="ex-epr-hyscore" data-group="EPR (epreasy)" data-title="HYSCORE (saffron)">
+import numpy as np
+import epreasy as es
+
+weak_n14 = {"Nucs": "14N", "A": [-1, -1, 2], "Q": [-1, -1, 2]}
+hyscore = es.saffron(weak_n14, {"Field": 350, "Sequence": "HYSCORE", "dt": 0.02, "nPoints": 128, "tau": 0.1})
+f1, f2 = hyscore.info["f1"], hyscore.info["f2"]
+print("time-domain signal", hyscore.spec.shape, "-> spectrum", hyscore.info["fd"].shape, f"on +-{f1[-1]:.1f} MHz")
+win1, win2 = (f1 >= 0) & (f1 <= 8), (f2 >= 0) & (f2 <= 8)
+z = np.abs(hyscore.info["fd"])[np.ix_(win1, win2)]
+top = z[(f1[win1] > 1.5)[:, None] & (f2[win2] > 1.5)[None, :]].max()
+peak = np.unravel_index(np.argmax(np.where((f1[win1] > 1.5)[:, None] & (f2[win2] > 1.5)[None, :], z, 0)), z.shape)
+print(f"double-quantum peak at ({f1[win1][peak[0]]:.2f}, {f2[win2][peak[1]]:.2f}) MHz")
+show_image(np.minimum(z, top), f2[win2], f1[win1], invert=False, title="HYSCORE of 14N (clipped to the double-quantum peaks)", xlabel="nu2 / MHz", ylabel="nu1 / MHz")
+</script>
+
+<script type="text/plain" class="example" id="ex-epr-mims" data-group="EPR (epreasy)" data-title="Mims ENDOR (saffron)">
+import numpy as np
+import epreasy as es
+
+proton = {"Nucs": "1H", "A": [1, 1, 5], "lwEndor": 0.1}
+nu_h = es.larmorfrq("1H", 325)[0, 0]
+mims = es.saffron(proton, {"Sequence": "MimsENDOR", "Field": 325, "tau": 0.1, "Range": [nu_h - 10, nu_h + 10], "nPoints": 401})
+blind = [k / (2 * 0.1) for k in range(1, 6)]
+print(f"proton Larmor frequency {nu_h:.2f} MHz; Mims blind spots at multiples of 1/(2 tau):", [round(b, 1) for b in blind], "MHz")
+print(f"largest ENDOR intensity at {mims.x[np.argmax(mims.spec)]:.2f} MHz")
+show_spectrum(mims, title="Mims ENDOR of a weakly coupled proton", xlabel="rf / MHz", ylabel="ENDOR intensity")
+</script>
+
+<script type="text/plain" class="example" id="ex-epr-salt" data-group="EPR (epreasy)" data-title="cw ENDOR with orientation selection (salt)">
+import numpy as np
+import epreasy as es
+
+centre = {"Nucs": "14N", "g": [2.25, 2.25, 2], "A": [44, 49, 54], "Q": [0.84, 0.84, -1.68], "HStrain": [100, 100, 100], "lwEndor": 0.5}
+exp = {"Range": [16, 65], "Field": 326.5, "mwFreq": 9.7, "nPoints": 1001}
+full = es.salt(centre, exp)
+selected = es.salt(centre, {**exp, "ExciteWidth": 50})
+print("transitions:", full.info["Transitions"].tolist())
+print(f"orientation selection at {exp['Field']} mT keeps {np.abs(selected.spec).sum() / np.abs(full.spec).sum():.0%} of the powder intensity")
+show_spectrum(
+    [full.spec / np.abs(full.spec).max(), selected.spec / np.abs(selected.spec).max()], full.x, invert=False,
+    title="14N ENDOR of an axial Cu(II)-like centre", xlabel="rf / MHz", ylabel="normalised ENDOR intensity",
+    names=["all orientations", "ExciteWidth = 50 MHz"],
+)
+</script>
+
+<script type="text/plain" class="example" id="ex-epr-curry" data-group="EPR (epreasy)" data-title="Magnetometry of a dimer (curry)">
+import numpy as np
+import epreasy as es
+
+dimer = {"S": [0.5, 0.5], "g": [2, 2], "ee": 2 * 4 * 30e3}  # antiferromagnetic exchange J = 4 cm^-1 (in MHz)
+T = np.linspace(1, 300, 300)
+chi_t = np.ravel(es.curry(dimer, {"Temperature": T, "Field": 100}, {"Output": "chimolT"}))
+curie = 2 * np.ravel(es.curry({"S": 0.5, "g": 2}, {"Temperature": T, "Field": 100}, {"Output": "chimolT"}))
+print(f"chi T at 300 K: {chi_t[-1]:.3e} m^3 K mol^-1 ({chi_t[-1] / curie[-1]:.0%} of two free spins); at 1 K: {chi_t[0]:.1e}")
+show_spectrum([chi_t, curie], T, invert=False, title="Exchange-coupled dimer: chi T against the Curie law", xlabel="T / K", ylabel="chi T / m^3 K mol^-1", names=["dimer, J = 4 cm^-1", "two free spins"])
+</script>
+
+<script type="text/plain" class="example" id="ex-epr-levels" data-group="EPR (epreasy)" data-title="Energy levels of a high-spin ion (levels)">
+import numpy as np
+import epreasy as es
+
+manganese = {"S": 2.5, "g": 2.0, "D": [500, 100]}  # S = 5/2 with a rhombic zero-field splitting, no nucleus
+fields = np.linspace(0, 600, 301)
+energies = es.levels(manganese, "z", fields)
+print("levels along z:", energies.shape, "-> at 340 mT (GHz):", (energies[np.searchsorted(fields, 340)] / 1e3).round(2))
+print("zero-field energies (MHz):", energies[0].round(1))
+show_spectrum([energies[:, k] for k in range(energies.shape[1])], fields, invert=False, title="Zeeman diagram of an S = 5/2 ion along z", xlabel="B / mT", ylabel="E / MHz")
+</script>
+
+<script type="text/plain" class="example" id="ex-epr-cu4n" data-group="EPR (epreasy)" data-title="Cu(II) with four 14N, hybrid method (pepper)">
+import numpy as np
+import epreasy as es
+
+copper = {"S": 0.5, "g": [2.05, 2.05, 2.2], "Nucs": "63Cu,14N,14N,14N,14N",
+          "A": [[50, 50, 500], [40, 40, 40], [40, 40, 40], [40, 40, 40], [40, 40, 40]], "lwpp": 1}
+exp = {"mwFreq": 9.5, "Range": [260, 360], "nPoints": 1024}
+print("648 states: copper and four nitrogens; full diagonalisation would take a minute, the hybrid method a fraction of a second")
+hybrid = es.pepper(copper, exp, {"FuzzLevel": 0, "Method": "hybrid", "HybridCoreNuclei": [1]})
+perturb = es.pepper(copper, exp, {"FuzzLevel": 0, "Method": "perturb2"})
+print(f"hybrid and second-order perturbation spectra differ by {np.abs(hybrid.spec - perturb.spec).max() / np.abs(hybrid.spec).max():.1%}")
+show_spectrum([hybrid.spec, perturb.spec + 0.2 * hybrid.spec.max()], hybrid.x, invert=False, title="Cu(II) with four 14N at X band", xlabel="B / mT", ylabel="dA/dB", names=["hybrid", "perturb2 (offset)"])
+</script>
+
+<script type="text/plain" class="example" id="ex-epr-esfit" data-group="EPR (epreasy)" data-title="Fitting a powder spectrum (esfit)">
+import numpy as np
+import epreasy as es
+
+truth = {"g": [2.0, 2.1], "lw": 3}
+exp = {"mwFreq": 9.5, "Range": [300, 360], "nPoints": 300}
+data = es.addnoise(es.pepper(truth, exp, {"FuzzLevel": 0}).spec, 50, "n")
+start = {"g": [2.01, 2.08], "lw": 2}
+vary = {"g": [0.05, 0.05], "lw": 1.5}
+print("Nelder-Mead simplex on three parameters; each iteration simulates a 300-point powder spectrum")
+result = es.esfit(data, es.pepper, [start, exp, {"FuzzLevel": 0}], [vary], {"Method": "simplex", "Verbosity": 1})
+for name, value, std in zip(result.pnames, result.pfit, result.pstd):
+    print(f"  {name:12s} {value:9.4f} +- {std:.4f}")
+print("truth: g =", truth["g"], " lw =", truth["lw"])
+show_spectrum([data, result.fit, result.residuals - 0.6 * np.abs(data).max()], es.pepper(truth, exp).x, invert=False, title="Axial powder spectrum: data, fit and residuals", xlabel="B / mT", ylabel="dA/dB", names=["data with noise", "fit", "residuals (offset)"])
+</script>
+
+<script type="text/plain" class="example" id="ex-ctps" data-group="Pathways (ctps)" data-title="Pathway selection">
 import ctps
 from ctps import AllowedOrders, Nucleus, Period, PhaseCycle, Pulse, Sequence, simulate
 
@@ -340,7 +483,7 @@ for row in result.table()[:8]:
     print(f"{row['rank']:2d}  {path}   total {row['total']:.4f}  pc {row['pc']:.3f}")
 </script>
 
-<script type="text/plain" class="example" id="ex-powder-fine" data-title="Powder CSA, 1600 orientations">
+<script type="text/plain" class="example" id="ex-powder-fine" data-group="NMR (spynach)" data-title="Powder CSA, 1600 orientations">
 import numpy as np
 import spynach
 from spynach.plotting import axis_1d
@@ -366,7 +509,7 @@ axis, xlabel = axis_1d(spin_system, pars)
 show_spectrum(spectrum, axis, title="CSA powder, rep_2ang_1600pts_sph", xlabel=xlabel)
 </script>
 
-<script type="text/plain" class="example" id="ex-mas" data-title="MAS sidebands (110 orientations)">
+<script type="text/plain" class="example" id="ex-mas" data-group="NMR (spynach)" data-title="MAS sidebands (110 orientations)">
 import numpy as np
 import spynach
 from spynach.plotting import axis_1d
@@ -393,7 +536,7 @@ axis, xlabel = axis_1d(spin_system, pars)
 show_spectrum(spectrum, axis, title="Magic-angle spinning, 500 Hz", xlabel=xlabel)
 </script>
 
-<script type="text/plain" class="example" id="ex-cosy3" data-title="COSY-90, three spins">
+<script type="text/plain" class="example" id="ex-cosy3" data-group="NMR (spynach)" data-title="COSY-90, three spins">
 import numpy as np
 import spynach
 from spynach.plotting import axis_1d
@@ -417,7 +560,7 @@ print(f"FID {fid.shape}, spectrum {spectrum.shape}")
 show_image(spectrum.real.T, axis, axis, title="COSY-90, Derome three-spin system", xlabel="F2: " + xlabel, ylabel="F1: " + xlabel)
 </script>
 
-<script type="text/plain" class="example" id="ex-noesy" data-title="NOESY, Redfield relaxation">
+<script type="text/plain" class="example" id="ex-noesy" data-group="NMR (spynach)" data-title="NOESY, Redfield relaxation">
 import numpy as np
 import spynach
 from spynach.plotting import axis_1d
@@ -446,7 +589,7 @@ print(f"spectrum {spectrum.shape}")
 show_image(-spectrum.real.T, axis, axis, title="NOESY, 300 ms, Redfield", xlabel="F2: " + xlabel, ylabel="F1: " + xlabel)
 </script>
 
-<script type="text/plain" class="example" id="ex-chain" data-title="12-proton chain, IK-2">
+<script type="text/plain" class="example" id="ex-chain" data-group="NMR (spynach)" data-title="12-proton chain, IK-2">
 import numpy as np
 import spynach
 from spynach.plotting import axis_1d
@@ -477,7 +620,7 @@ axis, xlabel = axis_1d(spin_system, pars)
 show_spectrum(spectrum, axis, title="12-proton chain, nearest-neighbour J, IK-2", xlabel=xlabel)
 </script>
 
-<script type="text/plain" class="example" id="ex-powder-12k" data-title="Powder CSA, 12800 orientations">
+<script type="text/plain" class="example" id="ex-powder-12k" data-group="NMR (spynach)" data-slow="true" data-title="Powder CSA, 12800 orientations">
 import numpy as np
 import spynach
 from spynach.plotting import axis_1d
@@ -521,12 +664,25 @@ let lastPlots = null;
 let startedAt = 0;
 let versionNote = "";
 
+const groups = new Map();
 examples.forEach((node) => {
+  const name = node.dataset.group || "Examples";
+  if (!groups.has(name)) {
+    const group = document.createElement("optgroup");
+    group.label = name;
+    exampleSel.appendChild(group);
+    groups.set(name, group);
+  }
   const option = document.createElement("option");
   option.value = node.id;
   option.textContent = node.dataset.title;
-  exampleSel.appendChild(option);
+  groups.get(name).appendChild(option);
 });
+
+function exampleFromHash() {
+  const id = decodeURIComponent(location.hash.slice(1));
+  return id && examples.some((node) => node.id === id) ? id : null;
+}
 
 function exampleSource(id) {
   const node = document.getElementById(id);
@@ -600,7 +756,7 @@ function bootWorker() {
   if (worker) worker.terminate();
   stopClock();
   setPhase("loading", "Loading Pyodide…");
-  worker = new Worker("worker.js?v=2", { type: "module" });
+  worker = new Worker("worker.js?v=3", { type: "module" });
   worker.onmessage = onWorker;
   worker.onerror = (event) => {
     setPhase("fatal", "The worker failed to start");
@@ -615,15 +771,19 @@ function onWorker(event) {
     return;
   }
   if (msg.type === "ready") {
-    versionNote = "Python " + msg.python + " · spynach " + msg.spynach + " · ctps " + msg.ctps;
+    versionNote = "Python " + msg.python + " · spynach " + msg.spynach + " · epreasy " + msg.epreasy + " · ctps " + msg.ctps;
     if (autoRun && !dirty) run();
     else setPhase("ready", versionNote);
     return;
   }
   if (msg.type === "progress") {
-    if (msg.id !== runId || statusEl.dataset.phase !== "running" || !msg.total) return;
-    const pct = Math.round(100 * msg.done / msg.total);
-    progressNote = msg.kind + " " + msg.done + "/" + msg.total + " (" + pct + "%)";
+    if (msg.id !== runId || statusEl.dataset.phase !== "running") return;
+    if (msg.total) {
+      const pct = Math.round(100 * msg.done / msg.total);
+      progressNote = msg.kind + " " + msg.done + "/" + msg.total + " (" + pct + "%)";
+    } else {
+      progressNote = msg.kind + " " + msg.done;
+    }
     showProgress();
     return;
   }
@@ -1139,9 +1299,21 @@ function nearest(map, xVal) {
 }
 
 if (location.protocol === "file:") document.querySelector("#file-warn").hidden = false;
-loadExample(examples[0].id);
-exampleSel.dataset.current = examples[0].id;
+const first = exampleFromHash() || examples[0].id;
+exampleSel.value = first;
+exampleSel.dataset.current = first;
+loadExample(first);
 bootWorker();
+window.addEventListener("hashchange", () => {
+  const id = exampleFromHash();
+  if (!id || id === exampleSel.dataset.current) return;
+  if (dirty && !window.confirm("Replace the editor contents with this example?")) return;
+  exampleSel.value = id;
+  exampleSel.dataset.current = id;
+  loadExample(id);
+  autoRun = false;
+  if (!runBtn.disabled) run();
+});
 </script>
 </body>
 </html>
