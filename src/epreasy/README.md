@@ -1,4 +1,4 @@
-# epreasy: EasySpin's EPR functions in Python
+# EPReasy: EasySpin's EPR functions in Python
 
 A port of [EasySpin](https://easyspin.org) (Stefan Stoll and contributors, MIT
 licence), the MATLAB toolbox for EPR spectral simulation, to Python. It lives

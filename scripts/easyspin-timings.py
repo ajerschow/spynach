@@ -104,6 +104,26 @@ def relative_difference(ours: np.ndarray, reference: np.ndarray) -> float:
     return float(np.linalg.norm(ours - reference) / norm) if norm else float(np.linalg.norm(ours))
 
 
+def time_case(fixture, case_call, kernels, repeats: int, *, with_numba: bool) -> dict:
+    """EasySpin's recorded seconds, epreasy's median seconds with the NumPy kernels (and the Numba kernels when
+    asked), and the relative difference of the two results."""
+    run, reference = case_call(fixture)
+    kernels.HAVE_NUMBA = False
+    numpy_s = timed(run, repeats)
+    rel = relative_difference(run(), reference)
+    numba_s = None
+    if with_numba:
+        kernels.HAVE_NUMBA = True
+        numba_s = timed(run, repeats)
+        kernels.HAVE_NUMBA = False
+    return {
+        "easyspin_s": easyspin_seconds(fixture),
+        "epreasy_numpy_s": numpy_s,
+        "epreasy_numba_s": numba_s,
+        "rel_err": rel,
+    }
+
+
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--list", action="store_true", help="print the cases and their inputs without timing")
@@ -135,30 +155,17 @@ def main(argv=None) -> int:
             raise SystemExit(f"fixture case {case} not found; generate it with oracle/run_easyspin_fixtures.sh")
         fixture = load_fixture(path)
         easyspin_meta = easyspin_meta or fixture.meta
-        run, reference = case_call(fixture)
-        kernels.HAVE_NUMBA = False
-        numpy_s = timed(run, args.repeats)
-        rel = relative_difference(run(), reference)
-        numba_s = None
-        if numba_version and fn in KERNEL_FUNCTIONS:
-            kernels.HAVE_NUMBA = True
-            numba_s = timed(run, args.repeats)
-            kernels.HAVE_NUMBA = False
-        row = {
-            "case": case,
-            "function": fn,
-            "description": description,
-            "example": example,
-            "uses_kernels": fn in KERNEL_FUNCTIONS,
-            "easyspin_s": easyspin_seconds(fixture),
-            "epreasy_numpy_s": numpy_s,
-            "epreasy_numba_s": numba_s,
-            "rel_err": rel,
-        }
+        row = time_case(
+            fixture, case_call, kernels, args.repeats, with_numba=bool(numba_version) and fn in KERNEL_FUNCTIONS
+        )
+        row.update(
+            case=case, function=fn, description=description, example=example, uses_kernels=fn in KERNEL_FUNCTIONS
+        )
         rows.append(row)
         es_s = "not timed" if row["easyspin_s"] is None else f"{row['easyspin_s']:.3f} s"
-        nb_s = "" if numba_s is None else f", numba {numba_s:.3f} s"
-        print(f"{case:24s} EasySpin {es_s:>10s}  epreasy numpy {numpy_s:.3f} s{nb_s}  rel {rel:.1e}")
+        nb_s = "" if row["epreasy_numba_s"] is None else f", numba {row['epreasy_numba_s']:.3f} s"
+        numpy_s = row["epreasy_numpy_s"]
+        print(f"{case:24s} EasySpin {es_s:>10s}  epreasy numpy {numpy_s:.3f} s{nb_s}  rel {row['rel_err']:.1e}")
 
     import scipy
 

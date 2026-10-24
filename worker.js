@@ -241,6 +241,7 @@ def _with_progress(fn, kind):
     return wrapped
 
 def _iteration_hook():
+    """esfit's IterFcn: sends the iteration count to the page at most every 0.3 s, never stops the fit."""
     last = [0.0]
     def report(info):
         now = time.monotonic()
@@ -252,6 +253,8 @@ def _iteration_hook():
     return report
 
 def _with_iterations(fn):
+    """esfit with the hook injected: esfit(data, model, p0, vary[, opt]) or esfit(data, model, p0, lb, ub[, opt]);
+    a trailing dict is the options, otherwise one is appended."""
     def wrapped(*args, **kwargs):
         args = list(args)
         if args and isinstance(args[-1], dict):

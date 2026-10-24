@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Spynach in the browser</title>
-<meta name="description" content="Run Spynach, epreasy and ctps in the browser: NMR, EPR and coherence-pathway examples in Pyodide, in a web worker, nothing to install.">
+<meta name="description" content="Run Spynach, EPReasy and ctps in the browser: NMR, EPR and coherence-pathway examples in Pyodide, in a web worker, nothing to install.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap">
@@ -101,7 +101,7 @@ figure.plot figcaption { font-family: var(--mono); font-size: 0.75rem; color: va
 <!-- /site:nav -->
 <header class="head">
   <h1>Try it</h1>
-  <p>Spynach, epreasy and ctps running in Pyodide. Pick an NMR, EPR or pathway example, edit it, run it. Every calculation goes to a web worker, so the page stays responsive.</p>
+  <p>Spynach, EPReasy and ctps running in Pyodide. Pick an NMR, EPR or pathway example, edit it, run it. Every calculation goes to a web worker, so the page stays responsive.</p>
 </header>
 <div id="status" data-phase="loading">Starting…</div>
 <p class="banner" id="file-warn" hidden>This page needs a web server rooted at the repository, not a file:// address, so the worker can load <code>src/</code>.</p>
@@ -129,11 +129,14 @@ import numpy as np
 import spynach
 from spynach.plotting import axis_1d
 
+# Two protons at 14.1 T: chemical shifts in ppm, scalar coupling in Hz
 spin_system = spynach.create(
     {"isotopes": ["1H", "1H"], "magnet": 14.1},
     {"zeeman": {"scalar": [1.00, 1.10]}, "coupling": {"scalar": [[0, 12.0], [0, 0]]}},
 )
+# Hilbert space, complete basis
 spin_system = spynach.basis(spin_system, {"formalism": "zeeman-hilb", "approximation": "none"})
+# Acquisition: offset and sweep in Hz, initial state and detection state
 pars = {
     "spins": ["1H"],
     "offset": 630,
@@ -144,6 +147,7 @@ pars = {
     "rho0": spynach.state(spin_system, "L+", "1H"),
     "coil": spynach.state(spin_system, "L+", "1H"),
 }
+# Pulse-acquire in the liquid-state context, apodisation, Fourier transform
 fid = spynach.liquid(spin_system, spynach.acquire, pars, "nmr")
 fid = spynach.apodisation(fid, [("exp", 6)])
 spectrum = np.fft.fftshift(np.fft.fft(fid, pars["zerofill"]))
@@ -166,6 +170,7 @@ spin_system = spynach.create(
 )
 spin_system = spynach.basis(spin_system, {"formalism": "zeeman-hilb", "approximation": "none"})
 
+# A pulse sequence is a function of the spin system, the parameters and the generators H, R, K
 def pulse_acquire(spin_system, parameters, H, R, K):
     L = H + 1j * R + 1j * K
     Ly = spynach.operator(spin_system, "Ly", parameters["spins"][0])
@@ -182,6 +187,7 @@ pars = {
     "rho0": spynach.state(spin_system, "Lz", "1H"),
     "coil": spynach.state(spin_system, "L+", "1H"),
 }
+# The same spectrum from Lz through a 90° pulse and directly from L+
 fid_pulse = spynach.liquid(spin_system, pulse_acquire, pars, "nmr")
 fid_direct = spynach.liquid(
     spin_system, spynach.acquire, {**pars, "rho0": spynach.state(spin_system, "L+", "1H")}, "nmr",
@@ -198,11 +204,13 @@ import numpy as np
 import spynach
 from spynach.plotting import axis_1d
 
+# Two sites 3 ppm apart exchanging at 2000 Hz: near coalescence at 14.1 T
 spin_system = spynach.create(
     {"isotopes": ["1H", "1H"], "magnet": 14.1},
     {"zeeman": {"scalar": [0.0, 3.0]},
      "chem": {"parts": [[0], [1]], "rates": [[-2e3, 2e3], [2e3, -2e3]], "concs": [1.0, 1.0]}},
 )
+# Chemical exchange needs Liouville space (spherical tensor basis)
 spin_system = spynach.basis(spin_system, {"formalism": "sphten-liouv", "approximation": "none"})
 pars = {
     "spins": ["1H"], "offset": 900.0, "sweep": 5000.0, "npoints": 512, "zerofill": 1024,
@@ -223,6 +231,7 @@ import numpy as np
 import spynach
 from spynach.plotting import axis_1d
 
+# Two protons with anisotropic shielding tensors: eigenvalues in ppm, Euler angles in radians
 spin_system = spynach.create(
     {"isotopes": ["1H", "1H"], "magnet": 14.1},
     {"zeeman": {"eigs": [[-7, -7, -1], [4, 2, 9]], "euler": [[0, 0, 0], [0.3, 0.9, 1.2]]}},
@@ -236,6 +245,7 @@ pars = {
     "rho0": spynach.state(spin_system, "L+", "1H"),
     "coil": spynach.state(spin_system, "L+", "1H"),
 }
+# One crystal orientation
 fid = spynach.crystal(spin_system, spynach.acquire, pars, "nmr")
 fid = fid * np.exp(-6 * np.arange(pars["npoints"]) / pars["npoints"])
 spectrum = np.fft.fftshift(np.fft.fft(fid, pars["zerofill"]))
@@ -262,6 +272,7 @@ pars = {
     "rho0": spynach.state(spin_system, "L+", "1H"),
     "coil": spynach.state(spin_system, "L+", "1H"),
 }
+# Powder average over a 100-point spherical grid shipped with Spynach
 print("averaging 100 orientations…")
 fid = spynach.powder(spin_system, spynach.acquire, pars, "nmr")
 fid = fid * np.exp(-6 * np.arange(pars["npoints"]) / pars["npoints"])
@@ -280,6 +291,7 @@ spin_system = spynach.create(
     {"zeeman": {"scalar": [1.00, 1.10]}, "coupling": {"scalar": [[0, 12.0], [0, 0]]}},
 )
 spin_system = spynach.basis(spin_system, {"formalism": "sphten-liouv", "approximation": "none"})
+# COSY-90: 64 x 64 increments, zero-filled to 256 x 256
 pars = {
     "angle": np.pi / 2, "offset": 630.0, "sweep": 200.0,
     "npoints": [64, 64], "zerofill": [256, 256], "spins": ["1H"], "axis_units": "ppm",
@@ -289,15 +301,18 @@ fid = spynach.apodisation(fid, [("sqcos",), ("sqcos",)])
 spectrum = np.fft.fftshift(np.fft.fft2(fid, pars["zerofill"]))
 axis, xlabel = axis_1d(spin_system, {**pars, "zerofill": pars["zerofill"][0]})
 print(f"{spin_system.basis.nstates} Liouville states, FID {fid.shape}, spectrum {spectrum.shape}")
+# 2D contour plot of the real part, F1 along the rows
 show_image(spectrum.real.T, axis, axis, title="COSY-90", xlabel="F2: " + xlabel, ylabel="F1: " + xlabel)
 </script>
 
-<script type="text/plain" class="example" id="ex-epr-pepper" data-group="EPR (epreasy)" data-title="Nitroxide powder spectrum (pepper)">
+<script type="text/plain" class="example" id="ex-epr-pepper" data-group="EPR (EPReasy)" data-title="Nitroxide powder spectrum (pepper)">
 import numpy as np
 import epreasy as es
 
+# A nitroxide: rhombic g, 14N hyperfine in MHz, peak-to-peak line width in mT
 nitroxide = {"g": [2.0088, 2.0061, 2.0027], "Nucs": "14N", "A": [16, 16, 86], "lwpp": 0.3}
 exp = {"mwFreq": 9.5, "Range": [330, 350], "nPoints": 1024}
+# The same spectrum by full matrix diagonalisation and by second-order perturbation theory
 matrix = es.pepper(nitroxide, exp, {"FuzzLevel": 0})
 perturb = es.pepper(nitroxide, exp, {"FuzzLevel": 0, "Method": "perturb2"})
 print("transitions:", matrix.info["Transitions"].tolist(), " orientations:", matrix.info["nOrientations"])
@@ -310,12 +325,14 @@ show_spectrum(
 )
 </script>
 
-<script type="text/plain" class="example" id="ex-epr-garlic" data-group="EPR (epreasy)" data-title="Nitroxide in solution (garlic)">
+<script type="text/plain" class="example" id="ex-epr-garlic" data-group="EPR (EPReasy)" data-title="Nitroxide in solution (garlic)">
 import numpy as np
 import epreasy as es
 
+# In solution the anisotropies average out but set the fast-motion line widths
 solution = {"g": [2.0088, 2.0064, 2.0027], "Nucs": "14N", "A": es.unitconvert(np.array([7.59, 5.95, 31.76]) / 10, "mT->MHz"), "lwpp": 0.02}
 exp = {"mwFreq": 9.5, "Range": [336, 341], "nPoints": 2048}
+# Two rotational correlation times
 rigid = es.garlic({**solution, "tcorr": 1e-11}, exp)
 slow = es.garlic({**solution, "tcorr": 1e-9}, exp)
 widths, mI = es.fastmotion(solution, 340, 1e-9)
@@ -328,14 +345,16 @@ show_spectrum(
 )
 </script>
 
-<script type="text/plain" class="example" id="ex-epr-chili" data-group="EPR (epreasy)" data-title="Slow motion, four correlation times (chili)">
+<script type="text/plain" class="example" id="ex-epr-chili" data-group="EPR (EPReasy)" data-title="Slow motion, four correlation times (chili)">
 import numpy as np
 import epreasy as es
 
+# The slow-motion regime: the stochastic Liouville equation in a Wigner basis
 slow = {"g": [2.008, 2.0061, 2.0027], "Nucs": "14N", "A": [16, 16, 86], "lw": 0.1}
 sweep = {"mwFreq": 9.8, "Range": [344, 354], "nPoints": 512}
 spectra = {tc: es.chili({**slow, "tcorr": tc}, sweep) for tc in (1e-10, 1e-9, 1e-8, 1e-7)}
 print("stochastic Liouville equation in", spectra[1e-9].info["nBasis"], "basis functions per spectrum")
+# Normalised spectra, offset for display
 offset = [s.spec / np.abs(s.spec).max() - 1.5 * k for k, s in enumerate(spectra.values())]
 show_spectrum(
     offset, spectra[1e-9].x, invert=False,
@@ -344,14 +363,17 @@ show_spectrum(
 )
 </script>
 
-<script type="text/plain" class="example" id="ex-epr-saffron" data-group="EPR (epreasy)" data-title="Three-pulse ESEEM (saffron)">
+<script type="text/plain" class="example" id="ex-epr-saffron" data-group="EPR (EPReasy)" data-title="Three-pulse ESEEM (saffron)">
 import numpy as np
 import epreasy as es
 
+# A weakly coupled 14N near exact cancellation: hyperfine and quadrupole in MHz
 weak_n14 = {"Nucs": "14N", "A": [-1, -1, 2], "Q": [-1, -1, 2]}
+# Three-pulse ESEEM with ideal pulses: tau fixed, T incremented
 three_pulse = es.saffron(weak_n14, {"Field": 350, "Sequence": "3pESEEM", "dt": 0.01, "nPoints": 512, "tau": 0.1})
 nu_n = es.larmorfrq("14N", 350)[0, 0]
 print(f"time axis starts at tau + T = {three_pulse.x[0]:g} us; 14N Larmor frequency {nu_n:.3f} MHz")
+# The processed modulation spectrum comes with the result
 f = three_pulse.info["f"]
 spectrum = np.abs(three_pulse.info["fd"])
 print(f"modulation spectrum: {f.size} points from {f[0]:.1f} to {f[-1]:.1f} MHz, strongest line at {f[spectrum.argmax()]:.2f} MHz")
@@ -359,14 +381,16 @@ show_spectrum(np.real(three_pulse.spec), three_pulse.x, invert=False, title="Thr
 show_spectrum(spectrum[f >= 0], f[f >= 0], invert=False, title="Modulation spectrum", xlabel="frequency / MHz", ylabel="|FT|")
 </script>
 
-<script type="text/plain" class="example" id="ex-epr-hyscore" data-group="EPR (epreasy)" data-title="HYSCORE (saffron)">
+<script type="text/plain" class="example" id="ex-epr-hyscore" data-group="EPR (EPReasy)" data-title="HYSCORE (saffron)">
 import numpy as np
 import epreasy as es
 
 weak_n14 = {"Nucs": "14N", "A": [-1, -1, 2], "Q": [-1, -1, 2]}
+# HYSCORE: 128 x 128 points in t1 and t2, spectrum in info
 hyscore = es.saffron(weak_n14, {"Field": 350, "Sequence": "HYSCORE", "dt": 0.02, "nPoints": 128, "tau": 0.1})
 f1, f2 = hyscore.info["f1"], hyscore.info["f2"]
 print("time-domain signal", hyscore.spec.shape, "-> spectrum", hyscore.info["fd"].shape, f"on +-{f1[-1]:.1f} MHz")
+# Crop to the 0-8 MHz quadrant and clip at the double-quantum peaks so the contours show them
 win1, win2 = (f1 >= 0) & (f1 <= 8), (f2 >= 0) & (f2 <= 8)
 z = np.abs(hyscore.info["fd"])[np.ix_(win1, win2)]
 top = z[(f1[win1] > 1.5)[:, None] & (f2[win2] > 1.5)[None, :]].max()
@@ -375,26 +399,30 @@ print(f"double-quantum peak at ({f1[win1][peak[0]]:.2f}, {f2[win2][peak[1]]:.2f}
 show_image(np.minimum(z, top), f2[win2], f1[win1], invert=False, title="HYSCORE of 14N (clipped to the double-quantum peaks)", xlabel="nu2 / MHz", ylabel="nu1 / MHz")
 </script>
 
-<script type="text/plain" class="example" id="ex-epr-mims" data-group="EPR (epreasy)" data-title="Mims ENDOR (saffron)">
+<script type="text/plain" class="example" id="ex-epr-mims" data-group="EPR (EPReasy)" data-title="Mims ENDOR (saffron)">
 import numpy as np
 import epreasy as es
 
+# A weakly coupled proton with a Gaussian ENDOR line width
 proton = {"Nucs": "1H", "A": [1, 1, 5], "lwEndor": 0.1}
 nu_h = es.larmorfrq("1H", 325)[0, 0]
 mims = es.saffron(proton, {"Sequence": "MimsENDOR", "Field": 325, "tau": 0.1, "Range": [nu_h - 10, nu_h + 10], "nPoints": 401})
+# Mims ENDOR has blind spots at multiples of 1/(2 tau)
 blind = [k / (2 * 0.1) for k in range(1, 6)]
 print(f"proton Larmor frequency {nu_h:.2f} MHz; Mims blind spots at multiples of 1/(2 tau):", [round(b, 1) for b in blind], "MHz")
 print(f"largest ENDOR intensity at {mims.x[np.argmax(mims.spec)]:.2f} MHz")
 show_spectrum(mims, title="Mims ENDOR of a weakly coupled proton", xlabel="rf / MHz", ylabel="ENDOR intensity")
 </script>
 
-<script type="text/plain" class="example" id="ex-epr-salt" data-group="EPR (epreasy)" data-title="cw ENDOR with orientation selection (salt)">
+<script type="text/plain" class="example" id="ex-epr-salt" data-group="EPR (EPReasy)" data-title="cw ENDOR with orientation selection (salt)">
 import numpy as np
 import epreasy as es
 
+# An axial Cu(II)-like centre with a 14N ligand; HStrain broadens the EPR line
 centre = {"Nucs": "14N", "g": [2.25, 2.25, 2], "A": [44, 49, 54], "Q": [0.84, 0.84, -1.68], "HStrain": [100, 100, 100], "lwEndor": 0.5}
 exp = {"Range": [16, 65], "Field": 326.5, "mwFreq": 9.7, "nPoints": 1001}
 full = es.salt(centre, exp)
+# ExciteWidth keeps the orientations the microwave frequency excites
 selected = es.salt(centre, {**exp, "ExciteWidth": 50})
 print("transitions:", full.info["Transitions"].tolist())
 print(f"orientation selection at {exp['Field']} mT keeps {np.abs(selected.spec).sum() / np.abs(full.spec).sum():.0%} of the powder intensity")
@@ -405,54 +433,63 @@ show_spectrum(
 )
 </script>
 
-<script type="text/plain" class="example" id="ex-epr-curry" data-group="EPR (epreasy)" data-title="Magnetometry of a dimer (curry)">
+<script type="text/plain" class="example" id="ex-epr-curry" data-group="EPR (EPReasy)" data-title="Magnetometry of a dimer (curry)">
 import numpy as np
 import epreasy as es
 
+# Two S = 1/2 coupled by isotropic exchange, ee in MHz
 dimer = {"S": [0.5, 0.5], "g": [2, 2], "ee": 2 * 4 * 30e3}  # antiferromagnetic exchange J = 4 cm^-1 (in MHz)
 T = np.linspace(1, 300, 300)
 chi_t = np.ravel(es.curry(dimer, {"Temperature": T, "Field": 100}, {"Output": "chimolT"}))
+# The Curie law of two free spins for comparison
 curie = 2 * np.ravel(es.curry({"S": 0.5, "g": 2}, {"Temperature": T, "Field": 100}, {"Output": "chimolT"}))
 print(f"chi T at 300 K: {chi_t[-1]:.3e} m^3 K mol^-1 ({chi_t[-1] / curie[-1]:.0%} of two free spins); at 1 K: {chi_t[0]:.1e}")
 show_spectrum([chi_t, curie], T, invert=False, title="Exchange-coupled dimer: chi T against the Curie law", xlabel="T / K", ylabel="chi T / m^3 K mol^-1", names=["dimer, J = 4 cm^-1", "two free spins"])
 </script>
 
-<script type="text/plain" class="example" id="ex-epr-levels" data-group="EPR (epreasy)" data-title="Energy levels of a high-spin ion (levels)">
+<script type="text/plain" class="example" id="ex-epr-levels" data-group="EPR (EPReasy)" data-title="Energy levels of a high-spin ion (levels)">
 import numpy as np
 import epreasy as es
 
+# S = 5/2 with a rhombic zero-field splitting, D and E in MHz
 manganese = {"S": 2.5, "g": 2.0, "D": [500, 100]}  # S = 5/2 with a rhombic zero-field splitting, no nucleus
 fields = np.linspace(0, 600, 301)
+# Energies along z over the field sweep
 energies = es.levels(manganese, "z", fields)
 print("levels along z:", energies.shape, "-> at 340 mT (GHz):", (energies[np.searchsorted(fields, 340)] / 1e3).round(2))
 print("zero-field energies (MHz):", energies[0].round(1))
 show_spectrum([energies[:, k] for k in range(energies.shape[1])], fields, invert=False, title="Zeeman diagram of an S = 5/2 ion along z", xlabel="B / mT", ylabel="E / MHz")
 </script>
 
-<script type="text/plain" class="example" id="ex-epr-cu4n" data-group="EPR (epreasy)" data-title="Cu(II) with four 14N, hybrid method (pepper)">
+<script type="text/plain" class="example" id="ex-epr-cu4n" data-group="EPR (EPReasy)" data-title="Cu(II) with four 14N, hybrid method (pepper)">
 import numpy as np
 import epreasy as es
 
+# Copper with four 14N ligands: 648 states
 copper = {"S": 0.5, "g": [2.05, 2.05, 2.2], "Nucs": "63Cu,14N,14N,14N,14N",
           "A": [[50, 50, 500], [40, 40, 40], [40, 40, 40], [40, 40, 40], [40, 40, 40]], "lwpp": 1}
 exp = {"mwFreq": 9.5, "Range": [260, 360], "nPoints": 1024}
 print("648 states: copper and four nitrogens; full diagonalisation would take a minute, the hybrid method a fraction of a second")
+# Hybrid method: matrix diagonalisation for the copper, perturbation theory for the nitrogens
 hybrid = es.pepper(copper, exp, {"FuzzLevel": 0, "Method": "hybrid", "HybridCoreNuclei": [1]})
 perturb = es.pepper(copper, exp, {"FuzzLevel": 0, "Method": "perturb2"})
 print(f"hybrid and second-order perturbation spectra differ by {np.abs(hybrid.spec - perturb.spec).max() / np.abs(hybrid.spec).max():.1%}")
 show_spectrum([hybrid.spec, perturb.spec + 0.2 * hybrid.spec.max()], hybrid.x, invert=False, title="Cu(II) with four 14N at X band", xlabel="B / mT", ylabel="dA/dB", names=["hybrid", "perturb2 (offset)"])
 </script>
 
-<script type="text/plain" class="example" id="ex-epr-esfit" data-group="EPR (epreasy)" data-title="Fitting a powder spectrum (esfit)">
+<script type="text/plain" class="example" id="ex-epr-esfit" data-group="EPR (EPReasy)" data-title="Fitting a powder spectrum (esfit)">
 import numpy as np
 import epreasy as es
 
+# Synthetic data: an axial powder spectrum with noise
 truth = {"g": [2.0, 2.1], "lw": 3}
 exp = {"mwFreq": 9.5, "Range": [300, 360], "nPoints": 300}
 data = es.addnoise(es.pepper(truth, exp, {"FuzzLevel": 0}).spec, 50, "n")
+# Starting values and how far each parameter may vary
 start = {"g": [2.01, 2.08], "lw": 2}
 vary = {"g": [0.05, 0.05], "lw": 1.5}
 print("Nelder-Mead simplex on three parameters; each iteration simulates a 300-point powder spectrum")
+# Nelder-Mead simplex; Verbosity 1 prints the summary
 result = es.esfit(data, es.pepper, [start, exp, {"FuzzLevel": 0}], [vary], {"Method": "simplex", "Verbosity": 1})
 for name, value, std in zip(result.pnames, result.pfit, result.pstd):
     print(f"  {name:12s} {value:9.4f} +- {std:.4f}")
@@ -465,17 +502,20 @@ import ctps
 from ctps import AllowedOrders, Nucleus, Period, PhaseCycle, Pulse, Sequence, simulate
 
 proton = Nucleus("1H")
+# Three pulses on protons, with the coherence orders each period may hold
 sequence = Sequence(
     nuclei=(proton,),
     pulses=(Pulse("1H", label="90"), Pulse("1H", label="180"), Pulse("1H", label="90")),
     periods=(Period(), Period(), Period(), Period()),
     allowed={"1H": AllowedOrders.standard(2, 4, start=[0], end=[-1])},
 )
+# A four-step phase cycle of the first and third pulses, with the receiver
 cycle = PhaseCycle.explicit(
     phases=[[0, 1, 2, 3], [0], [0, 3, 2, 1]],
     receiver=[0, 2, 0, 2],
     base=4,
 )
+# Every pathway the sequence allows, weighted by the cycle and ranked
 result = simulate(sequence, cycle, epsilon=1e-9, cutoff=0)
 print(f"ctps {ctps.__version__}: {result.n_enumerated} pathways enumerated, {len(result)} kept")
 for row in result.table()[:8]:
@@ -501,6 +541,7 @@ pars = {
     "rho0": spynach.state(spin_system, "L+", "1H"),
     "coil": spynach.state(spin_system, "L+", "1H"),
 }
+# A finer grid: 1600 orientations take a few seconds here
 print(f"{spin_system.basis.nstates} Liouville states, averaging 1600 orientations")
 fid = spynach.powder(spin_system, spynach.acquire, pars, "nmr")
 fid = fid * np.exp(-6 * np.arange(pars["npoints"]) / pars["npoints"])
@@ -521,6 +562,7 @@ spin_system = spynach.create(
 spin_system = spynach.basis(
     spin_system, {"formalism": "sphten-liouv", "approximation": "none", "projections": [[1]]},
 )
+# Spinning at 500 Hz about the magic angle: Fokker-Planck rotor grid and a Lebedev orientation grid
 pars = {
     "spins": ["1H"], "offset": 0.0, "rate": 500.0, "axis": [1, 1, 1], "max_rank": 17,
     "grid": "leb_2ang_rank_17", "sweep": 2e4, "npoints": 256, "zerofill": 1024,
@@ -541,6 +583,7 @@ import numpy as np
 import spynach
 from spynach.plotting import axis_1d
 
+# Derome's three-spin system: three protons, three couplings
 spin_system = spynach.create(
     {"isotopes": ["1H", "1H", "1H"], "magnet": 16.1},
     {"zeeman": {"scalar": [3.70, 3.92, 4.50]},
@@ -565,6 +608,7 @@ import numpy as np
 import spynach
 from spynach.plotting import axis_1d
 
+# Two protons 2.5 Å apart with Redfield relaxation at a 2 ns correlation time
 spin_system = spynach.create(
     {"isotopes": ["1H", "1H"], "magnet": 14.1},
     {"zeeman": {"scalar": [1.0, 3.0]}, "coordinates": [[0, 0, 0], [0, 0, 2.5]],
@@ -578,6 +622,7 @@ pars = {
 }
 print(f"{spin_system.basis.nstates} Liouville states; building the Redfield superoperator, then a 64 × 64 NOESY")
 fid = spynach.liquid(spin_system, spynach.noesy, pars, "nmr")
+# States-type processing of the cosine and sine data sets
 cos = spynach.apodisation(fid["cos"], [("sqcos",), ("sqcos",)])
 sin = spynach.apodisation(fid["sin"], [("sqcos",), ("sqcos",)])
 zf = 256
@@ -594,6 +639,7 @@ import numpy as np
 import spynach
 from spynach.plotting import axis_1d
 
+# A chain of 12 protons with nearest-neighbour couplings; IK-2 keeps only low spin orders
 n = 12
 coupling = np.zeros((n, n))
 for i in range(n - 1):
@@ -638,6 +684,7 @@ pars = {
     "rho0": spynach.state(spin_system, "L+", "1H"),
     "coil": spynach.state(spin_system, "L+", "1H"),
 }
+# The slow one: 12800 orientations, about a minute
 print(f"{spin_system.basis.nstates} Liouville states, averaging 12800 orientations")
 fid = spynach.powder(spin_system, spynach.acquire, pars, "nmr")
 fid = fid * np.exp(-6 * np.arange(pars["npoints"]) / pars["npoints"])

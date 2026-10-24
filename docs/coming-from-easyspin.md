@@ -58,7 +58,7 @@ print(H.shape, np.allclose(H, H0 - 350 * muz))
 
 ## Spin systems
 
-| EasySpin | epreasy |
+| EasySpin | EPReasy |
 |---|---|
 | `Sys` structure with fields `S`, `g`, `gFrame`, `Nucs`, `A`, `AFrame`, `D`, `DFrame`, `Q`, `QFrame`, `ee`/`J`/`dip`/`dvec`, `eeFrame`, `ee2`, `nn`, `nnFrame`, `B1`..`B12`, `sigma`, `gnscale`, `n`, `lw`, `lwpp`, `lwEndor`, `gStrain`, `DStrain`, `HStrain`, `AStrain` | a dict with the same keys and the same size rules and shorthands (`g_`, `D_`, `A_` spherical forms, `D=[D, E]`, `Q=[eeqQ, eta]`) |
 | `validatespinsys(Sys)` (private) returns `[FullSys, err]` | `validatespinsys(sys)` is public and returns the processed dict; errors raise |
@@ -68,7 +68,7 @@ print(H.shape, np.allclose(H, H0 - 350 * muz))
 
 ## Spin operators and rotations
 
-| EasySpin | epreasy |
+| EasySpin | EPReasy |
 |---|---|
 | `sop(Spins,'xye')`, `sop(Spins,'x1,y2')`, `sop(Spins,'x(1|3)')`, `sop(Spins,[1 1; 2 3])` | the same strings and the same `(N, 2)` numeric array; `[Sx,Sy,Sz] = sop(S,'x','y','z')` is `Sx, Sy, Sz = sop(S, "x", "y", "z")` |
 | `sop(...,'sparse')` | `sop(..., sparse=True)` returns `scipy.sparse` CSR |
@@ -81,7 +81,7 @@ print(H.shape, np.allclose(H, H0 - 350 * muz))
 
 ## Hamiltonians and energy levels
 
-| EasySpin | epreasy |
+| EasySpin | EPReasy |
 |---|---|
 | `[H0,mux,muy,muz] = ham(Sys)`, `H = ham(Sys,B0)`, `[H0,muzL] = ham(Sys,B0)` | `ham(sys)` returns the 4-tuple; `ham(sys, B0)` returns `H`; `ham(sys, B0, split=True)` returns `(H0, muzL)` |
 | `ham(...,'sparse')` and the same option on every component | `sparse=True` keyword |
@@ -92,7 +92,7 @@ print(H.shape, np.allclose(H, H0 - 350 * muz))
 
 ## Units, constants, nuclear data
 
-| EasySpin | epreasy |
+| EasySpin | EPReasy |
 |---|---|
 | `bmagn`, `nmagn`, `planck`, `hbar`, `gfree`, `clight`, `mu0`, `boltzm`, `evolt`, `echarge`, `amu`, `avogadro` as functions | module attributes with the same values (`es.bmagn`) |
 | `unitconvert(value,'cm^-1->MHz')`, `unitconvert(value,'mT->MHz',g)`, `mt2mhz`, `mhz2mt` | the same |
@@ -101,7 +101,7 @@ print(H.shape, np.allclose(H, H0 - 350 * muz))
 
 ## Resonance fields
 
-| EasySpin | epreasy |
+| EasySpin | EPReasy |
 |---|---|
 | `[Pos,Int,Wid,Trans] = resfields(Sys,Exp,Opt)` with outputs chosen by `nargout` | `resfields(sys, exp, opt)` returns `Resonances(pos, int, wid, trans)`; `wid` is `None` without strains. The gradient output (`nargout>4`) is not returned (EasySpin leaves it unsorted and `pepper` does not use it) |
 | `Exp.mwFreq`, `Range`, `CenterSweep`, `Temperature`, `mwMode` (`'perpendicular'`, `'parallel'`, `{k alpha}`, `{k 'unpolarized'}`, `{k 'circular+'}`), `SampleFrame`, `MolFrame`, `lightBeam`, `lightScatter` | the same keys; `mwMode` cells become lists `[k, alpha]` |
@@ -116,7 +116,7 @@ print(H.shape, np.allclose(H, H0 - 350 * muz))
 
 ## Line shapes and grids
 
-| EasySpin | epreasy |
+| EasySpin | EPReasy |
 |---|---|
 | `gaussian(x,x0,fwhm,diff,phase)`, `[ya,yd] = gaussian(...)`; the same for `lorentzian`, `voigtian` | the same arguments; `dispersion=True` returns `(absorption, dispersion)`; the Gaussian dispersion integral (`diff=-1`) raises `NotImplementedError` (EasySpin needs the Symbolic Toolbox) |
 | `lshape(x,x0,fwhm,diff,alpha,phase)` | the same |
@@ -126,7 +126,7 @@ print(H.shape, np.allclose(H, H0 - 350 * muz))
 
 ## Powder and crystal spectra: pepper
 
-| EasySpin | epreasy |
+| EasySpin | EPReasy |
 |---|---|
 | `[B,spc,info] = pepper(Sys,Exp,Opt)`, outputs by `nargout`, a plot without outputs | `pepper(sys, exp, opt)` returns `Spectrum(x, spec, info)`; no plotting |
 | `Exp.mwFreq`, `Range`/`CenterSweep`, `nPoints`, `Harmonic`, `ModAmp`, `mwPhase`, `Temperature`, `mwMode`, `SampleFrame`, `MolFrame`, `lightBeam`, `lightScatter` | the same keys |
@@ -151,7 +151,7 @@ print(spectrum.x.shape, spectrum.spec.shape, spectrum.info["Transitions"].tolist
 
 ## Solution spectra: garlic
 
-| EasySpin | epreasy |
+| EasySpin | EPReasy |
 |---|---|
 | `[B,spc,info] = garlic(Sys,Exp,Opt)` | `garlic(sys, exp, opt)` returns `Spectrum(x, spec, info)`; `info["resfields"]` are the line positions, `info["intensities"]` their amplitudes |
 | `Sys.g` (isotropic, or principal values whose mean is used), `Nucs`, `A`, `n`, `lw`, `lwpp`, `tcorr`/`logtcorr`, `Q` | the same |
@@ -170,7 +170,7 @@ print("three lines at", np.sort(lines.info["resfields"]).round(3), "mT")
 
 ## Fitting: esfit
 
-| EasySpin | epreasy |
+| EasySpin | EPReasy |
 |---|---|
 | `esfit(data,fcn,p0,vary)`, `esfit(data,fcn,p0,lb,ub)`, `esfit(___,FitOpt)`; `result = esfit(...)`, or the GUI without an output | the same positional forms (`vary`, `lb`, `ub`, `opt` also as keywords) returning a `FitResult` dataclass with EasySpin's fields; no GUI |
 | `pepper({Sys1,Sys2},Exp)` with `Sys.weight`, `Opt.separate = 'components'` | `pepper([sys1, sys2], exp)` and the same for `garlic`; isotopologues are not expanded |
@@ -195,7 +195,7 @@ print(result.pnames, result.pfit.round(5), f"rmsd {result.rmsd:.1e}")
 
 ## ENDOR: endorfrq, salt, orisel
 
-| EasySpin | epreasy |
+| EasySpin | EPReasy |
 |---|---|
 | `[Pos,Int,Tra,Info] = endorfrq(Sys,Exp,Opt)`, intensities only with two or more outputs | `endorfrq(sys, exp, opt)` returns `EndorResonances(pos, int, trans, info)`; `int` is `None` with `Opt.Intensity = 'off'` |
 | `Exp.Field`, `mwFreq`, `ExciteWidth`, `Temperature`, `Range`, `rf`, `SampleFrame`, `MolFrame`; `Opt.Transitions`, `Threshold`, `Nuclei`, `Intensity`, `Enhancement`, `OriWeights`, `OriThreshold` | the same keys |
@@ -215,7 +215,7 @@ print(spectrum.x.shape, spectrum.info["Transitions"].tolist())
 
 ## Magnetometry: curry
 
-| EasySpin | epreasy |
+| EasySpin | EPReasy |
 |---|---|
 | `curry(Sys,Exp,Opt)` with outputs chosen by `Opt.Output` and `nargout` (`'muBM chimol'` for two outputs) | `curry(sys, exp, opt)`; `Opt.Output` defaults to `'muBM chimol'`; one keyword returns the array, several the tuple in that order; shapes are `(nFields, nTemperatures)` as in EasySpin |
 | `Exp.Field`, `Temperature`, `SampleFrame`, `MolFrame`, `CrystalSymmetry` (P1); `Sys.TIP`; `Opt.Output`, `Units`, `Method`, `GridSize`, `GridSymmetry`, `GridFrame`, `Spins`, `deltaB` | the same keys; `Exp.Ordering` and `SampleRotation` raise `NotImplementedError` |
@@ -229,7 +229,7 @@ print(chi.shape, chi.round(12))
 
 ## Slow motion: chili
 
-| EasySpin | epreasy |
+| EasySpin | EPReasy |
 |---|---|
 | `[B,spc,info] = chili(Sys,Exp,Opt)`, a plot without outputs | `chili(sys, exp, opt)` returns `Spectrum(x, spec, info)`; `info` carries the basis size, the norm of the equilibrium vector and a `warning` string where EasySpin prints one |
 | `Opt.LiouvMethod`: `'fast'` (C kernel, default for S = 1/2 with up to two nuclei) or `'general'` | the general method only; `'fast'` raises `NotImplementedError`. EasySpin's own test requires the two to agree at 1e-3 |
@@ -249,7 +249,7 @@ print(spectrum.spec.shape, spectrum.info["nBasis"])
 
 ## Pulse EPR: saffron
 
-| EasySpin | epreasy |
+| EasySpin | EPReasy |
 |---|---|
 | `[t,td,info] = saffron(Sys,Exp,Opt)`, `{t1,t2}` for 2-D experiments, a plot without outputs | `saffron(sys, exp, opt)` returns `Spectrum(x, spec, info)`; `x` is the time axis or a tuple of two, `spec` the complex modulation signal (the ENDOR spectrum for Mims ENDOR), `info` holds `td`, `fd`, `f`/`f1`/`f2` and `nSkippedOrientations` |
 | `Opt.SimulationMode = 'fast'` (ideal pulses, frequency-domain histogram) or `'thyme'` (explicit propagation with shaped pulses) | the fast engine only; `'thyme'`, shaped pulses, `Exp.DetWindow`, resonators and the pulse-parameter dimensions raise `NotImplementedError` |

@@ -96,17 +96,18 @@ def render_nav(page: str) -> str:
 
 
 # ---------------------------------------------------------------- timing tables
-def fmt_s(x) -> str:
+def cell_s(x) -> str:
+    """A seconds cell; None means the side was not timed."""
     if x is None:
         return '<td class="num na">not timed</td>'
     return f'<td class="num">{x:.2f}</td>' if x >= 0.1 else f'<td class="num">{x:.3f}</td>'
 
 
-def fmt_ratio(a, b) -> str:
+def cell_ratio(a, b) -> str:
     return '<td class="num na"></td>' if a is None or b is None or a == 0 else f'<td class="num">{b / a:.2f}x</td>'
 
 
-def fmt_rel(x) -> str:
+def cell_rel(x) -> str:
     return '<td class="num na"></td>' if x is None else f'<td class="num">{x:.1e}</td>'
 
 
@@ -134,10 +135,10 @@ def render_timing_spinach() -> str:
         rows.append(
             "<tr>"
             f'<td><code>{esc(s["case"])}</code><br><span class="note">{note}</span></td>'
-            + fmt_s(total.get("spinach"))
-            + fmt_s(total.get("spynach"))
-            + fmt_ratio(total.get("spinach"), total.get("spynach"))
-            + fmt_rel(max(rels) if rels else None)
+            + cell_s(total.get("spinach"))
+            + cell_s(total.get("spynach"))
+            + cell_ratio(total.get("spinach"), total.get("spynach"))
+            + cell_rel(max(rels) if rels else None)
             + f'<td class="links"><a href="comparison/runs/{esc(s["run"])}/report.html">report</a></td>'
             "</tr>"
         )
@@ -164,20 +165,20 @@ def render_timing_easyspin() -> str:
         return '<p class="note">No EasySpin timings yet: run scripts/easyspin-timings.py with the fixtures.</p>'
     rows = []
     for c in data["cases"]:
+        times = [t for t in (c.get("epreasy_numpy_s"), c.get("epreasy_numba_s")) if t is not None]
+        best = min(times) if times else None
         browser = (
             f'<td class="links"><a href="try.html#{esc(c["example"])}">run</a></td>'
             if c.get("example")
             else "<td></td>"
         )
-        numba = fmt_s(c.get("epreasy_numba_s")) if c.get("uses_kernels") else '<td class="num na">no kernel</td>'
         rows.append(
             "<tr>"
             f'<td><code>{esc(c["function"])}</code><br><span class="note">{esc(c["description"])}</span></td>'
-            + fmt_s(c.get("easyspin_s"))
-            + fmt_s(c.get("epreasy_numpy_s"))
-            + numba
-            + fmt_ratio(c.get("easyspin_s"), c.get("epreasy_numpy_s"))
-            + fmt_rel(c.get("rel_err"))
+            + cell_s(c.get("easyspin_s"))
+            + cell_s(best)
+            + cell_ratio(c.get("easyspin_s"), best)
+            + cell_rel(c.get("rel_err"))
             + browser
             + "</tr>"
         )
@@ -185,16 +186,17 @@ def render_timing_easyspin() -> str:
     ep = data["epreasy"]
     numba = f", Numba {ep['numba']}" if ep.get("numba") else ""
     machine = (
-        f"EasySpin {esc(es_['version'])} in MATLAB {esc(es_['matlab_version'])}; epreasy {esc(ep['version'])} with "
+        f"EasySpin {esc(es_['version'])} in MATLAB {esc(es_['matlab_version'])}; EPReasy {esc(ep['version'])} with "
         f"Python {esc(ep['python'])}, NumPy {esc(ep['numpy'])}, SciPy {esc(ep['scipy'])} on "
         f"{esc(ep['blas'])}{esc(numba)}; {esc(ep['platform'])}, {ep['cores']} cores. "
         f"EasySpin times are one call inside the fixture run after a warm-up call (a fit is timed once); "
-        f"epreasy times are the median of {data['repeats']} calls after a warm-up. Generated {esc(data['generated'])}."
+        f"EPReasy times are the median of {data['repeats']} calls after a warm-up, the faster of the NumPy and "
+        f"the Numba kernels where a kernel is on the path. Generated {esc(data['generated'])}."
     )
     return (
         '<div class="scroll"><table class="timing">\n<thead><tr><th>Case</th><th class="num">EasySpin / s</th>'
-        '<th class="num">NumPy / s</th><th class="num">Numba / s</th>'
-        '<th class="num">NumPy / EasySpin</th><th class="num">Agreement</th><th>Browser</th></tr></thead>\n'
+        '<th class="num">EPReasy / s</th><th class="num">EPReasy / EasySpin</th><th class="num">Agreement</th>'
+        "<th>Browser</th></tr></thead>\n"
         "<tbody>\n" + "\n".join(rows) + f'\n</tbody></table></div>\n<p class="note">{machine}</p>'
     )
 
