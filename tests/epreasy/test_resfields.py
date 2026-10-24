@@ -15,7 +15,7 @@ def test_free_electron_resonance():
     for g in (2.0, 2.0023, 2.3):
         r = es.resfields({"S": 0.5, "g": g}, {"mwFreq": 9.5, "Range": [250, 400]}, NOFUZZ)
         B = es.mhz2mt(9500, g)
-        np.testing.assert_allclose(r.pos, [[B]], rtol=1e-7)  # EasySpin's stated precision; the cubic roots cancel
+        np.testing.assert_allclose(r.pos, [[B]], rtol=1e-10)  # the polished cubic roots
         # intensity = transition rate (g muB / 2h)^2 times dB/dE = h / (g muB), in MHz/mT, for one orientation
         np.testing.assert_allclose(r.int, [[g * es.bmagn / es.planck / 1e9 / 4]], rtol=1e-7)
         assert r.trans.tolist() == [[1, 2]] and r.wid is None

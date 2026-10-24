@@ -122,7 +122,7 @@ def _crystal_orientations(exp: dict, opt: dict) -> tuple[np.ndarray, int, int, b
     if mol_frame.shape[1] != 3:
         raise ValueError("Exp.MolFrame requires three numbers per row (three Euler angles).")
     symmetry = exp.get("CrystalSymmetry", 1)
-    if symmetry not in (1, "P1", None):
+    if symmetry not in (1, "P1", None, ""):
         raise NotImplementedError("Crystal symmetry other than P1 (site transformations) is not ported yet.")
     if exp.get("SampleRotation"):
         raise NotImplementedError("Exp.SampleRotation is not ported yet.")
@@ -256,6 +256,29 @@ def nucspinrmv(system: dict, rmvidx) -> dict:
         new.pop("QFrame", None)
     else:
         rows("QFrame", False)
+    # a processed system is re-validated from scratch, as EasySpin does by clearing Sys.processed
+    for derived in (
+        "processed",
+        "nElectrons",
+        "nNuclei",
+        "I",
+        "gn",
+        "Spins",
+        "nStates",
+        "nL",
+        "L",
+        "gL",
+        "B",
+        "BFrame",
+        "fullg",
+        "fullA",
+        "fullD",
+        "fullQ",
+        "fullee",
+        "fullnn",
+        "fullsigma",
+    ):
+        new.pop(derived, None)
     return new
 
 
@@ -386,6 +409,15 @@ def cubicsolve(C: np.ndarray, loop_fields: bool) -> tuple[np.ndarray, np.ndarray
             raise ValueError("All coefficients of the cubic spline are zero!")
         valid = (cand >= 0) & (cand <= 1)
         cand[~valid] = np.nan
+        # Two Newton steps polish the closed-form roots, which cancel badly for nearly linear cubics
+        # (EasySpin's MEX leaves that error, about 1e-8 relative, in place)
+        for _ in range(2):
+            f = ((a[:, None] * cand + b[:, None]) * cand + c[:, None]) * cand + d[:, None]
+            fp = (3 * a[:, None] * cand + 2 * b[:, None]) * cand + c[:, None]
+            step = np.where(fp != 0, f / fp, 0.0)
+            polished = cand - step
+            ok = (np.abs(step) < 1e-6) & (polished >= 0) & (polished <= 1)
+            cand = np.where(ok, polished, cand)
         packed = np.sort(cand, axis=1)
         roots[ex] = packed[ex]
         count[ex] = valid.sum(axis=1)[ex]
@@ -808,13 +840,15 @@ def resfields_oriented(  # noqa: C901
             for s in range(n_segments)
         ]
 
+        # Roots of all transition-segment cubics in one vectorised call, rows ordered transition-major
+        coeff_arr = np.stack(coeffs)  # (nSeg, 4, nCore)
+        dEpoly_all = (coeff_arr[:, :, v] - coeff_arr[:, :, u]).transpose(2, 0, 1).reshape(-1, 4)
+        dEpoly_all[:, 3] -= mw_freq
+        roots_all, count_all = cubicsolve(dEpoly_all, loop_fields)
         for iTrans in range(n_transitions):
             for s in range(n_segments):
-                dEpoly = coeffs[s][:, v[iTrans]] - coeffs[s][:, u[iTrans]]
-                dEpoly = dEpoly.copy()
-                dEpoly[3] -= mw_freq
-                roots, count = cubicsolve(dEpoly[None, :], loop_fields)
-                zeros = roots[0, : count[0]]
+                row = iTrans * n_segments + s
+                zeros = roots_all[row, : count_all[row]]
                 if zeros.size == 0:
                     continue
                 res_fields = knots_arr[s] + dBs[s] * zeros
@@ -1051,7 +1085,9 @@ def resfields_oriented(  # noqa: C901
 
 
 # ----------------------------------------------------------------------------- eigenfield method
-def resfields_eig(system: dict, exp: dict, opt: dict | None = None):
+def resfields_eig(
+    system: dict, exp: dict, opt: dict | None = None, *, _orientations=None, _average_over_chi: bool = False
+):
     """Resonance fields by the eigenfield method (Belford et al., J. Magn. Reson. 11, 251 (1973)): all fields at which a
     transition of energy ``mwFreq`` exists, without a field sweep. Returns the fields (mT) per orientation (one array
     for a single orientation, a list otherwise); with ``opt["Intensities"]`` true also the intensities."""
@@ -1088,7 +1124,11 @@ def resfields_eig(system: dict, exp: dict, opt: dict | None = None):
             "Verbosity": 0,
         },
     )
-    orientations, n_ori, _, average_over_chi = _crystal_orientations(exp_full, opt)
+    if _orientations is None:
+        orientations, n_ori, _, average_over_chi = _crystal_orientations(exp_full, opt)
+    else:  # pepper supplies grid orientations
+        orientations = np.atleast_2d(np.asarray(_orientations, dtype=float))
+        n_ori, average_over_chi = orientations.shape[0], bool(_average_over_chi)
     compute_intensities = bool(opt["Intensities"]) or opt["Threshold"] != 0
     from .hamiltonian import ham
 

@@ -29,6 +29,19 @@ with EasySpin [`docs/coming-from-easyspin.md`](../../docs/coming-from-easyspin.m
   `convspec`.
 - `epreasy.grids`: `sphgrid` (the SOPHE grid with its triangulation),
   `gridparam`.
+- `epreasy.pepper`: `pepper`, cw EPR spectra of powders and crystals by the
+  matrix, hybrid, perturbation and eigenfield methods, with orientation
+  interpolation, triangle projection, strain summation, convolution,
+  derivatives and field modulation; `epreasy.perturb` holds
+  `resfields_perturb`.
+- `epreasy.garlic`: `garlic` (isotropic cw spectra: Breit-Rabi and
+  perturbation positions, equivalent nuclei, fast-motion widths, frequency
+  sweeps), `fastmotion`, `equivcouple`.
+- `epreasy.kernels`: `lisum1i`, `projecttriangles`, `projectzones`, the MEX
+  kernels in NumPy with a Numba path (`fast` extra) that is bit-exact with
+  the MEX.
+- `epreasy.interp`: `gridinterp`, `esspline1d`, `esspline2d`;
+  `epreasy.symmetry`: `hamsymm`; `epreasy.processing`: `fieldmod`.
 - `epreasy.rotations`: `erot`, `eulang`, `ang2vec`, `vec2ang`, `letter2vec`.
 - `epreasy.units`, `epreasy.constants`: `unitconvert`, `mt2mhz`, `mhz2mt`,
   the physical constants as module attributes.
@@ -39,8 +52,10 @@ with EasySpin [`docs/coming-from-easyspin.md`](../../docs/coming-from-easyspin.m
 
 ## Not here (yet, or on purpose)
 
-- The simulators (`pepper`, `garlic`, `salt`, `chili`, `saffron`, `spidyan`,
-  `curry`) and fitting (`esfit`): the next phases.
+- The simulators `salt`, `chili`, `saffron`, `spidyan`, `curry` and fitting
+  (`esfit`): the next phases. In `pepper` and `garlic`: frequency sweeps of
+  powders, isotope mixtures, partial ordering, sample rotations, immediate
+  binning.
 - Orbital angular momentum (`Sys.L`, `soc`, `gL`, `CF*`; `ham_so`, `ham_cf`,
   `ham_oz`), higher-order Zeeman terms (`Sys.Ham...`, `ham_ezho`), tilted
   frames of Stevens-operator terms (`Sys.B?Frame`, needs `wignerd`), crystal

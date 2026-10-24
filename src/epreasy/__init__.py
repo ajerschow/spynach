@@ -6,14 +6,21 @@ and ``docs/coming-from-easyspin.md``.
 """
 
 from .constants import amu, avogadro, bmagn, boltzm, clight, echarge, evolt, gfree, hbar, mu0, nmagn, planck
+from .garlic import Spectrum, equivcouple, fastmotion, garlic
 from .grids import SphGrid, gridparam, sphgrid
 from .hamiltonian import ham, ham_ee, ham_ez, ham_hf, ham_nn, ham_nq, ham_nz, ham_zf, levels
+from .interp import esspline1d, esspline2d, gridinterp
+from .kernels import lisum1i, projecttriangles, projectzones
 from .lineshapes import convspec, gaussian, lorentzian, lshape, voigtian
 from .nucdata import isotopes, nucabund, nucdata, nucgval, nucqmom, nucspin, nucstring2list
+from .pepper import pepper
+from .perturb import resfields_perturb
+from .processing import fieldmod
 from .resfields import Resonances, cubicsolve, nucspinrmv, photoselect, resfields, resfields_eig
 from .rotations import ang2vec, erot, eulang, letter2vec, vec2ang
 from .spinops import sop, stev
 from .spinsystem import hsdim, spinvec, validatespinsys
+from .symmetry import hamsymm
 from .units import mhz2mt, mt2mhz, unitconvert
 
 __version__ = "0.1.0"
@@ -21,7 +28,11 @@ __version__ = "0.1.0"
 __all__ = [
     "amu", "avogadro", "bmagn", "boltzm", "clight", "echarge", "evolt", "gfree", "hbar", "mu0", "nmagn", "planck",
     "ham", "ham_ee", "ham_ez", "ham_hf", "ham_nn", "ham_nq", "ham_nz", "ham_zf", "levels",
+    "Spectrum", "equivcouple", "fastmotion", "garlic",
     "SphGrid", "gridparam", "sphgrid",
+    "esspline1d", "esspline2d", "gridinterp",
+    "lisum1i", "projecttriangles", "projectzones",
+    "fieldmod", "hamsymm", "pepper", "resfields_perturb",
     "convspec", "gaussian", "lorentzian", "lshape", "voigtian",
     "Resonances", "cubicsolve", "nucspinrmv", "photoselect", "resfields", "resfields_eig",
     "isotopes", "nucabund", "nucdata", "nucgval", "nucqmom", "nucspin", "nucstring2list",

@@ -15,8 +15,10 @@ updated with every ported function. The companion notebook is
 5. [Units, constants, nuclear data](#units-constants-nuclear-data)
 6. [Resonance fields](#resonance-fields)
 7. [Line shapes and grids](#line-shapes-and-grids)
-8. [Not ported](#not-ported)
-9. [Verification](#verification)
+8. [Powder and crystal spectra: pepper](#powder-and-crystal-spectra-pepper)
+9. [Solution spectra: garlic](#solution-spectra-garlic)
+10. [Not ported](#not-ported)
+11. [Verification](#verification)
 
 ## The rules
 
@@ -116,10 +118,56 @@ print(H.shape, np.allclose(H, H0 - 350 * muz))
 | `[grid,tri] = sphgrid(Symmetry,GridSize)` | `sphgrid(symmetry, grid_size, triangulate=True)` returns a `SphGrid` with `phi`, `theta`, `vecs`, `weights`, `tri_idx` (1-based, as EasySpin), `tri_areas`; open-phi grids are triangulated by `scipy.spatial.Delaunay`, which may pick other diagonals than MATLAB's `delaunay` where knots are co-circular (same areas and weights) |
 | `gridparam` (private) | public |
 
+## Powder and crystal spectra: pepper
+
+| EasySpin | epreasy |
+|---|---|
+| `[B,spc,info] = pepper(Sys,Exp,Opt)`, outputs by `nargout`, a plot without outputs | `pepper(sys, exp, opt)` returns `Spectrum(x, spec, info)`; no plotting |
+| `Exp.mwFreq`, `Range`/`CenterSweep`, `nPoints`, `Harmonic`, `ModAmp`, `mwPhase`, `Temperature`, `mwMode`, `SampleFrame`, `MolFrame`, `lightBeam`, `lightScatter` | the same keys |
+| `Exp.Field` with `mwRange` (frequency sweeps), `Exp.Ordering`, `Exp.SampleRotation`, `Exp.CrystalSymmetry` other than P1 | `NotImplementedError` |
+| `Opt.Method` `'matrix'`, `'hybrid'`, `'perturb'`, `'perturb1'`, `'perturb2'`, `'eig'`; `GridSize`, `GridSymmetry`, `GridFrame`, `Threshold`, `Transitions`, `Intensity`, `Freq2Field`, `BruteForce`, `separate` (`''`, `'transitions'`, `'orientations'`, `'sites'`), `Hybrid*`, `FuzzLevel`, `Verbosity` | the same keys; `Opt.ImmediateBinning` raises `NotImplementedError` |
+| `Opt.separate` defaults to `''`: crystal orientations are summed | the same |
+| the matrix and hybrid methods search `Exp.Range` only (6.0.15's `resfields` ignores `Exp.SearchRange`), the perturbation methods search 20 % beyond it | the same, so that lines just outside the range enter the spectrum only in the perturbation methods |
+| `Sys.Nucs = 'Cu'` and other isotope mixtures (`isotopologues`) | `ValueError` naming the isotopes to choose from; mixtures are not ported |
+| `Opt.FuzzLevel = 1e-10` by default | the same; use 0 for reproducible numbers |
+| the MEX kernels `lisum1i`, `projecttriangles`, `projectzones` | `epreasy.kernels`, bit-exact with the MEX and as fast when Numba is installed (`pip install spynach-spin[fast]`), 5 to 12 times slower in the pure NumPy fallback |
+| `hamsymm(Sys)` returns `[Group,R]` | `hamsymm(sys)` returns `(group, R)`, with EasySpin's `isisotropic` test as it is in 6.0.15 (inverted logic, so a full `g` with equal eigenvalues is not reduced to `O3`) |
+| `gridinterp`, `esspline1d`, `esspline2d` (private) | public in `epreasy.interp`; the spline end conditions are EasySpin's (not-a-knot, clamped, periodic) |
+| `fieldmod(B,spc,ModAmp,Harmonic)` | the same, Bessel-function pseudo-modulation in the Fourier domain |
+| run time | the nitroxide at X band takes 0.19 s against EasySpin's 0.06 s (the per-orientation loop is Python); Cu(II) with four 14N takes 0.05 s by second-order perturbation theory (EasySpin 0.04 s) and 0.3 s by the hybrid method (EasySpin 0.08 s), where full diagonalisation takes about a minute on either side |
+
+```python
+nitroxide = {"g": [2.0088, 2.0061, 2.0027], "Nucs": "14N", "A": [16, 16, 86], "lwpp": 0.3}
+exp = {"mwFreq": 9.5, "Range": [330, 350], "nPoints": 1024}
+spectrum = es.pepper(nitroxide, exp, {"FuzzLevel": 0})  # EasySpin: [B,spc,info] = pepper(Sys,Exp,Opt)
+print(spectrum.x.shape, spectrum.spec.shape, spectrum.info["Transitions"].tolist())
+```
+
+## Solution spectra: garlic
+
+| EasySpin | epreasy |
+|---|---|
+| `[B,spc,info] = garlic(Sys,Exp,Opt)` | `garlic(sys, exp, opt)` returns `Spectrum(x, spec, info)`; `info["resfields"]` are the line positions, `info["intensities"]` their amplitudes |
+| `Sys.g` (isotropic, or principal values whose mean is used), `Nucs`, `A`, `n`, `lw`, `lwpp`, `tcorr`/`logtcorr`, `Q` | the same |
+| `Exp.mwFreq` with `Range`/`CenterSweep` (automatic if absent), or `Exp.Field` with `mwRange`/`mwCenterSweep`; `nPoints`, `Harmonic`, `ModAmp`, `mwPhase`, `Temperature` | the same keys |
+| `Opt.Method` `'exact'` (Breit-Rabi) or `'perturb1'` to `'perturb5'`; `Opt.AccumMethod` `'binning'`, `'template'`, `'explicit'`; `Opt.IsoCutoff` | the same |
+| `'template'` accumulation in 6.0.15 omits the amplitude factor `(template width / line width)^harmonic` | the factor is applied (EasySpin's development branch does the same), so template spectra match the other accumulation methods |
+| `fastmotion(Sys,B,tcorr)`, `[lw,mI] = fastmotion(...)`, `'freq'` domain | `fastmotion(sys, field, tcorr, domain)` returns `(lw, mI)`; `Sys.Q` is used as given, like EasySpin, so a two-element `[e2qQ/h, eta]` row is not converted to principal values (`garlic` hands it the validated system, where it is) |
+| `equivcouple(I,n)` | the same tuple `(F, N)` |
+| isotope mixtures (`Nucs = 'Cu'`) | not ported |
+
+```python
+solution = {"g": 2.006, "Nucs": "14N", "A": 47, "lwpp": 0.1}
+lines = es.garlic(solution, {"mwFreq": 9.5, "Range": [330, 350]})  # EasySpin: [B,spc] = garlic(Sys,Exp)
+print("three lines at", np.sort(lines.info["resfields"]).round(3), "mT")
+```
+
 ## Not ported
 
-The simulators `pepper`, `garlic`, `salt`, `curry`, `chili`, `saffron`,
-`spidyan` and fitting (`esfit`): the next phases. Not planned: orbital
+The simulators `salt`, `curry`, `chili`, `saffron`, `spidyan` and fitting
+(`esfit`): the next phases. In `pepper` and `garlic`: frequency sweeps of
+powders, isotope mixtures, partial ordering, sample rotations, immediate
+binning. Not planned: orbital
 angular momentum (`Sys.L`, `soc`, `gL`, `CF*`), higher-order Zeeman terms
 (`Sys.Ham...`), tilted Stevens-operator frames (`Sys.B?Frame`, needs
 `wignerd`), crystal symmetries beyond P1 and sample rotations in the
@@ -128,10 +176,11 @@ resonance-field functions, the GUIs, MD-trajectory methods (`cardamom`,
 
 ## Verification
 
-Reference data are written by EasySpin itself: `oracle/matlab/easyspin/dumps/esdump_ham.m`
-runs in MATLAB with the installed EasySpin on the path (read-only) and
-writes one case per spin system to `$EPREASY_FIXTURES/<version>/<case>/`,
-with the spin system recorded in `meta.json` so that
-`tests/epreasy/test_parity.py` rebuilds the case from the same input. The
-five systems and the measured agreement are listed in
+Reference data are written by EasySpin itself: the dump scripts in
+`oracle/matlab/easyspin/dumps/` (`esdump_ham.m`, `esdump_resfields.m`,
+`esdump_pepper.m`) run in MATLAB with the installed EasySpin on the path
+(read-only) and write one case per spin system or spectrum to
+`$EPREASY_FIXTURES/<version>/<case>/`, with the inputs recorded in
+`meta.json` so that `tests/epreasy/test_parity*.py` rebuild each case from
+the same input. The cases and the measured agreement are listed in
 [`porting/EASYSPIN_FIXTURES.md`](../porting/EASYSPIN_FIXTURES.md).

@@ -21,6 +21,16 @@ Releases are tagged `vX.Y.Z` on GitHub; the version is `spynach.__version__`.
   `gaussian`, `lorentzian`, `lshape`, `voigtian`, `convspec`, and `sphgrid`
   with its triangulation; verified against EasySpin on a nitroxide, Cu(II)
   with two 14N, Mn(II) and a radical pair.
+- `epreasy` simulators `pepper` (cw EPR of powders and crystals: matrix,
+  hybrid, perturbation and eigenfield methods, orientation interpolation
+  and triangle projection, strain summation, convolution, derivatives,
+  field modulation) and `garlic` (isotropic solutions: Breit-Rabi and
+  perturbation positions, equivalent nuclei, fast-motion widths, frequency
+  sweeps), with `fastmotion`, `equivcouple`, `hamsymm`, `gridinterp`,
+  `fieldmod` and the MEX kernels `lisum1i`, `projecttriangles`,
+  `projectzones` in NumPy with an optional Numba path (`spynach-spin[fast]`)
+  that is bit-exact with EasySpin's C code; verified against EasySpin on 32
+  `pepper` and 14 `garlic` spectra.
 - Spynach in the browser (contributed by Moritz Zaiss, MRsources): `try.html` runs
   the kernel in Pyodide in a web worker (`worker.js`), with no install, and
   draws spectra, FIDs and 2D contours from an editor (`show_spectrum`,

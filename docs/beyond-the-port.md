@@ -179,10 +179,11 @@ and slow-motion methods of EPR spectroscopy belong to
 separate package in this repository (`import epreasy`) that ports EasySpin to
 Python with EasySpin's interface: spin systems as dicts with EasySpin's field
 names, fields in mT, energies in MHz, 1-based spin numbers. It depends on
-`spynach` and changes nothing in it. The first step is the foundation the
-simulators will build on: `validatespinsys`, `sop`, `stev`, `ham` with the
-split `H = H0 - B·mu` that makes field sweeps cheap, and `levels`, all
-verified against EasySpin 6.0.15 ([EPR spin systems with `epreasy`](epreasy.md),
+`spynach` and changes nothing in it. It has the foundation (`validatespinsys`,
+`sop`, `stev`, `ham` with the split `H = H0 - B·mu` that makes field sweeps
+cheap, `levels`), `resfields` and the line shapes, and the cw simulators
+`pepper` (powders and crystals) and `garlic` (solutions), all verified
+against EasySpin 6.0.15 ([EPR spin systems with `epreasy`](epreasy.md),
 [Coming from EasySpin](coming-from-easyspin.md)):
 
 ```python
@@ -190,4 +191,6 @@ import epreasy as es
 
 nitroxide = {"g": [2.0088, 2.0061, 2.0027], "Nucs": "14N", "A": [16, 16, 86]}
 print("levels at 340 mT along z (MHz):", es.levels(nitroxide, "z", 340).round(1))
+powder = es.pepper({**nitroxide, "lwpp": 0.3}, {"mwFreq": 9.5, "Range": [330, 350]}, {"FuzzLevel": 0})
+print("powder spectrum:", powder.spec.shape, "points, extrema at", powder.x[[powder.spec.argmax(), powder.spec.argmin()]].round(2), "mT")
 ```
