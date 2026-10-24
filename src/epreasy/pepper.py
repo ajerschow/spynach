@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import numpy as np
 
+from .components import compisoloop
 from .constants import bmagn, planck
 from .garlic import Spectrum
 from .grids import sphgrid
@@ -54,6 +55,8 @@ def pepper(system: dict, exp: dict, opt: dict | None = None) -> Spectrum:  # noq
     ``GridFrame``, ``separate`` (``''`` or ``'transitions'``; ``'orientations'`` for crystals), ``Threshold``,
     ``Transitions``, ``Intensity``, ``BruteForce``, ``Smoothing``, and the ``resfields`` options.
     """
+    if isinstance(system, (list, tuple)):  # several components: weighted sum of their spectra
+        return compisoloop(pepper, system, exp, opt)
     sys = validatespinsys(system)
     if any(not any(ch.isdigit() for ch in n) for n in nucstring2list(system.get("Nucs", ""))):
         raise NotImplementedError(

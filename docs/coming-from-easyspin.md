@@ -17,8 +17,9 @@ updated with every ported function. The companion notebook is
 7. [Line shapes and grids](#line-shapes-and-grids)
 8. [Powder and crystal spectra: pepper](#powder-and-crystal-spectra-pepper)
 9. [Solution spectra: garlic](#solution-spectra-garlic)
-10. [Not ported](#not-ported)
-11. [Verification](#verification)
+10. [Fitting: esfit](#fitting-esfit)
+11. [Not ported](#not-ported)
+12. [Verification](#verification)
 
 ## The rules
 
@@ -162,10 +163,35 @@ lines = es.garlic(solution, {"mwFreq": 9.5, "Range": [330, 350]})  # EasySpin: [
 print("three lines at", np.sort(lines.info["resfields"]).round(3), "mT")
 ```
 
+## Fitting: esfit
+
+| EasySpin | epreasy |
+|---|---|
+| `esfit(data,fcn,p0,vary)`, `esfit(data,fcn,p0,lb,ub)`, `esfit(___,FitOpt)`; `result = esfit(...)`, or the GUI without an output | the same positional forms (`vary`, `lb`, `ub`, `opt` also as keywords) returning a `FitResult` dataclass with EasySpin's fields; no GUI |
+| `pepper({Sys1,Sys2},Exp)` with `Sys.weight`, `Opt.separate = 'components'` | `pepper([sys1, sys2], exp)` and the same for `garlic`; isotopologues are not expanded |
+| EasySpin-style parameters `{Sys0,Exp0}`, `{vSys}`, `{vSys,vExp}`; names `arg1.g(1,2)`, `arg1{2}.g(1,1)`, `arg1.initState{1}(1,3)` | lists of dicts, the same names; `initState` is the tuple `(state, basis)` and its vary entry `([0, 0, 0.2],)` |
+| custom model functions receive the vector of *active* parameters (fixed ones are dropped) | the full vector, fixed parameters in place |
+| `FitOpt.Method` keywords `simplex`, `levmar`, `montecarlo`, `genetic`, `grid`, `swarm`, `lsqnonlin` (Optimization Toolbox) and `fcn`, `int`, `dint`, `diff`, `fft` | the same; `lsqnonlin` is `scipy.optimize.least_squares` (trust-region reflective) |
+| the `diff` keyword computes the Fourier-transform residual and `fft` the derivative (6.0.15 swaps the two cases) | `diff` is the derivative, `fft` the Fourier magnitude |
+| `AutoScale`, `BaseLine`, `Mask`, `weight`, `OutArg`, `RandomSeed`, `RandomStart`, `CalculateUncertainties`, `maxTime`, `TolFun`, `TolEdgeLength`, `TolStep`, `delta`, `lambda`, `Gradient`, `SimplexPars`, `ScaleParams`, `nTrials`, `PopulationSize`, `EliteCount`, `maxGenerations`, `GridSize`, `randGrid`, `maxGridPoints`, `nParticles`, `SwarmParams`, `TolStallIter`, `IterFcn`, `Verbosity` | the same keys; `RandomSeed` seeds a NumPy generator (random draws differ from MATLAB's), `Verbosity = 1` prints the summary and `2` the iterations (EasySpin prints both at 1) |
+| `esfit_simplex(fcn,x0,lb,ub,Opt)`, `esfit_levmar`, `esfit_montecarlo(fcn,lb,ub,Opt)`, `esfit_genetic`, `esfit_grid`, `esfit_swarm`, outputs by `nargout` | the same arguments, always `(x, info)` |
+| `rescaledata(y,mode)`, `rescaledata(y,yref,mode,region)` | `rescaledata(y, yref=None, mode=None, region=None)` returning `(yscaled, scale)` |
+| `basecorr(data,dim,n,region)`, `deriv(y)`, `deriv(x,y)`, `addnoise(y,SNR,model)` | the same (`dim=None` for the 2-D fit, `addnoise(..., rng=seed)`); `basecorr` and `deriv` return the tuple `(corrected, baseline)` and the derivative |
+| `jacobianest`, `hccm` (private) | public |
+
+```python
+system = {"g": [2.0, 2.1], "lw": 1.2}
+exp = {"mwFreq": 9.5, "Range": [300, 360], "nPoints": 300}
+measured = es.pepper(system, exp, {"FuzzLevel": 0}).spec
+# EasySpin: result = esfit(spc,@pepper,{Sys0,Exp,Opt},{Vary},FitOpt)
+result = es.esfit(measured, es.pepper, [{"g": [2.01, 2.09], "lw": 1.2}, exp, {"FuzzLevel": 0}], [{"g": [0.03, 0.03]}], {"Verbosity": 0})
+print(result.pnames, result.pfit.round(5), f"rmsd {result.rmsd:.1e}")
+```
+
 ## Not ported
 
-The simulators `salt`, `curry`, `chili`, `saffron`, `spidyan` and fitting
-(`esfit`): the next phases. In `pepper` and `garlic`: frequency sweeps of
+The simulators `salt`, `curry`, `chili`, `saffron` and `spidyan`: the next
+phases. `esfit`'s window and `eprconvert`. In `pepper` and `garlic`: frequency sweeps of
 powders, isotope mixtures, partial ordering, sample rotations, immediate
 binning. Not planned: orbital
 angular momentum (`Sys.L`, `soc`, `gL`, `CF*`), higher-order Zeeman terms
@@ -178,7 +204,7 @@ resonance-field functions, the GUIs, MD-trajectory methods (`cardamom`,
 
 Reference data are written by EasySpin itself: the dump scripts in
 `oracle/matlab/easyspin/dumps/` (`esdump_ham.m`, `esdump_resfields.m`,
-`esdump_pepper.m`) run in MATLAB with the installed EasySpin on the path
+`esdump_pepper.m`, `esdump_esfit.m`) run in MATLAB with the installed EasySpin on the path
 (read-only) and write one case per spin system or spectrum to
 `$EPREASY_FIXTURES/<version>/<case>/`, with the inputs recorded in
 `meta.json` so that `tests/epreasy/test_parity*.py` rebuild each case from

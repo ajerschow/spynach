@@ -126,8 +126,9 @@ Add-ons originating here, with no Spinach counterpart, each with an example in t
   never the reverse) that ports [EasySpin](https://easyspin.org) to Python
   with EasySpin's interface: the foundation (spin systems, `sop`, `stev`,
   `ham` with the field split, `levels`, rotations, units, nuclear data),
-  `resfields` and the line shapes, and the cw simulators `pepper` (powders
-  and crystals) and `garlic` (solutions), verified against EasySpin 6.0.15
+  `resfields` and the line shapes, the cw simulators `pepper` (powders
+  and crystals) and `garlic` (solutions) and least-squares fitting with
+  `esfit`, verified against EasySpin 6.0.15
   ([docs/epreasy.md](docs/epreasy.md),
   [docs/coming-from-easyspin.md](docs/coming-from-easyspin.md),
   `src/epreasy/README.md` for how to remove it without touching Spynach).

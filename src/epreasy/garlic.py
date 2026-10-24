@@ -16,6 +16,7 @@ from typing import NamedTuple
 
 import numpy as np
 
+from .components import compisoloop
 from .constants import bmagn, boltzm, nmagn, planck
 from .kernels import lisum1i
 from .lineshapes import convspec, lorentzian
@@ -162,6 +163,8 @@ def garlic(system: dict, exp: dict, opt: dict | None = None) -> Spectrum:  # noq
     ``mwPhase``, ``mwMode``, ``Temperature``. ``opt``: ``Method`` (``'exact'`` Breit-Rabi, ``'perturb1'``..
     ``'perturb5'``), ``AccumMethod`` (``'binning'``, ``'template'``, ``'explicit'``), ``Stretch``, ``Accuracy``.
     """
+    if isinstance(system, (list, tuple)):  # several components: weighted sum of their spectra
+        return compisoloop(garlic, system, exp, opt)
     sys = validatespinsys(system)
     opt = dict(opt or {})
     if sys["nElectrons"] != 1 or sys["S"][0] != 0.5:

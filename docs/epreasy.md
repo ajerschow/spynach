@@ -7,9 +7,9 @@ interface: spin systems are dicts with EasySpin's field names, fields are in
 mT, energies in MHz, Euler angles are EasySpin's passive rotations, and spin
 numbers are 1-based. This guide covers the foundation (spin systems, spin
 operators, the spin Hamiltonian and its field split, energy levels,
-rotations, units and nuclear data), the resonance-field layer, and the first
-two simulators: `pepper` for powders and crystals and `garlic` for isotropic
-solutions. The companion notebook is [`notebooks/epreasy.ipynb`](notebooks/epreasy.ipynb)
+rotations, units and nuclear data), the resonance-field layer, the first
+two simulators (`pepper` for powders and crystals, `garlic` for isotropic
+solutions) and least-squares fitting with `esfit`. The companion notebook is [`notebooks/epreasy.ipynb`](notebooks/epreasy.ipynb)
 ([interactive figures on nbviewer](https://nbviewer.org/github/ajerschow/spynach/blob/main/docs/notebooks/epreasy.ipynb)).
 
 `epreasy` depends on `spynach` and changes nothing in it; the Spinach port
@@ -27,7 +27,8 @@ what differs, see [Coming from EasySpin](coming-from-easyspin.md).
 7. [Line shapes and spherical grids](#line-shapes-and-spherical-grids)
 8. [Powder and crystal spectra: `pepper`](#powder-and-crystal-spectra-pepper)
 9. [Solution spectra: `garlic`](#solution-spectra-garlic)
-10. [What is checked, and what is pending](#what-is-checked-and-what-is-pending)
+10. [Fitting spectra: `esfit`](#fitting-spectra-esfit)
+11. [What is checked, and what is pending](#what-is-checked-and-what-is-pending)
 
 ## A spin system
 
@@ -423,10 +424,77 @@ sweep = es.garlic({"g": 2.006, "Nucs": "14N", "A": 47, "lw": 0.1}, {"Field": 340
 print("frequency sweep at 340 mT: lines at", np.sort(sweep.info["resfields"]).round(4), "GHz")
 ```
 
+## Fitting spectra: `esfit`
+
+`esfit(data, fcn, p0, vary)` or `esfit(data, fcn, p0, lb, ub)`, with an
+options dict last, fits a model to data by least squares, as EasySpin's
+`esfit` does without its window. For `pepper` and `garlic` the parameters
+are the input dicts themselves: `p0 = [sys, exp]` (or `[sys, exp, opt]`) and
+`vary` is a list of dicts of the same shape whose numeric fields say by how
+much each value may move (`[{"g": [0.02, 0.02], "lw": 0.5}]`; a zero fixes
+the value); `lb`/`ub` give bounds instead. Any other callable `fcn(p)` takes
+a parameter vector and returns the model data, or a list of arrays for a
+global fit of several data sets. `Opt["Method"]` names the algorithm
+(`simplex`, `levmar`, `montecarlo`, `genetic`, `grid`, `swarm`, or
+`lsqnonlin` for SciPy's bounded least squares) and the target the residuals
+are taken from (`fcn`, `int`, `dint`, `diff`, `fft`; the integral is the
+default for `pepper` and `garlic`, whose derivative spectra it makes
+smoother to fit). `AutoScale` fits a scale factor (`lsq`, the default for
+the simulators), `BaseLine` a polynomial baseline, `Mask` leaves points
+out, `weight` balances data sets. The result carries the fitted parameters
+with their standard deviations, 95 % confidence intervals, covariance and
+correlation matrices (from a Romberg-extrapolated Jacobian and a
+heteroscedasticity-consistent covariance estimate, as in EasySpin), the
+fitted data, scale and baseline, the residuals and the goodness-of-fit
+numbers; `Verbosity = 1` prints the report, `2` adds the iterations.
+
+```python
+truth = {"g": [2.0, 2.1], "lw": 3}
+exp = {"mwFreq": 9.5, "Range": [300, 360], "nPoints": 300}
+measured = es.addnoise(es.pepper(truth, exp, {"FuzzLevel": 0}).spec, 40, "n", rng=1)
+start = [{"g": [2.005, 2.095], "lw": 2.5}, exp, {"FuzzLevel": 0}]  # within a line width of the truth
+result = es.esfit(measured, es.pepper, start, [{"g": [0.02, 0.02], "lw": 1.5}], {"Verbosity": 0})
+for name, value, std in zip(result.pnames, result.pfit, result.pstd, strict=True):
+    print(f"{name:14s} {value:9.5f} +- {std:.5f}")
+print("rmsd", round(result.rmsd, 3), " scale", result.scale.round(4), " fitted system:", result.argsfit[0])
+```
+
+```python
+import plotly.graph_objects as go
+
+B = np.linspace(300, 360, 300)
+fig = go.Figure()
+fig.add_trace(go.Scatter(x=B, y=measured, mode="lines", name="data", line={"color": "gray"}))
+fig.add_trace(go.Scatter(x=B, y=result.fit, mode="lines", name="fit"))
+fig.add_trace(go.Scatter(x=B, y=result.residuals - 0.6 * np.abs(measured).max(), mode="lines", name="residuals (offset)"))
+fig.update_layout(title="esfit: g and line width of an axial S = 1/2 powder", xaxis_title="B / mT", yaxis_title="dA/dB", width=700, height=420)
+fig
+```
+
+![Least-squares fit of a noisy axial powder spectrum with esfit](figures/epreasy-esfit.png)
+
+The algorithms are also available on their own, for any function:
+`esfit_simplex` and `esfit_levmar` start from a point, `esfit_montecarlo`,
+`esfit_genetic`, `esfit_grid` and `esfit_swarm` search the bounds. With the
+helpers `rescaledata`, `basecorr`, `deriv` and `addnoise`, data can be
+prepared and compared as in EasySpin.
+
+```python
+x = np.linspace(300, 400, 200)
+model = lambda p: 5 * np.exp(-((x - p[0]) ** 2) / (2 * p[1] ** 2))  # noqa: E731
+data = model([350, 7]) + 0.4 + 0.003 * (x - 300)  # with a sloping baseline
+fit = es.esfit(data, model, [340, 5], [50, 20], {"Method": "levmar", "BaseLine": 1, "Verbosity": 0})
+print("centre and width:", fit.pfit.round(4), " baseline type:", fit.baselinetype, " rmsd:", f"{fit.rmsd:.1e}")
+xmin, info = es.esfit_simplex(lambda p: (p[0] - 1) ** 2 + 100 * (p[1] - p[0] ** 2) ** 2, [-1, 1.5], [-2, -2], [2, 2])
+print("Rosenbrock minimum by simplex:", xmin.round(3), "after", info["nEvals"], "evaluations")
+corrected, baseline = es.basecorr(data, 1, 1, region=np.abs(x - 350) > 35)  # fit the baseline beside the line
+print("baseline removed:", np.abs(corrected - model([350, 7])).max() < 1e-4)
+```
+
 ## What is checked, and what is pending
 
-`tests/epreasy/test_foundation.py`, `tests/epreasy/test_resfields.py` and
-`tests/epreasy/test_pepper.py` check the closed forms (angular momentum algebra, Stevens operators against
+`tests/epreasy/test_foundation.py`, `tests/epreasy/test_resfields.py`,
+`tests/epreasy/test_pepper.py` and `tests/epreasy/test_fitting.py` check the closed forms (angular momentum algebra, Stevens operators against
 their polynomial forms, the free-electron and proton Zeeman energies,
 first-order hyperfine splittings, the zero-field levels of a triplet, tensor
 frames; the free-electron resonance field and intensity, the spline method
@@ -438,11 +506,14 @@ against SciPy, the point groups of known Hamiltonians, the agreement of
 `pepper`'s methods with each other and with `garlic` on an isotropic
 system, `garlic`'s line spacings and equivalent-nuclei amplitudes, the
 fast-motion widths in the fast limit, field modulation against the
-derivative) and `tests/epreasy/test_parity.py`,
-`tests/epreasy/test_parity_resfields.py` and
-`tests/epreasy/test_parity_pepper.py` compare every stage with EasySpin
+derivative; the fitting algorithms on known minima, the parameter
+bookkeeping, scaling, baselines, masks and global fits, the uncertainty
+estimate against the linearised covariance, the Jacobian against analytic
+derivatives) and `tests/epreasy/test_parity.py`,
+`tests/epreasy/test_parity_resfields.py`, `tests/epreasy/test_parity_pepper.py`
+and `tests/epreasy/test_parity_esfit.py` compare every stage with EasySpin
 6.0.15 on the cases written by `oracle/matlab/easyspin/dumps/esdump_ham.m`,
-`esdump_resfields.m` and `esdump_pepper.m`: a nitroxide with tilted frames, a Cu(II) with two 14N, an S = 5/2 Mn(II) with
+`esdump_resfields.m`, `esdump_pepper.m` and `esdump_esfit.m`: a nitroxide with tilted frames, a Cu(II) with two 14N, an S = 5/2 Mn(II) with
 D, E and a rank-4 Stevens term, a radical pair with J, dipolar, antisymmetric
 and biquadratic exchange, a triplet with full g, D, A and Q matrices and two
 coupled nuclei; resonance fields of these in the matrix and hybrid methods,
@@ -455,11 +526,16 @@ with D strain, Cu(II) with four 14N, crystals) and 14 `garlic` spectra
 (exact and perturbation positions, the accumulation methods, Gaussian and
 Lorentzian widths, modulation, temperature, dispersion, equivalent protons,
 Cu with 14N, fast motion, frequency sweeps), plus `fastmotion`, `hamsymm`,
-`fieldmod` and `equivcouple`. The measured agreement is in
+`fieldmod` and `equivcouple`; 33 `esfit` fits (analytic models by every
+deterministic algorithm and target, with scaling, baselines and masks,
+global fits with weights, the confidence intervals of a noisy exponential,
+`pepper` spectra with one and two components and `initState`) on the very
+data EasySpin fitted, plus `rescaledata`, `basecorr` and `deriv`. The
+measured agreement is in
 [`porting/EASYSPIN_FIXTURES.md`](../porting/EASYSPIN_FIXTURES.md). In
 `pepper`, frequency sweeps, isotope mixtures (`Nucs = "Cu"`), partial
 ordering (`Exp["Ordering"]`), sample rotations and `Opt["ImmediateBinning"]`
-are not ported yet; `salt`, `curry`, `chili`, `saffron`, `spidyan` and
-`esfit` are the next phases; orbital angular momentum, higher-order Zeeman
+are not ported yet; `esfit`'s window is not ported; `salt`, `curry`,
+`chili`, `saffron` and `spidyan` are the next phases; orbital angular momentum, higher-order Zeeman
 terms, tilted Stevens-operator frames and crystal symmetries beyond P1 are
 not ported.

@@ -6,6 +6,22 @@ and ``docs/coming-from-easyspin.md``.
 """
 
 from .constants import amu, avogadro, bmagn, boltzm, clight, echarge, evolt, gfree, hbar, mu0, nmagn, planck
+from .fitting import (
+    FitResult,
+    addnoise,
+    basecorr,
+    deriv,
+    esfit,
+    esfit_genetic,
+    esfit_grid,
+    esfit_levmar,
+    esfit_montecarlo,
+    esfit_simplex,
+    esfit_swarm,
+    hccm,
+    jacobianest,
+    rescaledata,
+)
 from .garlic import Spectrum, equivcouple, fastmotion, garlic
 from .grids import SphGrid, gridparam, sphgrid
 from .hamiltonian import ham, ham_ee, ham_ez, ham_hf, ham_nn, ham_nq, ham_nz, ham_zf, levels
@@ -29,6 +45,8 @@ __all__ = [
     "amu", "avogadro", "bmagn", "boltzm", "clight", "echarge", "evolt", "gfree", "hbar", "mu0", "nmagn", "planck",
     "ham", "ham_ee", "ham_ez", "ham_hf", "ham_nn", "ham_nq", "ham_nz", "ham_zf", "levels",
     "Spectrum", "equivcouple", "fastmotion", "garlic",
+    "FitResult", "addnoise", "basecorr", "deriv", "esfit", "esfit_genetic", "esfit_grid", "esfit_levmar",
+    "esfit_montecarlo", "esfit_simplex", "esfit_swarm", "hccm", "jacobianest", "rescaledata",
     "SphGrid", "gridparam", "sphgrid",
     "esspline1d", "esspline2d", "gridinterp",
     "lisum1i", "projecttriangles", "projectzones",

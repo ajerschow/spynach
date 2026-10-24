@@ -31,6 +31,15 @@ Releases are tagged `vX.Y.Z` on GitHub; the version is `spynach.__version__`.
   `projectzones` in NumPy with an optional Numba path (`spynach-spin[fast]`)
   that is bit-exact with EasySpin's C code; verified against EasySpin on 32
   `pepper` and 14 `garlic` spectra.
+- `epreasy` fitting: `esfit` without the GUI (EasySpin-style parameter
+  dicts for `pepper` and `garlic` or custom model functions, global fits,
+  autoscaling, baselines, masks, weights, standard deviations and
+  confidence intervals), the algorithms `esfit_simplex`, `esfit_levmar`,
+  `esfit_montecarlo`, `esfit_genetic`, `esfit_grid`, `esfit_swarm` and
+  SciPy's least squares for `lsqnonlin`, `jacobianest`, `hccm`, the data
+  helpers `rescaledata`, `basecorr`, `deriv`, `addnoise`, and several
+  component systems in `pepper` and `garlic` (`Sys.weight`); verified
+  against EasySpin on 33 fits of the same data.
 - Spynach in the browser (contributed by Moritz Zaiss, MRsources): `try.html` runs
   the kernel in Pyodide in a web worker (`worker.js`), with no install, and
   draws spectra, FIDs and 2D contours from an editor (`show_spectrum`,

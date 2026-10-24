@@ -41,7 +41,15 @@ with EasySpin [`docs/coming-from-easyspin.md`](../../docs/coming-from-easyspin.m
   kernels in NumPy with a Numba path (`fast` extra) that is bit-exact with
   the MEX.
 - `epreasy.interp`: `gridinterp`, `esspline1d`, `esspline2d`;
-  `epreasy.symmetry`: `hamsymm`; `epreasy.processing`: `fieldmod`.
+  `epreasy.symmetry`: `hamsymm`; `epreasy.processing`: `fieldmod`;
+  `epreasy.components`: the loop over component systems
+  (`pepper([sys1, sys2], exp)`).
+- `epreasy.fitting`: `esfit` without the GUI (EasySpin-style and custom
+  models, global fits, scaling, baselines, masks, uncertainties), the
+  algorithms `esfit_simplex`, `esfit_levmar`, `esfit_montecarlo`,
+  `esfit_genetic`, `esfit_grid`, `esfit_swarm` (and SciPy's least squares
+  for `lsqnonlin`), `jacobianest`, `hccm`, and the data helpers
+  `rescaledata`, `basecorr`, `deriv`, `addnoise`.
 - `epreasy.rotations`: `erot`, `eulang`, `ang2vec`, `vec2ang`, `letter2vec`.
 - `epreasy.units`, `epreasy.constants`: `unitconvert`, `mt2mhz`, `mhz2mt`,
   the physical constants as module attributes.
@@ -52,10 +60,10 @@ with EasySpin [`docs/coming-from-easyspin.md`](../../docs/coming-from-easyspin.m
 
 ## Not here (yet, or on purpose)
 
-- The simulators `salt`, `chili`, `saffron`, `spidyan`, `curry` and fitting
-  (`esfit`): the next phases. In `pepper` and `garlic`: frequency sweeps of
-  powders, isotope mixtures, partial ordering, sample rotations, immediate
-  binning.
+- The simulators `salt`, `chili`, `saffron`, `spidyan`, `curry`: the next
+  phases. In `pepper` and `garlic`: frequency sweeps of powders, isotope
+  mixtures, partial ordering, sample rotations, immediate binning. In
+  `esfit`: the window.
 - Orbital angular momentum (`Sys.L`, `soc`, `gL`, `CF*`; `ham_so`, `ham_cf`,
   `ham_oz`), higher-order Zeeman terms (`Sys.Ham...`, `ham_ezho`), tilted
   frames of Stevens-operator terms (`Sys.B?Frame`, needs `wignerd`), crystal
