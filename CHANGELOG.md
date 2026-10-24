@@ -4,6 +4,15 @@ Releases are tagged `vX.Y.Z` on GitHub; the version is `spynach.__version__`.
 
 ## Unreleased
 
+- `epreasy`, a separate package beside Spynach that ports EasySpin (Stefan
+  Stoll and co-workers, MIT) to Python, imported as `epreasy` and depending
+  on `spynach` (never the reverse; a test enforces it). This first step is
+  the foundation: spin systems as dicts with EasySpin's fields
+  (`validatespinsys`), `sop` and `stev`, `ham` with the field split and its
+  components, `levels`, `erot`/`eulang`, units, constants and EasySpin's
+  isotope table; verified against EasySpin 6.0.15 on five spin systems
+  (`oracle/matlab/easyspin/`). Guides `docs/epreasy.md` and
+  `docs/coming-from-easyspin.md`.
 - Spynach in the browser (contributed by Moritz Zaiss, MRsources): `try.html` runs
   the kernel in Pyodide in a web worker (`worker.js`), with no install, and
   draws spectra, FIDs and 2D contours from an editor (`show_spectrum`,

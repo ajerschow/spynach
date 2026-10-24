@@ -15,6 +15,7 @@ notebook is [`notebooks/beyond-the-port.ipynb`](notebooks/beyond-the-port.ipynb)
 4. [Checking results: `compare`, the parity page, timed reports](#checking-results-compare-the-parity-page-timed-reports)
 5. [Executable documentation, Colab, contributed notebooks](#executable-documentation-colab-contributed-notebooks)
 6. [Spynach in the browser](#spynach-in-the-browser)
+7. [EPR with `epreasy`](#epr-with-epreasy)
 
 ## Coherence transfer pathway selection: `ctps`
 
@@ -169,3 +170,24 @@ powder_fid = spynach.powder(csa_system, spynach.acquire, powder_pars, "nmr")
 
 The page was contributed by Moritz Zaiss (MRsources). It runs in a single thread,
 so it suits guide-sized examples rather than full-size calculations.
+
+## EPR with `epreasy`
+
+Spinach covers EPR as time-domain spin dynamics; the field-swept, resonance-field
+and slow-motion methods of EPR spectroscopy belong to
+[EasySpin](https://easyspin.org) (Stefan Stoll and co-workers). `epreasy` is a
+separate package in this repository (`import epreasy`) that ports EasySpin to
+Python with EasySpin's interface: spin systems as dicts with EasySpin's field
+names, fields in mT, energies in MHz, 1-based spin numbers. It depends on
+`spynach` and changes nothing in it. The first step is the foundation the
+simulators will build on: `validatespinsys`, `sop`, `stev`, `ham` with the
+split `H = H0 - B·mu` that makes field sweeps cheap, and `levels`, all
+verified against EasySpin 6.0.15 ([EPR spin systems with `epreasy`](epreasy.md),
+[Coming from EasySpin](coming-from-easyspin.md)):
+
+```python
+import epreasy as es
+
+nitroxide = {"g": [2.0088, 2.0061, 2.0027], "Nucs": "14N", "A": [16, 16, 86]}
+print("levels at 340 mT along z (MHz):", es.levels(nitroxide, "z", 340).round(1))
+```
