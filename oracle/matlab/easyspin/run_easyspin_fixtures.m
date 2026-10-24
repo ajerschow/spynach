@@ -20,7 +20,7 @@ repo_dir='/Users/alexej/Documents/PROG/spynach';                       % spynach
 easyspin_dir='/Users/alexej/Documents/MATLAB/easyspin-6.0.15/easyspin'; % installed EasySpin release (read-only)
 easyspin_version='6.0.15';
 fixtures_root='/Users/alexej/Documents/PROG/easyspin-fixtures';
-dump_scripts={'esdump_ham','esdump_resfields','esdump_pepper','esdump_esfit','esdump_endor'};                                           % cases that already exist are skipped
+dump_scripts={'esdump_ham','esdump_resfields','esdump_pepper','esdump_esfit','esdump_endor','esdump_chili'};                                           % cases that already exist are skipped
 
 %% Nothing below needs editing
 

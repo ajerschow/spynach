@@ -1,8 +1,9 @@
 # Coming from EasySpin
 
 What carries over from [EasySpin](https://easyspin.org) 6.0.15 to `epreasy`,
-what differs, and what is not ported. The foundation is covered in the guide
-[EPR spin systems with `epreasy`](epreasy.md); this page is the reference,
+what differs, and what is not ported. The guides are
+[EPR spin systems with `epreasy`](epreasy.md) and
+[EPR simulations with `epreasy`](epreasy-simulators.md); this page is the reference,
 updated with every ported function. The companion notebook is
 [`notebooks/coming-from-easyspin.ipynb`](notebooks/coming-from-easyspin.ipynb).
 
@@ -20,8 +21,9 @@ updated with every ported function. The companion notebook is
 10. [Fitting: esfit](#fitting-esfit)
 11. [ENDOR: endorfrq, salt, orisel](#endor-endorfrq-salt-orisel)
 12. [Magnetometry: curry](#magnetometry-curry)
-13. [Not ported](#not-ported)
-14. [Verification](#verification)
+13. [Slow motion: chili](#slow-motion-chili)
+14. [Not ported](#not-ported)
+15. [Verification](#verification)
 
 ## The rules
 
@@ -224,11 +226,32 @@ chi = es.curry({"S": 0.5, "g": 2}, {"Temperature": [10, 100], "Field": 0}, {"Out
 print(chi.shape, chi.round(12))
 ```
 
+## Slow motion: chili
+
+| EasySpin | epreasy |
+|---|---|
+| `[B,spc,info] = chili(Sys,Exp,Opt)`, a plot without outputs | `chili(sys, exp, opt)` returns `Spectrum(x, spec, info)`; `info` carries the basis size, the norm of the equilibrium vector and a `warning` string where EasySpin prints one |
+| `Opt.LiouvMethod`: `'fast'` (C kernel, default for S = 1/2 with up to two nuclei) or `'general'` | the general method only; `'fast'` raises `NotImplementedError`. EasySpin's own test requires the two to agree at 1e-3 |
+| `Sys.tcorr`, `logtcorr`, `Diff`, `logDiff` (1, 2 or 3 values), `DiffFrame`, `lw`, `lwpp`, `Potential`, `Exchange` | the same, except `DiffFrame` (ignored by EasySpin's general method too) and `Exchange` (fast method only; `NotImplementedError`) |
+| `Exp.mwFreq` with `Range`/`CenterSweep` or `Field` with `mwRange`/`mwCenterSweep`, `nPoints`, `Harmonic`, `ModAmp`, `mwPhase`, `Temperature`, `SampleFrame`, `Ordering` (number or function) | the same keys |
+| `Opt.LLMK`, `evenK`, `jKmin`, `highField`, `pImax`, `pImaxall`, `MpSymm`, `GridSize`, `GridSymmetry`, `GridFrame`, `PostConvNucs`, `Solver` (`'L'`, `'\'`, `'E'`, `'C'`, `'B'`), `FieldSweepMethod`, `Lentz`, `Threshold`, `Rescale`, `IncludeNZI`, `PeqTol`, `separate` | the same keys; `Opt.useLMKbasis`, `StartVec`, `Diagnostics`, `BasisAnalysis` are not ported |
+| `wigner3j`, `wigner6j` (`'f'`/`'r'` methods) | exact integer arithmetic for every rank; the same call forms |
+| `wignerd(J,...)`, `wignerd([J m1 m2],...)`, phase `'+'`/`'-'` | the same, `phase=` keyword; single elements are vectorised over the angles |
+| `tensor_cart2sph`, `tensor_sph2cart` | the same |
+| `istotensor`, `hil2liouv`, `generateoribasis`, `jjjsymbol`, `liouvhamiltonian`, `diffsuperop`, `chili_xlmk`, `chili_eqpopvec`, `chili_lanczos`, `chili_conjgrad`, `chili_contfracspec`, `pqorder`, `magint`, `rbos` (private) | private functions of `epreasy.slowmotion` |
+
+```python
+slow = {"g": [2.008, 2.0061, 2.0027], "Nucs": "14N", "A": [16, 16, 86], "lw": 0.1, "tcorr": 1e-9}
+spectrum = es.chili(slow, {"mwFreq": 9.8, "Range": [344, 354]})  # EasySpin: [B,spc] = chili(Sys,Exp)
+print(spectrum.spec.shape, spectrum.info["nBasis"])
+```
+
 ## Not ported
 
-The simulators `chili`, `saffron` and `spidyan`: the next phases. `esfit`'s
-window and `eprconvert`. In `salt` and `curry`: partial ordering, sample
-rotations. In `pepper` and `garlic`: frequency sweeps of
+The simulators `saffron` and `spidyan`: the next phase. `esfit`'s window
+and `eprconvert`. In `salt` and `curry`: partial ordering, sample
+rotations. In `chili`: the fast C kernel, Heisenberg exchange, the LMK basis
+option, user-supplied starting vectors. In `pepper` and `garlic`: frequency sweeps of
 powders, isotope mixtures, partial ordering, sample rotations, immediate
 binning. Not planned: orbital
 angular momentum (`Sys.L`, `soc`, `gL`, `CF*`), higher-order Zeeman terms
@@ -241,7 +264,7 @@ resonance-field functions, the GUIs, MD-trajectory methods (`cardamom`,
 
 Reference data are written by EasySpin itself: the dump scripts in
 `oracle/matlab/easyspin/dumps/` (`esdump_ham.m`, `esdump_resfields.m`,
-`esdump_pepper.m`, `esdump_esfit.m`, `esdump_endor.m`) run in MATLAB with the installed EasySpin on the path
+`esdump_pepper.m`, `esdump_esfit.m`, `esdump_endor.m`, `esdump_chili.m`) run in MATLAB with the installed EasySpin on the path
 (read-only) and write one case per spin system or spectrum to
 `$EPREASY_FIXTURES/<version>/<case>/`, with the inputs recorded in
 `meta.json` so that `tests/epreasy/test_parity*.py` rebuild each case from

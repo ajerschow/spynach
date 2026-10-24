@@ -183,9 +183,10 @@ names, fields in mT, energies in MHz, 1-based spin numbers. It depends on
 `sop`, `stev`, `ham` with the split `H = H0 - B·mu` that makes field sweeps
 cheap, `levels`), `resfields` and the line shapes, the cw simulators
 `pepper` (powders and crystals) and `garlic` (solutions), least-squares
-fitting with `esfit`, ENDOR with `salt` and magnetometry with `curry`, all
-verified
+fitting with `esfit`, ENDOR with `salt`, magnetometry with `curry` and
+slow-motion spectra with `chili`, all verified
 against EasySpin 6.0.15 ([EPR spin systems with `epreasy`](epreasy.md),
+[EPR simulations with `epreasy`](epreasy-simulators.md),
 [Coming from EasySpin](coming-from-easyspin.md)):
 
 ```python

@@ -48,6 +48,16 @@ Releases are tagged `vX.Y.Z` on GitHub; the version is `spynach.__version__`.
   susceptibilities in SI and CGS by the operator or partition-function
   method); verified against EasySpin on 14 `endorfrq`, 23 `salt` and 14
   `curry` cases.
+- `epreasy` slow motion: `chili` solves the stochastic Liouville equation
+  in the K-symmetrised Wigner basis (EasySpin's general Liouvillian method:
+  Brownian diffusion, orientational potentials, MOMD, Lanczos with
+  continued fraction and the direct, eigenvalue, conjugate-gradient and
+  BiCGSTAB solvers, approximate and explicit field sweeps, frequency sweeps,
+  post-convolution), with `wigner3j` (exact for every rank), `wigner6j`,
+  `wignerd`, `tensor_cart2sph` and `tensor_sph2cart`; verified against
+  EasySpin on 48 spectra and the helpers. The `epreasy` guide is split:
+  `docs/epreasy.md` keeps the foundation, `docs/epreasy-simulators.md`
+  holds the simulators.
 - Spynach in the browser (contributed by Moritz Zaiss, MRsources): `try.html` runs
   the kernel in Pyodide in a web worker (`worker.js`), with no install, and
   draws spectra, FIDs and 2D contours from an editor (`show_spectrum`,

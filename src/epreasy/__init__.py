@@ -36,6 +36,7 @@ from .perturb import resfields_perturb
 from .processing import fieldmod
 from .resfields import Resonances, cubicsolve, nucspinrmv, photoselect, resfields, resfields_eig
 from .rotations import ang2vec, erot, eulang, letter2vec, vec2ang
+from .slowmotion import chili, tensor_cart2sph, tensor_sph2cart, wigner3j, wigner6j, wignerd
 from .spinops import sop, stev
 from .spinsystem import hsdim, spinvec, validatespinsys
 from .symmetry import hamsymm
@@ -48,6 +49,7 @@ __all__ = [
     "ham", "ham_ee", "ham_ez", "ham_hf", "ham_nn", "ham_nq", "ham_nz", "ham_zf", "levels",
     "Spectrum", "equivcouple", "fastmotion", "garlic",
     "EndorResonances", "anisosubsys", "endorfrq", "endorfrq_perturb", "orisel", "salt", "curry",
+    "chili", "tensor_cart2sph", "tensor_sph2cart", "wigner3j", "wigner6j", "wignerd",
     "FitResult", "addnoise", "basecorr", "deriv", "esfit", "esfit_genetic", "esfit_grid", "esfit_levmar",
     "esfit_montecarlo", "esfit_simplex", "esfit_swarm", "hccm", "jacobianest", "rescaledata",
     "SphGrid", "gridparam", "sphgrid",

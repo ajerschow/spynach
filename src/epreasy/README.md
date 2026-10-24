@@ -8,7 +8,8 @@ propagation); nothing in `spynach` depends on it, and a test enforces that.
 The Spinach port is the core of this repository: `epreasy` adapts to it and
 changes nothing in it.
 
-The user guide is [`docs/epreasy.md`](../../docs/epreasy.md), the comparison
+The user guides are [`docs/epreasy.md`](../../docs/epreasy.md) (foundation) and
+[`docs/epreasy-simulators.md`](../../docs/epreasy-simulators.md) (simulators), the comparison
 with EasySpin [`docs/coming-from-easyspin.md`](../../docs/coming-from-easyspin.md)
 (notebooks under `docs/notebooks/`); the tests are in `tests/epreasy/`.
 
@@ -57,6 +58,11 @@ with EasySpin [`docs/coming-from-easyspin.md`](../../docs/coming-from-easyspin.m
   crystal ENDOR spectra).
 - `epreasy.magnetometry`: `curry` (magnetic moments and susceptibilities,
   SI and CGS, operator and partition-function methods).
+- `epreasy.slowmotion`: `chili` (the stochastic Liouville equation in the
+  K-symmetrised Wigner basis: Brownian diffusion, orientational potentials,
+  MOMD, Lanczos/continued-fraction and the other solvers, post-convolution;
+  EasySpin's general Liouvillian method), `wigner3j`, `wigner6j`,
+  `wignerd`, `tensor_cart2sph`, `tensor_sph2cart`.
 - `epreasy.rotations`: `erot`, `eulang`, `ang2vec`, `vec2ang`, `letter2vec`.
 - `epreasy.units`, `epreasy.constants`: `unitconvert`, `mt2mhz`, `mhz2mt`,
   the physical constants as module attributes.
@@ -67,10 +73,12 @@ with EasySpin [`docs/coming-from-easyspin.md`](../../docs/coming-from-easyspin.m
 
 ## Not here (yet, or on purpose)
 
-- The simulators `chili`, `saffron`, `spidyan`: the next phases. In
-  `pepper` and `garlic`: frequency sweeps of powders, isotope mixtures,
-  partial ordering, sample rotations, immediate binning. In `salt` and
-  `curry`: partial ordering, sample rotations. In `esfit`: the window.
+- The simulators `saffron` and `spidyan`: the next phase. In `pepper`
+  and `garlic`: frequency sweeps of powders, isotope mixtures, partial
+  ordering, sample rotations, immediate binning. In `salt` and `curry`:
+  partial ordering, sample rotations. In `esfit`: the window. In `chili`:
+  the fast C kernel (`chili_lm`), Heisenberg exchange, the LMK basis option,
+  user-supplied starting vectors.
 - Orbital angular momentum (`Sys.L`, `soc`, `gL`, `CF*`; `ham_so`, `ham_cf`,
   `ham_oz`), higher-order Zeeman terms (`Sys.Ham...`, `ham_ezho`), tilted
   frames of Stevens-operator terms (`Sys.B?Frame`, needs `wignerd`), crystal
@@ -110,8 +118,9 @@ The package touches nothing in `src/spynach`. To remove it:
 
 ```
 git rm -r src/epreasy tests/epreasy oracle/matlab/easyspin oracle/run_easyspin_fixtures.sh \
-          docs/epreasy.md docs/coming-from-easyspin.md docs/notebooks/epreasy.ipynb \
-          docs/notebooks/coming-from-easyspin.ipynb docs/figures/epreasy-*.png porting/EASYSPIN_FIXTURES.md
+          docs/epreasy.md docs/epreasy-simulators.md docs/coming-from-easyspin.md docs/notebooks/epreasy.ipynb \
+          docs/notebooks/epreasy-simulators.ipynb docs/notebooks/coming-from-easyspin.ipynb \
+          docs/figures/epreasy-*.png porting/EASYSPIN_FIXTURES.md
 ```
 
 then revert the one-line mentions in `README.md`, `docs/README.md`,
