@@ -8,8 +8,12 @@
 //
 // Without ids every example runs except those marked data-slow. Not part of the test suite (needs npm and the
 // network); tests/unit/test_playground_examples.py runs the examples natively.
-import { loadPyodide } from "pyodide";
 import { readFileSync } from "node:fs";
+import { join } from "node:path";
+import { pathToFileURL } from "node:url";
+
+// The pyodide package lives in the directory this is run from, not beside this script.
+const { loadPyodide } = await import(pathToFileURL(join(process.cwd(), "node_modules", "pyodide", "pyodide.mjs")));
 
 const root = process.argv[2];
 const only = process.argv.slice(3);
