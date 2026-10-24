@@ -58,6 +58,14 @@ Releases are tagged `vX.Y.Z` on GitHub; the version is `spynach.__version__`.
   EasySpin on 48 spectra and the helpers. The `epreasy` guide is split:
   `docs/epreasy.md` keeps the foundation, `docs/epreasy-simulators.md`
   holds the simulators.
+- `epreasy` pulse EPR: `saffron` with EasySpin's fast engine (ideal and
+  rectangular pulses, the predefined 2-, 3- and 4-pulse ESEEM, HYSCORE and
+  Mims ENDOR experiments, custom sequences with coherence transfer
+  pathways, filters and phases, orientation selection, product rule,
+  relaxation decays, frequency-histogram and time-domain evolution, crystals
+  and components), with `sf_pathways`, `larmorfrq`, `apowin`, `fdaxis` and
+  `exponfit`; verified against EasySpin on 69 experiments. The thyme engine
+  (shaped pulses) and `spidyan` are not ported.
 - Spynach in the browser (contributed by Moritz Zaiss, MRsources): `try.html` runs
   the kernel in Pyodide in a web worker (`worker.js`), with no install, and
   draws spectra, FIDs and 2D contours from an editor (`show_spectrum`,

@@ -22,8 +22,9 @@ updated with every ported function. The companion notebook is
 11. [ENDOR: endorfrq, salt, orisel](#endor-endorfrq-salt-orisel)
 12. [Magnetometry: curry](#magnetometry-curry)
 13. [Slow motion: chili](#slow-motion-chili)
-14. [Not ported](#not-ported)
-15. [Verification](#verification)
+14. [Pulse EPR: saffron](#pulse-epr-saffron)
+15. [Not ported](#not-ported)
+16. [Verification](#verification)
 
 ## The rules
 
@@ -246,9 +247,33 @@ spectrum = es.chili(slow, {"mwFreq": 9.8, "Range": [344, 354]})  # EasySpin: [B,
 print(spectrum.spec.shape, spectrum.info["nBasis"])
 ```
 
+## Pulse EPR: saffron
+
+| EasySpin | epreasy |
+|---|---|
+| `[t,td,info] = saffron(Sys,Exp,Opt)`, `{t1,t2}` for 2-D experiments, a plot without outputs | `saffron(sys, exp, opt)` returns `Spectrum(x, spec, info)`; `x` is the time axis or a tuple of two, `spec` the complex modulation signal (the ENDOR spectrum for Mims ENDOR), `info` holds `td`, `fd`, `f`/`f1`/`f2` and `nSkippedOrientations` |
+| `Opt.SimulationMode = 'fast'` (ideal pulses, frequency-domain histogram) or `'thyme'` (explicit propagation with shaped pulses) | the fast engine only; `'thyme'`, shaped pulses, `Exp.DetWindow`, resonators and the pulse-parameter dimensions raise `NotImplementedError` |
+| `Exp.Sequence = '2pESEEM'`, `'3pESEEM'`, `'4pESEEM'`, `'HYSCORE'`, `'MimsENDOR'` with `Field`, `dt`, `nPoints`, `tau`, `T`, `t1`, `t2`, `Range`, `tprf` | the same keys |
+| `Exp.Sequence = {p1 tau p2 T p3 tau}` with `Exp.Dim1 = {'d2' dt}`, pulses `struct('Flip',pi/2,'Phase',0,'tp',0.016)`, `Exp.Filter`, `Exp.Pathways` | a list alternating pulse dicts and delays, `Exp["Dim1"] = [["d2", dt]]` (several delays as `"d1,d2"`, negative `dt` decrements); ideal pulses and rectangular real pulses (`Opt.nOffsets`, `lwOffset`); the thyme-only variants (`'p1.Flip'`, non-linear increments, more than two dimensions) raise |
+| `Exp.mwFreq` + `Exp.ExciteWidth` (orientation selection), `Opt.OriThreshold`, `Opt.Transitions`, `Sys.HStrain` | the same |
+| `Sys.T1`, `Sys.T2` (decays of the predefined experiments) | the same, as single values |
+| `Opt.ProductRule`, `Opt.Nuclei`, `Opt.TimeDomain`, `Opt.Expand`, `Opt.EndorMethod`, `Opt.Window`, `Opt.ZeroFillFactor`, `Opt.GridSize`, `Opt.GridSymmetry`, `Opt.GridFrame` | the same keys |
+| `Exp.SampleFrame`, `Exp.MolFrame` (crystals), `Exp.CrystalSymmetry` | P1 only; `Exp.Ordering` and `SampleRotation` are not ported |
+| `Sys = {Sys1, Sys2}` with `Sys.weight` | a list of dicts; `info["fd"]` is the weighted sum |
+| `sf_peaks` (C), `sf_evolve`, `sf_pathways`, `pathwayparser` (private) | NumPy; `sf_pathways` is public, the rest private in `epreasy.pulsed` |
+| `larmorfrq`, `apowin`, `fdaxis`, `exponfit`, `basecorr` | the same; `exponfit(x, y, n, noconst=True)` instead of the `'noconst'` flag |
+| isotope mixtures in `Sys.Nucs` (`'N'`, `'Cu'`) | not ported; give isotopes |
+
+```python
+seq = {"Field": 350, "Sequence": "3pESEEM", "dt": 0.01, "nPoints": 512, "tau": 0.1}
+eseem = es.saffron({"Nucs": "14N", "A": [-1, -1, 2], "Q": [-1, -1, 2]}, seq)  # EasySpin: [t,td] = saffron(Sys,Exp)
+print(eseem.spec.shape, eseem.info["fd"].shape)
+```
+
 ## Not ported
 
-The simulators `saffron` and `spidyan`: the next phase. `esfit`'s window
+The simulator `spidyan` and `saffron`'s thyme engine (shaped pulses,
+explicit propagation, resonators, transient detection). `esfit`'s window
 and `eprconvert`. In `salt` and `curry`: partial ordering, sample
 rotations. In `chili`: the fast C kernel, Heisenberg exchange, the LMK basis
 option, user-supplied starting vectors. In `pepper` and `garlic`: frequency sweeps of
@@ -264,7 +289,8 @@ resonance-field functions, the GUIs, MD-trajectory methods (`cardamom`,
 
 Reference data are written by EasySpin itself: the dump scripts in
 `oracle/matlab/easyspin/dumps/` (`esdump_ham.m`, `esdump_resfields.m`,
-`esdump_pepper.m`, `esdump_esfit.m`, `esdump_endor.m`, `esdump_chili.m`) run in MATLAB with the installed EasySpin on the path
+`esdump_pepper.m`, `esdump_esfit.m`, `esdump_endor.m`, `esdump_chili.m`,
+`esdump_saffron.m`) run in MATLAB with the installed EasySpin on the path
 (read-only) and write one case per spin system or spectrum to
 `$EPREASY_FIXTURES/<version>/<case>/`, with the inputs recorded in
 `meta.json` so that `tests/epreasy/test_parity*.py` rebuild each case from

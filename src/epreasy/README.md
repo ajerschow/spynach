@@ -63,6 +63,11 @@ with EasySpin [`docs/coming-from-easyspin.md`](../../docs/coming-from-easyspin.m
   MOMD, Lanczos/continued-fraction and the other solvers, post-convolution;
   EasySpin's general Liouvillian method), `wigner3j`, `wigner6j`,
   `wignerd`, `tensor_cart2sph`, `tensor_sph2cart`.
+- `epreasy.pulsed`: `saffron` (pulse EPR with EasySpin's fast engine:
+  ideal and rectangular pulses, the predefined ESEEM, HYSCORE and Mims
+  ENDOR experiments and custom sequences, coherence transfer pathways,
+  orientation selection, product rule, relaxation decays, time-domain
+  evolution), `sf_pathways`, `larmorfrq`, `apowin`, `fdaxis`, `exponfit`.
 - `epreasy.rotations`: `erot`, `eulang`, `ang2vec`, `vec2ang`, `letter2vec`.
 - `epreasy.units`, `epreasy.constants`: `unitconvert`, `mt2mhz`, `mhz2mt`,
   the physical constants as module attributes.
@@ -73,7 +78,8 @@ with EasySpin [`docs/coming-from-easyspin.md`](../../docs/coming-from-easyspin.m
 
 ## Not here (yet, or on purpose)
 
-- The simulators `saffron` and `spidyan`: the next phase. In `pepper`
+- The simulator `spidyan` and `saffron`'s thyme engine (shaped pulses,
+  explicit propagation, resonators, transient detection). In `pepper`
   and `garlic`: frequency sweeps of powders, isotope mixtures, partial
   ordering, sample rotations, immediate binning. In `salt` and `curry`:
   partial ordering, sample rotations. In `esfit`: the window. In `chili`:

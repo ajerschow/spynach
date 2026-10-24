@@ -4,7 +4,8 @@ The simulators of [EasySpin](https://easyspin.org) in Python, on the
 foundation described in [EPR spin systems with `epreasy`](epreasy.md):
 `pepper` for powders and crystals, `garlic` for isotropic solutions, `esfit`
 for least-squares fitting, `salt` for ENDOR, `curry` for magnetometry and
-`chili` for the slow-motion regime. Every function keeps EasySpin's
+`chili` for the slow-motion regime and `saffron` for pulse EPR (ESEEM,
+HYSCORE, Mims ENDOR). Every function keeps EasySpin's
 interface (dicts with EasySpin's field names, mT and MHz, 1-based spin
 numbers) and is verified against EasySpin 6.0.15; what differs is listed in
 [Coming from EasySpin](coming-from-easyspin.md). The companion notebook is
@@ -19,6 +20,7 @@ numbers) and is verified against EasySpin 6.0.15; what differs is listed in
 4. [ENDOR: `endorfrq` and `salt`](#endor-endorfrq-and-salt)
 5. [Magnetometry: `curry`](#magnetometry-curry)
 6. [Slow motion: `chili`](#slow-motion-chili)
+7. [Pulse EPR: `saffron`](#pulse-epr-saffron)
 
 The examples share one spin system, the nitroxide of the foundation guide:
 
@@ -345,3 +347,65 @@ free = es.chili({k: v for k, v in momd.items() if k != "Potential"}, {"mwFreq": 
 print("MOMD with an ordering potential: norm of the equilibrium vector", round(restrained.info["normPeq"], 4), " spectra differ by", f"{np.abs(restrained.spec / np.abs(restrained.spec).max() - free.spec / np.abs(free.spec).max()).max():.2f}")
 ```
 
+## Pulse EPR: `saffron`
+
+`saffron(spin_system, exp, opt)` simulates the echo modulation of pulse
+experiments on a spin system with one electron spin and any number of
+nuclei, with EasySpin's fast engine: the pulses are ideal (infinitely short
+and non-selective), the electron spin manifolds are found for every
+orientation of the grid (analytically for S = 1/2 with weakly coupled nuclei,
+by diagonalisation otherwise), the nuclear sub-Hamiltonians of the two
+manifolds give the nuclear frequencies and the overlap matrix, and the
+modulation of every coherence transfer pathway is accumulated in a frequency
+histogram and transformed to the time domain (`Opt["TimeDomain"] = True`
+evolves in time instead). `Exp["Sequence"]` names a predefined experiment
+(`"2pESEEM"`, `"3pESEEM"`, `"4pESEEM"`, `"HYSCORE"`, `"MimsENDOR"`) with
+`Exp["Field"]` (mT), `dt` and `nPoints` for the time axis and `tau`, `T`,
+`t1`, `t2` for the fixed delays, or lists a custom sequence of pulses
+(`{"Flip": angle, "Phase": phase}`, with `"tp"` for a real rectangular pulse
+of finite length) alternating with delays in microseconds, whose
+incrementation `Exp["Dim1"] = [["d2", dt]]` names the delays that step
+along each dimension. `Exp["mwFreq"]` with `Exp["ExciteWidth"]` selects the
+orientations the first pulse excites; `Sys["T1"]`, `Sys["T2"]` add
+relaxation decays; `Opt["ProductRule"]` treats the nuclei in separate
+subspaces; `Opt["Nuclei"]` picks the nuclei that modulate, the others stay in
+the electron Hamiltonian. The result holds the time axis (a pair for 2-D
+experiments), the complex modulation signal, and in `info` the processed
+spectrum (`fd`, after decay and baseline correction, apodisation with
+`Opt["Window"]` and zero filling) with its frequency axis.
+
+```python
+weak_n14 = {"Nucs": "14N", "A": [-1, -1, 2], "Q": [-1, -1, 2]}
+three_pulse = es.saffron(weak_n14, {"Field": 350, "Sequence": "3pESEEM", "dt": 0.01, "nPoints": 512, "tau": 0.1})
+hyscore = es.saffron(weak_n14, {"Field": 350, "Sequence": "HYSCORE", "dt": 0.02, "nPoints": 128, "tau": 0.1})
+nu_n = es.larmorfrq("14N", 350)[0, 0]
+print("time axis starts at tau + T =", three_pulse.x[0], "us; nuclear Larmor frequency", round(nu_n, 3), "MHz;",
+      "HYSCORE spectrum", hyscore.info["fd"].shape, "on", round(hyscore.info["f1"][-1], 2), "MHz")
+```
+
+```python
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+
+fig = make_subplots(rows=1, cols=2, subplot_titles=("three-pulse ESEEM", "HYSCORE (double-quantum region)"))
+fig.add_trace(go.Scatter(x=three_pulse.x, y=np.real(three_pulse.spec), mode="lines", name="echo modulation"), row=1, col=1)
+f1, f2 = hyscore.info["f1"], hyscore.info["f2"]
+win1, win2 = (f1 >= 0) & (f1 <= 8), (f2 >= 0) & (f2 <= 8)  # the plotted window only keeps the notebook small
+f1, f2, z = f1[win1], f2[win2], np.abs(hyscore.info["fd"])[np.ix_(win1, win2)]
+top = z[(f1 > 1.5)[:, None] & (f2 > 1.5)[None, :]].max()  # levels relative to the peaks away from the low-frequency corner
+fig.add_trace(go.Contour(x=f2, y=f1, z=z, contours={"coloring": "lines", "start": 0.1 * top, "end": top, "size": 0.1 * top}, colorscale=[[0, "#1f77b4"], [1, "#d62728"]], showscale=False, name="|FT|"), row=1, col=2)
+fig.update_xaxes(title_text="t / us", row=1, col=1)
+fig.update_xaxes(title_text="nu2 / MHz", range=[0, 8], row=1, col=2)
+fig.update_yaxes(title_text="nu1 / MHz", range=[0, 8], row=1, col=2)
+fig.update_layout(title="14N ESEEM with saffron", width=820, height=400)
+fig
+```
+
+![Three-pulse ESEEM trace and HYSCORE spectrum of a weakly coupled 14N](figures/epreasy-simulators-saffron.png)
+
+```python
+mims = es.saffron({"Nucs": "1H", "A": [1, 1, 5], "lwEndor": 0.1}, {"Sequence": "MimsENDOR", "Field": 325, "tau": 0.1, "Range": [5, 25], "nPoints": 401})
+custom = es.saffron(weak_n14, {"Field": 350, "Sequence": [{"Flip": np.pi / 2}, 0.1, {"Flip": np.pi / 2}, 0.0, {"Flip": np.pi / 2}, 0.1], "nPoints": 512, "Dim1": [["d2", 0.01]]})
+print("Mims ENDOR doublet at", np.round(mims.x[np.argsort(mims.spec)[-1]], 2), "MHz;",
+      "the custom three-pulse sequence reproduces the predefined one to", f"{np.abs(custom.spec - three_pulse.spec).max():.1e}")
+```

@@ -34,6 +34,7 @@ from .nucdata import isotopes, nucabund, nucdata, nucgval, nucqmom, nucspin, nuc
 from .pepper import pepper
 from .perturb import resfields_perturb
 from .processing import fieldmod
+from .pulsed import apowin, exponfit, fdaxis, larmorfrq, saffron, sf_pathways
 from .resfields import Resonances, cubicsolve, nucspinrmv, photoselect, resfields, resfields_eig
 from .rotations import ang2vec, erot, eulang, letter2vec, vec2ang
 from .slowmotion import chili, tensor_cart2sph, tensor_sph2cart, wigner3j, wigner6j, wignerd
@@ -50,6 +51,7 @@ __all__ = [
     "Spectrum", "equivcouple", "fastmotion", "garlic",
     "EndorResonances", "anisosubsys", "endorfrq", "endorfrq_perturb", "orisel", "salt", "curry",
     "chili", "tensor_cart2sph", "tensor_sph2cart", "wigner3j", "wigner6j", "wignerd",
+    "apowin", "exponfit", "fdaxis", "larmorfrq", "saffron", "sf_pathways",
     "FitResult", "addnoise", "basecorr", "deriv", "esfit", "esfit_genetic", "esfit_grid", "esfit_levmar",
     "esfit_montecarlo", "esfit_simplex", "esfit_swarm", "hccm", "jacobianest", "rescaledata",
     "SphGrid", "gridparam", "sphgrid",
