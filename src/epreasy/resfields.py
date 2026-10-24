@@ -358,7 +358,7 @@ def cubicsolve(C: np.ndarray, loop_fields: bool) -> tuple[np.ndarray, np.ndarray
         noroot = np.where(mono, same, same & (yex * d > 0))
         active = ~noroot
         roots = np.full((N, 3), np.nan)
-        count = np.zeros(N, np.int64)
+        count = np.zeros(N, np.intp)
         zero_d = active & (d == 0)
         roots[zero_d, 0] = 0.0
         count[zero_d] = 1

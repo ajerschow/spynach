@@ -95,6 +95,10 @@ with EasySpin [`docs/coming-from-easyspin.md`](../../docs/coming-from-easyspin.m
 
 ## Conventions
 
+Integer index arrays, repeat counts and `bincount` bins are `np.intp`, not
+`np.int64`: the browser playground runs the package on 32-bit WebAssembly,
+where `intp` is int32 and NumPy refuses to cast int64 counts to it.
+
 EasySpin's throughout, so that an EasySpin script maps line by line: spin
 systems are dicts with EasySpin's field names; fields in mT, energies and
 couplings in MHz, magnetic moments in MHz/mT; Euler angles are EasySpin's

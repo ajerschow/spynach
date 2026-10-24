@@ -149,7 +149,7 @@ def sphgrid(symmetry, grid_size: int, *, closed_phi: bool = False, triangulate: 
     tri_idx = tri_areas = None
     if triangulate:
         if n_octants in (0, -1):
-            tri = np.zeros((0, 3), dtype=np.int64)
+            tri = np.zeros((0, 3), dtype=np.intp)
             areas = np.zeros(0)
         elif n_octants == 1:
             if closed:

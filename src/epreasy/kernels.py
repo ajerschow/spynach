@@ -101,11 +101,11 @@ def lisum1i_numpy(T, PosT, WidT, Pos, Amp, Wid, x, chunk: int = 3_000_000):
         right = left + (nT - 1) / alpha
     ok &= ~((left >= nx - 1) | (right <= 0))
     ok &= np.isfinite(left) & np.isfinite(right)
-    first = np.where(left < 0, 0, np.ceil(np.where(ok, left, 0))).astype(np.int64)
-    last = np.where(right > nx - 1, nx - 1, np.ceil(np.where(ok, right, 0))).astype(np.int64)
+    first = np.where(left < 0, 0, np.ceil(np.where(ok, left, 0))).astype(np.intp)
+    last = np.where(right > nx - 1, nx - 1, np.ceil(np.where(ok, right, 0))).astype(np.intp)
     A = Amp / beta
     q = alpha * (first - left) - alpha
-    idx0 = np.where(ok, q, 0).astype(np.int64)
+    idx0 = np.where(ok, q, 0).astype(np.intp)
     rem0 = q - idx0
     idx0c = np.clip(idx0, 0, nT - 2)
     V0 = np.where(idx0 < 0, T[0], T[idx0c] * (1 - rem0) + T[idx0c + 1] * rem0)
@@ -125,7 +125,7 @@ def lisum1i_numpy(T, PosT, WidT, Pos, Amp, Wid, x, chunk: int = 3_000_000):
         line = L[owner]
         j = idx - first[line]
         pT = alpha[line] * (idx - left[line])
-        idxT = pT.astype(np.int64)
+        idxT = pT.astype(np.intp)
         rem = pT - idxT
         idxTc = np.minimum(idxT, nT - 2)
         V = T[idxTc] * (1 - rem) + T[idxTc + 1] * rem
@@ -234,7 +234,7 @@ def projecttriangles_numpy(tri, areas, fun, amp, x):
     x = np.asarray(x, dtype=float)
     nx = x.size
     delta = x[1] - x[0]
-    i = np.asarray(tri).astype(np.int64) - 1
+    i = np.asarray(tri).astype(np.intp) - 1
     fun = np.asarray(fun, dtype=float)
     amp = np.asarray(amp, dtype=float).ravel()
     P = np.sort(fun[i], axis=0)
@@ -247,7 +247,7 @@ def projecttriangles_numpy(tri, areas, fun, amp, x):
     with np.errstate(divide="ignore", invalid="ignore"):
         f1 = np.where(W1 > 0, (2 * Amp * areas / Width) / W1 / delta, 0.0)
         f2 = np.where(W2 > 0, (2 * Amp * areas / Width) / W2 / delta, 0.0)
-    first1, last1, last2 = (v.astype(np.int64) for v in (left, middle, right))
+    first1, last1, last2 = (v.astype(np.intp) for v in (left, middle, right))
     first2 = last1
 
     def half(first, last, f0, W, first_w, last_w, ramp_sign, ramp_ref):
@@ -298,7 +298,7 @@ def projecttriangles(tri, areas, fun, amp, x):
     """Project the values ``fun`` at the knots of a triangulation ``tri`` ((3, N), 1-based) onto the axis ``x``,
     with triangle weights ``areas`` and knot amplitudes ``amp`` (one value for all, or one per knot)."""
     args = (
-        np.ascontiguousarray(tri, dtype=np.int64), np.ascontiguousarray(np.ravel(areas), dtype=float),
+        np.ascontiguousarray(tri, dtype=np.intp), np.ascontiguousarray(np.ravel(areas), dtype=float),
         np.ascontiguousarray(np.ravel(fun), dtype=float), np.ascontiguousarray(np.ravel(amp), dtype=float),
         np.ascontiguousarray(x, dtype=float),
     )  # fmt: skip
@@ -358,7 +358,7 @@ def projectzones_numpy(pos, amp, seg_weights, x):
     left = (np.minimum(lo, hi) - x[0]) / delta
     right = (np.maximum(lo, hi) - x[0]) / delta
     left, right = np.where(ok, left, 0.0), np.where(ok, right, 0.0)
-    first, last = np.trunc(left).astype(np.int64), np.trunc(right).astype(np.int64)
+    first, last = np.trunc(left).astype(np.intp), np.trunc(right).astype(np.intp)
     ok &= ~((first >= nx) | (last < 0))
     mean_amp = (amp[:-1] + amp[1:]) / 2 / delta if amp.size != 1 else np.full(lo.size, amp[0] / delta)
     spec = np.zeros(nx)

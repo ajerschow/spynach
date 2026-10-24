@@ -71,7 +71,9 @@ Releases are tagged `vX.Y.Z` on GitHub; the version is `spynach.__version__`.
   Mims ENDOR, cw ENDOR, magnetometry, energy levels, Cu(II) with four 14N, a
   fit with an iteration counter) in a grouped example list with deep links
   such as `try.html#ex-epr-hyscore`; every example is run natively by
-  `tests/unit/test_playground_examples.py`.
+  `tests/unit/test_playground_examples.py` and in Pyodide under Node by
+  `scripts/pyodide-examples.mjs`. EPReasy's kernels index with `np.intp`
+  instead of `np.int64`, which the 32-bit WebAssembly NumPy refused.
 - `epreasy` pulse EPR: `saffron` with EasySpin's fast engine (ideal and
   rectangular pulses, the predefined 2-, 3- and 4-pulse ESEEM, HYSCORE and
   Mims ENDOR experiments, custom sequences with coherence transfer

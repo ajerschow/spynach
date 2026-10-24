@@ -223,7 +223,12 @@ span is stale. The parity paragraph of `spinach.html` comes from
 `oracle/parity_summary.py`. Reports are linked relatively, so they are
 served by Pages; guides and notebooks link to GitHub and nbviewer. The
 playground's examples are written into `try.html` and run natively by
-`tests/unit/test_playground_examples.py`. The hero figure is
+`tests/unit/test_playground_examples.py` and through the worker's Python
+runner by `tests/unit/test_playground_runner.py`; `scripts/pyodide-examples.mjs`
+runs them in Pyodide itself under Node (`npm install pyodide` in a scratch
+directory), which is the only way to catch what differs in 32-bit WebAssembly:
+NumPy's index type is int32 there, so integer arrays used as repeat counts or
+`bincount` indices must be `np.intp`, never `np.int64`. The hero figure is
 `assets/Spynoza.jpg`; `assets/liouvillian-strychnine*.png` are sparsity
 patterns of the strychnine NOESY Liouvillian rendered by
 `scripts/landing-figure.py` (needs Pillow and Matplotlib, which the

@@ -63,7 +63,7 @@ def esspline_eval(coeffs: np.ndarray, xs: np.ndarray) -> np.ndarray:
     """Evaluate spline coefficients (4, d, npp) at the 1-based abscissae ``xs``: array (d, len(xs))."""
     npp = coeffs.shape[2]
     xs = np.asarray(xs, dtype=float).ravel()
-    index = np.minimum(np.trunc(xs).astype(np.int64), npp)
+    index = np.minimum(np.trunc(xs).astype(np.intp), npp)
     t = xs - index
     c = coeffs[:, :, index - 1]  # (4, d, m)
     return ((c[0] * t + c[1]) * t + c[2]) * t + c[3]
@@ -91,8 +91,8 @@ def esspline2d(data, ri, ci, endcon=(0, 0)) -> np.ndarray:
     cb = esspline_coeffs(data, endcon[1])  # (4, R, C-1): [b, r, jp]
     seqs = cb.transpose(0, 2, 1).reshape(4 * (C - 1), R)
     K = esspline_coeffs(seqs, endcon[0]).reshape(4, 4, C - 1, R - 1)  # [a, b, jp, ip]
-    ip = np.minimum(np.trunc(ri).astype(np.int64), R - 1)
-    jp = np.minimum(np.trunc(ci).astype(np.int64), C - 1)
+    ip = np.minimum(np.trunc(ri).astype(np.intp), R - 1)
+    jp = np.minimum(np.trunc(ci).astype(np.intp), C - 1)
     tr, tc = ri - ip, ci - jp
     k = K[:, :, jp - 1, ip - 1]  # (4, 4, ...)
     inner = ((k[:, 0] * tc + k[:, 1]) * tc + k[:, 2]) * tc + k[:, 3]  # (4, ...)
@@ -100,7 +100,7 @@ def esspline2d(data, ri, ci, endcon=(0, 0)) -> np.ndarray:
 
 
 def _fast_linear(y: np.ndarray, xx: np.ndarray) -> np.ndarray:
-    k = np.minimum(np.maximum(1 + np.floor(xx - 1).astype(np.int64), 1), y.size - 1)
+    k = np.minimum(np.maximum(1 + np.floor(xx - 1).astype(np.intp), 1), y.size - 1)
     return y[k - 1] + (xx - k) * (y[k] - y[k - 1])
 
 
@@ -204,8 +204,8 @@ def gridinterp(y, grid_params, phi, theta, interp_type: str = "G3") -> np.ndarra
 def _bilinear(z: np.ndarray, xi: np.ndarray, yi: np.ndarray) -> np.ndarray:
     """MATLAB's interp2(z, xi, yi, 'linear') with 1-based coordinates (xi columns, yi rows)."""
     nr, nc = z.shape
-    j = np.clip(np.floor(xi).astype(np.int64), 1, nc - 1)
-    i = np.clip(np.floor(yi).astype(np.int64), 1, nr - 1)
+    j = np.clip(np.floor(xi).astype(np.intp), 1, nc - 1)
+    i = np.clip(np.floor(yi).astype(np.intp), 1, nr - 1)
     tx, ty = xi - j, yi - i
     z00, z01, z10, z11 = z[i - 1, j - 1], z[i - 1, j], z[i, j - 1], z[i, j]
     out = (1 - ty) * ((1 - tx) * z00 + tx * z01) + ty * ((1 - tx) * z10 + tx * z11)

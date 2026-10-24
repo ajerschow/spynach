@@ -302,7 +302,7 @@ def _bins(nu, dt, n):
     x = np.fmod(-nu * dt, 1.0) * n
     idx = np.where(x >= 0, np.floor(x), np.ceil(x))
     idx = np.where(idx < 0, idx + n, idx)
-    return idx.astype(np.int64)
+    return idx.astype(np.intp)
 
 
 def _sf_peaks(scheme: int, buff: np.ndarray, dt, free_l, free_r, Ea, Eb, G, D, *blocks):  # noqa: C901

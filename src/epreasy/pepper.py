@@ -400,10 +400,10 @@ def pepper(system: dict, exp: dict, opt: dict | None = None) -> Spectrum:  # noq
                 if do_interpolation:
                     fgrid = sphgrid(grid_symmetry, nf_knots, triangulate=True)
                     fphi, fthe = fgrid.phi, fgrid.theta
-                    idx_tri, f_weights = fgrid.tri_idx.T.astype(np.int64), fgrid.tri_areas
+                    idx_tri, f_weights = fgrid.tri_idx.T.astype(np.intp), fgrid.tri_areas
                 else:
                     fphi, fthe = phi, theta
-                    idx_tri, f_weights = grid.tri_idx.T.astype(np.int64), grid.tri_areas
+                    idx_tri, f_weights = grid.tri_idx.T.astype(np.intp), grid.tri_areas
                 f_weights = 4 * np.pi * f_weights / f_weights.sum()
             for t in range(n_transitions):
                 if do_interpolation:
