@@ -12,8 +12,12 @@ import epreasy as es
 from epreasy.oracle import assert_matches, fixture_root, load_fixture
 
 ROOT = fixture_root()
-CASES = sorted(p for p in ROOT.glob("*/*") if p.is_dir() and (p / "data.h5").is_file()) if ROOT.is_dir() else []
-SYSTEM_CASES = [p for p in CASES if p.name != "helpers"]
+CASES = (
+    sorted(p for p in ROOT.glob("*/*") if p.is_dir() and (p / "data.h5").is_file() and (p / "meta.json").is_file())
+    if ROOT.is_dir()
+    else []
+)
+SYSTEM_CASES = [p for p in CASES if "/ham/H0" in load_fixture(p)]  # the esdump_ham spin-system cases
 HELPERS = [p for p in CASES if p.name == "helpers"]
 
 pytestmark = pytest.mark.skipif(not CASES, reason=f"no EasySpin fixtures under {ROOT}")

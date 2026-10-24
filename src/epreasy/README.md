@@ -21,6 +21,14 @@ with EasySpin [`docs/coming-from-easyspin.md`](../../docs/coming-from-easyspin.m
 - `epreasy.hamiltonian`: `ham` with the field split `H = H0 - B·mu`, the
   components `ham_ez`, `ham_nz`, `ham_hf`, `ham_zf`, `ham_nq`, `ham_ee`,
   `ham_nn`, and `levels`.
+- `epreasy.resfields`: `resfields` (adaptive spline modelling of the energy
+  level diagram; matrix and hybrid methods, strains, populations, excitation
+  modes, photoselection), `resfields_eig` (the eigenfield method),
+  `cubicsolve`, `photoselect`, `nucspinrmv`.
+- `epreasy.lineshapes`: `gaussian`, `lorentzian`, `lshape`, `voigtian`,
+  `convspec`.
+- `epreasy.grids`: `sphgrid` (the SOPHE grid with its triangulation),
+  `gridparam`.
 - `epreasy.rotations`: `erot`, `eulang`, `ang2vec`, `vec2ang`, `letter2vec`.
 - `epreasy.units`, `epreasy.constants`: `unitconvert`, `mt2mhz`, `mhz2mt`,
   the physical constants as module attributes.
@@ -32,10 +40,12 @@ with EasySpin [`docs/coming-from-easyspin.md`](../../docs/coming-from-easyspin.m
 ## Not here (yet, or on purpose)
 
 - The simulators (`pepper`, `garlic`, `salt`, `chili`, `saffron`, `spidyan`,
-  `curry`), `resfields`, line shapes and fitting (`esfit`): the next phases.
+  `curry`) and fitting (`esfit`): the next phases.
 - Orbital angular momentum (`Sys.L`, `soc`, `gL`, `CF*`; `ham_so`, `ham_cf`,
   `ham_oz`), higher-order Zeeman terms (`Sys.Ham...`, `ham_ezho`), tilted
-  frames of Stevens-operator terms (`Sys.B?Frame`, needs `wignerd`).
+  frames of Stevens-operator terms (`Sys.B?Frame`, needs `wignerd`), crystal
+  symmetries beyond P1 (`sitetransforms`) and sample rotations, sparse
+  matrices in `resfields`.
 - EasySpin's GUIs (`esfit`'s window, `eprconvert`), MD-trajectory methods
   (`cardamom`, `mdhmm`), Bruker file readers.
 

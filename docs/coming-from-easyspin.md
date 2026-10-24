@@ -13,8 +13,10 @@ updated with every ported function. The companion notebook is
 3. [Spin operators and rotations](#spin-operators-and-rotations)
 4. [Hamiltonians and energy levels](#hamiltonians-and-energy-levels)
 5. [Units, constants, nuclear data](#units-constants-nuclear-data)
-6. [Not ported](#not-ported)
-7. [Verification](#verification)
+6. [Resonance fields](#resonance-fields)
+7. [Line shapes and grids](#line-shapes-and-grids)
+8. [Not ported](#not-ported)
+9. [Verification](#verification)
 
 ## The rules
 
@@ -89,15 +91,40 @@ print(H.shape, np.allclose(H, H0 - 350 * muz))
 | `nucdata('14N,1H')` returns up to five outputs; `nucspin`, `nucgval`, `nucqmom`, `nucabund` | `nucdata` returns a named tuple `(spin, gn, qm, abund, nucs)`; the wrappers are the same |
 | the isotope table `private/isotopedata.txt` | shipped verbatim as `epreasy/data/isotopedata.txt`; `isotopes()` returns it. It differs from `spynach`'s table (from Spinach) in some values, so each package keeps its own |
 
+## Resonance fields
+
+| EasySpin | epreasy |
+|---|---|
+| `[Pos,Int,Wid,Trans] = resfields(Sys,Exp,Opt)` with outputs chosen by `nargout` | `resfields(sys, exp, opt)` returns `Resonances(pos, int, wid, trans)`; `wid` is `None` without strains. The gradient output (`nargout>4`) is not returned (EasySpin leaves it unsorted and `pepper` does not use it) |
+| `Exp.mwFreq`, `Range`, `CenterSweep`, `Temperature`, `mwMode` (`'perpendicular'`, `'parallel'`, `{k alpha}`, `{k 'unpolarized'}`, `{k 'circular+'}`), `SampleFrame`, `MolFrame`, `lightBeam`, `lightScatter` | the same keys; `mwMode` cells become lists `[k, alpha]` |
+| `Exp.CrystalSymmetry`, `Opt.Sites`, `Exp.SampleRotation` | only symmetry P1 (`1`, `'P1'`); others raise `NotImplementedError` |
+| `Opt.Transitions`, `Threshold`, `Method`/`Hybrid`, `HybridCoreNuclei`, `FuzzLevel`, `Freq2Field`, `maxSegments`, `ModellingAccuracy`, `RediagLimit`, `Intensity` | the same keys; `Opt.Sparse` raises `NotImplementedError` (dense only); `Opt.Verbosity` is accepted and ignored |
+| `Opt.FuzzLevel = 1e-10` adds unseeded random noise to break degeneracies | the same, with NumPy's generator; use `FuzzLevel = 0` to reproduce numbers |
+| `Sys.initState` as a density matrix or `{populations, basis}` | a matrix, or a tuple `(state, basis)` with basis `'uncoupled'`, `'eigen'` or `'zerofield'`; `'coupled'`, `'xyz'` and the string shorthands are not ported |
+| `resfields_eig(Sys,Exp,Opt)`, `[B,Int] = resfields_eig(...)` | `resfields_eig(sys, exp, opt)` returns the fields; `opt["Intensities"] = True` returns `(fields, intensities)`; one orientation gives arrays, several give lists |
+| `cubicsolve` (MEX) | `cubicsolve(C, loop_fields)` on an (N, 4) array of cubics at once, NaN-padded roots |
+| `photoselect`, `nucspinrmv` | the same |
+| the pepper path (grid orientations with averaging over chi) | the private `resfields_oriented` for `pepper` |
+
+## Line shapes and grids
+
+| EasySpin | epreasy |
+|---|---|
+| `gaussian(x,x0,fwhm,diff,phase)`, `[ya,yd] = gaussian(...)`; the same for `lorentzian`, `voigtian` | the same arguments; `dispersion=True` returns `(absorption, dispersion)`; the Gaussian dispersion integral (`diff=-1`) raises `NotImplementedError` (EasySpin needs the Symbolic Toolbox) |
+| `lshape(x,x0,fwhm,diff,alpha,phase)` | the same |
+| `convspec(spec,df,fwhm,deriv,alpha,phase)` | the same, any dimension, one value per axis |
+| `[grid,tri] = sphgrid(Symmetry,GridSize)` | `sphgrid(symmetry, grid_size, triangulate=True)` returns a `SphGrid` with `phi`, `theta`, `vecs`, `weights`, `tri_idx` (1-based, as EasySpin), `tri_areas`; open-phi grids are triangulated by `scipy.spatial.Delaunay`, which may pick other diagonals than MATLAB's `delaunay` where knots are co-circular (same areas and weights) |
+| `gridparam` (private) | public |
+
 ## Not ported
 
-Everything beyond the foundation, planned in phases: `resfields` and
-`resfields_eig`, line shapes (`lshape`, `gaussian`, `lorentzian`, `voigtian`,
-`convspec`), the simulators `pepper`, `garlic`, `salt`, `curry`, `chili`,
-`saffron`, `spidyan`, fitting (`esfit`). Not planned: orbital angular
-momentum (`Sys.L`, `soc`, `gL`, `CF*`), higher-order Zeeman terms
+The simulators `pepper`, `garlic`, `salt`, `curry`, `chili`, `saffron`,
+`spidyan` and fitting (`esfit`): the next phases. Not planned: orbital
+angular momentum (`Sys.L`, `soc`, `gL`, `CF*`), higher-order Zeeman terms
 (`Sys.Ham...`), tilted Stevens-operator frames (`Sys.B?Frame`, needs
-`wignerd`), the GUIs, MD-trajectory methods (`cardamom`, `mdhmm`).
+`wignerd`), crystal symmetries beyond P1 and sample rotations in the
+resonance-field functions, the GUIs, MD-trajectory methods (`cardamom`,
+`mdhmm`).
 
 ## Verification
 

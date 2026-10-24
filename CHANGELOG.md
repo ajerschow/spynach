@@ -13,6 +13,14 @@ Releases are tagged `vX.Y.Z` on GitHub; the version is `spynach.__version__`.
   isotope table; verified against EasySpin 6.0.15 on five spin systems
   (`oracle/matlab/easyspin/`). Guides `docs/epreasy.md` and
   `docs/coming-from-easyspin.md`.
+- `epreasy` resonance-field layer: `resfields` (EasySpin's adaptive spline
+  modelling of the energy level diagram, matrix and hybrid methods, H/g/A/D
+  strains, Boltzmann and non-equilibrium populations, excitation modes,
+  photoselection; crystal symmetry P1), `resfields_eig` (the eigenfield
+  method), `cubicsolve` vectorised over all cubics, the line shapes
+  `gaussian`, `lorentzian`, `lshape`, `voigtian`, `convspec`, and `sphgrid`
+  with its triangulation; verified against EasySpin on a nitroxide, Cu(II)
+  with two 14N, Mn(II) and a radical pair.
 - Spynach in the browser (contributed by Moritz Zaiss, MRsources): `try.html` runs
   the kernel in Pyodide in a web worker (`worker.js`), with no install, and
   draws spectra, FIDs and 2D contours from an editor (`show_spectrum`,

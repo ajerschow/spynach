@@ -22,7 +22,9 @@ what differs, see [Coming from EasySpin](coming-from-easyspin.md).
 3. [The spin Hamiltonian and its field split](#the-spin-hamiltonian-and-its-field-split)
 4. [Energy levels](#energy-levels)
 5. [Rotations, units, nuclear data](#rotations-units-nuclear-data)
-6. [What is checked, and what is pending](#what-is-checked-and-what-is-pending)
+6. [Resonance fields](#resonance-fields)
+7. [Line shapes and spherical grids](#line-shapes-and-spherical-grids)
+8. [What is checked, and what is pending](#what-is-checked-and-what-is-pending)
 
 ## A spin system
 
@@ -205,19 +207,130 @@ print("spins", data.spin, " gn", data.gn, " abundance", data.abund)
 print("quadrupole moments (barn):", data.qm, " 63Cu natural abundance:", es.nucabund("63Cu"))
 ```
 
+## Resonance fields
+
+A cw EPR spectrum is a field sweep at fixed microwave frequency, so the
+central question is at which fields `B` a pair of levels satisfies
+`E_v(B) - E_u(B) = h nu`. `resfields(spin_system, exp, opt)` answers it as
+EasySpin does: the energy level diagram is modelled over the sweep range by
+cubic splines whose segments are bisected until the model is accurate to
+`Opt["ModellingAccuracy"]` (a few diagonalisations suffice for a simple
+system), the resonance fields are the roots of the cubics, and for each
+resonance the transition rate (from the magnetic moment operators in the lab
+frame), the frequency-to-field factor `dB/dE` (the general form of the
+`1/g` factor), the thermal or non-equilibrium polarisation and, when strains
+are given, the line width follow. The experiment is a dict with EasySpin's
+fields: `mwFreq` in GHz, `Range` or `CenterSweep` in mT, `Temperature` in K,
+`mwMode` (`'perpendicular'`, `'parallel'`, or `[k, alpha]` for a beam direction
+and polarisation), `SampleFrame` with one lab-frame orientation per row, and
+`MolFrame`. The result is a named tuple: `pos` and `int` are
+transitions-by-orientations arrays (`NaN` where a resonance leaves the
+range), `wid` the strain widths (FWHM, mT) or `None`, `trans` the level pairs.
+
+```python
+nitroxide = {"g": [2.0088, 2.0061, 2.0027], "Nucs": "14N", "A": [16, 16, 86]}
+exp = {"mwFreq": 9.5, "Range": [330, 350], "SampleFrame": [[0, 0, 0], [0.3, 1.1, 0.7]]}
+res = es.resfields(nitroxide, exp, {"FuzzLevel": 0})
+print("transitions:", res.trans.tolist())
+print("fields (mT) for the two orientations:\n", res.pos.round(3))
+print("intensities (the three allowed lines carry it):\n", res.int.round(4))
+```
+
+Two things to know. `Opt["FuzzLevel"]` (EasySpin's default 1e-10) multiplies
+the Hamiltonian by random noise to break degeneracies in systems with
+several electrons or nuclei; set it to 0 for reproducible numbers. And with
+`Opt["Method"] = "hybrid"`, nuclei not listed in `Opt["HybridCoreNuclei"]`
+are treated to first order: the core system is diagonalised and each
+resonance is split by the nuclear sub-Hamiltonians of the remaining nuclei
+(the Mims matrix gives the amplitudes), which is what makes Cu(II) with four
+14N tractable.
+
+```python
+cu = {"S": 1 / 2, "g": [2.05, 2.2], "Nucs": "63Cu,14N,14N", "A": [[50, 50, 500], [40, 40, 44], [38, 38, 42]]}
+exp = {"mwFreq": 9.5, "Range": [260, 360], "SampleFrame": [0.3, 1.1, 0.7]}
+matrix = es.resfields(cu, exp, {"FuzzLevel": 0})
+hybrid = es.resfields(cu, exp, {"FuzzLevel": 0, "Method": "hybrid", "HybridCoreNuclei": [1]})
+print("lines by matrix diagonalisation:", matrix.pos.shape[0], "  hybrid:", hybrid.pos.shape[0])
+print("total intensity, matrix and hybrid:", np.nansum(matrix.int).round(4), np.nansum(hybrid.int).round(4))
+```
+
+Strains broaden each line in proportion to how its field depends on the
+strained parameter: `HStrain` (an orientation-dependent residual width in
+MHz), `gStrain` and `AStrain` (distributions of the principal values), and
+`DStrain` with the `D`-`E` correlation `DStrainCorr`. Temperatures give
+Boltzmann polarisations, `initState` non-equilibrium populations, and
+`Exp["lightBeam"]` with `Sys["tdm"]` photoselection weights.
+
+```python
+strained = {**nitroxide, "HStrain": [10, 10, 30], "gStrain": [0.002, 0.001, 0.001]}
+res = es.resfields(strained, {"mwFreq": 9.5, "Range": [330, 350], "Temperature": 4}, {"FuzzLevel": 0})
+print("widths (FWHM, mT):", res.wid.ravel().round(4), " intensities at 4 K:", res.int.ravel().round(4))
+```
+
+`resfields_eig` is the exact alternative: the eigenfield method of Belford
+et al. turns the resonance condition into a generalised eigenvalue problem in
+Liouville space whose eigenvalues are all resonance fields at once, with no
+field search. It costs a problem of dimension `n^2`, so it serves as the
+reference for small systems:
+
+```python
+fields = es.resfields_eig(nitroxide, {"mwFreq": 9.5, "Range": [330, 350], "SampleFrame": [0.3, 1.1, 0.7]})
+print("eigenfields (mT):", np.round(fields, 4))
+```
+
+## Line shapes and spherical grids
+
+The line shapes are EasySpin's, area-normalised, with derivatives (`diff`),
+dispersion (`dispersion=True` returns both parts, `phase` mixes them) and the
+pseudo-Voigt combination `lshape` and the true Voigt convolution `voigtian`.
+`convspec` convolves a spectrum of any dimension with them, one width per
+axis; its output keeps the units of the input (a stick of area one gives a
+line of area one times the step).
+
+```python
+B = np.linspace(330, 350, 2001)
+absorption = es.gaussian(B, 340, 0.5)
+derivative = es.lorentzian(B, 340, 0.5, 1)
+sticks = np.zeros(B.size)
+sticks[[400, 1000, 1600]] = [1, 2, 1]
+spectrum = es.convspec(sticks, B[1] - B[0], 0.8, 1, 0.5)  # first-derivative pseudo-Voigt lines
+print("areas:", (absorption.sum() * (B[1] - B[0])).round(6), " derivative sums to", derivative.sum().round(9))
+print("convolved spectrum has", spectrum.size, "points and extrema at", B[[spectrum.argmax(), spectrum.argmin()]].round(2), "mT")
+```
+
+Powder spectra integrate over orientations on `sphgrid`, EasySpin's SOPHE
+grid: knots on a region of the unit sphere chosen by the point group of the
+Hamiltonian (`'D2h'` for one octant, `'Ci'` for a hemisphere, `'C1'` for the
+whole sphere, `'Dinfh'` for a quarter meridian), with weights summing to
+`4 pi`, and the triangulation that the spectrum is projected from:
+
+```python
+grid = es.sphgrid("D2h", 19, triangulate=True)
+print(grid.n, "knots,", grid.tri_idx.shape[0], "triangles; weights sum to 4 pi:", (grid.weights.sum() / (4 * np.pi)).round(12))
+print("first knots (phi, theta):", np.column_stack([grid.phi, grid.theta])[:4].round(4).tolist())
+```
+
 ## What is checked, and what is pending
 
-`tests/epreasy/test_foundation.py` checks the closed forms (angular momentum
-algebra, Stevens operators against their polynomial forms, the free-electron
-and proton Zeeman energies, first-order hyperfine splittings, the zero-field
-levels of a triplet, tensor frames) and `tests/epreasy/test_parity.py`
-compares every stage with EasySpin 6.0.15 on five spin systems written by
-`oracle/matlab/easyspin/dumps/esdump_ham.m`: a nitroxide with tilted frames, a
-Cu(II) with two 14N, an S = 5/2 Mn(II) with D, E and a rank-4 Stevens term, a
-radical pair with J, dipolar, antisymmetric and biquadratic exchange, and a
-triplet with full g, D, A and Q matrices and two coupled nuclei. Spin and
-Stevens operators and rotations agree to 1e-14 (the same arithmetic),
-Hamiltonians and levels to 1e-12. The simulators (`pepper`, `garlic`, `salt`,
-`chili`, `saffron`, `spidyan`, `curry`), `resfields`, line shapes and `esfit`
-are the next phases; orbital angular momentum, higher-order Zeeman terms and
-tilted Stevens-operator frames are not ported.
+`tests/epreasy/test_foundation.py` and `tests/epreasy/test_resfields.py`
+check the closed forms (angular momentum algebra, Stevens operators against
+their polynomial forms, the free-electron and proton Zeeman energies,
+first-order hyperfine splittings, the zero-field levels of a triplet, tensor
+frames; the free-electron resonance field and intensity, the spline method
+against the eigenfield method, the hybrid method against full
+diagonalisation, strain widths, Boltzmann and non-equilibrium polarisations,
+photoselection, line-shape areas and derivatives, grid weights) and
+`tests/epreasy/test_parity.py` and `tests/epreasy/test_parity_resfields.py`
+compare every stage with EasySpin 6.0.15 on the cases written by
+`oracle/matlab/easyspin/dumps/esdump_ham.m` and `esdump_resfields.m`: a
+nitroxide with tilted frames, a Cu(II) with two 14N, an S = 5/2 Mn(II) with
+D, E and a rank-4 Stevens term, a radical pair with J, dipolar, antisymmetric
+and biquadratic exchange, a triplet with full g, D, A and Q matrices and two
+coupled nuclei; resonance fields of these in the matrix and hybrid methods,
+with strains, temperatures, excitation modes and photoselection; the
+eigenfield method; the line shapes; the grids. The measured agreement is in
+[`porting/EASYSPIN_FIXTURES.md`](../porting/EASYSPIN_FIXTURES.md). The
+simulators (`pepper`, `garlic`, `salt`, `chili`, `saffron`, `spidyan`,
+`curry`) and `esfit` are the next phases; orbital angular momentum,
+higher-order Zeeman terms, tilted Stevens-operator frames, crystal
+symmetries beyond P1 and sample rotations are not ported.
