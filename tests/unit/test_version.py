@@ -15,3 +15,11 @@ def test_version_copies_agree():
     citation = re.search(r"^version: (\S+)$", (ROOT / "CITATION.cff").read_text(encoding="utf-8"), flags=re.M)
     assert citation and citation.group(1) == pyproject
     assert f"## {pyproject} - " in (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
+
+
+def test_ctps_carries_the_distribution_version():
+    """The three packages ship in one distribution, so ctps keeps its version equal to it."""
+    import ctps
+
+    pyproject = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))["project"]["version"]
+    assert ctps.__version__ == pyproject

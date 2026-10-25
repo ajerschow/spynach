@@ -6,7 +6,7 @@
   "matlab_version": "26.2.0.3386108 (R2026b)"
  },
  "epreasy": {
-  "version": "0.1.0",
+  "version": "0.2.0",
   "python": "3.12.5",
   "numpy": "2.5.4",
   "scipy": "1.18.1",

@@ -4,6 +4,8 @@ Releases are tagged `vX.Y.Z` on GitHub; the version is `spynach.__version__`.
 
 ## Unreleased
 
+- `epreasy` and `ctps` carry the distribution version, 0.2.0, as `spynach` does; tests keep the
+  three equal to `[project].version`.
 - `epreasy`, a separate package beside Spynach that ports EasySpin (Stefan
   Stoll and co-workers, MIT) to Python, imported as `epreasy` and depending
   on `spynach` (never the reverse; a test enforces it). This first step is
