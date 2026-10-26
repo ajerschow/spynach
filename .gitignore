@@ -20,3 +20,5 @@ comparison/runs/*-quick*/
 build/
 coherence-pathway-selection-publications/
 easyspin-publications/
+# built distributions
+dist/

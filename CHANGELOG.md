@@ -4,6 +4,9 @@ Releases are tagged `vX.Y.Z` on GitHub; the version is `spynach.__version__`.
 
 ## Unreleased
 
+- EPReasy has a PyPI distribution, `easyspyn` (import name `epreasy`, NumPy and SciPy only; `easyspyn[fast]` adds
+  Numba), built by `scripts/build_easyspyn.py` from `packaging/easyspyn/`; the name is held for an initial 0.2.0
+  release while the final name of the package is decided.
 - Threaded Numba kernels for the sparse linear algebra of `spynach` (`spynach.kernels`, the `fast`
   extra): the product of two sparse matrices with the rounding of `clean_up` fused in (the squarings of
   `propagator` and `expmint`), sparse-times-dense products, one fused term of the Taylor series of `step`, and the

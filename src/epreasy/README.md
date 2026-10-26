@@ -122,6 +122,13 @@ in batch mode. The installed EasySpin release is only read. Fixtures go to
 layout) and `meta.json`, whose `inputs` the parity tests read back to rebuild
 each case; `porting/EASYSPIN_FIXTURES.md` lists the cases.
 
+## On PyPI
+
+EPReasy is published on PyPI as `easyspyn` (`pip install easyspyn`; the import name stays `epreasy`; the
+distribution needs only NumPy and SciPy, with `easyspyn[fast]` adding Numba). `python scripts/build_easyspyn.py`
+builds it into `dist/easyspyn/` from a staged copy of this package and `packaging/easyspyn/`; the version there
+is kept equal to the repository's by `tests/unit/test_version.py`.
+
 ## Rolling it back
 
 The package touches nothing in `src/spynach`. To remove it:
