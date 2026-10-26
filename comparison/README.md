@@ -40,7 +40,7 @@ the long cases are kept in two runs on the same machine: `runs/<case>/` timed wi
 (`SPYNACH_NUMBA=0`, or Numba not installed) and `runs/<case>-numba/` timed with it, both against the same
 Spinach side (copy `spinach/` into the tagged directory before running the Spynach side with `--tag numba`).
 `meta.json` records `numba_version` (null without the kernels) and the report's provenance card shows it;
-`scripts/build_site.py` puts the two timings in one row of the project page's table.
+`scripts/build_site.py` shows the faster of the two in the project page's table.
 
 `<run>` is `<case>[-gpu][-<tag>]`: the case name, `-gpu` when the run was
 made with the GPU switch, and `-<tag>` when a tag was given (use the same
