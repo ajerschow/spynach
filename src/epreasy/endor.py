@@ -9,6 +9,14 @@ first- and second-order perturbation expressions of Iwasaki; ``orisel``
 the orientation-selection weights of an EPR excitation; ``salt`` the ENDOR
 spectrum of a powder or crystal with the interpolation, projection and
 summation of ``pepper``.
+
+EasySpin authors, by original file (contributors to the file up to EasySpin 6.0.15, see
+  docs/easyspin-credits.md):
+  anisosubsys.m: Stefan Stoll
+  endorfrq.m: Stefan Stoll, AlaCodon (GitHub user), Claudia Tait
+  endorfrq_perturb.m: Stefan Stoll
+  orisel.m: Stefan Stoll
+  salt.m: Stefan Stoll, Joscha Nehrkorn
 """
 
 from __future__ import annotations
@@ -73,6 +81,8 @@ def endorfrq(
     angle), ``SampleFrame``, ``MolFrame``. ``opt``: ``Transitions``, ``Threshold``, ``Nuclei`` (1-based, which
     nuclei's Zeeman terms detect), ``Intensity``, ``Enhancement`` (``'on'`` adds the electron Zeeman term to the
     detection operator), ``OriWeights``/``OriThreshold`` (skip orientations).
+
+    EasySpin authors (endorfrq.m): Stefan Stoll, AlaCodon (GitHub user), Claudia Tait.
     """
     sys = validatespinsys(system)
     if sys["nNuclei"] == 0:
@@ -256,7 +266,10 @@ def endorfrq_perturb(
     """ENDOR frequencies and intensities by first- or second-order perturbation theory (Iwasaki 1974).
 
     One electron spin; ``opt["PerturbOrder"]`` 1 or 2 (default 2); ``opt["Nuclei"]`` selects the nuclei. The
-    transitions are ordered by nucleus, then by the mI of the lower level, then by mS; ``trans`` is empty."""
+    transitions are ordered by nucleus, then by the mI of the lower level, then by mS; ``trans`` is empty.
+
+    EasySpin authors (endorfrq_perturb.m): Stefan Stoll.
+    """
     sys = validatespinsys(system)
     if sys["nElectrons"] != 1:
         raise ValueError("Perturbation theory available only for systems with 1 electron.")
@@ -458,7 +471,10 @@ def orisel(system: dict, exp: dict, opt: dict | None = None, *, per_transition: 
     """Orientation-selection weights of an EPR excitation at ``exp["Field"]`` (mT), ``exp["mwFreq"]`` (GHz) with
     the excitation width ``exp["ExciteWidth"]`` (MHz FWHM) and ``Sys.HStrain``: one weight per orientation of
     ``exp["Orientations"]`` (rows ``[phi, theta]``) or of the grid (``opt["GridSize"]``, ``GridSymmetry``).
-    ``per_transition=True`` returns ``(weights, transitions)`` with one column per level pair."""
+    ``per_transition=True`` returns ``(weights, transitions)`` with one column per level pair.
+
+    EasySpin authors (orisel.m): Stefan Stoll.
+    """
     sys = validatespinsys(system)
     h_strain = np.asarray(sys.get("HStrain", [0, 0, 0]), dtype=float).ravel()
     if h_strain.size == 1:
@@ -522,7 +538,10 @@ def orisel(system: dict, exp: dict, opt: dict | None = None, *, per_transition: 
 
 def anisosubsys(system: dict, lw=None) -> dict:
     """The sub-system responsible for the anisotropy of the EPR spectrum: nuclei whose splitting is below the
-    line width ``lw`` (default ``Sys.HStrain``) are removed and their splitting added to ``HStrain``."""
+    line width ``lw`` (default ``Sys.HStrain``) are removed and their splitting added to ``HStrain``.
+
+    EasySpin authors (anisosubsys.m): Stefan Stoll.
+    """
     sub = validatespinsys(system)
     if lw is None:
         lw = np.asarray(system.get("HStrain", [0, 0, 0]), dtype=float).ravel()
@@ -562,6 +581,8 @@ def salt(system: dict, exp: dict, opt: dict | None = None) -> Spectrum:  # noqa:
     ``opt``: ``Method`` (``'matrix'``, ``'perturb1'``, ``'perturb2'``), ``GridSize``, ``GridSymmetry``,
     ``GridFrame``, ``separate`` (``''``, ``'components'``, ``'transitions'``, ``'orientations'``), ``Transitions``,
     ``Threshold``, ``Nuclei``, ``Intensity``, ``Enhancement``, ``OriPreSelect``, ``OriThreshold``, ``OriWeights``.
+
+    EasySpin authors (salt.m): Stefan Stoll, Joscha Nehrkorn.
     """
     if isinstance(system, (list, tuple)):
         return compisoloop(salt, system, exp, opt)

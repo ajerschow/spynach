@@ -122,6 +122,16 @@ in batch mode. The installed EasySpin release is only read. Fixtures go to
 layout) and `meta.json`, whose `inputs` the parity tests read back to rebuild
 each case; `porting/EASYSPIN_FIXTURES.md` lists the cases.
 
+## Credits
+
+EasySpin's function headers name no authors, so every function that translates an EasySpin file carries a line
+`EasySpin authors (pepper.m): ...` in its docstring, naming the people who authored commits to that file up to
+release 6.0.15 (and any author the source names, such as John D'Errico for `jacobianest`), a block per module, and
+the generated page [`docs/easyspin-credits.md`](../../docs/easyspin-credits.md).
+`porting/tools/gen_easyspin_authors.py --fetch` reads the history through the `gh` CLI into
+`porting/easyspin_authors.json`; `--write` writes the docstrings and the page; `tests/epreasy/test_credits.py` keeps
+them current without network access. The lists show who changed a file, not who wrote which algorithm.
+
 ## On PyPI
 
 EPReasy is published on PyPI as `easyspyn` (`pip install easyspyn`; the import name stays `epreasy`; the

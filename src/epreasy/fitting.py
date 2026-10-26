@@ -11,6 +11,23 @@ plus ``lsqnonlin`` through ``scipy.optimize.least_squares``. The parameter
 uncertainties follow EasySpin (Romberg-extrapolated Jacobian, HC1
 heteroscedasticity-consistent covariance). ``rescaledata``, ``basecorr``,
 ``deriv`` and ``addnoise`` are the data helpers that go with it.
+
+EasySpin authors, by original file (contributors to the file up to EasySpin 6.0.15, see
+  docs/easyspin-credits.md):
+  addnoise.m: Stefan Stoll, Matthew Krzyaniak
+  basecorr.m: Stefan Stoll
+  deriv.m: Stefan Stoll
+  esfit.m: Stefan Stoll, Claudia Tait, Peter Martin
+  esfit_algdefaults.m: Stefan Stoll, Claudia Tait
+  esfit_genetic.m: Stefan Stoll, Claudia Tait, Peter Martin
+  esfit_grid.m: Stefan Stoll, Claudia Tait, Peter Martin
+  esfit_levmar.m: Claudia Tait, Stefan Stoll, Peter Martin
+  esfit_montecarlo.m: Stefan Stoll, Claudia Tait, Peter Martin
+  esfit_simplex.m: Stefan Stoll, Claudia Tait
+  esfit_swarm.m: Claudia Tait, Stefan Stoll
+  hccm.m: Stefan Stoll
+  jacobianest.m: John D'Errico, Claudia Tait, Stefan Stoll
+  rescaledata.m: Stefan Stoll, Claudia Tait, Matthew Krzyaniak
 """
 
 from __future__ import annotations
@@ -61,7 +78,10 @@ _EASYSPIN_FUNCTIONS = {"pepper", "garlic", "chili", "salt"}
 
 # ---------------------------------------------------------------------------------- algorithm options
 def _algdefaults(algorithm: str) -> dict:
-    """EasySpin's ``esfit_algdefaults``: the options of each algorithm."""
+    """EasySpin's ``esfit_algdefaults``: the options of each algorithm.
+
+    EasySpin authors (esfit_algdefaults.m, translated as a private function): Stefan Stoll, Claudia Tait.
+    """
     opt: dict[str, Any] = {"TolFun": 1e-5, "maxTime": np.inf, "IterFcn": None, "Verbosity": 0, "RandomStart": 0}
     if algorithm == "Nelder-Mead simplex":
         opt.update(delta=0.1, TolEdgeLength=1e-4, SimplexPars=None, ScaleParams=False)
@@ -130,7 +150,10 @@ def esfit_simplex(fcn: Callable, x0, lb, ub, fitopt: dict | None = None) -> tupl
 
     Options: ``delta`` (edge length of the initial simplex as a fraction of the bounds), ``SimplexPars``
     (``[rho, chi, psi, sigma]``; adaptive above two parameters), ``TolFun``, ``TolEdgeLength``, ``maxTime``
-    (minutes), ``ScaleParams``, ``RandomStart``, ``IterFcn``, ``Verbosity``."""
+    (minutes), ``ScaleParams``, ``RandomStart``, ``IterFcn``, ``Verbosity``.
+
+    EasySpin authors (esfit_simplex.m): Stefan Stoll, Claudia Tait.
+    """
     opt = _options(fitopt, "Nelder-Mead simplex")
     x0, lb, ub = _check_bounds(x0, lb, ub)
     n = x0.size
@@ -252,7 +275,10 @@ def esfit_levmar(fcn: Callable, x0, lb, ub, fitopt: dict | None = None) -> tuple
 
     EasySpin's variant: Gauss-Newton with Marquardt damping and a Jacobian that is updated by secant steps
     between finite-difference refreshes. Options: ``lambda`` (initial damping), ``delta`` (difference step),
-    ``TolStep``, ``Gradient``, ``maxTime``, ``ScaleParams``, ``RandomStart``, ``IterFcn``, ``Verbosity``."""
+    ``TolStep``, ``Gradient``, ``maxTime``, ``ScaleParams``, ``RandomStart``, ``IterFcn``, ``Verbosity``.
+
+    EasySpin authors (esfit_levmar.m): Claudia Tait, Stefan Stoll, Peter Martin.
+    """
     opt = _options(fitopt, "Levenberg-Marquardt")
     x0, lb, ub = _check_bounds(x0, lb, ub)
     n = x0.size
@@ -407,7 +433,10 @@ def _lm_step(A, g, mu):
 
 # ---------------------------------------------------------------------------------- Monte Carlo
 def esfit_montecarlo(fcn: Callable, lb, ub, fitopt: dict | None = None) -> tuple[np.ndarray, dict]:
-    """Random search of ``fcn`` over ``[lb, ub]`` with ``nTrials`` trials: ``(bestx, info)``."""
+    """Random search of ``fcn`` over ``[lb, ub]`` with ``nTrials`` trials: ``(bestx, info)``.
+
+    EasySpin authors (esfit_montecarlo.m): Stefan Stoll, Claudia Tait, Peter Martin.
+    """
     opt = _options(fitopt, "Monte Carlo")
     _, lb, ub = _check_bounds(None, lb, ub, with_x0=False)
     rng = _rng(opt)
@@ -448,7 +477,10 @@ def esfit_montecarlo(fcn: Callable, lb, ub, fitopt: dict | None = None) -> tuple
 def esfit_genetic(fcn: Callable, lb, ub, fitopt: dict | None = None) -> tuple[np.ndarray, dict]:
     """Genetic algorithm (roulette selection, blend recombination, sectioned mutation, elitism): ``(bestx, info)``.
 
-    Options: ``PopulationSize``, ``EliteCount``, ``maxGenerations``, ``TolFun``, ``maxTime``."""
+    Options: ``PopulationSize``, ``EliteCount``, ``maxGenerations``, ``TolFun``, ``maxTime``.
+
+    EasySpin authors (esfit_genetic.m): Stefan Stoll, Claudia Tait, Peter Martin.
+    """
     opt = _options(fitopt, "genetic algorithm")
     _, lb, ub = _check_bounds(None, lb, ub, with_x0=False)
     rng = _rng(opt)
@@ -550,7 +582,10 @@ def esfit_genetic(fcn: Callable, lb, ub, fitopt: dict | None = None) -> tuple[np
 
 # ---------------------------------------------------------------------------------- grid search
 def esfit_grid(fcn: Callable, lb, ub, fitopt: dict | None = None) -> tuple[np.ndarray, dict]:
-    """Evaluate ``fcn`` on a grid over ``[lb, ub]`` (``GridSize`` points per parameter): ``(bestx, info)``."""
+    """Evaluate ``fcn`` on a grid over ``[lb, ub]`` (``GridSize`` points per parameter): ``(bestx, info)``.
+
+    EasySpin authors (esfit_grid.m): Stefan Stoll, Claudia Tait, Peter Martin.
+    """
     opt = _options(fitopt, "grid search")
     _, lb, ub = _check_bounds(None, lb, ub, with_x0=False)
     n = lb.size
@@ -612,7 +647,10 @@ def esfit_swarm(fcn: Callable, lb, ub, fitopt: dict | None = None) -> tuple[np.n
     """Particle swarm minimisation of ``fcn`` over ``[lb, ub]``: ``(bestx, info)``.
 
     Options: ``nParticles`` (default ``20 + 10 n``), ``SwarmParams`` ``[k, w, c1, c2]``, ``TolStallIter``,
-    ``TolFun``, ``maxTime``."""
+    ``TolFun``, ``maxTime``.
+
+    EasySpin authors (esfit_swarm.m): Claudia Tait, Stefan Stoll.
+    """
     opt = _options(fitopt, "particle swarm")
     _, lb, ub = _check_bounds(None, lb, ub, with_x0=False)
     rng = _rng(opt)
@@ -682,7 +720,11 @@ def jacobianest(fun: Callable, x0, max_rel_step: float | np.ndarray = 0.01) -> t
     """Jacobian of the vector function ``fun`` at ``x0`` by Romberg-extrapolated central differences.
 
     Returns ``(jac, err)``: the derivative estimates and their error estimates (EasySpin's ``jacobianest``,
-    after John D'Errico's DERIVESTsuite)."""
+    after John D'Errico's DERIVESTsuite).
+
+    EasySpin authors (jacobianest.m, code of John D'Errico included in EasySpin): John D'Errico, Claudia Tait,
+      Stefan Stoll.
+    """
     x0 = np.asarray(x0, dtype=float).ravel()
     nx = x0.size
     step_ratio = 2 + 1e-7
@@ -743,7 +785,10 @@ def _romberg(step_ratio: float, der_init: np.ndarray, rombexpon: tuple[int, int]
 
 def hccm(J: np.ndarray, res: np.ndarray, mode: str = "HC1") -> np.ndarray:
     """Heteroscedasticity-consistent covariance matrix of the parameters from the Jacobian ``J`` and the
-    residuals ``res`` (modes ``HC0`` to ``HC5``; EasySpin uses ``HC1``)."""
+    residuals ``res`` (modes ``HC0`` to ``HC5``; EasySpin uses ``HC1``).
+
+    EasySpin authors (hccm.m): Stefan Stoll.
+    """
     J = np.asarray(J, dtype=float)
     res = np.asarray(res, dtype=float).ravel()
     N, M = J.shape
@@ -770,7 +815,10 @@ def hccm(J: np.ndarray, res: np.ndarray, mode: str = "HC1") -> np.ndarray:
 
 # ---------------------------------------------------------------------------------- data helpers
 def deriv(*args) -> np.ndarray:
-    """Numerical derivative along the first axis: ``deriv(y)`` or ``deriv(x, y)`` (EasySpin's ``deriv``)."""
+    """Numerical derivative along the first axis: ``deriv(y)`` or ``deriv(x, y)`` (EasySpin's ``deriv``).
+
+    EasySpin authors (deriv.m): Stefan Stoll.
+    """
     if len(args) == 1:
         y, x = np.asarray(args[0], dtype=float), None
     elif len(args) == 2:
@@ -788,7 +836,10 @@ def deriv(*args) -> np.ndarray:
 def rescaledata(y, yref=None, mode: str | None = None, region=None) -> tuple[np.ndarray, float]:
     """Rescale ``y``: ``'maxabs'`` (to a maximum magnitude of 1, or of ``yref``), ``'lsq'`` (least-squares fit
     to ``yref``), ``'int'``, ``'dint'`` (unit integral or double integral) or ``'none'``; ``region`` is a mask
-    of the points to use. Returns ``(yscaled, scale)``; the scale is never negative."""
+    of the points to use. Returns ``(yscaled, scale)``; the scale is never negative.
+
+    EasySpin authors (rescaledata.m): Stefan Stoll, Claudia Tait, Matthew Krzyaniak.
+    """
     if isinstance(yref, str):
         mode, yref = yref, None
     if mode is None:
@@ -835,7 +886,10 @@ def rescaledata(y, yref=None, mode: str | None = None, region=None) -> tuple[np.
 def basecorr(data, dim: int | None, n, region=None) -> tuple[np.ndarray, np.ndarray]:
     """Polynomial baseline correction of 1-D or 2-D ``data`` along ``dim`` (1 columns, 2 rows, ``None`` for a
     2-D surface with orders ``n = [n1, n2]``), optionally fitted on the points where ``region`` is true.
-    Returns ``(corrected, baseline)``."""
+    Returns ``(corrected, baseline)``.
+
+    EasySpin authors (basecorr.m): Stefan Stoll.
+    """
     data = np.asarray(data, dtype=float)
     if data.size == 0 or data.ndim > 2:
         raise ValueError("Only 1D or 2D data can be fitted.")
@@ -894,7 +948,10 @@ def basecorr(data, dim: int | None, n, region=None) -> tuple[np.ndarray, np.ndar
 
 
 def addnoise(y, snr: float, noisemodel: str, rng: np.random.Generator | int | None = None) -> np.ndarray:
-    """Add noise of the given signal-to-noise ratio to ``y``: ``'n'`` normal, ``'u'`` uniform, ``'f'`` 1/f."""
+    """Add noise of the given signal-to-noise ratio to ``y``: ``'n'`` normal, ``'u'`` uniform, ``'f'`` 1/f.
+
+    EasySpin authors (addnoise.m): Stefan Stoll, Matthew Krzyaniak.
+    """
     if np.size(snr) != 1 or snr <= 0:
         raise ValueError("The second input, the signal-to-noise ratio (SNR), must be a positive number.")
     rng = rng if isinstance(rng, np.random.Generator) else np.random.default_rng(rng)
@@ -1272,7 +1329,10 @@ def esfit(data, fcn: Callable, p0, *args, vary=None, lb=None, ub=None, opt: dict
     fitting). Options: ``Method`` (algorithm ``simplex``, ``levmar``, ``montecarlo``, ``genetic``, ``grid``,
     ``swarm``, ``lsqnonlin`` and target ``fcn``, ``int``, ``dint``, ``diff``, ``fft``), ``AutoScale`` (``lsq``,
     ``maxabs``, ``none``), ``BaseLine`` (polynomial order per dataset), ``Mask``, ``weight``, ``OutArg``,
-    ``RandomSeed``, ``CalculateUncertainties``, ``Verbosity``, and the algorithm options."""
+    ``RandomSeed``, ``CalculateUncertainties``, ``Verbosity``, and the algorithm options.
+
+    EasySpin authors (esfit.m): Stefan Stoll, Claudia Tait, Peter Martin.
+    """
     # Argument list: 4, 5 or 6 positional inputs as in EasySpin
     if len(args) == 1:
         vary = args[0]

@@ -1,4 +1,9 @@
-"""Spectral post-processing shared by the simulators: field modulation (EasySpin's fieldmod)."""
+"""Spectral post-processing shared by the simulators: field modulation (EasySpin's fieldmod).
+
+EasySpin authors, by original file (contributors to the file up to EasySpin 6.0.15, see
+  docs/easyspin-credits.md):
+  fieldmod.m: Stefan Stoll, sikuenstner (GitHub user)
+"""
 
 from __future__ import annotations
 
@@ -8,7 +13,10 @@ from scipy.special import jv
 
 def fieldmod(B, spc, mod_amp: float, harmonic: int = 1) -> np.ndarray:
     """Pseudo-modulated spectrum: the effect of field modulation of peak-to-peak amplitude ``mod_amp`` (mT) on an
-    absorption spectrum ``spc`` over the field axis ``B`` (mT), detected at ``harmonic`` (1, 2, ...)."""
+    absorption spectrum ``spc`` over the field axis ``B`` (mT), detected at ``harmonic`` (1, 2, ...).
+
+    EasySpin authors (fieldmod.m): Stefan Stoll, sikuenstner (GitHub user).
+    """
     B = np.asarray(B, dtype=float).ravel()
     spc = np.asarray(spc, dtype=float).ravel()
     if harmonic != int(harmonic) or harmonic < 0:

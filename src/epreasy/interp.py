@@ -5,6 +5,12 @@ finer one before the spectrum is projected: along the quarter meridian for
 axial grids, on the rectangle of (theta, phi) that the triangular grid is
 "rectified" to otherwise. ``G3`` is the global cubic spline, ``L3`` the local
 cubic (Fritsch-Carlson slopes, axial grids only), ``L1`` linear.
+
+EasySpin authors, by original file (contributors to the file up to EasySpin 6.0.15, see
+  docs/easyspin-credits.md):
+  esspline1d.m: Stefan Stoll
+  esspline2d.m: Stefan Stoll
+  gridinterp.m: Stefan Stoll
 """
 
 from __future__ import annotations
@@ -16,6 +22,8 @@ def esspline_coeffs(y: np.ndarray, endcon: int = 0) -> np.ndarray:
     """Cubic spline coefficients of the rows of ``y`` over ``x = 1..n``: array (4, d, n-1) of ``c4, c3, c2, c1``.
 
     ``endcon`` 0 is not-a-knot, 1 zero end slopes, 2 periodic (EasySpin's esspline1d).
+
+    EasySpin authors (esspline1d.m, the coefficient step): Stefan Stoll.
     """
     y = np.atleast_2d(np.asarray(y, dtype=float))
     d, n = y.shape
@@ -60,7 +68,10 @@ def esspline_coeffs(y: np.ndarray, endcon: int = 0) -> np.ndarray:
 
 
 def esspline_eval(coeffs: np.ndarray, xs: np.ndarray) -> np.ndarray:
-    """Evaluate spline coefficients (4, d, npp) at the 1-based abscissae ``xs``: array (d, len(xs))."""
+    """Evaluate spline coefficients (4, d, npp) at the 1-based abscissae ``xs``: array (d, len(xs)).
+
+    EasySpin authors (esspline1d.m, the evaluation step): Stefan Stoll.
+    """
     npp = coeffs.shape[2]
     xs = np.asarray(xs, dtype=float).ravel()
     index = np.minimum(np.trunc(xs).astype(np.intp), npp)
@@ -70,7 +81,10 @@ def esspline_eval(coeffs: np.ndarray, xs: np.ndarray) -> np.ndarray:
 
 
 def esspline1d(y, endcon: int = 0, xx=None) -> np.ndarray:
-    """Cubic spline interpolation of the rows of ``y`` over ``1..n`` at ``xx`` (a count of points, or abscissae)."""
+    """Cubic spline interpolation of the rows of ``y`` over ``1..n`` at ``xx`` (a count of points, or abscissae).
+
+    EasySpin authors (esspline1d.m): Stefan Stoll.
+    """
     y = np.atleast_2d(np.asarray(y, dtype=float))
     n = y.shape[1]
     coeffs = esspline_coeffs(y, endcon)
@@ -82,7 +96,10 @@ def esspline1d(y, endcon: int = 0, xx=None) -> np.ndarray:
 
 
 def esspline2d(data, ri, ci, endcon=(0, 0)) -> np.ndarray:
-    """Tensor-product cubic spline of a 2-D array at 1-based (row, column) abscissae ``ri``, ``ci``."""
+    """Tensor-product cubic spline of a 2-D array at 1-based (row, column) abscissae ``ri``, ``ci``.
+
+    EasySpin authors (esspline2d.m): Stefan Stoll.
+    """
     data = np.asarray(data, dtype=float)
     R, C = data.shape
     ri = np.asarray(ri, dtype=float)
@@ -160,7 +177,10 @@ def _fritsch_carlson_row(y: np.ndarray, factor: int) -> np.ndarray:
 
 def gridinterp(y, grid_params, phi, theta, interp_type: str = "G3") -> np.ndarray:
     """Interpolate data given on the knots of a spherical grid (one value per knot, rows of ``y``) to the
-    orientations ``phi``, ``theta``. ``grid_params`` is ``[nOrientations, GridSize, closedPhi, nOctants, maxPhi]``."""
+    orientations ``phi``, ``theta``. ``grid_params`` is ``[nOrientations, GridSize, closedPhi, nOctants, maxPhi]``.
+
+    EasySpin authors (gridinterp.m): Stefan Stoll.
+    """
     y = np.atleast_2d(np.asarray(y, dtype=float))
     n_ori, grid_size, closed_phi, n_octants, max_phi = grid_params
     grid_size, n_octants = int(grid_size), int(n_octants)

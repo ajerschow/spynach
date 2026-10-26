@@ -1,0 +1,2580 @@
+{
+ "easyspin_version": "6.0.15",
+ "tag": "v6.0.15",
+ "repository": "https://github.com/StollLab/EasySpin",
+ "notice": "Copyright (c) 2006-2024 Stefan Stoll and other contributors",
+ "files": {
+  "adddefaults.m": {
+   "path": "easyspin/private/adddefaults.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 3
+    }
+   ]
+  },
+  "addnoise.m": {
+   "path": "easyspin/addnoise.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 4
+    },
+    {
+     "name": "Matthew Krzyaniak",
+     "commits": 2
+    }
+   ]
+  },
+  "ang2vec.m": {
+   "path": "easyspin/ang2vec.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 5
+    }
+   ]
+  },
+  "anisosubsys.m": {
+   "path": "easyspin/private/anisosubsys.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 3
+    }
+   ]
+  },
+  "apowin.m": {
+   "path": "easyspin/apowin.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 3
+    }
+   ]
+  },
+  "basecorr.m": {
+   "path": "easyspin/basecorr.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 4
+    }
+   ]
+  },
+  "chili.m": {
+   "path": "easyspin/chili.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 139
+    },
+    {
+     "name": "Jeremy Lehner",
+     "commits": 9
+    },
+    {
+     "name": "Peter Martin",
+     "commits": 3
+    },
+    {
+     "name": "Matthew Krzyaniak",
+     "commits": 1
+    },
+    {
+     "name": "Joscha Nehrkorn",
+     "commits": 1
+    }
+   ]
+  },
+  "chili_conjgrad.m": {
+   "path": "easyspin/private/chili_conjgrad.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 5
+    }
+   ]
+  },
+  "chili_contfracspec.m": {
+   "path": "easyspin/private/chili_contfracspec.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 4
+    }
+   ]
+  },
+  "chili_eqpopvec.m": {
+   "path": "easyspin/private/chili_eqpopvec.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 2
+    }
+   ]
+  },
+  "chili_lanczos.m": {
+   "path": "easyspin/private/chili_lanczos.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 6
+    }
+   ]
+  },
+  "chili_xlmk.m": {
+   "path": "easyspin/private/chili_xlmk.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 7
+    }
+   ]
+  },
+  "compisoloop.m": {
+   "path": "easyspin/private/compisoloop.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 2
+    },
+    {
+     "name": "Claudia Tait",
+     "commits": 1
+    }
+   ]
+  },
+  "convspec.m": {
+   "path": "easyspin/convspec.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 4
+    }
+   ]
+  },
+  "cubicsolve.c": {
+   "path": "easyspin/private/cubicsolve.c",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 1
+    }
+   ]
+  },
+  "curry.m": {
+   "path": "easyspin/curry.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 30
+    },
+    {
+     "name": "Joscha Nehrkorn",
+     "commits": 4
+    }
+   ]
+  },
+  "deriv.m": {
+   "path": "easyspin/deriv.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 1
+    }
+   ]
+  },
+  "diffsuperop.m": {
+   "path": "easyspin/private/diffsuperop.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 22
+    },
+    {
+     "name": "Jeremy Lehner",
+     "commits": 2
+    }
+   ]
+  },
+  "endorfrq.m": {
+   "path": "easyspin/endorfrq.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 17
+    },
+    {
+     "name": "AlaCodon (GitHub user)",
+     "commits": 1
+    },
+    {
+     "name": "Claudia Tait",
+     "commits": 1
+    }
+   ]
+  },
+  "endorfrq_perturb.m": {
+   "path": "easyspin/endorfrq_perturb.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 14
+    }
+   ]
+  },
+  "equivcouple.m": {
+   "path": "easyspin/equivcouple.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 2
+    }
+   ]
+  },
+  "erot.m": {
+   "path": "easyspin/erot.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 3
+    }
+   ]
+  },
+  "esfit.m": {
+   "path": "easyspin/esfit.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 35
+    },
+    {
+     "name": "Claudia Tait",
+     "commits": 20
+    },
+    {
+     "name": "Peter Martin",
+     "commits": 4
+    }
+   ]
+  },
+  "esfit_algdefaults.m": {
+   "path": "easyspin/private/esfit_algdefaults.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 1
+    },
+    {
+     "name": "Claudia Tait",
+     "commits": 1
+    }
+   ]
+  },
+  "esfit_genetic.m": {
+   "path": "easyspin/esfit_genetic.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 9
+    },
+    {
+     "name": "Claudia Tait",
+     "commits": 8
+    },
+    {
+     "name": "Peter Martin",
+     "commits": 2
+    }
+   ]
+  },
+  "esfit_grid.m": {
+   "path": "easyspin/esfit_grid.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 7
+    },
+    {
+     "name": "Claudia Tait",
+     "commits": 4
+    },
+    {
+     "name": "Peter Martin",
+     "commits": 1
+    }
+   ]
+  },
+  "esfit_levmar.m": {
+   "path": "easyspin/esfit_levmar.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Claudia Tait",
+     "commits": 7
+    },
+    {
+     "name": "Stefan Stoll",
+     "commits": 7
+    },
+    {
+     "name": "Peter Martin",
+     "commits": 4
+    }
+   ]
+  },
+  "esfit_montecarlo.m": {
+   "path": "easyspin/esfit_montecarlo.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 7
+    },
+    {
+     "name": "Claudia Tait",
+     "commits": 4
+    },
+    {
+     "name": "Peter Martin",
+     "commits": 2
+    }
+   ]
+  },
+  "esfit_simplex.m": {
+   "path": "easyspin/esfit_simplex.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 6
+    },
+    {
+     "name": "Claudia Tait",
+     "commits": 5
+    }
+   ]
+  },
+  "esfit_swarm.m": {
+   "path": "easyspin/esfit_swarm.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Claudia Tait",
+     "commits": 6
+    },
+    {
+     "name": "Stefan Stoll",
+     "commits": 6
+    }
+   ]
+  },
+  "esspline1d.m": {
+   "path": "easyspin/private/esspline1d.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 3
+    }
+   ]
+  },
+  "esspline2d.m": {
+   "path": "easyspin/private/esspline2d.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 3
+    }
+   ]
+  },
+  "eulang.m": {
+   "path": "easyspin/eulang.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 6
+    },
+    {
+     "name": "Claudia Tait",
+     "commits": 1
+    }
+   ]
+  },
+  "exponfit.m": {
+   "path": "easyspin/exponfit.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 6
+    }
+   ]
+  },
+  "fastmotion.m": {
+   "path": "easyspin/fastmotion.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 6
+    },
+    {
+     "name": "Matthew Krzyaniak",
+     "commits": 1
+    }
+   ]
+  },
+  "fdaxis.m": {
+   "path": "easyspin/fdaxis.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 2
+    }
+   ]
+  },
+  "fieldmod.m": {
+   "path": "easyspin/fieldmod.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 4
+    },
+    {
+     "name": "sikuenstner (GitHub user)",
+     "commits": 1
+    }
+   ]
+  },
+  "garlic.m": {
+   "path": "easyspin/garlic.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 35
+    },
+    {
+     "name": "Joscha Nehrkorn",
+     "commits": 2
+    }
+   ]
+  },
+  "gaussian.m": {
+   "path": "easyspin/gaussian.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 5
+    }
+   ]
+  },
+  "generateoribasis.m": {
+   "path": "easyspin/private/generateoribasis.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 5
+    }
+   ]
+  },
+  "getdstrainops.m": {
+   "path": "easyspin/private/getdstrainops.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 2
+    }
+   ]
+  },
+  "gethamdata.m": {
+   "path": "easyspin/private/gethamdata.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 3
+    },
+    {
+     "name": "Matthew Krzyaniak",
+     "commits": 1
+    }
+   ]
+  },
+  "gridinterp.m": {
+   "path": "easyspin/private/gridinterp.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 5
+    }
+   ]
+  },
+  "gridparam.m": {
+   "path": "easyspin/private/gridparam.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 1
+    }
+   ]
+  },
+  "ham.m": {
+   "path": "easyspin/ham.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 2
+    }
+   ]
+  },
+  "ham_ee.m": {
+   "path": "easyspin/ham_ee.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 4
+    }
+   ]
+  },
+  "ham_ez.m": {
+   "path": "easyspin/ham_ez.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 3
+    }
+   ]
+  },
+  "ham_hf.m": {
+   "path": "easyspin/ham_hf.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 2
+    }
+   ]
+  },
+  "ham_nn.m": {
+   "path": "easyspin/ham_nn.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 4
+    }
+   ]
+  },
+  "ham_nq.m": {
+   "path": "easyspin/ham_nq.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 3
+    }
+   ]
+  },
+  "ham_nz.m": {
+   "path": "easyspin/ham_nz.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 4
+    }
+   ]
+  },
+  "ham_zf.m": {
+   "path": "easyspin/ham_zf.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 5
+    }
+   ]
+  },
+  "hamsymm.m": {
+   "path": "easyspin/hamsymm.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 3
+    }
+   ]
+  },
+  "hccm.m": {
+   "path": "easyspin/private/hccm.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 2
+    }
+   ]
+  },
+  "hil2liouv.m": {
+   "path": "easyspin/private/hil2liouv.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 2
+    },
+    {
+     "name": "Jeremy Lehner",
+     "commits": 1
+    }
+   ]
+  },
+  "hsdim.m": {
+   "path": "easyspin/hsdim.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 4
+    }
+   ]
+  },
+  "isotopes.m": {
+   "path": "easyspin/isotopes.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 3
+    },
+    {
+     "name": "Claudia Tait",
+     "commits": 1
+    },
+    {
+     "name": "Liam Twomey",
+     "commits": 1
+    }
+   ]
+  },
+  "istotensor.m": {
+   "path": "easyspin/private/istotensor.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 5
+    },
+    {
+     "name": "Jeremy Lehner",
+     "commits": 1
+    }
+   ]
+  },
+  "jacobianest.m": {
+   "path": "easyspin/private/jacobianest.m",
+   "external": [
+    "John D'Errico"
+   ],
+   "contributors": [
+    {
+     "name": "Claudia Tait",
+     "commits": 1
+    },
+    {
+     "name": "Stefan Stoll",
+     "commits": 1
+    }
+   ]
+  },
+  "larmorfrq.m": {
+   "path": "easyspin/larmorfrq.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 4
+    }
+   ]
+  },
+  "letter2vec.m": {
+   "path": "easyspin/private/letter2vec.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 2
+    }
+   ]
+  },
+  "levels.m": {
+   "path": "easyspin/levels.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 9
+    }
+   ]
+  },
+  "lisum1i.c": {
+   "path": "easyspin/private/lisum1i.c",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 2
+    }
+   ]
+  },
+  "lorentzian.m": {
+   "path": "easyspin/lorentzian.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 5
+    },
+    {
+     "name": "Claudia Tait",
+     "commits": 1
+    }
+   ]
+  },
+  "lshape.m": {
+   "path": "easyspin/lshape.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 3
+    }
+   ]
+  },
+  "magint.m": {
+   "path": "easyspin/private/magint.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 7
+    },
+    {
+     "name": "Jeremy Lehner",
+     "commits": 2
+    },
+    {
+     "name": "Peter Martin",
+     "commits": 2
+    }
+   ]
+  },
+  "mhz2mt.m": {
+   "path": "easyspin/mhz2mt.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 5
+    },
+    {
+     "name": "Matthew Krzyaniak",
+     "commits": 1
+    }
+   ]
+  },
+  "mt2mhz.m": {
+   "path": "easyspin/mt2mhz.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 4
+    },
+    {
+     "name": "Matthew Krzyaniak",
+     "commits": 1
+    }
+   ]
+  },
+  "nucabund.m": {
+   "path": "easyspin/nucabund.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 3
+    }
+   ]
+  },
+  "nucdata.m": {
+   "path": "easyspin/nucdata.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 6
+    },
+    {
+     "name": "Matthew Krzyaniak",
+     "commits": 1
+    }
+   ]
+  },
+  "nucgval.m": {
+   "path": "easyspin/nucgval.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 3
+    }
+   ]
+  },
+  "nucqmom.m": {
+   "path": "easyspin/nucqmom.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 3
+    }
+   ]
+  },
+  "nucspin.m": {
+   "path": "easyspin/nucspin.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 3
+    }
+   ]
+  },
+  "nucspinrmv.m": {
+   "path": "easyspin/nucspinrmv.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 9
+    }
+   ]
+  },
+  "nucstring2list.m": {
+   "path": "easyspin/private/nucstring2list.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 3
+    }
+   ]
+  },
+  "orisel.m": {
+   "path": "easyspin/orisel.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 13
+    }
+   ]
+  },
+  "pepper.m": {
+   "path": "easyspin/pepper.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 78
+    },
+    {
+     "name": "Claudia Tait",
+     "commits": 2
+    },
+    {
+     "name": "Joscha Nehrkorn",
+     "commits": 2
+    }
+   ]
+  },
+  "photoselect.m": {
+   "path": "easyspin/photoselect.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 1
+    }
+   ]
+  },
+  "pqorder.m": {
+   "path": "easyspin/private/pqorder.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 5
+    }
+   ]
+  },
+  "projecttriangles.c": {
+   "path": "easyspin/private/projecttriangles.c",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 1
+    }
+   ]
+  },
+  "projectzones.c": {
+   "path": "easyspin/private/projectzones.c",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 1
+    }
+   ]
+  },
+  "rbos.m": {
+   "path": "easyspin/private/rbos.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 4
+    },
+    {
+     "name": "Peter Martin",
+     "commits": 1
+    },
+    {
+     "name": "Jeremy Lehner",
+     "commits": 1
+    }
+   ]
+  },
+  "rescaledata.m": {
+   "path": "easyspin/rescaledata.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 6
+    },
+    {
+     "name": "Claudia Tait",
+     "commits": 1
+    },
+    {
+     "name": "Matthew Krzyaniak",
+     "commits": 1
+    }
+   ]
+  },
+  "resfields.m": {
+   "path": "easyspin/resfields.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 41
+    },
+    {
+     "name": "Matthew Krzyaniak",
+     "commits": 6
+    },
+    {
+     "name": "Claudia Tait",
+     "commits": 4
+    },
+    {
+     "name": "Joscha Nehrkorn",
+     "commits": 3
+    },
+    {
+     "name": "AlaCodon (GitHub user)",
+     "commits": 1
+    }
+   ]
+  },
+  "resfields_eig.m": {
+   "path": "easyspin/resfields_eig.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 8
+    }
+   ]
+  },
+  "resfields_perturb.m": {
+   "path": "easyspin/resfields_perturb.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 23
+    },
+    {
+     "name": "Claudia Tait",
+     "commits": 2
+    },
+    {
+     "name": "Joscha Nehrkorn",
+     "commits": 2
+    },
+    {
+     "name": "AlaCodon (GitHub user)",
+     "commits": 1
+    },
+    {
+     "name": "Matthew Krzyaniak",
+     "commits": 1
+    }
+   ]
+  },
+  "saffron.m": {
+   "path": "easyspin/saffron.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 52
+    },
+    {
+     "name": "Stephan Pribitzer",
+     "commits": 11
+    },
+    {
+     "name": "Claudia Tait",
+     "commits": 1
+    },
+    {
+     "name": "Joscha Nehrkorn",
+     "commits": 1
+    }
+   ]
+  },
+  "salt.m": {
+   "path": "easyspin/salt.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 50
+    },
+    {
+     "name": "Joscha Nehrkorn",
+     "commits": 1
+    }
+   ]
+  },
+  "sf_pathways.m": {
+   "path": "easyspin/private/sf_pathways.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 2
+    },
+    {
+     "name": "Claudia Tait",
+     "commits": 1
+    }
+   ]
+  },
+  "sf_peaks.c": {
+   "path": "easyspin/private/sf_peaks.c",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 2
+    }
+   ]
+  },
+  "sop.m": {
+   "path": "easyspin/sop.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 13
+    },
+    {
+     "name": "Stephan Pribitzer",
+     "commits": 3
+    },
+    {
+     "name": "Peter Martin",
+     "commits": 1
+    }
+   ]
+  },
+  "sphgrid.m": {
+   "path": "easyspin/sphgrid.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 17
+    }
+   ]
+  },
+  "spinvec.m": {
+   "path": "easyspin/spinvec.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 3
+    }
+   ]
+  },
+  "stev.m": {
+   "path": "easyspin/stev.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 9
+    },
+    {
+     "name": "AlbanBloorRiley (GitHub user)",
+     "commits": 1
+    }
+   ]
+  },
+  "tensor_cart2sph.m": {
+   "path": "easyspin/tensor_cart2sph.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 2
+    }
+   ]
+  },
+  "tensor_sph2cart.m": {
+   "path": "easyspin/tensor_sph2cart.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 2
+    }
+   ]
+  },
+  "unitconvert.m": {
+   "path": "easyspin/unitconvert.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "sikuenstner (GitHub user)",
+     "commits": 1
+    },
+    {
+     "name": "Matthew Krzyaniak",
+     "commits": 1
+    }
+   ]
+  },
+  "validatespinsys.m": {
+   "path": "easyspin/private/validatespinsys.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 39
+    },
+    {
+     "name": "Claudia Tait",
+     "commits": 3
+    },
+    {
+     "name": "Stephan Pribitzer",
+     "commits": 3
+    },
+    {
+     "name": "Joscha Nehrkorn",
+     "commits": 3
+    },
+    {
+     "name": "Matthew Krzyaniak",
+     "commits": 1
+    }
+   ]
+  },
+  "vec2ang.m": {
+   "path": "easyspin/vec2ang.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 5
+    }
+   ]
+  },
+  "voigtian.m": {
+   "path": "easyspin/voigtian.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 4
+    }
+   ]
+  },
+  "wigner3j.m": {
+   "path": "easyspin/wigner3j.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 8
+    }
+   ]
+  },
+  "wigner6j.m": {
+   "path": "easyspin/wigner6j.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 3
+    }
+   ]
+  },
+  "wignerd.m": {
+   "path": "easyspin/wignerd.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 10
+    }
+   ]
+  }
+ },
+ "functions": {
+  "epreasy.components.compisoloop": {
+   "files": [
+    {
+     "file": "compisoloop.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.endor.anisosubsys": {
+   "files": [
+    {
+     "file": "anisosubsys.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.endor.endorfrq": {
+   "files": [
+    {
+     "file": "endorfrq.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.endor.endorfrq_perturb": {
+   "files": [
+    {
+     "file": "endorfrq_perturb.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.endor.orisel": {
+   "files": [
+    {
+     "file": "orisel.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.endor.salt": {
+   "files": [
+    {
+     "file": "salt.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.fitting._algdefaults": {
+   "files": [
+    {
+     "file": "esfit_algdefaults.m",
+     "note": "translated as a private function"
+    }
+   ],
+   "relation": "derived",
+   "note": ""
+  },
+  "epreasy.fitting.addnoise": {
+   "files": [
+    {
+     "file": "addnoise.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.fitting.basecorr": {
+   "files": [
+    {
+     "file": "basecorr.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.fitting.deriv": {
+   "files": [
+    {
+     "file": "deriv.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.fitting.esfit": {
+   "files": [
+    {
+     "file": "esfit.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.fitting.esfit_genetic": {
+   "files": [
+    {
+     "file": "esfit_genetic.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.fitting.esfit_grid": {
+   "files": [
+    {
+     "file": "esfit_grid.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.fitting.esfit_levmar": {
+   "files": [
+    {
+     "file": "esfit_levmar.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.fitting.esfit_montecarlo": {
+   "files": [
+    {
+     "file": "esfit_montecarlo.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.fitting.esfit_simplex": {
+   "files": [
+    {
+     "file": "esfit_simplex.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.fitting.esfit_swarm": {
+   "files": [
+    {
+     "file": "esfit_swarm.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.fitting.hccm": {
+   "files": [
+    {
+     "file": "hccm.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.fitting.jacobianest": {
+   "files": [
+    {
+     "file": "jacobianest.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.fitting.rescaledata": {
+   "files": [
+    {
+     "file": "rescaledata.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.garlic.equivcouple": {
+   "files": [
+    {
+     "file": "equivcouple.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.garlic.fastmotion": {
+   "files": [
+    {
+     "file": "fastmotion.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.garlic.garlic": {
+   "files": [
+    {
+     "file": "garlic.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.grids.gridparam": {
+   "files": [
+    {
+     "file": "gridparam.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.grids.sphgrid": {
+   "files": [
+    {
+     "file": "sphgrid.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.hamiltonian.ham": {
+   "files": [
+    {
+     "file": "ham.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.hamiltonian.ham_ee": {
+   "files": [
+    {
+     "file": "ham_ee.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.hamiltonian.ham_ez": {
+   "files": [
+    {
+     "file": "ham_ez.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.hamiltonian.ham_hf": {
+   "files": [
+    {
+     "file": "ham_hf.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.hamiltonian.ham_nn": {
+   "files": [
+    {
+     "file": "ham_nn.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.hamiltonian.ham_nq": {
+   "files": [
+    {
+     "file": "ham_nq.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.hamiltonian.ham_nz": {
+   "files": [
+    {
+     "file": "ham_nz.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.hamiltonian.ham_zf": {
+   "files": [
+    {
+     "file": "ham_zf.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.hamiltonian.levels": {
+   "files": [
+    {
+     "file": "levels.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.interp.esspline1d": {
+   "files": [
+    {
+     "file": "esspline1d.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.interp.esspline2d": {
+   "files": [
+    {
+     "file": "esspline2d.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.interp.esspline_coeffs": {
+   "files": [
+    {
+     "file": "esspline1d.m",
+     "note": "the coefficient step"
+    }
+   ],
+   "relation": "derived",
+   "note": ""
+  },
+  "epreasy.interp.esspline_eval": {
+   "files": [
+    {
+     "file": "esspline1d.m",
+     "note": "the evaluation step"
+    }
+   ],
+   "relation": "derived",
+   "note": ""
+  },
+  "epreasy.interp.gridinterp": {
+   "files": [
+    {
+     "file": "gridinterp.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.interp.rectify": {
+   "files": [],
+   "relation": "new",
+   "note": ""
+  },
+  "epreasy.kernels.lisum1i": {
+   "files": [
+    {
+     "file": "lisum1i.c",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.kernels.lisum1i_numpy": {
+   "files": [
+    {
+     "file": "lisum1i.c",
+     "note": "the C kernel, in NumPy"
+    }
+   ],
+   "relation": "derived",
+   "note": ""
+  },
+  "epreasy.kernels.projecttriangles": {
+   "files": [
+    {
+     "file": "projecttriangles.c",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.kernels.projecttriangles_numpy": {
+   "files": [
+    {
+     "file": "projecttriangles.c",
+     "note": "the C kernel, in NumPy"
+    }
+   ],
+   "relation": "derived",
+   "note": ""
+  },
+  "epreasy.kernels.projectzones": {
+   "files": [
+    {
+     "file": "projectzones.c",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.kernels.projectzones_numpy": {
+   "files": [
+    {
+     "file": "projectzones.c",
+     "note": "the C kernel, in NumPy"
+    }
+   ],
+   "relation": "derived",
+   "note": ""
+  },
+  "epreasy.lineshapes.convspec": {
+   "files": [
+    {
+     "file": "convspec.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.lineshapes.gaussian": {
+   "files": [
+    {
+     "file": "gaussian.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.lineshapes.lorentzian": {
+   "files": [
+    {
+     "file": "lorentzian.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.lineshapes.lshape": {
+   "files": [
+    {
+     "file": "lshape.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.lineshapes.voigtian": {
+   "files": [
+    {
+     "file": "voigtian.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.magnetometry.curry": {
+   "files": [
+    {
+     "file": "curry.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.nucdata.isotopes": {
+   "files": [
+    {
+     "file": "isotopes.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.nucdata.nucabund": {
+   "files": [
+    {
+     "file": "nucabund.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.nucdata.nucdata": {
+   "files": [
+    {
+     "file": "nucdata.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.nucdata.nucgval": {
+   "files": [
+    {
+     "file": "nucgval.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.nucdata.nucqmom": {
+   "files": [
+    {
+     "file": "nucqmom.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.nucdata.nucspin": {
+   "files": [
+    {
+     "file": "nucspin.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.nucdata.nucstring2list": {
+   "files": [
+    {
+     "file": "nucstring2list.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.pepper.pepper": {
+   "files": [
+    {
+     "file": "pepper.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.perturb.resfields_perturb": {
+   "files": [
+    {
+     "file": "resfields_perturb.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.perturb.resfields_perturb_oriented": {
+   "files": [
+    {
+     "file": "resfields_perturb.m",
+     "note": "the per-orientation part"
+    }
+   ],
+   "relation": "derived",
+   "note": ""
+  },
+  "epreasy.processing.fieldmod": {
+   "files": [
+    {
+     "file": "fieldmod.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.pulsed._pathwayparser": {
+   "files": [
+    {
+     "file": "saffron.m",
+     "note": "the pathway parser of the fast engine"
+    }
+   ],
+   "relation": "derived",
+   "note": ""
+  },
+  "epreasy.pulsed._sf_evolve": {
+   "files": [
+    {
+     "file": "saffron.m",
+     "note": "the time-domain evolution of the fast engine"
+    }
+   ],
+   "relation": "derived",
+   "note": ""
+  },
+  "epreasy.pulsed._sf_peaks": {
+   "files": [
+    {
+     "file": "sf_peaks.c",
+     "note": "the peak-binning kernel, in NumPy"
+    }
+   ],
+   "relation": "derived",
+   "note": ""
+  },
+  "epreasy.pulsed.apowin": {
+   "files": [
+    {
+     "file": "apowin.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.pulsed.exponfit": {
+   "files": [
+    {
+     "file": "exponfit.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.pulsed.fdaxis": {
+   "files": [
+    {
+     "file": "fdaxis.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.pulsed.larmorfrq": {
+   "files": [
+    {
+     "file": "larmorfrq.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.pulsed.saffron": {
+   "files": [
+    {
+     "file": "saffron.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.pulsed.sf_pathways": {
+   "files": [
+    {
+     "file": "sf_pathways.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.resfields.adddefaults": {
+   "files": [
+    {
+     "file": "adddefaults.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.resfields.cubicsolve": {
+   "files": [
+    {
+     "file": "cubicsolve.c",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.resfields.getdstrainops": {
+   "files": [
+    {
+     "file": "getdstrainops.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.resfields.gethamdata": {
+   "files": [
+    {
+     "file": "gethamdata.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.resfields.nucspinrmv": {
+   "files": [
+    {
+     "file": "nucspinrmv.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.resfields.photoselect": {
+   "files": [
+    {
+     "file": "photoselect.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.resfields.resfields": {
+   "files": [
+    {
+     "file": "resfields.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.resfields.resfields_eig": {
+   "files": [
+    {
+     "file": "resfields_eig.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.resfields.resfields_oriented": {
+   "files": [
+    {
+     "file": "resfields.m",
+     "note": "the per-orientation part"
+    }
+   ],
+   "relation": "derived",
+   "note": ""
+  },
+  "epreasy.rotations.ang2vec": {
+   "files": [
+    {
+     "file": "ang2vec.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.rotations.erot": {
+   "files": [
+    {
+     "file": "erot.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.rotations.eulang": {
+   "files": [
+    {
+     "file": "eulang.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.rotations.letter2vec": {
+   "files": [
+    {
+     "file": "letter2vec.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.rotations.vec2ang": {
+   "files": [
+    {
+     "file": "vec2ang.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.slowmotion._conjgrad": {
+   "files": [
+    {
+     "file": "chili_conjgrad.m",
+     "note": "translated as a private function"
+    }
+   ],
+   "relation": "derived",
+   "note": ""
+  },
+  "epreasy.slowmotion._contfracspec": {
+   "files": [
+    {
+     "file": "chili_contfracspec.m",
+     "note": "translated as a private function"
+    }
+   ],
+   "relation": "derived",
+   "note": ""
+  },
+  "epreasy.slowmotion._diffsuperop": {
+   "files": [
+    {
+     "file": "diffsuperop.m",
+     "note": "translated as a private function"
+    }
+   ],
+   "relation": "derived",
+   "note": ""
+  },
+  "epreasy.slowmotion._eqpopvec": {
+   "files": [
+    {
+     "file": "chili_eqpopvec.m",
+     "note": "translated as a private function"
+    }
+   ],
+   "relation": "derived",
+   "note": ""
+  },
+  "epreasy.slowmotion._generateoribasis": {
+   "files": [
+    {
+     "file": "generateoribasis.m",
+     "note": "translated as a private function"
+    }
+   ],
+   "relation": "derived",
+   "note": ""
+  },
+  "epreasy.slowmotion._hil2liouv": {
+   "files": [
+    {
+     "file": "hil2liouv.m",
+     "note": "translated as a private function"
+    }
+   ],
+   "relation": "derived",
+   "note": ""
+  },
+  "epreasy.slowmotion._istotensor": {
+   "files": [
+    {
+     "file": "istotensor.m",
+     "note": "translated as a private function"
+    }
+   ],
+   "relation": "derived",
+   "note": ""
+  },
+  "epreasy.slowmotion._lanczos": {
+   "files": [
+    {
+     "file": "chili_lanczos.m",
+     "note": "translated as a private function"
+    }
+   ],
+   "relation": "derived",
+   "note": ""
+  },
+  "epreasy.slowmotion._magint": {
+   "files": [
+    {
+     "file": "magint.m",
+     "note": "translated as a private function"
+    }
+   ],
+   "relation": "derived",
+   "note": ""
+  },
+  "epreasy.slowmotion._pqorder": {
+   "files": [
+    {
+     "file": "pqorder.m",
+     "note": "translated as a private function"
+    }
+   ],
+   "relation": "derived",
+   "note": ""
+  },
+  "epreasy.slowmotion._rbos": {
+   "files": [
+    {
+     "file": "rbos.m",
+     "note": "translated as a private function"
+    }
+   ],
+   "relation": "derived",
+   "note": ""
+  },
+  "epreasy.slowmotion._xlmk": {
+   "files": [
+    {
+     "file": "chili_xlmk.m",
+     "note": "translated as a private function"
+    }
+   ],
+   "relation": "derived",
+   "note": ""
+  },
+  "epreasy.slowmotion.chili": {
+   "files": [
+    {
+     "file": "chili.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.slowmotion.tensor_cart2sph": {
+   "files": [
+    {
+     "file": "tensor_cart2sph.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.slowmotion.tensor_sph2cart": {
+   "files": [
+    {
+     "file": "tensor_sph2cart.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.slowmotion.wigner3j": {
+   "files": [
+    {
+     "file": "wigner3j.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.slowmotion.wigner6j": {
+   "files": [
+    {
+     "file": "wigner6j.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.slowmotion.wignerd": {
+   "files": [
+    {
+     "file": "wignerd.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.spinops.sop": {
+   "files": [
+    {
+     "file": "sop.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.spinops.stev": {
+   "files": [
+    {
+     "file": "stev.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.spinsystem.hsdim": {
+   "files": [
+    {
+     "file": "hsdim.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.spinsystem.spinvec": {
+   "files": [
+    {
+     "file": "spinvec.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.spinsystem.validatespinsys": {
+   "files": [
+    {
+     "file": "validatespinsys.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.symmetry.hamsymm": {
+   "files": [
+    {
+     "file": "hamsymm.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.units.mhz2mt": {
+   "files": [
+    {
+     "file": "mhz2mt.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.units.mt2mhz": {
+   "files": [
+    {
+     "file": "mt2mhz.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "epreasy.units.unitconvert": {
+   "files": [
+    {
+     "file": "unitconvert.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  }
+ },
+ "modules": {
+  "epreasy.components": [
+   "compisoloop.m"
+  ],
+  "epreasy.endor": [
+   "anisosubsys.m",
+   "endorfrq.m",
+   "endorfrq_perturb.m",
+   "orisel.m",
+   "salt.m"
+  ],
+  "epreasy.fitting": [
+   "addnoise.m",
+   "basecorr.m",
+   "deriv.m",
+   "esfit.m",
+   "esfit_algdefaults.m",
+   "esfit_genetic.m",
+   "esfit_grid.m",
+   "esfit_levmar.m",
+   "esfit_montecarlo.m",
+   "esfit_simplex.m",
+   "esfit_swarm.m",
+   "hccm.m",
+   "jacobianest.m",
+   "rescaledata.m"
+  ],
+  "epreasy.garlic": [
+   "equivcouple.m",
+   "fastmotion.m",
+   "garlic.m"
+  ],
+  "epreasy.grids": [
+   "gridparam.m",
+   "sphgrid.m"
+  ],
+  "epreasy.hamiltonian": [
+   "ham.m",
+   "ham_ee.m",
+   "ham_ez.m",
+   "ham_hf.m",
+   "ham_nn.m",
+   "ham_nq.m",
+   "ham_nz.m",
+   "ham_zf.m",
+   "levels.m"
+  ],
+  "epreasy.interp": [
+   "esspline1d.m",
+   "esspline2d.m",
+   "gridinterp.m"
+  ],
+  "epreasy.kernels": [
+   "lisum1i.c",
+   "projecttriangles.c",
+   "projectzones.c"
+  ],
+  "epreasy.lineshapes": [
+   "convspec.m",
+   "gaussian.m",
+   "lorentzian.m",
+   "lshape.m",
+   "voigtian.m"
+  ],
+  "epreasy.magnetometry": [
+   "curry.m"
+  ],
+  "epreasy.nucdata": [
+   "isotopes.m",
+   "nucabund.m",
+   "nucdata.m",
+   "nucgval.m",
+   "nucqmom.m",
+   "nucspin.m",
+   "nucstring2list.m"
+  ],
+  "epreasy.pepper": [
+   "pepper.m"
+  ],
+  "epreasy.perturb": [
+   "resfields_perturb.m"
+  ],
+  "epreasy.processing": [
+   "fieldmod.m"
+  ],
+  "epreasy.pulsed": [
+   "apowin.m",
+   "exponfit.m",
+   "fdaxis.m",
+   "larmorfrq.m",
+   "saffron.m",
+   "sf_pathways.m",
+   "sf_peaks.c"
+  ],
+  "epreasy.resfields": [
+   "adddefaults.m",
+   "cubicsolve.c",
+   "getdstrainops.m",
+   "gethamdata.m",
+   "nucspinrmv.m",
+   "photoselect.m",
+   "resfields.m",
+   "resfields_eig.m"
+  ],
+  "epreasy.rotations": [
+   "ang2vec.m",
+   "erot.m",
+   "eulang.m",
+   "letter2vec.m",
+   "vec2ang.m"
+  ],
+  "epreasy.slowmotion": [
+   "chili.m",
+   "chili_conjgrad.m",
+   "chili_contfracspec.m",
+   "chili_eqpopvec.m",
+   "chili_lanczos.m",
+   "chili_xlmk.m",
+   "diffsuperop.m",
+   "generateoribasis.m",
+   "hil2liouv.m",
+   "istotensor.m",
+   "magint.m",
+   "pqorder.m",
+   "rbos.m",
+   "tensor_cart2sph.m",
+   "tensor_sph2cart.m",
+   "wigner3j.m",
+   "wigner6j.m",
+   "wignerd.m"
+  ],
+  "epreasy.spinops": [
+   "sop.m",
+   "stev.m"
+  ],
+  "epreasy.spinsystem": [
+   "hsdim.m",
+   "spinvec.m",
+   "validatespinsys.m"
+  ],
+  "epreasy.symmetry": [
+   "hamsymm.m"
+  ],
+  "epreasy.units": [
+   "mhz2mt.m",
+   "mt2mhz.m",
+   "unitconvert.m"
+  ]
+ }
+}

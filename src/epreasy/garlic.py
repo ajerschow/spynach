@@ -8,6 +8,12 @@ spectrum is built by binning (then convolution), by a Lorentzian template
 or by explicit summation. In the fast-motion regime (``Sys.tcorr``) every
 line gets its own Lorentzian width from the Redfield coefficients A, B, C
 of the anisotropies of g and A (and the quadrupole).
+
+EasySpin authors, by original file (contributors to the file up to EasySpin 6.0.15, see
+  docs/easyspin-credits.md):
+  equivcouple.m: Stefan Stoll
+  fastmotion.m: Stefan Stoll, Matthew Krzyaniak
+  garlic.m: Stefan Stoll, Joscha Nehrkorn
 """
 
 from __future__ import annotations
@@ -35,7 +41,10 @@ class Spectrum(NamedTuple):
 
 def equivcouple(I: float, n: int) -> tuple[np.ndarray, np.ndarray]:
     """Effective spins ``F`` and their multiplicities ``N`` from ``n`` equivalent spins ``I`` (Clebsch-Gordan
-    decomposition; Freed & Fraenkel, J. Chem. Phys. 39, 326 (1963), eq. 4.32)."""
+    decomposition; Freed & Fraenkel, J. Chem. Phys. 39, 326 (1963), eq. 4.32).
+
+    EasySpin authors (equivcouple.m): Stefan Stoll.
+    """
     if n == 1:
         return np.array([float(I)]), np.array([1])
     F = np.arange(I * n, -0.5, -1.0)
@@ -57,7 +66,10 @@ def _all_mI(I: np.ndarray) -> np.ndarray:
 
 def fastmotion(system: dict, field: float, tcorr: float, domain: str = "field"):
     """Lorentzian FWHM line widths (mT, or MHz with ``domain='freq'``) of the fast-motion regime for all mI
-    combinations, from the anisotropies of g and A and the quadrupole couplings: ``(lw, mI)``."""
+    combinations, from the anisotropies of g and A and the quadrupole couplings: ``(lw, mI)``.
+
+    EasySpin authors (fastmotion.m): Stefan Stoll, Matthew Krzyaniak.
+    """
     if domain not in ("field", "freq"):
         raise ValueError("Fourth input must be either 'field' or 'freq'.")
     sys = validatespinsys(system)
@@ -162,6 +174,8 @@ def garlic(system: dict, exp: dict, opt: dict | None = None) -> Spectrum:  # noq
     (mT) with ``mwRange``/``mwCenterSweep`` (GHz) for a frequency sweep; ``nPoints``, ``Harmonic``, ``ModAmp``,
     ``mwPhase``, ``mwMode``, ``Temperature``. ``opt``: ``Method`` (``'exact'`` Breit-Rabi, ``'perturb1'``..
     ``'perturb5'``), ``AccumMethod`` (``'binning'``, ``'template'``, ``'explicit'``), ``Stretch``, ``Accuracy``.
+
+    EasySpin authors (garlic.m): Stefan Stoll, Joscha Nehrkorn.
     """
     if isinstance(system, (list, tuple)):  # several components: weighted sum of their spectra
         return compisoloop(garlic, system, exp, opt)

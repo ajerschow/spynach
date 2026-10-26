@@ -5,6 +5,11 @@ region covered chosen by the point group of the Hamiltonian (one octant for
 ``D2h``, a quarter meridian for ``Dinfh``, the whole sphere for ``C1``, ...)
 and ``GridSize`` knots along a quarter meridian. The triangulation of the grid
 is what the powder spectrum is projected from.
+
+EasySpin authors, by original file (contributors to the file up to EasySpin 6.0.15, see
+  docs/easyspin-credits.md):
+  gridparam.m: Stefan Stoll
+  sphgrid.m: Stefan Stoll
 """
 
 from __future__ import annotations
@@ -22,7 +27,10 @@ _CLOSED_PHI = [False] * 6 + [True] * 8
 
 
 def gridparam(point_group: str) -> tuple[float, bool, int]:
-    """``(maxPhi, closedPhi, nOctants)`` of the grid region for a point group (Schoenflies symbol)."""
+    """``(maxPhi, closedPhi, nOctants)`` of the grid region for a point group (Schoenflies symbol).
+
+    EasySpin authors (gridparam.m): Stefan Stoll.
+    """
     if point_group not in _GROUPS:
         raise ValueError(f"Unsupported symmetry group {point_group}!")
     k = _GROUPS.index(point_group)
@@ -128,6 +136,8 @@ def sphgrid(symmetry, grid_size: int, *, closed_phi: bool = False, triangulate: 
     grids are triangulated with ``scipy.spatial.Delaunay``, which may pick a
     different diagonal than MATLAB's ``delaunay`` where four knots are
     co-circular.
+
+    EasySpin authors (sphgrid.m): Stefan Stoll.
     """
     if isinstance(symmetry, str):
         max_phi, closed, n_octants = gridparam(symmetry)

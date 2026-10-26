@@ -29,3 +29,4 @@ spin dynamics kernel. It is an early release (0.2.0); corrections and bug report
 - Try it in the browser, with timings against EasySpin: https://ajerschow.github.io/spynach/easyspin.html
 
 Attribution: EPReasy is a translation of EasySpin and keeps its notice; see `LICENSE`.
+Each function's docstring names the EasySpin contributors to the original file (`help(epreasy.pepper)`); the full table is at https://github.com/ajerschow/spynach/blob/main/docs/easyspin-credits.md.

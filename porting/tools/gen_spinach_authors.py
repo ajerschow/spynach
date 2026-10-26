@@ -24,8 +24,10 @@ import json
 import re
 import subprocess
 import sys
-import textwrap
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from credits_common import apply_edits, wrap_block  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
 SRC = ROOT / "src" / "spynach"
@@ -237,35 +239,6 @@ def module_block(data: dict, files: list[str]) -> list[str]:
     return lines
 
 
-def wrap_block(block: list[str], indent: int) -> list[str]:
-    """Wrap the lines of a block to the line length of the source (continuation lines indented by two)."""
-    out: list[str] = []
-    for line in block:
-        lead = len(line) - len(line.lstrip())
-        out += textwrap.wrap(
-            line, width=110 - indent, initial_indent="", subsequent_indent=" " * (lead + 2), break_long_words=False
-        )
-    return out
-
-
-def rewrite_docstring(lines: list[str], expr: ast.Expr, block: list[str]) -> None:
-    """Replace the lines of one docstring so that it ends with ``block`` (an earlier block is removed first)."""
-    start, end = expr.lineno - 1, expr.end_lineno - 1
-    indent = " " * expr.col_offset
-    text = "\n".join(lines[start : end + 1]).rstrip()
-    if not text.endswith('"""'):
-        raise SystemExit(f"line {start + 1}: docstring does not end with triple double quotes")
-    body = text[:-3].split("\n")
-    for i, line in enumerate(body):
-        if i > 0 and line.strip().startswith("Spinach authors"):
-            body = body[:i]
-            break
-    while len(body) > 1 and body[-1].strip() == "":
-        body.pop()
-    new = [*body, "", *[(indent + b) if b else "" for b in block], indent + '"""']
-    lines[start : end + 1] = new
-
-
 def docstring_targets(data: dict) -> dict[Path, list[tuple[ast.Expr, list[str]]]]:
     targets: dict[Path, list[tuple[ast.Expr, list[str]]]] = {}
     for py in python_files():
@@ -287,18 +260,7 @@ def docstring_targets(data: dict) -> dict[Path, list[tuple[ast.Expr, list[str]]]
 
 
 def apply_docstrings(data: dict) -> int:
-    changed = 0
-    for py, found in docstring_targets(data).items():
-        original = py.read_text(encoding="utf-8")
-        lines = original.split("\n")
-        for expr, block in sorted(found, key=lambda t: t[0].lineno, reverse=True):
-            rewrite_docstring(lines, expr, block)
-        updated = "\n".join(lines)
-        ast.parse(updated)  # the edit must leave valid Python
-        if updated != original:
-            py.write_text(updated, encoding="utf-8")
-            changed += 1
-    return changed
+    return apply_edits(docstring_targets(data))
 
 
 def docstring_problems(data: dict) -> list[str]:

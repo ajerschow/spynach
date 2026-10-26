@@ -8,6 +8,10 @@ form, with the first-order (``PerturbOrder=1``) or second-order (``2``)
 corrections. No diagonalisation, so it is the fast method of ``pepper`` for
 systems with many nuclei; it requires non-zero hyperfine couplings and
 supports H, g, A and D strains (D strain for integer spins).
+
+EasySpin authors, by original file (contributors to the file up to EasySpin 6.0.15, see
+  docs/easyspin-credits.md):
+  resfields_perturb.m: Stefan Stoll, Claudia Tait, Joscha Nehrkorn, AlaCodon (GitHub user), Matthew Krzyaniak
 """
 
 from __future__ import annotations
@@ -29,7 +33,11 @@ _DEFAULT_EXP = {
 
 def resfields_perturb(system: dict, exp: dict, opt: dict | None = None) -> Resonances:
     """Resonance fields, intensities, widths and transitions by perturbation theory for the orientations of
-    ``Exp.SampleFrame`` (crystal symmetry P1); ``opt["PerturbOrder"]`` is 1 or 2 (default)."""
+    ``Exp.SampleFrame`` (crystal symmetry P1); ``opt["PerturbOrder"]`` is 1 or 2 (default).
+
+    EasySpin authors (resfields_perturb.m): Stefan Stoll, Claudia Tait, Joscha Nehrkorn, AlaCodon (GitHub
+      user), Matthew Krzyaniak.
+    """
     exp_full = adddefaults(exp, _DEFAULT_EXP)
     opt = dict(opt or {})
     angles, n_ori, n_sites, average = _crystal_orientations(exp_full, opt)
@@ -39,7 +47,11 @@ def resfields_perturb(system: dict, exp: dict, opt: dict | None = None) -> Reson
 def resfields_perturb_oriented(  # noqa: C901
     system: dict, exp: dict, opt: dict | None, orientations: np.ndarray, average_over_chi: bool
 ) -> Resonances:
-    """The perturbation-theory computation for given lab-frame orientations (rows ``[phi, theta, chi]``)."""
+    """The perturbation-theory computation for given lab-frame orientations (rows ``[phi, theta, chi]``).
+
+    EasySpin authors (resfields_perturb.m, the per-orientation part): Stefan Stoll, Claudia Tait, Joscha
+      Nehrkorn, AlaCodon (GitHub user), Matthew Krzyaniak.
+    """
     sys = validatespinsys(system)
     S = float(sys["S"][0])
     high_spin = S > 0.5

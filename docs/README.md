@@ -31,7 +31,9 @@ links every notebook through nbviewer as well.
 [`spinach-credits.md`](spinach-credits.md) is a generated table of the Spinach authors of every Spynach
 function that translates or derives from one (names from the Spinach developer team page, taken from the headers
 of the original functions); `porting/tools/gen_spinach_authors.py` writes it, and the same lines, into the
-docstrings.
+docstrings. [`easyspin-credits.md`](easyspin-credits.md) is the same for `epreasy` and EasySpin; EasySpin's
+headers name no authors, so it lists the people who authored commits to each original file up to release 6.0.15
+(and authors the source itself names), written by `porting/tools/gen_easyspin_authors.py`.
 
 [`parity.md`](parity.md) is not a guide but a generated table: every fixture
 case, tolerance and measured difference of the parity suite, written by

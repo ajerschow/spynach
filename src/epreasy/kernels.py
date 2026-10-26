@@ -7,6 +7,12 @@ unavailable (the browser page). ``lisum1i`` adds line shapes to a spectrum
 by interpolating from an *integrated* template, ``projecttriangles`` and
 ``projectzones`` project the resonance positions of triangles (or
 segments, for axial grids) of an orientation grid onto the field axis.
+
+EasySpin authors, by original file (contributors to the file up to EasySpin 6.0.15, see
+  docs/easyspin-credits.md):
+  lisum1i.c: Stefan Stoll
+  projecttriangles.c: Stefan Stoll
+  projectzones.c: Stefan Stoll
 """
 
 from __future__ import annotations
@@ -84,7 +90,10 @@ def _lisum1i_loop(T, PosT, WidT, Pos, Amp, Wid, x):  # pragma: no cover - compil
 
 
 def lisum1i_numpy(T, PosT, WidT, Pos, Amp, Wid, x, chunk: int = 3_000_000):
-    """Pure NumPy lisum1i (ragged vectorisation, processed in chunks of ``chunk`` points)."""
+    """Pure NumPy lisum1i (ragged vectorisation, processed in chunks of ``chunk`` points).
+
+    EasySpin authors (lisum1i.c, the C kernel, in NumPy): Stefan Stoll.
+    """
     T = np.asarray(T, dtype=float)
     x = np.asarray(x, dtype=float)
     PosT = PosT - 1.0
@@ -145,6 +154,8 @@ def lisum1i(T, PosT, WidT, Pos, Amp, Wid, x):
     ``T`` is the integral of the line shape on the index axis ``0..len(T)-1``
     with centre ``PosT`` (1-based, as in EasySpin) and width ``WidT``;
     ``Pos``, ``Amp`` and ``Wid`` are the lines in the units of the axis ``x``.
+
+    EasySpin authors (lisum1i.c): Stefan Stoll.
     """
     args = (
         np.ascontiguousarray(T, dtype=float), float(PosT), float(WidT),
@@ -230,7 +241,10 @@ def _projecttriangles_loop(tri, areas, fun, amp, x):  # pragma: no cover - compi
 
 
 def projecttriangles_numpy(tri, areas, fun, amp, x):
-    """Pure NumPy projecttriangles."""
+    """Pure NumPy projecttriangles.
+
+    EasySpin authors (projecttriangles.c, the C kernel, in NumPy): Stefan Stoll.
+    """
     x = np.asarray(x, dtype=float)
     nx = x.size
     delta = x[1] - x[0]
@@ -296,7 +310,10 @@ def projecttriangles_numpy(tri, areas, fun, amp, x):
 
 def projecttriangles(tri, areas, fun, amp, x):
     """Project the values ``fun`` at the knots of a triangulation ``tri`` ((3, N), 1-based) onto the axis ``x``,
-    with triangle weights ``areas`` and knot amplitudes ``amp`` (one value for all, or one per knot)."""
+    with triangle weights ``areas`` and knot amplitudes ``amp`` (one value for all, or one per knot).
+
+    EasySpin authors (projecttriangles.c): Stefan Stoll.
+    """
     args = (
         np.ascontiguousarray(tri, dtype=np.intp), np.ascontiguousarray(np.ravel(areas), dtype=float),
         np.ascontiguousarray(np.ravel(fun), dtype=float), np.ascontiguousarray(np.ravel(amp), dtype=float),
@@ -346,7 +363,10 @@ def _projectzones_loop(pos, amp, seg_weights, x):  # pragma: no cover - compiled
 
 
 def projectzones_numpy(pos, amp, seg_weights, x):
-    """Pure NumPy projectzones."""
+    """Pure NumPy projectzones.
+
+    EasySpin authors (projectzones.c, the C kernel, in NumPy): Stefan Stoll.
+    """
     x = np.asarray(x, dtype=float)
     nx = x.size
     delta = x[1] - x[0]
@@ -382,7 +402,10 @@ def projectzones_numpy(pos, amp, seg_weights, x):
 
 def projectzones(pos, amp, seg_weights, x):
     """Project the segments between consecutive positions ``pos`` (an axial grid) onto the axis ``x``, with
-    segment weights ``seg_weights`` (one fewer than positions) and amplitudes ``amp`` (one, or one per position)."""
+    segment weights ``seg_weights`` (one fewer than positions) and amplitudes ``amp`` (one, or one per position).
+
+    EasySpin authors (projectzones.c): Stefan Stoll.
+    """
     args = (
         np.ascontiguousarray(np.ravel(pos), dtype=float), np.ascontiguousarray(np.ravel(amp), dtype=float),
         np.ascontiguousarray(np.ravel(seg_weights), dtype=float), np.ascontiguousarray(x, dtype=float),

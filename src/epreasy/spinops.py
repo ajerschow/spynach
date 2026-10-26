@@ -3,6 +3,11 @@
 Basis order is EasySpin's ``|mS, mI, ...>`` with the first spin slowest and
 ``m`` descending within each spin (``+S`` first). Spin and level numbers in
 operator specifications are 1-based, as in EasySpin.
+
+EasySpin authors, by original file (contributors to the file up to EasySpin 6.0.15, see
+  docs/easyspin-credits.md):
+  sop.m: Stefan Stoll, Stephan Pribitzer, Peter Martin
+  stev.m: Stefan Stoll, AlbanBloorRiley (GitHub user)
 """
 
 from __future__ import annotations
@@ -188,6 +193,8 @@ def sop(spins, *specs, sparse: bool = False):
     or an (N, 2) array of ``[spin, component]`` rows with component 0..5 for
     e, x, y, z, +, -. One specification returns one matrix, several a tuple.
     ``sparse=True`` returns ``scipy.sparse`` CSR matrices.
+
+    EasySpin authors (sop.m): Stefan Stoll, Stephan Pribitzer, Peter Martin.
     """
     spin_vec = _spins(spins)
     if not specs:
@@ -213,6 +220,8 @@ def stev(spins, k: int, q: int, ispin: int = 1, *, sparse: bool = False):
 
     ``q >= 0`` gives the cosine tesseral operator O_k^|q|(c), ``q < 0`` the sine
     operator O_k^|q|(s); ``0 <= k <= 2S`` and ``|q| <= k`` with ``k <= 12``.
+
+    EasySpin authors (stev.m): Stefan Stoll, AlbanBloorRiley (GitHub user).
     """
     spin_vec = _spins(spins)
     if ispin < 1 or ispin > spin_vec.size:

@@ -14,6 +14,16 @@ evolved directly in the time domain. Real rectangular pulses are included
 by numerical propagation over an offset distribution; the product rule
 treats nuclei in separate subspaces. The thyme engine for shaped pulses and
 ``spidyan`` are not ported.
+
+EasySpin authors, by original file (contributors to the file up to EasySpin 6.0.15, see
+  docs/easyspin-credits.md):
+  apowin.m: Stefan Stoll
+  exponfit.m: Stefan Stoll
+  fdaxis.m: Stefan Stoll
+  larmorfrq.m: Stefan Stoll
+  saffron.m: Stefan Stoll, Stephan Pribitzer, Claudia Tait, Joscha Nehrkorn
+  sf_pathways.m: Stefan Stoll, Claudia Tait
+  sf_peaks.c: Stefan Stoll
 """
 
 from __future__ import annotations
@@ -55,7 +65,10 @@ _INC_SCHEMES = {
 # ----------------------------------------------------------------------------- helpers
 def larmorfrq(nucs, fields) -> np.ndarray:
     """Nuclear Larmor frequencies (MHz) of the isotopes in ``nucs`` at the fields ``fields`` (mT):
-    an (nFields, nNuclei) array."""
+    an (nFields, nNuclei) array.
+
+    EasySpin authors (larmorfrq.m): Stefan Stoll.
+    """
     gn = np.abs(np.atleast_1d(nucgval(nucs)))
     pre = gn * nmagn / 1e3 / planck / 1e6
     fields = np.atleast_1d(np.asarray(fields, dtype=float)).ravel()
@@ -65,7 +78,10 @@ def larmorfrq(nucs, fields) -> np.ndarray:
 def apowin(kind: str, n: int, alpha: float | None = None) -> np.ndarray:
     """Apodisation window of ``n`` points: ``'ham'``, ``'han'``, ``'bla'``, ``'bar'``, ``'con'``, ``'cos'``,
     ``'wel'`` (no parameter), ``'kai'``, ``'gau'``, ``'exp'`` (with ``alpha``); a trailing ``'+'`` or
-    ``'-'`` gives the right or left half."""
+    ``'-'`` gives the right or left half.
+
+    EasySpin authors (apowin.m): Stefan Stoll.
+    """
     if not isinstance(kind, str) or len(kind) not in (3, 4):
         raise ValueError("The first argument must be a 3- or 4-character string!")
     if len(kind) == 4:
@@ -116,7 +132,10 @@ def apowin(kind: str, n: int, alpha: float | None = None) -> np.ndarray:
 
 
 def fdaxis(*args) -> np.ndarray:
-    """Frequency axis of an FFT: ``fdaxis(dt, n)`` or ``fdaxis(time_axis)``, centred (zero at index n//2)."""
+    """Frequency axis of an FFT: ``fdaxis(dt, n)`` or ``fdaxis(time_axis)``, centred (zero at index n//2).
+
+    EasySpin authors (fdaxis.m): Stefan Stoll.
+    """
     if len(args) == 1:
         t = np.asarray(args[0], dtype=float).ravel()
         dt, n = t[1] - t[0], t.size
@@ -209,7 +228,10 @@ def _mexpfit(t, y, k_guess, include_offset):
 
 def exponfit(x, y, n_exponents: int = 1, noconst: bool = False):
     """Fit one or two decaying exponentials (with an offset unless ``noconst``) to ``y(x)``, column by
-    column: ``(k, c, fitted)`` with decay rates ``k``, coefficients ``c`` (offset first) and the fit."""
+    column: ``(k, c, fitted)`` with decay rates ``k``, coefficients ``c`` (offset first) and the fit.
+
+    EasySpin authors (exponfit.m): Stefan Stoll.
+    """
     if n_exponents not in (1, 2):
         raise ValueError("Number of exponents must be 1 or 2.")
     x = np.asarray(x, dtype=float).ravel()
@@ -255,7 +277,10 @@ def exponfit(x, y, n_exponents: int = 1, noconst: bool = False):
 def sf_pathways(t, inc) -> np.ndarray:
     """Coherence transfer pathways (rows; 1 = alpha, 2 = beta, 3 = +1, 4 = -1) that refocus at the end of a
     sequence with ideal pulses, initial delays ``t`` (us) and incrementation scheme ``inc`` (0 constant,
-    +-k incremented or decremented along dimension k)."""
+    +-k incremented or decremented along dimension k).
+
+    EasySpin authors (sf_pathways.m): Stefan Stoll, Claudia Tait.
+    """
     t = np.asarray(t, dtype=float).ravel()
     inc = np.asarray(inc, dtype=int).ravel()
     if inc.size != t.size:
@@ -306,7 +331,10 @@ def _bins(nu, dt, n):
 
 
 def _sf_peaks(scheme: int, buff: np.ndarray, dt, free_l, free_r, Ea, Eb, G, D, *blocks):  # noqa: C901
-    """Add the peaks of one pathway to the frequency-domain buffer ``buff`` (in place), as sf_peaks."""
+    """Add the peaks of one pathway to the frequency-domain buffer ``buff`` (in place), as sf_peaks.
+
+    EasySpin authors (sf_peaks.c, the peak-binning kernel, in NumPy): Stefan Stoll.
+    """
     E = {1: Ea, 2: Eb}
     dt = np.atleast_1d(np.asarray(dt, dtype=float))
     free_l = [int(v) for v in np.atleast_1d(free_l)]
@@ -384,7 +412,11 @@ def _sf_peaks(scheme: int, buff: np.ndarray, dt, free_l, free_r, Ea, Eb, G, D, *
 
 
 def _sf_evolve(scheme, n_points, dt, inc_l, inc_r, Ea, Eb, G, D, *blocks):
-    """Time-domain evolution of one pathway (sf_evolve) for the schemes [1], [1 1] and [1 2]."""
+    """Time-domain evolution of one pathway (sf_evolve) for the schemes [1], [1 1] and [1 2].
+
+    EasySpin authors (saffron.m, the time-domain evolution of the fast engine): Stefan Stoll, Stephan
+      Pribitzer, Claudia Tait, Joscha Nehrkorn.
+    """
     E = {1: Ea, 2: Eb}
     dt = np.atleast_1d(np.asarray(dt, dtype=float))
     n_points = np.atleast_1d(np.asarray(n_points, dtype=int))
@@ -508,6 +540,8 @@ def saffron(system: dict, exp: dict, opt: dict | None = None) -> Spectrum:  # no
     ``ProductRule``, ``TimeDomain``, ``Expand``, ``EndorMethod``, ``OriThreshold``, ``Transitions``,
     ``Window``, ``ZeroFillFactor``, ``nOffsets``, ``lwOffset``. ``x`` is the time axis (a tuple of two for
     2-D experiments) or the rf axis; ``info`` holds ``td``, ``fd`` and the frequency axis.
+
+    EasySpin authors (saffron.m): Stefan Stoll, Stephan Pribitzer, Claudia Tait, Joscha Nehrkorn.
     """
     if isinstance(system, (list, tuple)):
         return compisoloop(saffron, system, exp, opt, needs_range=False)

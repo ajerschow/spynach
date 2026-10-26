@@ -5,6 +5,18 @@ moment operators in MHz/mT. ``ham(sys)`` returns the field-independent part
 ``H0`` and the moment components ``mux, muy, muz`` (molecular frame) such
 that ``H = H0 - B[0]*mux - B[1]*muy - B[2]*muz`` for a field vector ``B``;
 ``ham(sys, B)`` returns that ``H``. Spin numbers are 1-based.
+
+EasySpin authors, by original file (contributors to the file up to EasySpin 6.0.15, see
+  docs/easyspin-credits.md):
+  ham.m: Stefan Stoll
+  ham_ee.m: Stefan Stoll
+  ham_ez.m: Stefan Stoll
+  ham_hf.m: Stefan Stoll
+  ham_nn.m: Stefan Stoll
+  ham_nq.m: Stefan Stoll
+  ham_nz.m: Stefan Stoll
+  ham_zf.m: Stefan Stoll
+  levels.m: Stefan Stoll
 """
 
 from __future__ import annotations
@@ -49,7 +61,10 @@ def _indices(spec, n: int, what: str):
 
 
 def ham_ez(system: dict, B=None, espins=None, *, sparse: bool = False):
-    """Electron Zeeman term: ``(mux, muy, muz)`` in MHz/mT, or the Hamiltonian ``H`` for field vector ``B`` (mT)."""
+    """Electron Zeeman term: ``(mux, muy, muz)`` in MHz/mT, or the Hamiltonian ``H`` for field vector ``B`` (mT).
+
+    EasySpin authors (ham_ez.m): Stefan Stoll.
+    """
     sys = validatespinsys(system)
     spins = sys["Spins"]
     n = sys["nStates"]
@@ -75,7 +90,10 @@ def ham_ez(system: dict, B=None, espins=None, *, sparse: bool = False):
 
 
 def ham_nz(system: dict, B=None, nspins=None, *, sparse: bool = False):
-    """Nuclear Zeeman term: ``(mux, muy, muz)`` in MHz/mT, or the Hamiltonian ``H`` for field vector ``B`` (mT)."""
+    """Nuclear Zeeman term: ``(mux, muy, muz)`` in MHz/mT, or the Hamiltonian ``H`` for field vector ``B`` (mT).
+
+    EasySpin authors (ham_nz.m): Stefan Stoll.
+    """
     sys = validatespinsys(system)
     spins = sys["Spins"]
     n = sys["nStates"]
@@ -102,7 +120,10 @@ def ham_nz(system: dict, B=None, nspins=None, *, sparse: bool = False):
 
 
 def ham_hf(system: dict, espins=None, nspins=None, *, sparse: bool = False):
-    """Hyperfine Hamiltonian (MHz) between electron spins ``espins`` and nuclei ``nspins`` (default: all)."""
+    """Hyperfine Hamiltonian (MHz) between electron spins ``espins`` and nuclei ``nspins`` (default: all).
+
+    EasySpin authors (ham_hf.m): Stefan Stoll.
+    """
     sys = validatespinsys(system)
     spins = sys["Spins"]
     n = sys["nStates"]
@@ -128,7 +149,10 @@ def ham_hf(system: dict, espins=None, nspins=None, *, sparse: bool = False):
 
 
 def ham_zf(system: dict, espins=None, *, sparse: bool = False):
-    """Zero-field splitting Hamiltonian (MHz): the ``S.D.S`` terms and the Stevens-operator terms ``B2``..``B12``."""
+    """Zero-field splitting Hamiltonian (MHz): the ``S.D.S`` terms and the Stevens-operator terms ``B2``..``B12``.
+
+    EasySpin authors (ham_zf.m): Stefan Stoll.
+    """
     sys = validatespinsys(system)
     spins = sys["Spins"]
     n = sys["nStates"]
@@ -161,7 +185,10 @@ def ham_zf(system: dict, espins=None, *, sparse: bool = False):
 
 
 def ham_nq(system: dict, nspins=None, *, sparse: bool = False):
-    """Nuclear quadrupole Hamiltonian (MHz) for nuclei ``nspins`` (default: all)."""
+    """Nuclear quadrupole Hamiltonian (MHz) for nuclei ``nspins`` (default: all).
+
+    EasySpin authors (ham_nq.m): Stefan Stoll.
+    """
     sys = validatespinsys(system)
     spins = sys["Spins"]
     n = sys["nStates"]
@@ -181,7 +208,10 @@ def ham_nq(system: dict, nspins=None, *, sparse: bool = False):
 
 
 def ham_ee(system: dict, espins=None, *, sparse: bool = False):
-    """Electron-electron coupling Hamiltonian (MHz): bilinear ``S1.ee.S2`` and biquadratic ``ee2 (S1.S2)^2`` terms."""
+    """Electron-electron coupling Hamiltonian (MHz): bilinear ``S1.ee.S2`` and biquadratic ``ee2 (S1.S2)^2`` terms.
+
+    EasySpin authors (ham_ee.m): Stefan Stoll.
+    """
     sys = validatespinsys(system)
     spins = sys["Spins"]
     n = sys["nStates"]
@@ -213,7 +243,10 @@ def ham_ee(system: dict, espins=None, *, sparse: bool = False):
 
 
 def ham_nn(system: dict, nspins=None, *, sparse: bool = False):
-    """Nuclear-nuclear coupling Hamiltonian (MHz): bilinear ``I1.nn.I2`` terms."""
+    """Nuclear-nuclear coupling Hamiltonian (MHz): bilinear ``I1.nn.I2`` terms.
+
+    EasySpin authors (ham_nn.m): Stefan Stoll.
+    """
     sys = validatespinsys(system)
     spins = sys["Spins"]
     n = sys["nStates"]
@@ -249,6 +282,8 @@ def ham(system: dict, B=None, *, sparse: bool = False, split: bool = False):
     ``ham(sys, B)`` with a field vector ``B`` (mT, molecular frame) returns
     ``H = H0 - B[0]*mux - B[1]*muy - B[2]*muz``; with ``split=True`` it returns
     ``(H0, muzL)`` with ``muzL`` the moment along ``B``, so ``H = H0 - |B| muzL``.
+
+    EasySpin authors (ham.m): Stefan Stoll.
     """
     sys = validatespinsys(system)
     H0 = (
@@ -287,6 +322,8 @@ def levels(system: dict, ori=None, B=None, *, phi=None, theta=None, vectors: boo
     value, two values (a 101-point range) or a vector. The result has the
     axes (orientations or phi, theta), field, level, with singleton axes
     removed as in EasySpin; ``vectors=True`` also returns the eigenvectors.
+
+    EasySpin authors (levels.m): Stefan Stoll.
     """
     sys = validatespinsys(system)
     if B is None:

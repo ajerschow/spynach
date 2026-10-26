@@ -4,6 +4,14 @@ Releases are tagged `vX.Y.Z` on GitHub; the version is `spynach.__version__`.
 
 ## Unreleased
 
+- The EasySpin contributors behind every function that EPReasy translates are acknowledged by name, as the Spinach
+  authors are in Spynach: an `EasySpin authors (pepper.m): ...` line in the docstring of each function (113 functions
+  from 103 EasySpin files), a block per module, and the generated page `docs/easyspin-credits.md`. EasySpin's headers
+  name no authors, so the lists are the people who authored commits to each original file up to release 6.0.15,
+  plus authors the source names (John D'Errico for `jacobianest.m`).
+  `porting/tools/gen_easyspin_authors.py` reads the history through the `gh` CLI; `tests/epreasy/test_credits.py`
+  keeps docstrings and page current offline. The shared code of both credits tools is in
+  `porting/tools/credits_common.py`.
 - The Spinach authors of every translated function are acknowledged by name: a `Spinach authors (propagator.m): ...`
   line in its docstring (and a module line for each module), and the generated page `docs/spinach-credits.md`
   (65 ports, 9 derived functions, 17 without a Spinach counterpart). Names come from the Spinach developer team

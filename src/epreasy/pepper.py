@@ -9,6 +9,10 @@ instead. Convolution with the residual line shape, the detection harmonic
 and field modulation follow. Crystals are summed over the given sample
 orientations. Methods: ``'matrix'`` (adaptive diagonalisation),
 ``'hybrid'``, ``'perturb1'``, ``'perturb2'`` (``'perturb'``), ``'eig'``.
+
+EasySpin authors, by original file (contributors to the file up to EasySpin 6.0.15, see
+  docs/easyspin-credits.md):
+  pepper.m: Stefan Stoll, Claudia Tait, Joscha Nehrkorn
 """
 
 from __future__ import annotations
@@ -54,6 +58,8 @@ def pepper(system: dict, exp: dict, opt: dict | None = None) -> Spectrum:  # noq
     ``lightBeam``. ``opt``: ``Method``, ``GridSize`` (``[knots, interpolation factor]``), ``GridSymmetry``,
     ``GridFrame``, ``separate`` (``''`` or ``'transitions'``; ``'orientations'`` for crystals), ``Threshold``,
     ``Transitions``, ``Intensity``, ``BruteForce``, ``Smoothing``, and the ``resfields`` options.
+
+    EasySpin authors (pepper.m): Stefan Stoll, Claudia Tait, Joscha Nehrkorn.
     """
     if isinstance(system, (list, tuple)):  # several components: weighted sum of their spectra
         return compisoloop(pepper, system, exp, opt)

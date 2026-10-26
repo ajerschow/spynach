@@ -39,7 +39,7 @@ FIGURES = DOCS / "figures"
 PLOTLY = "application/vnd.plotly.v1+json"
 
 # Guides that are not tutorials and get no notebook
-SKIP = {"README.md", "parity.md", "spinach-credits.md"}  # the index and the generated parity and credits pages
+SKIP = {"README.md", "parity.md", "spinach-credits.md", "easyspin-credits.md"}  # the index and the generated pages
 
 FENCE = re.compile(r"^```python\n(.*?)^```$", flags=re.S | re.M)
 HEADING = re.compile(r"^(?=#{1,3} )", flags=re.M)

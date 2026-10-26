@@ -5,6 +5,10 @@ The group decides the region of the sphere a powder integration has to cover
 by combining the symmetries of the tensors geometrically; with full tensors
 or Stevens-operator terms, by comparing the eigenvalues of the Hamiltonian
 for symmetry-related field directions.
+
+EasySpin authors, by original file (contributors to the file up to EasySpin 6.0.15, see
+  docs/easyspin-credits.md):
+  hamsymm.m: Stefan Stoll
 """
 
 from __future__ import annotations
@@ -20,7 +24,10 @@ _GEOM_GROUPS = ["O3", "Dinfh", "D2h", "C2h", "Ci"]
 
 
 def hamsymm(system: dict) -> tuple[str, np.ndarray]:
-    """``(point group, symmetry frame)``: the Schoenflies symbol and the matrix whose columns are the frame axes."""
+    """``(point group, symmetry frame)``: the Schoenflies symbol and the matrix whose columns are the frame axes.
+
+    EasySpin authors (hamsymm.m): Stefan Stoll.
+    """
     sys = validatespinsys(system)
     high_order = bool(sys["B"])
     full_tensors = any(sys[k] for k in ("fullg", "fullA", "fullD", "fullee", "fullQ", "fullsigma", "fullnn"))

@@ -4,6 +4,14 @@ All shapes are area-normalised for ``diff=0``; ``diff`` is the derivative order
 (``-1`` the integral from minus infinity), ``phase`` mixes absorption and
 dispersion (``pi/2`` is pure dispersion). Each function returns the
 absorption shape, and ``(absorption, dispersion)`` with ``dispersion=True``.
+
+EasySpin authors, by original file (contributors to the file up to EasySpin 6.0.15, see
+  docs/easyspin-credits.md):
+  convspec.m: Stefan Stoll
+  gaussian.m: Stefan Stoll
+  lorentzian.m: Stefan Stoll, Claudia Tait
+  lshape.m: Stefan Stoll
+  voigtian.m: Stefan Stoll
 """
 
 from __future__ import annotations
@@ -60,7 +68,10 @@ def _dawson_deriv(x: np.ndarray, n: int) -> np.ndarray:
 
 
 def gaussian(x, x0: float, fwhm: float, diff: int = 0, phase: float = 0.0, *, dispersion: bool = False):
-    """Area-normalised Gaussian absorption (and dispersion) line shape or its derivatives."""
+    """Area-normalised Gaussian absorption (and dispersion) line shape or its derivatives.
+
+    EasySpin authors (gaussian.m): Stefan Stoll.
+    """
     x = np.asarray(x, dtype=float)
     if fwhm <= 0:
         raise ValueError("3rd input (fwhm, full width at half maximum) must be a real and positive number.")
@@ -95,7 +106,10 @@ def gaussian(x, x0: float, fwhm: float, diff: int = 0, phase: float = 0.0, *, di
 
 
 def lorentzian(x, x0: float, fwhm: float, diff: int = 0, phase: float = 0.0, *, dispersion: bool = False):
-    """Area-normalised Lorentzian absorption (and dispersion) line shape or its derivatives (``diff`` -1..2)."""
+    """Area-normalised Lorentzian absorption (and dispersion) line shape or its derivatives (``diff`` -1..2).
+
+    EasySpin authors (lorentzian.m): Stefan Stoll, Claudia Tait.
+    """
     x = np.asarray(x, dtype=float)
     if fwhm <= 0:
         raise ValueError("3rd input (fwhm, full width at half maximum) must be a real and positive number.")
@@ -126,7 +140,10 @@ def lorentzian(x, x0: float, fwhm: float, diff: int = 0, phase: float = 0.0, *, 
 
 
 def lshape(x, x0: float, fwhm, diff: int = 0, alpha: float = 1.0, phase: float = 0.0):
-    """Pseudo-Voigt line shape ``alpha*Gaussian + (1-alpha)*Lorentzian``; ``fwhm`` is one width or two."""
+    """Pseudo-Voigt line shape ``alpha*Gaussian + (1-alpha)*Lorentzian``; ``fwhm`` is one width or two.
+
+    EasySpin authors (lshape.m): Stefan Stoll.
+    """
     fwhm = np.atleast_1d(np.asarray(fwhm, dtype=float))
     if np.any(fwhm <= 0):
         raise ValueError("fwhm must be positive and real!")
@@ -145,7 +162,10 @@ def lshape(x, x0: float, fwhm, diff: int = 0, alpha: float = 1.0, phase: float =
 
 
 def voigtian(x, x0: float, fwhm_gl, diff: int = 0, phase: float = 0.0, *, dispersion: bool = False):
-    """Voigt line shape: the convolution of a Gaussian and a Lorentzian of widths ``fwhm_gl = [fwhmG, fwhmL]``."""
+    """Voigt line shape: the convolution of a Gaussian and a Lorentzian of widths ``fwhm_gl = [fwhmG, fwhmL]``.
+
+    EasySpin authors (voigtian.m): Stefan Stoll.
+    """
     x = np.asarray(x, dtype=float)
     fwhm_gl = np.asarray(fwhm_gl, dtype=float).ravel()
     if fwhm_gl.size != 2:
@@ -197,6 +217,8 @@ def convspec(spec, steps, fwhm, deriv=0, alpha=1.0, phase=0.0):
     derivative (0, 1, 2 or -1), ``alpha`` the Gaussian fraction (1 Gaussian, 0
     Lorentzian), ``phase`` the phase, each either one value for all axes or
     one per axis; a width of 0 skips that axis.
+
+    EasySpin authors (convspec.m): Stefan Stoll.
     """
     spec = np.asarray(spec)
     if np.any(np.isnan(spec)):

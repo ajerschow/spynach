@@ -11,6 +11,17 @@ strain widths (FWHM, mT) when strains are given, and the level pairs. The
 orientations are those of ``Exp.SampleFrame`` (one lab-frame orientation per
 row, crystal symmetry P1); ``pepper`` supplies grid orientations through the
 private ``resfields_oriented``.
+
+EasySpin authors, by original file (contributors to the file up to EasySpin 6.0.15, see
+  docs/easyspin-credits.md):
+  adddefaults.m: Stefan Stoll
+  cubicsolve.c: Stefan Stoll
+  getdstrainops.m: Stefan Stoll
+  gethamdata.m: Stefan Stoll, Matthew Krzyaniak
+  nucspinrmv.m: Stefan Stoll
+  photoselect.m: Stefan Stoll
+  resfields.m: Stefan Stoll, Matthew Krzyaniak, Claudia Tait, Joscha Nehrkorn, AlaCodon (GitHub user)
+  resfields_eig.m: Stefan Stoll
 """
 
 from __future__ import annotations
@@ -51,7 +62,10 @@ class MwMode(NamedTuple):
 
 # ----------------------------------------------------------------------------- option handling
 def adddefaults(user: dict | None, defaults: dict) -> dict:
-    """``defaults`` updated by ``user``; a user key that matches a default only up to case is an error."""
+    """``defaults`` updated by ``user``; a user key that matches a default only up to case is an error.
+
+    EasySpin authors (adddefaults.m): Stefan Stoll.
+    """
     out = dict(defaults)
     if not user:
         return out
@@ -143,7 +157,10 @@ def _crystal_orientations(exp: dict, opt: dict) -> tuple[np.ndarray, int, int, b
 def photoselect(tdm, ori, k, alpha: float) -> np.ndarray:
     """Photoselection weight (0..1) of a spin centre: transition dipole ``tdm`` (letter, vector or angles) in the
     molecular frame, lab-frame orientations ``ori`` (rows ``[phi, theta]`` integrate over chi; ``[phi, theta, chi]``
-    do not), light propagation ``k`` and polarisation angle ``alpha`` (``nan`` for unpolarised light)."""
+    do not), light propagation ``k`` and polarisation angle ``alpha`` (``nan`` for unpolarised light).
+
+    EasySpin authors (photoselect.m): Stefan Stoll.
+    """
     if isinstance(tdm, str):
         tdm_mol = letter2vec(tdm)
     else:
@@ -197,7 +214,10 @@ def photoselect(tdm, ori, k, alpha: float) -> np.ndarray:
 
 
 def nucspinrmv(system: dict, rmvidx) -> dict:
-    """Remove the nuclei with the (1-based) numbers ``rmvidx`` from an unprocessed spin system dict."""
+    """Remove the nuclei with the (1-based) numbers ``rmvidx`` from an unprocessed spin system dict.
+
+    EasySpin authors (nucspinrmv.m): Stefan Stoll.
+    """
     new = dict(system)
     rmv = [int(i) for i in np.atleast_1d(rmvidx)]
     if not rmv:
@@ -284,7 +304,10 @@ def nucspinrmv(system: dict, rmvidx) -> dict:
 
 # ----------------------------------------------------------------------------- Hamiltonian data
 def gethamdata(B: float, H0: np.ndarray, muzL: np.ndarray, u: np.ndarray, v: np.ndarray, n_levels: int):
-    """Eigenpairs of ``H0 - B muzL`` (sorted), ``dE/dB`` and the transition energies ``E[v] - E[u]``."""
+    """Eigenpairs of ``H0 - B muzL`` (sorted), ``dE/dB`` and the transition energies ``E[v] - E[u]``.
+
+    EasySpin authors (gethamdata.m): Stefan Stoll, Matthew Krzyaniak.
+    """
     E, V = np.linalg.eigh(H0 - B * muzL)
     if n_levels < E.size:
         E, V = E[:n_levels], V[:, :n_levels]
@@ -305,7 +328,10 @@ def gethamdata(B: float, H0: np.ndarray, muzL: np.ndarray, u: np.ndarray, v: np.
 
 
 def getdstrainops(sys: dict) -> tuple[bool, list, list]:
-    """Hamiltonian derivatives with respect to D and E, premultiplied with the D strain widths."""
+    """Hamiltonian derivatives with respect to D and E, premultiplied with the D strain widths.
+
+    EasySpin authors (getdstrainops.m): Stefan Stoll.
+    """
     use = bool(np.any(sys["DStrain"]))
     dHdD: list[Any] = [0] * sys["nElectrons"]
     dHdE: list[Any] = [0] * sys["nElectrons"]
@@ -348,7 +374,10 @@ def cubicsolve(C: np.ndarray, loop_fields: bool) -> tuple[np.ndarray, np.ndarray
     """Roots in [0, 1] of the cubics ``C[:, 0] t^3 + ... + C[:, 3]`` (rows), as EasySpin's MEX.
 
     Returns ``(roots, counts)`` with the roots NaN-padded to (N, 3) and sorted ascending. With
-    ``loop_fields`` false a Newton search is tried first on monotonic cubics."""
+    ``loop_fields`` false a Newton search is tried first on monotonic cubics.
+
+    EasySpin authors (cubicsolve.c): Stefan Stoll.
+    """
     a, b, c, d = (np.asarray(C[:, k], float) for k in range(4))
     N = a.size
     with np.errstate(all="ignore"):
@@ -496,7 +525,11 @@ def _init_state(sys: dict, n_core: int):
 
 
 def resfields(system: dict, exp: dict, opt: dict | None = None) -> Resonances:
-    """Resonance fields, intensities, strain widths and transitions of a cw EPR experiment (module docstring)."""
+    """Resonance fields, intensities, strain widths and transitions of a cw EPR experiment (module docstring).
+
+    EasySpin authors (resfields.m): Stefan Stoll, Matthew Krzyaniak, Claudia Tait, Joscha Nehrkorn, AlaCodon
+      (GitHub user).
+    """
     exp_full = adddefaults(exp, _DEFAULT_EXP)
     if "lightBeam" in exp:
         exp_full["lightBeam"] = exp["lightBeam"]
@@ -510,7 +543,11 @@ def resfields(system: dict, exp: dict, opt: dict | None = None) -> Resonances:
 def resfields_oriented(  # noqa: C901
     system: dict, exp: dict, opt: dict | None, angles_M2L: np.ndarray, average_over_chi: bool, n_sites: int = 1
 ) -> Resonances:
-    """The resfields computation for given lab-frame orientations ``angles_M2L`` (rows ``[phi, theta, chi]``)."""
+    """The resfields computation for given lab-frame orientations ``angles_M2L`` (rows ``[phi, theta, chi]``).
+
+    EasySpin authors (resfields.m, the per-orientation part): Stefan Stoll, Matthew Krzyaniak, Claudia Tait,
+      Joscha Nehrkorn, AlaCodon (GitHub user).
+    """
     sys = validatespinsys(system)
     sys = dict(sys)
     sys.setdefault("gAStrainCorr", 1)
@@ -1090,7 +1127,10 @@ def resfields_eig(
 ):
     """Resonance fields by the eigenfield method (Belford et al., J. Magn. Reson. 11, 251 (1973)): all fields at which a
     transition of energy ``mwFreq`` exists, without a field sweep. Returns the fields (mT) per orientation (one array
-    for a single orientation, a list otherwise); with ``opt["Intensities"]`` true also the intensities."""
+    for a single orientation, a list otherwise); with ``opt["Intensities"]`` true also the intensities.
+
+    EasySpin authors (resfields_eig.m): Stefan Stoll.
+    """
     sys = validatespinsys(system)
     if "Detection" in exp:
         raise ValueError("Exp.Detection is obsolete. Use Exp.mwMode instead.")

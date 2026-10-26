@@ -4,6 +4,10 @@
 weighted by ``Sys.weight`` (default 1); ``Opt.separate = 'components'``
 stacks them. Isotope mixtures (``isotopologues``) are not ported, so each
 component is one spin system.
+
+EasySpin authors, by original file (contributors to the file up to EasySpin 6.0.15, see
+  docs/easyspin-credits.md):
+  compisoloop.m: Stefan Stoll, Claudia Tait
 """
 
 from __future__ import annotations
@@ -17,7 +21,10 @@ _RANGE_FIELDS = ("Range", "CenterSweep", "mwRange", "mwCenterSweep")
 
 def compisoloop(simfcn: Callable, systems: list | tuple, exp: dict, opt: dict | None, *, needs_range: bool = True):
     """Sum (or stack) the spectra of the component systems ``systems`` simulated by ``simfcn``; ``needs_range``
-    is the cw simulators' demand for an explicit sweep range (pulse experiments carry their own axes)."""
+    is the cw simulators' demand for an explicit sweep range (pulse experiments carry their own axes).
+
+    EasySpin authors (compisoloop.m): Stefan Stoll, Claudia Tait.
+    """
     from .garlic import Spectrum
 
     opt = dict(opt or {})

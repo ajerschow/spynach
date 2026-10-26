@@ -12,6 +12,12 @@ nuclei of spin zero are removed, and ``Spins``, ``nStates``, ``I`` and
 Numbers follow MATLAB's shapes: a scalar or flat list is one row, so
 ``g=[2.0088, 2.0061, 2.0027]`` is the three principal values of one
 electron and ``A=[[16, 16, 86], [5, 5, 5]]`` is one row per nucleus.
+
+EasySpin authors, by original file (contributors to the file up to EasySpin 6.0.15, see
+  docs/easyspin-credits.md):
+  hsdim.m: Stefan Stoll
+  spinvec.m: Stefan Stoll
+  validatespinsys.m: Stefan Stoll, Claudia Tait, Stephan Pribitzer, Joscha Nehrkorn, Matthew Krzyaniak
 """
 
 from __future__ import annotations
@@ -68,7 +74,10 @@ def _frame(sys: dict, field: str, shape: tuple[int, int]) -> None:
 
 
 def hsdim(spins) -> int:
-    """Dimension of the Hilbert space of a vector of spin quantum numbers or of a spin system."""
+    """Dimension of the Hilbert space of a vector of spin quantum numbers or of a spin system.
+
+    EasySpin authors (hsdim.m): Stefan Stoll.
+    """
     if isinstance(spins, dict):
         full = validatespinsys(spins)
         n_equiv = full["n"]
@@ -81,12 +90,19 @@ def hsdim(spins) -> int:
 
 
 def spinvec(system: dict) -> np.ndarray:
-    """Vector of all spin quantum numbers ``[S..., I...]`` of a spin system."""
+    """Vector of all spin quantum numbers ``[S..., I...]`` of a spin system.
+
+    EasySpin authors (spinvec.m): Stefan Stoll.
+    """
     return validatespinsys(system)["Spins"]
 
 
 def validatespinsys(sys_in: dict) -> dict[str, Any]:  # noqa: C901
-    """Check a spin system and return it in EasySpin's processed layout (see the module docstring)."""
+    """Check a spin system and return it in EasySpin's processed layout (see the module docstring).
+
+    EasySpin authors (validatespinsys.m): Stefan Stoll, Claudia Tait, Stephan Pribitzer, Joscha Nehrkorn,
+      Matthew Krzyaniak.
+    """
     if not isinstance(sys_in, dict):
         raise TypeError("Spin system must be a dict.")
     if sys_in.get("processed"):

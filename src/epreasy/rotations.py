@@ -6,6 +6,14 @@ rotation (a coordinate transformation) about z, y', z'' in that order;
 ``mat2 = Rp @ mat1 @ Rp.T`` taking vectors and matrices from frame 1 to
 frame 2. Spynach's ``euler2dcm`` is Spinach's *active* ZYZ rotation; the two
 are transposes of each other for the same angles.
+
+EasySpin authors, by original file (contributors to the file up to EasySpin 6.0.15, see
+  docs/easyspin-credits.md):
+  ang2vec.m: Stefan Stoll
+  erot.m: Stefan Stoll
+  eulang.m: Stefan Stoll, Claudia Tait
+  letter2vec.m: Stefan Stoll
+  vec2ang.m: Stefan Stoll
 """
 
 from __future__ import annotations
@@ -24,7 +32,10 @@ _LETTERS = {
 
 
 def erot(*angles) -> np.ndarray:
-    """Passive rotation matrix from Euler angles (radians): ``erot([a, b, g])`` or ``erot(a, b, g)``."""
+    """Passive rotation matrix from Euler angles (radians): ``erot([a, b, g])`` or ``erot(a, b, g)``.
+
+    EasySpin authors (erot.m): Stefan Stoll.
+    """
     if len(angles) == 1:
         angles = np.asarray(angles[0], dtype=float).ravel()
         if angles.size != 3:
@@ -53,6 +64,8 @@ def eulang(R, nocheck: bool = False) -> np.ndarray:
 
     A nearly orthogonal matrix is orthogonalised by SVD; a far-from-orthogonal
     one or a negative determinant raises. ``nocheck=True`` skips the checks.
+
+    EasySpin authors (eulang.m): Stefan Stoll, Claudia Tait.
     """
     R = np.asarray(R, dtype=float)
     if not nocheck:
@@ -90,7 +103,10 @@ def eulang(R, nocheck: bool = False) -> np.ndarray:
 
 
 def letter2vec(s: str) -> np.ndarray:
-    """Unit vector for a direction letter: ``'x'``, ``'xy'``, ``'-z'``, ``'xyz'``, ..."""
+    """Unit vector for a direction letter: ``'x'``, ``'xy'``, ``'-z'``, ``'xyz'``, ...
+
+    EasySpin authors (letter2vec.m): Stefan Stoll.
+    """
     if not isinstance(s, str):
         raise TypeError("Input argument must be a string.")
     sign = -1.0 if s.startswith("-") else 1.0
@@ -102,7 +118,10 @@ def letter2vec(s: str) -> np.ndarray:
 
 
 def ang2vec(phi, theta) -> np.ndarray:
-    """Unit vectors (3, n) from polar angles ``phi`` (azimuth) and ``theta`` (from z), radians; one may be scalar."""
+    """Unit vectors (3, n) from polar angles ``phi`` (azimuth) and ``theta`` (from z), radians; one may be scalar.
+
+    EasySpin authors (ang2vec.m): Stefan Stoll.
+    """
     phi = np.asarray(phi, dtype=float).ravel()
     theta = np.asarray(theta, dtype=float).ravel()
     if phi.size != 1 and theta.size != 1 and phi.size != theta.size:
@@ -113,7 +132,10 @@ def ang2vec(phi, theta) -> np.ndarray:
 
 
 def vec2ang(v) -> tuple[np.ndarray, np.ndarray]:
-    """Polar angles ``(phi, theta)`` of vectors given as a direction letter, a 3-vector, or a (3, n) or (n, 3) array."""
+    """Polar angles ``(phi, theta)`` of vectors given as a direction letter, a 3-vector, or a (3, n) or (n, 3) array.
+
+    EasySpin authors (vec2ang.m): Stefan Stoll.
+    """
     if isinstance(v, str):
         v = letter2vec(v)
     v = np.asarray(v, dtype=float)

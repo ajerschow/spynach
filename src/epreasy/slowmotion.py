@@ -15,6 +15,27 @@ of the basis truncation.
 Also here: ``wigner3j`` (exact, by integer arithmetic), ``wigner6j``,
 ``wignerd`` (matrices and single elements), ``tensor_cart2sph`` and
 ``tensor_sph2cart``.
+
+EasySpin authors, by original file (contributors to the file up to EasySpin 6.0.15, see
+  docs/easyspin-credits.md):
+  chili.m: Stefan Stoll, Jeremy Lehner, Peter Martin, Matthew Krzyaniak, Joscha Nehrkorn
+  chili_conjgrad.m: Stefan Stoll
+  chili_contfracspec.m: Stefan Stoll
+  chili_eqpopvec.m: Stefan Stoll
+  chili_lanczos.m: Stefan Stoll
+  chili_xlmk.m: Stefan Stoll
+  diffsuperop.m: Stefan Stoll, Jeremy Lehner
+  generateoribasis.m: Stefan Stoll
+  hil2liouv.m: Stefan Stoll, Jeremy Lehner
+  istotensor.m: Stefan Stoll, Jeremy Lehner
+  magint.m: Stefan Stoll, Jeremy Lehner, Peter Martin
+  pqorder.m: Stefan Stoll
+  rbos.m: Stefan Stoll, Peter Martin, Jeremy Lehner
+  tensor_cart2sph.m: Stefan Stoll
+  tensor_sph2cart.m: Stefan Stoll
+  wigner3j.m: Stefan Stoll
+  wigner6j.m: Stefan Stoll
+  wignerd.m: Stefan Stoll
 """
 
 from __future__ import annotations
@@ -94,7 +115,10 @@ def _wigner3j_exact(j1d: int, j2d: int, j3d: int, m1d: int, m2d: int, m3d: int) 
 
 def wigner3j(*args) -> float:
     """Wigner 3j symbol ``(j1 j2 j3; m1 m2 m3)``: six numbers, three pairs ``[j, m]``, or ``j`` and ``m``
-    arrays (EasySpin's call forms). Exact for any rank (integer arithmetic)."""
+    arrays (EasySpin's call forms). Exact for any rank (integer arithmetic).
+
+    EasySpin authors (wigner3j.m): Stefan Stoll.
+    """
     if len(args) == 6:
         vals = args
     elif len(args) == 3:
@@ -116,7 +140,10 @@ def wigner3j(*args) -> float:
 
 
 def wigner6j(*args) -> float:
-    """Wigner 6j symbol ``{j1 j2 j3; j4 j5 j6}`` (six numbers, three pairs, two triples or one 6-array)."""
+    """Wigner 6j symbol ``{j1 j2 j3; j4 j5 j6}`` (six numbers, three pairs, two triples or one 6-array).
+
+    EasySpin authors (wigner6j.m): Stefan Stoll.
+    """
     if len(args) == 6:
         vals = args
     elif len(args) == 3:
@@ -214,7 +241,10 @@ def _littled(J: float, m1: float, m2: float, beta):
 def wignerd(J, *angles, phase: str = "-"):
     """Wigner rotation matrix ``D^J(alpha, beta, gamma)`` (or ``d^J(beta)`` with one angle) in EasySpin's
     convention (phase ``'-'``), ordered m = J .. -J; with ``J = [J, m1, m2]`` the single element, vectorised
-    over the angles."""
+    over the angles.
+
+    EasySpin authors (wignerd.m): Stefan Stoll.
+    """
     sign = {"-": -1, "+": 1}[phase]
     Jarr = np.atleast_1d(np.asarray(J, dtype=float))
     if len(angles) == 1:
@@ -247,7 +277,10 @@ def wignerd(J, *angles, phase: str = "-"):
 
 def tensor_cart2sph(Tc):
     """Irreducible spherical components ``(T0, T1[3], T2[5])`` of a scalar, a 3-vector of principal values or
-    a 3x3 cartesian tensor (Mehring's convention; components ordered +q .. -q)."""
+    a 3x3 cartesian tensor (Mehring's convention; components ordered +q .. -q).
+
+    EasySpin authors (tensor_cart2sph.m): Stefan Stoll.
+    """
     Tc = np.asarray(Tc, dtype=float)
     T1 = np.zeros(3, dtype=complex)
     T2 = np.zeros(5, dtype=complex)
@@ -275,7 +308,10 @@ def tensor_cart2sph(Tc):
 
 
 def tensor_sph2cart(T0, T1, T2) -> np.ndarray:
-    """The cartesian 3x3 tensor from its spherical components (the inverse of ``tensor_cart2sph``)."""
+    """The cartesian 3x3 tensor from its spherical components (the inverse of ``tensor_cart2sph``).
+
+    EasySpin authors (tensor_sph2cart.m): Stefan Stoll.
+    """
     T1 = np.asarray(T1, dtype=complex).ravel()
     T2 = np.asarray(T2, dtype=complex).ravel()
     if T1.size != 3 or T2.size != 5:
@@ -296,7 +332,10 @@ def tensor_sph2cart(T0, T1, T2) -> np.ndarray:
 
 
 def _istotensor(a, b):
-    """Rank-0, 1 and 2 irreducible spherical tensor operators from two vector operators (or vectors)."""
+    """Rank-0, 1 and 2 irreducible spherical tensor operators from two vector operators (or vectors).
+
+    EasySpin authors (istotensor.m, translated as a private function): Stefan Stoll, Jeremy Lehner.
+    """
 
     def mul(x, y):  # operator product for matrices, plain product with scalars
         if np.isscalar(x) or np.isscalar(y):
@@ -320,7 +359,10 @@ def _istotensor(a, b):
 
 
 def _hil2liouv(H):
-    """Hilbert-space operator to its Liouville-space commutator superoperator, kron(1, H) - kron(H^T, 1)."""
+    """Hilbert-space operator to its Liouville-space commutator superoperator, kron(1, H) - kron(H^T, 1).
+
+    EasySpin authors (hil2liouv.m, translated as a private function): Stefan Stoll, Jeremy Lehner.
+    """
     H = sps.csr_array(H)
     n = H.shape[0]
     eye = sps.identity(n, format="csr")
@@ -329,7 +371,10 @@ def _hil2liouv(H):
 
 # ----------------------------------------------------------------------------- orientational basis
 def _generateoribasis(even_lmax: int, odd_lmax: int, mmax: int, kmax: int, jkmin: int, even_k: bool):
-    """The K-symmetrised LjKKM basis in the Freed ordering: columns L, jK, K, M."""
+    """The K-symmetrised LjKKM basis in the Freed ordering: columns L, jK, K, M.
+
+    EasySpin authors (generateoribasis.m, translated as a private function): Stefan Stoll.
+    """
     delta_k = 2 if even_k else 1
     if even_k:
         kmax = kmax // 2 * 2
@@ -353,7 +398,10 @@ def _jjj(rank: int, L1: int, MK1: int, L2: int, MK2: int) -> float:
 
 
 def _pqorder(spins):
-    """(p, q) = (m1 - m2, m1 + m2) of every spin for the Liouville product basis in descending mm order."""
+    """(p, q) = (m1 - m2, m1 + m2) of every spin for the Liouville product basis in descending mm order.
+
+    EasySpin authors (pqorder.m, translated as a private function): Stefan Stoll.
+    """
     spins = np.asarray(spins, dtype=float)
     n_states = (2 * spins + 1).astype(int)
     n1 = int(np.prod(n_states))
@@ -376,7 +424,10 @@ def _pqorder(spins):
 
 # ----------------------------------------------------------------------------- interactions
 def _magint(sys: dict, spin_ops, center_field_mT: float, include_nz: bool, explicit_sweep: bool):
-    """Spherical tensor operators (T) and interaction tensor components (F, Hz) of every term."""
+    """Spherical tensor operators (T) and interaction tensor components (F, Hz) of every term.
+
+    EasySpin authors (magint.m, translated as a private function): Stefan Stoll, Jeremy Lehner, Peter Martin.
+    """
     n_el = sys["nElectrons"]
     n_nuc = sys["nNuclei"]
     B0 = (0.0, 0.0, 1.0) if explicit_sweep else (0.0, 0.0, center_field_mT / 1e3)
@@ -443,7 +494,10 @@ def _magint(sys: dict, spin_ops, center_field_mT: float, include_nz: bool, expli
 
 def _rbos(T, F, angles, field_dep):
     """Rotational basis operators in Liouville space: rank-0 scalar, rank-1 (3x3) and rank-2 (5x5) grids of
-    sparse superoperators, split into field-dependent (B) and field-independent (G) parts."""
+    sparse superoperators, split into field-dependent (B) and field-independent (G) parts.
+
+    EasySpin authors (rbos.m, translated as a private function): Stefan Stoll, Peter Martin, Jeremy Lehner.
+    """
     T0, T1, T2 = T
     F0, F1, F2 = F
     D1 = wignerd(1, *angles)
@@ -579,7 +633,10 @@ def _liouvhamiltonian_full(basis, Q0, Q1, Q2):
 
 
 def _xlmk(pot_L, pot_M, pot_K, pot_lambda, R):
-    """Expansion coefficients X^L_MK of the potential-dependent diffusion operator (chili_xlmk)."""
+    """Expansion coefficients X^L_MK of the potential-dependent diffusion operator (chili_xlmk).
+
+    EasySpin authors (chili_xlmk.m, translated as a private function): Stefan Stoll.
+    """
     L = np.asarray(pot_L, dtype=int).ravel()
     M = np.asarray(pot_M, dtype=int).ravel()
     K = np.asarray(pot_K, dtype=int).ravel()
@@ -666,7 +723,10 @@ def _xlmk(pot_L, pot_M, pot_K, pot_lambda, R):
 
 
 def _diffsuperop(basis: np.ndarray, R, XLMK, all_m_zero: bool) -> sps.csr_array:
-    """The diffusion superoperator in the LjKKM basis for a diagonal diffusion tensor, with the potential."""
+    """The diffusion superoperator in the LjKKM basis for a diagonal diffusion tensor, with the potential.
+
+    EasySpin authors (diffsuperop.m, translated as a private function): Stefan Stoll, Jeremy Lehner.
+    """
     L, jK, K, M = basis[:, 0], basis[:, 1], basis[:, 2], basis[:, 3]
     n = L.size
     R = np.asarray(R, dtype=float).ravel()
@@ -762,7 +822,10 @@ def _diffsuperop(basis: np.ndarray, R, XLMK, all_m_zero: bool) -> sps.csr_array:
 
 
 def _eqpopvec(basis: np.ndarray, pot_L, pot_M, pot_K, pot_lambda, tolerances=(1e-6, 1e-4, 1e-4)):
-    """The vector of sqrt(Peq) in the LjKKM basis under an orientational potential (chili_eqpopvec)."""
+    """The vector of sqrt(Peq) in the LjKKM basis under an orientational potential (chili_eqpopvec).
+
+    EasySpin authors (chili_eqpopvec.m, translated as a private function): Stefan Stoll.
+    """
     L, jK, K, M = basis[:, 0], basis[:, 1], basis[:, 2], basis[:, 3]
     n = L.size
     Lp = np.asarray(pot_L, dtype=int).ravel()
@@ -885,7 +948,10 @@ def _eqpopvec(basis: np.ndarray, pot_L, pot_M, pot_K, pot_lambda, tolerances=(1e
 # ----------------------------------------------------------------------------- solvers
 def _lanczos(A, b, z, lentz: bool = True, threshold: float = 1e-6):
     """Spectral function b^T (A + z)^-1 b of the complex-symmetric A by Lanczos tridiagonalisation and the
-    continued fraction (modified Lentz left to right, or right to left): ``(spec, converged, changes)``."""
+    continued fraction (modified Lentz left to right, or right to left): ``(spec, converged, changes)``.
+
+    EasySpin authors (chili_lanczos.m, translated as a private function): Stefan Stoll.
+    """
     N = b.size
     alpha = np.zeros(N, dtype=complex)
     beta = np.zeros(N, dtype=complex)
@@ -947,7 +1013,10 @@ def _contfracspec(z, alpha, beta, k):
 
 
 def _conjgrad(A, b, shift):
-    """Conjugate gradients with the Lanczos tridiagonal (diagonal T0, superdiagonal T1) from the CG scalars."""
+    """Conjugate gradients with the Lanczos tridiagonal (diagonal T0, superdiagonal T1) from the CG scalars.
+
+    EasySpin authors (chili_conjgrad.m, translated as a private function): Stefan Stoll.
+    """
     x = np.zeros_like(b)
     r = b - A @ x
     p = r.copy()
@@ -1037,6 +1106,8 @@ def chili(system: dict, exp: dict, opt: dict | None = None) -> Spectrum:  # noqa
     (``'L'`` Lanczos, ``'\\\\'`` direct, ``'E'`` eigenvalues, ``'C'`` conjugate gradients, ``'B'`` BiCGSTAB),
     ``FieldSweepMethod`` (``'approxlin'``, ``'approxinv'``, ``'explicit'``), ``Lentz``, ``Threshold``,
     ``Rescale``, ``IncludeNZI``, ``separate`` (``''`` or ``'components'``).
+
+    EasySpin authors (chili.m): Stefan Stoll, Jeremy Lehner, Peter Martin, Matthew Krzyaniak, Joscha Nehrkorn.
     """
     if isinstance(system, (list, tuple)):
         return compisoloop(chili, system, exp, opt)

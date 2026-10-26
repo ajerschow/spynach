@@ -1,4 +1,11 @@
-"""Unit conversions of EasySpin: unitconvert, mt2mhz, mhz2mt."""
+"""Unit conversions of EasySpin: unitconvert, mt2mhz, mhz2mt.
+
+EasySpin authors, by original file (contributors to the file up to EasySpin 6.0.15, see
+  docs/easyspin-credits.md):
+  mhz2mt.m: Stefan Stoll, Matthew Krzyaniak
+  mt2mhz.m: Stefan Stoll, Matthew Krzyaniak
+  unitconvert.m: sikuenstner (GitHub user), Matthew Krzyaniak
+"""
 
 from __future__ import annotations
 
@@ -40,6 +47,8 @@ def unitconvert(value, units: str, g=gfree):
     ``units`` is ``'<from>-><to>'``, e.g. ``'cm^-1->MHz'``. Conversions into or
     out of ``mT`` use the g factor ``g`` (default: the free electron). ``value``
     and ``g`` may be arrays of the same shape.
+
+    EasySpin authors (unitconvert.m): sikuenstner (GitHub user), Matthew Krzyaniak.
     """
     value = np.asarray(value, dtype=float)
     table = _conversions(np.asarray(g, dtype=float))
@@ -52,10 +61,16 @@ def unitconvert(value, units: str, g=gfree):
 
 
 def mt2mhz(value_mT, g=gfree):
-    """Magnetic field (mT) to frequency (MHz) for g factor ``g``."""
+    """Magnetic field (mT) to frequency (MHz) for g factor ``g``.
+
+    EasySpin authors (mt2mhz.m): Stefan Stoll, Matthew Krzyaniak.
+    """
     return unitconvert(value_mT, "mT->MHz", g)
 
 
 def mhz2mt(value_MHz, g=gfree):
-    """Frequency (MHz) to magnetic field (mT) for g factor ``g``."""
+    """Frequency (MHz) to magnetic field (mT) for g factor ``g``.
+
+    EasySpin authors (mhz2mt.m): Stefan Stoll, Matthew Krzyaniak.
+    """
     return unitconvert(value_MHz, "MHz->mT", g)

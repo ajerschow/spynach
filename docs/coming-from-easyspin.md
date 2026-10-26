@@ -44,6 +44,10 @@ updated with every ported function. The companion notebook is
   below.
 - **Errors are EasySpin's messages**, raised as `ValueError`; features that
   are not ported raise `NotImplementedError`.
+- **Authors are credited by name, not in function names.** EasySpin's headers name no authors, so each EPReasy
+  function's docstring (`help(epreasy.pepper)`) and the page [EasySpin function authors](easyspin-credits.md) name
+  the people who authored commits to the original file up to release 6.0.15, and any author its source names;
+  function names stay EasySpin's.
 
 ```python
 import numpy as np

@@ -6,6 +6,10 @@ temperatures, averaged over a powder or for crystal orientations, from the
 thermal populations of the eigenstates (the operator method, with the
 susceptibility as a numerical field derivative) or from the partition
 function.
+
+EasySpin authors, by original file (contributors to the file up to EasySpin 6.0.15, see
+  docs/easyspin-credits.md):
+  curry.m: Stefan Stoll, Joscha Nehrkorn
 """
 
 from __future__ import annotations
@@ -35,6 +39,8 @@ def curry(system: dict, exp: dict, opt: dict | None = None):  # noqa: C901
     several a tuple in that order. ``opt["Units"]``: ``'SI'`` or ``'CGS'``; ``opt["Method"]``: ``'operator'`` or
     ``'partitionfunction'``; ``opt["GridSize"]`` (default 10); ``opt["Spins"]`` (electron spins whose moment
     is taken); ``opt["deltaB"]`` (mT, the derivative step). ``exp["SampleFrame"]``/``MolFrame`` make it a crystal.
+
+    EasySpin authors (curry.m): Stefan Stoll, Joscha Nehrkorn.
     """
     if isinstance(system, (list, tuple)):
         raise ValueError("curry does not support calculations with multiple components.")
