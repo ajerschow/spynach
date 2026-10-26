@@ -22,7 +22,7 @@ compared with EasySpin 6.0.15's own output on about 280 reference cases. Not por
 and `spidyan`, the GUIs, and some options; the guide lists them.
 
 EPReasy is part of the [Spynach](https://github.com/ajerschow/spynach) project, which also ports the Spinach
-spin dynamics kernel. It is an early release (0.2.0); corrections and bug reports are welcome on GitHub.
+spin dynamics kernel. It is an early release (0.3.0); corrections and bug reports are welcome on GitHub.
 
 - Guides: https://github.com/ajerschow/spynach/blob/main/docs/epreasy.md
 - Differences from EasySpin: https://github.com/ajerschow/spynach/blob/main/docs/coming-from-easyspin.md

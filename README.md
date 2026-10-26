@@ -182,7 +182,7 @@ report are timed on the same machine.
 
 Releases are tagged `vX.Y.Z` and listed in [`CHANGELOG.md`](CHANGELOG.md);
 `spynach.__version__` gives the installed version, and
-`pip install "spynach @ git+https://github.com/ajerschow/spynach.git@v0.2.0"`
+`pip install "spynach @ git+https://github.com/ajerschow/spynach.git@v0.3.0"`
 installs a tagged one. To release: set the version in `pyproject.toml`,
 `src/spynach/__init__.py` and `CITATION.cff` (a test keeps them equal), add
 the `CHANGELOG.md` entry, refresh `uv.lock`, run the checks above plus

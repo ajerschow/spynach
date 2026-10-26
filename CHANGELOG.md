@@ -2,7 +2,7 @@
 
 Releases are tagged `vX.Y.Z` on GitHub; the version is `spynach.__version__`.
 
-## Unreleased
+## 0.3.0 - 2026-10-26
 
 - The EasySpin contributors behind every function that EPReasy translates are acknowledged by name, as the Spinach
   authors are in Spynach: an `EasySpin authors (pepper.m): ...` line in the docstring of each function (113 functions

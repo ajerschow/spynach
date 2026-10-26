@@ -43,7 +43,7 @@ from .spinsystem import hsdim, spinvec, validatespinsys
 from .symmetry import hamsymm
 from .units import mhz2mt, mt2mhz, unitconvert
 
-__version__ = "0.2.0"
+__version__ = "0.3.0"
 
 __all__ = [
     "amu", "avogadro", "bmagn", "boltzm", "clight", "echarge", "evolt", "gfree", "hbar", "mu0", "nmagn", "planck",

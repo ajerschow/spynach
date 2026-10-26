@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "easyspyn"
-version = "0.2.0"  # keep equal to epreasy.__version__ and the repository version (tests/unit/test_version.py)
+version = "0.3.0"  # keep equal to epreasy.__version__ and the repository version (tests/unit/test_version.py)
 description = "EasySpin's EPR simulators in Python (EPReasy): cw EPR, ENDOR, slow motion, pulse EPR, fitting"
 readme = "README.md"
 license = "MIT"
