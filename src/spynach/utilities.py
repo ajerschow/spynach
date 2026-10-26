@@ -11,6 +11,7 @@ import numpy as np
 import scipy.sparse as sps
 
 from spynach.backend import get_backend
+from spynach.kernels import matlab_round  # noqa: F401  (kept here: the name Spinach users know)
 from spynach.tolerances import Tolerances
 
 Matrix = np.ndarray | sps.csr_array
@@ -19,13 +20,6 @@ Matrix = np.ndarray | sps.csr_array
 def nnz(matrix: Matrix) -> int:
     return int(matrix.count_nonzero()) if sps.issparse(matrix) else int(np.count_nonzero(matrix))
     # GPU: count_nonzero exists for cupyx sparse matrices and cupy arrays; route through the backend then
-
-
-def matlab_round(values: np.ndarray) -> np.ndarray:
-    """Round half away from zero, separately on real and imaginary parts, as MATLAB ``round`` does."""
-    if np.iscomplexobj(values):
-        return matlab_round(values.real) + 1j * matlab_round(values.imag)
-    return np.sign(values) * np.floor(np.abs(values) + 0.5)
 
 
 def clean_up(tols: Tolerances, matrix: Matrix, nonzero_tol: float) -> Matrix:
@@ -42,13 +36,19 @@ def clean_up(tols: Tolerances, matrix: Matrix, nonzero_tol: float) -> Matrix:
         raise ValueError("nonzero_tol parameter must be a positive real number.")
     # GPU: this is called inside the propagator Taylor loop on device arrays; the rounding
     # works through the array module and the sparse/dense switch through the backend's csr()
+    be = get_backend()
     scale = 1 / nonzero_tol
     if sps.issparse(matrix):
         matrix = sps.csr_array(matrix, copy=True)
-        matrix.data = nonzero_tol * matlab_round(scale * matrix.data)
+        matrix.data = be.round_array(matrix.data, scale, nonzero_tol)
         matrix.eliminate_zeros()
     else:
-        matrix = nonzero_tol * matlab_round(scale * np.asarray(matrix))
+        matrix = be.round_array(np.asarray(matrix), scale, nonzero_tol)
+    return _choose_storage(tols, matrix)
+
+
+def _choose_storage(tols: Tolerances, matrix: Matrix) -> Matrix:
+    """The sparse-or-dense decision of ``clean_up``, applied to an already rounded matrix."""
     density = nnz(matrix) / (matrix.shape[0] * matrix.shape[1])
     if sps.issparse(matrix):
         if (nnz(matrix) > 0 and min(matrix.shape) < tols.small_matrix) or density > tols.dense_matrix:
@@ -57,6 +57,25 @@ def clean_up(tols: Tolerances, matrix: Matrix, nonzero_tol: float) -> Matrix:
     if density < tols.dense_matrix and min(matrix.shape) > tols.small_matrix:
         return sps.csr_array(matrix)
     return matrix
+
+
+def matmul_clean(tols: Tolerances, A: Matrix, B: Matrix, nonzero_tol: float) -> Matrix:
+    """``clean_up(tols, A @ B, nonzero_tol)``; two sparse factors are multiplied and rounded in one threaded
+    pass where the compiled kernel applies (:mod:`spynach.kernels`), with the same result."""
+    if sps.issparse(A) and sps.issparse(B) and nonzero_tol > 0 and not np.isnan(nonzero_tol):
+        product = get_backend().spgemm_round(A, B, 1 / nonzero_tol, nonzero_tol)
+        if product is not None:
+            return _choose_storage(tols, product)
+    return clean_up(tols, A @ B, nonzero_tol)
+
+
+def matmul(A: Matrix, X: np.ndarray) -> Matrix:
+    """``A @ X``; a CSR matrix times a dense stack goes through the threaded kernel where it applies."""
+    if sps.issparse(A) and not sps.issparse(X) and A.format == "csr":
+        product = get_backend().csr_times_dense(A, np.asarray(X))
+        if product is not None:
+            return product
+    return A @ X
 
 
 def chop(x: Matrix, tol: float) -> Matrix:
@@ -69,10 +88,10 @@ def chop(x: Matrix, tol: float) -> Matrix:
     be = get_backend()
     if be.issparse(x):
         x = be.csr(x, copy=True)
-        x.data = tol * matlab_round(x.data / tol)
+        x.data = be.round_array(x.data, tol, tol, divide=True)
         x.eliminate_zeros()
         return x
-    return tol * matlab_round(be.dense(x) / tol)
+    return be.round_array(be.dense(x), tol, tol, divide=True)
 
 
 def as_matrix(x: Matrix) -> Matrix:

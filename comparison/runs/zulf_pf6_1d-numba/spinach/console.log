@@ -1,0 +1,1206 @@
+== zulf_pf6_1d (Spinach /Users/alexej/Documents/PROG/spynach-spinach) -> /Users/alexej/Documents/PROG/spynach/comparison/runs/zulf_pf6_1d/spinach
+Running startup checks...
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  scratch location: /Users/alexej/Documents/PROG/spynach-spinach/scratch
+[...parison > zulf_pf6_1d_spinach > create > banner ]   
+[...parison > zulf_pf6_1d_spinach > create > banner ]  ============================================
+[...parison > zulf_pf6_1d_spinach > create > banner ]  =                                          =
+[...parison > zulf_pf6_1d_spinach > create > banner ]  =               SPINACH v2.13              =
+[...parison > zulf_pf6_1d_spinach > create > banner ]  =                                          =
+[...parison > zulf_pf6_1d_spinach > create > banner ]  =                <a href = "https://spindynamics.org/wiki/index.php?title=Spinach_developer_team">author list</a>               =
+[...parison > zulf_pf6_1d_spinach > create > banner ]  =                                          =
+[...parison > zulf_pf6_1d_spinach > create > banner ]  =               <a href = "https://spindynamics.org/wiki/index.php?title=Main_Page">documentation</a>              =
+[...parison > zulf_pf6_1d_spinach > create > banner ]  =                                          =
+[...parison > zulf_pf6_1d_spinach > create > banner ]  =                   <a href = "https://link.springer.com/book/10.1007/978-3-031-05607-9">book</a>                   =
+[...parison > zulf_pf6_1d_spinach > create > banner ]  =                                          =
+[...parison > zulf_pf6_1d_spinach > create > banner ]  =                MIT License               =
+[...parison > zulf_pf6_1d_spinach > create > banner ]  =                                          =
+[...parison > zulf_pf6_1d_spinach > create > banner ]  ============================================
+[...parison > zulf_pf6_1d_spinach > create > banner ]   
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Drop interaction tensors with 2-norms below (Hz)                 1.00000000e-10       (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Drop Liouvillian elements with norm below (rad/s)                1.00000000e-10       (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Drop relaxation superoperator elements with norm below (Hz)      1.00000000e-10       (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Drop propagator elements with norm below                         1.00000000e-10       (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Drop subspaces with populations below                            1.00000000e-10       (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Drop irreps with populations below                               1.00000000e-10       (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Steady state convergence tolerance                               1.00000000e-08       (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Number of time steps in ZTE sample                               32                   (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  ZTE track drop threshold                                         1.00000000e-24       (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  ZTE off for state vector densities above                         0.5                  (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Drop dipolar couplings over more than (Angstrom)                 100                  (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Krylov propagation for dimensions above                          10000                (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Basis set printing hush threshold                                256                  (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Collect small subspaces into bundles of dimension                1000                 (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Force sparse algebra for matrix density below                    0.15                 (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Force full algebra for matrix dimension below                    200                  (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Rel. acc. for the elements of Redfield superoperator             1.00000000e-04       (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Matrix exponential differentiation algorithm                     auxmat               (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Number of PBC images for DD couplings in PBC systems             2                    (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Number of days before a cache record is deleted                  365                  (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Planck constant (hbar)                                           1.05457182e-34      
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Boltzmann constant (k)                                           1.38064900e-23      
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Free electron g-factor                                           2.00231930e+00      
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Vacuum permeability                                              1.25663706e-06      
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Bohr magneton                                                    9.27401007e-24      
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  WARNING: the following functionality is enabled by the user
+[...> run_comparison > zulf_pf6_1d_spinach > create ]           > greedy parallelisation
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  job identifier: 836e0408b07a5a237fc4bda6b223008f
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  random number generator shuffled
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  starting a parallel pool with the following parameters:
+[...> run_comparison > zulf_pf6_1d_spinach > create ]           > parallel profile:  processes
+[...> run_comparison > zulf_pf6_1d_spinach > create ]           > workers requested: 11
+[...> run_comparison > zulf_pf6_1d_spinach > create ]           > worker port range: 20001-44999
+Starting parallel pool (parpool) using the 'Processes' profile ...
+Connected to parallel pool with 11 workers.
+[...parison > zulf_pf6_1d_spinach > create > banner ]   
+[...parison > zulf_pf6_1d_spinach > create > banner ]  ============================================
+[...parison > zulf_pf6_1d_spinach > create > banner ]  =                                          =
+[...parison > zulf_pf6_1d_spinach > create > banner ]  =               SPIN SYSTEM                =
+[...parison > zulf_pf6_1d_spinach > create > banner ]  =                                          =
+[...parison > zulf_pf6_1d_spinach > create > banner ]  ============================================
+[...parison > zulf_pf6_1d_spinach > create > banner ]   
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  a total of 7 particles in the simulation, of which 0 have a zero spin.
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  magnetic induction of 2.7e-06 Tesla (-0.00011496 MHz proton frequency, 7.5667e-05 GHz electron frequency).
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  WARNING - no Zeeman interactions supplied, magnet frequencies assumed.
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  WARNING - no giant spin terms supplied, zeros assumed.
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  initializing interaction arrays...
+[...f_pf6_1d_spinach > create > summary_coordinates ]  atomic coordinates (Angstrom)
+[...f_pf6_1d_spinach > create > summary_coordinates ]  ======================================
+[...f_pf6_1d_spinach > create > summary_coordinates ]  N    Spin     X         Y         Z   
+[...f_pf6_1d_spinach > create > summary_coordinates ]  --------------------------------------
+[...f_pf6_1d_spinach > create > summary_coordinates ]  1    31P   +0.000    +0.000    +0.000  
+[...f_pf6_1d_spinach > create > summary_coordinates ]  2    19F   -1.600    +0.000    +0.000  
+[...f_pf6_1d_spinach > create > summary_coordinates ]  3    19F   +1.600    +0.000    +0.000  
+[...f_pf6_1d_spinach > create > summary_coordinates ]  4    19F   +0.000    -1.600    +0.000  
+[...f_pf6_1d_spinach > create > summary_coordinates ]  5    19F   +0.000    +1.600    +0.000  
+[...f_pf6_1d_spinach > create > summary_coordinates ]  6    19F   +0.000    +0.000    -1.600  
+[...f_pf6_1d_spinach > create > summary_coordinates ]  7    19F   +0.000    +0.000    +1.600  
+[...f_pf6_1d_spinach > create > summary_coordinates ]  ======================================
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  periodic boundary conditions not specified, assuming a standalone spin system.
+[...arison > zulf_pf6_1d_spinach > create > dipolar ]  dipolar interaction distance threshold: 100 Angstrom.
+[...arison > zulf_pf6_1d_spinach > create > dipolar ]  running dipolar interaction network analysis...
+[...arison > zulf_pf6_1d_spinach > create > dipolar ]  found 21 spin pair(s) with distance under the threshold of 100 Angstrom.
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  processing coupling data...
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  summary of coupling tensors and their anisotropies (Hz)
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  ======================================================================================================
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  Spin A  Spin B                     Matrix                      Tr/3         norm[rank1]  norm[rank2]  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  ------------------------------------------------------------------------------------------------------
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  2       1       -1.118466e+04  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +5.592331e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +1.1185e+04  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +5.592331e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  3       1       -1.118466e+04  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +5.592331e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +1.1185e+04  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +5.592331e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  4       1       +5.592331e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  -1.118466e+04  +0.000000e+00    +0.0000e+00  +0.0000e+00  +1.1185e+04  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +5.592331e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  5       1       +5.592331e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  -1.118466e+04  +0.000000e+00    +0.0000e+00  +0.0000e+00  +1.1185e+04  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +5.592331e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  6       1       +5.592331e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +5.592331e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +1.1185e+04  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  -1.118466e+04
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  7       1       +5.592331e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +5.592331e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +1.1185e+04  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  -1.118466e+04
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  1       2       -1.047466e+04  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +6.302331e+03  +0.000000e+00    +7.1000e+02  +0.0000e+00  +1.1185e+04  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +6.302331e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  3       2       -3.247946e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +1.623973e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +3.2479e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +1.623973e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  4       2       -2.296645e+03  +6.889935e+03  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +6.889935e+03  -2.296645e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +4.593290e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  5       2       -2.296645e+03  -6.889935e+03  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  -6.889935e+03  -2.296645e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +4.593290e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  6       2       -2.296645e+03  +0.000000e+00  +6.889935e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +4.593290e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +6.889935e+03  +0.000000e+00  -2.296645e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  7       2       -2.296645e+03  +0.000000e+00  -6.889935e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +4.593290e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  -6.889935e+03  +0.000000e+00  -2.296645e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  1       3       -1.047466e+04  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +6.302331e+03  +0.000000e+00    +7.1000e+02  +0.0000e+00  +1.1185e+04  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +6.302331e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  2       3       -3.247946e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +1.623973e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +3.2479e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +1.623973e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  4       3       -2.296645e+03  -6.889935e+03  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  -6.889935e+03  -2.296645e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +4.593290e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  5       3       -2.296645e+03  +6.889935e+03  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +6.889935e+03  -2.296645e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +4.593290e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  6       3       -2.296645e+03  +0.000000e+00  -6.889935e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +4.593290e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  -6.889935e+03  +0.000000e+00  -2.296645e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  7       3       -2.296645e+03  +0.000000e+00  +6.889935e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +4.593290e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +6.889935e+03  +0.000000e+00  -2.296645e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  1       4       +6.302331e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  -1.047466e+04  +0.000000e+00    +7.1000e+02  +0.0000e+00  +1.1185e+04  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +6.302331e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  2       4       -2.296645e+03  +6.889935e+03  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +6.889935e+03  -2.296645e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +4.593290e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  3       4       -2.296645e+03  -6.889935e+03  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  -6.889935e+03  -2.296645e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +4.593290e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  5       4       +1.623973e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  -3.247946e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +3.2479e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +1.623973e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  6       4       +4.593290e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  -2.296645e+03  +6.889935e+03    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +6.889935e+03  -2.296645e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  7       4       +4.593290e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  -2.296645e+03  -6.889935e+03    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  -6.889935e+03  -2.296645e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  1       5       +6.302331e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  -1.047466e+04  +0.000000e+00    +7.1000e+02  +0.0000e+00  +1.1185e+04  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +6.302331e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  2       5       -2.296645e+03  -6.889935e+03  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  -6.889935e+03  -2.296645e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +4.593290e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  3       5       -2.296645e+03  +6.889935e+03  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +6.889935e+03  -2.296645e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +4.593290e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  4       5       +1.623973e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  -3.247946e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +3.2479e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +1.623973e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  6       5       +4.593290e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  -2.296645e+03  -6.889935e+03    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  -6.889935e+03  -2.296645e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  7       5       +4.593290e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  -2.296645e+03  +6.889935e+03    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +6.889935e+03  -2.296645e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  1       6       +6.302331e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +6.302331e+03  +0.000000e+00    +7.1000e+02  +0.0000e+00  +1.1185e+04  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  -1.047466e+04
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  2       6       -2.296645e+03  +0.000000e+00  +6.889935e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +4.593290e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +6.889935e+03  +0.000000e+00  -2.296645e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  3       6       -2.296645e+03  +0.000000e+00  -6.889935e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +4.593290e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  -6.889935e+03  +0.000000e+00  -2.296645e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  4       6       +4.593290e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  -2.296645e+03  +6.889935e+03    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +6.889935e+03  -2.296645e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  5       6       +4.593290e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  -2.296645e+03  -6.889935e+03    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  -6.889935e+03  -2.296645e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  7       6       +1.623973e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +1.623973e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +3.2479e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  -3.247946e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  1       7       +6.302331e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +6.302331e+03  +0.000000e+00    +7.1000e+02  +0.0000e+00  +1.1185e+04  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  -1.047466e+04
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  2       7       -2.296645e+03  +0.000000e+00  -6.889935e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +4.593290e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  -6.889935e+03  +0.000000e+00  -2.296645e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  3       7       -2.296645e+03  +0.000000e+00  +6.889935e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +4.593290e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +6.889935e+03  +0.000000e+00  -2.296645e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  4       7       +4.593290e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  -2.296645e+03  -6.889935e+03    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  -6.889935e+03  -2.296645e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  5       7       +4.593290e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  -2.296645e+03  +6.889935e+03    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +6.889935e+03  -2.296645e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  6       7       +1.623973e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +1.623973e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +3.2479e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  -3.247946e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  ======================================================================================================
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  spin temperature: 298 Kelvin
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  relaxation theory 1: redfield
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  chemical subsystem 1, rotational correlation time(s): 6.5e-11 seconds
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  terms to keep in the relaxation superoperator: labframe
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  action to take on dynamic frequency shifts: ignore
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  thermalisation method: dibari
+create                               21.8 s
+[...mparison > zulf_pf6_1d_spinach > basis > banner ]   
+[...mparison > zulf_pf6_1d_spinach > basis > banner ]  ============================================
+[...mparison > zulf_pf6_1d_spinach > basis > banner ]  =                                          =
+[...mparison > zulf_pf6_1d_spinach > basis > banner ]  =                BASIS SET                 =
+[...mparison > zulf_pf6_1d_spinach > basis > banner ]  =                                          =
+[...mparison > zulf_pf6_1d_spinach > basis > banner ]  ============================================
+[...mparison > zulf_pf6_1d_spinach > basis > banner ]   
+[...ulf_pf6_1d_spinach > basis > summary_basis_opts ]  spherical tensor basis set using Liouville space matrix formalism.
+[...ulf_pf6_1d_spinach > basis > summary_basis_opts ]  starting with complete basis set on all spins...
+[... > run_comparison > zulf_pf6_1d_spinach > basis ]  coupling tensors with norm below 1e-10 Hz will be ignored.
+[... > run_comparison > zulf_pf6_1d_spinach > basis ]  chemical substance 1, 7 spins:
+[... > run_comparison > zulf_pf6_1d_spinach > basis ]      keeping 1 subgraphs with 7 spins each.
+[... > run_comparison > zulf_pf6_1d_spinach > basis ]  building basis set descriptor...
+[... > run_comparison > zulf_pf6_1d_spinach > basis ]  eliminating redundant states...
+[... > run_comparison > zulf_pf6_1d_spinach > basis ]  sorting the basis...
+[... > run_comparison > zulf_pf6_1d_spinach > basis ]  chemical substance 1: 16383 states.
+[...n > zulf_pf6_1d_spinach > basis > summary_basis ]  over 256 states in the basis - printing suppressed.
+[...n > zulf_pf6_1d_spinach > basis > summary_basis ]  state space dimension 16384 (100% of the full state space).
+[...arison > zulf_pf6_1d_spinach > basis > symmetry ]  no symmetry information available.
+[... > run_comparison > zulf_pf6_1d_spinach > basis ]  caching Lie structure tables...
+basis                                 1.7 s
+[...> run_comparison > zulf_pf6_1d_spinach > assume ]  lab frame assumption set - no assumptions:
+[...> run_comparison > zulf_pf6_1d_spinach > assume ]    laboratory frame simulation for electrons,
+[...> run_comparison > zulf_pf6_1d_spinach > assume ]    laboratory frame simulation for nuclei,
+[...> run_comparison > zulf_pf6_1d_spinach > assume ]    all terms for electron Zeeman interactions,
+[...> run_comparison > zulf_pf6_1d_spinach > assume ]    all terms for nuclear Zeeman interactions,
+[...> run_comparison > zulf_pf6_1d_spinach > assume ]    all terms for giant spin model interactions,
+[...> run_comparison > zulf_pf6_1d_spinach > assume ]    all terms for all couplings.
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  building Hamiltonian descriptor...
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  complete isotropic Zeeman interaction for spin 1...
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]             (Lz) x -46.5789 Hz
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  complete isotropic Zeeman interaction for spin 2...
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]             (Lz) x -108.2094 Hz
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  complete isotropic Zeeman interaction for spin 3...
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]             (Lz) x -108.2094 Hz
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  complete isotropic Zeeman interaction for spin 4...
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]             (Lz) x -108.2094 Hz
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  complete isotropic Zeeman interaction for spin 5...
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]             (Lz) x -108.2094 Hz
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  complete isotropic Zeeman interaction for spin 6...
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]             (Lz) x -108.2094 Hz
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  complete isotropic Zeeman interaction for spin 7...
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]             (Lz) x -108.2094 Hz
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  complete isotropic coupling for spins 1,2...
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]             (LxSx+LySy+LzSz) x 710 Hz
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  complete isotropic coupling for spins 1,3...
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]             (LxSx+LySy+LzSz) x 710 Hz
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  complete isotropic coupling for spins 1,4...
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]             (LxSx+LySy+LzSz) x 710 Hz
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  complete isotropic coupling for spins 1,5...
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]             (LxSx+LySy+LzSz) x 710 Hz
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  complete isotropic coupling for spins 1,6...
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]             (LxSx+LySy+LzSz) x 710 Hz
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  complete isotropic coupling for spins 1,7...
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]             (LxSx+LySy+LzSz) x 710 Hz
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  25 unique operators in the Hamiltonian descriptor.
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  building individual operators...
+[...zulf_pf6_1d_spinach > hamiltonian > parfor/spmd ]  25/25 operators done, 54.1393 operators per second.
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  average worker process received 1.6039 MB and sent back 1.3145 MB
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  operator construction took 0.47377 seconds
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  operator array footprint: 0.014102 GB
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  assembling the Hamiltonian...
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  Hamiltonian assembly took 0.02574 seconds
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  WARNING - only the isotropic part has been returned.
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  memory footprint of I array: 0.0022643 GB
+hamiltonian                           0.7 s
+operators                             0.9 s
+[...un_comparison > zulf_pf6_1d_spinach > evolution ]  trying to reduce the problem dimension...
+[...un_comparison > zulf_pf6_1d_spinach > evolution ]  destination state screening is not applicable.
+[...ison > zulf_pf6_1d_spinach > evolution > reduce ]  no permutation symmetry information has been supplied.
+[...ison > zulf_pf6_1d_spinach > evolution > reduce ]  attempting zero track elimination...
+[... zulf_pf6_1d_spinach > evolution > reduce > zte ]  dropping states with amplitudes below 1e-24 within the first 0.00034239 seconds.
+[... zulf_pf6_1d_spinach > evolution > reduce > zte ]  a maximum of 32 steps shall be taken, 1.07e-05 seconds each.
+[... zulf_pf6_1d_spinach > evolution > reduce > zte ]  evolution step 0, active space dimension 3431
+[... zulf_pf6_1d_spinach > evolution > reduce > zte ]  evolution step 1, active space dimension 16384
+[... zulf_pf6_1d_spinach > evolution > reduce > zte ]  evolution step 2, active space dimension 16384
+[... zulf_pf6_1d_spinach > evolution > reduce > zte ]  state space dimension reduced from 16384 to 16384
+[...ison > zulf_pf6_1d_spinach > evolution > reduce ]  path-tracing subspace #1...
+[...f6_1d_spinach > evolution > reduce > path_trace ]  analyzing 16384-dimensional state space.
+[...f6_1d_spinach > evolution > reduce > path_trace ]  Liouvillian zero tolerance 1e-10
+[...f6_1d_spinach > evolution > reduce > path_trace ]  population tolerance for subspace drop 1e-10
+[...f6_1d_spinach > evolution > reduce > path_trace ]  found 2 non-interacting subspaces.
+[...f6_1d_spinach > evolution > reduce > path_trace ]  running subspace population analysis...
+[...f6_1d_spinach > evolution > reduce > path_trace ]  1 populated subspaces of dimension 1
+[...f6_1d_spinach > evolution > reduce > path_trace ]  1 populated subspaces of dimension 16383
+[...f6_1d_spinach > evolution > reduce > path_trace ]  keeping a total of 2 independent subspaces of total dimension 16384
+[...f6_1d_spinach > evolution > reduce > path_trace ]  merging small subspaces into batches of dimension 1000...
+[...f6_1d_spinach > evolution > reduce > path_trace ]  working subspace 1, dim 16383
+[...f6_1d_spinach > evolution > reduce > path_trace ]  working subspace 2, dim 1
+[...un_comparison > zulf_pf6_1d_spinach > evolution ]  splitting the space...
+[                                                   ]  evolving subspace 2 of 2...
+[                                                   ]  dim(L)=1, rho stack size 1, 1 substeps in optimal stepping.
+[                                                   ]  building the propagator...
+[                                                   ]  propagating the system on CPU...
+[                                                   ]  evolving subspace 1 of 2...
+[                                                   ]  large Liouvillian, propagating using Krylov algorithm... 
+[...un_comparison > zulf_pf6_1d_spinach > evolution ]  propagation finished.
+[...un_comparison > zulf_pf6_1d_spinach > evolution ]  recombining subspaces...
+[...un_comparison > zulf_pf6_1d_spinach > evolution ]  data retrieval finished.
+pulse                                 0.4 s
+[...un_comparison > zulf_pf6_1d_spinach > evolution ]  trying to reduce the problem dimension...
+[...un_comparison > zulf_pf6_1d_spinach > evolution ]  destination state screening using coil state.
+[...ison > zulf_pf6_1d_spinach > evolution > reduce ]  no permutation symmetry information has been supplied.
+[...ison > zulf_pf6_1d_spinach > evolution > reduce ]  attempting zero track elimination...
+[... zulf_pf6_1d_spinach > evolution > reduce > zte ]  dropping states with amplitudes below 1e-24 within the first 0.0010374 seconds.
+[... zulf_pf6_1d_spinach > evolution > reduce > zte ]  a maximum of 32 steps shall be taken, 3.2419e-05 seconds each.
+[... zulf_pf6_1d_spinach > evolution > reduce > zte ]  evolution step 0, active space dimension 7
+[... zulf_pf6_1d_spinach > evolution > reduce > zte ]  evolution step 1, active space dimension 3430
+[... zulf_pf6_1d_spinach > evolution > reduce > zte ]  evolution step 2, active space dimension 3430
+[... zulf_pf6_1d_spinach > evolution > reduce > zte ]  state space dimension reduced from 16384 to 3430
+[...ison > zulf_pf6_1d_spinach > evolution > reduce ]  path-tracing subspace #1...
+[...f6_1d_spinach > evolution > reduce > path_trace ]  analyzing 3430-dimensional state space.
+[...f6_1d_spinach > evolution > reduce > path_trace ]  Liouvillian zero tolerance 1e-10
+[...f6_1d_spinach > evolution > reduce > path_trace ]  population tolerance for subspace drop 1e-10
+[...f6_1d_spinach > evolution > reduce > path_trace ]  found 1 non-interacting subspaces.
+[...f6_1d_spinach > evolution > reduce > path_trace ]  running subspace population analysis...
+[...f6_1d_spinach > evolution > reduce > path_trace ]  1 populated subspaces of dimension 3430
+[...f6_1d_spinach > evolution > reduce > path_trace ]  keeping a total of 1 independent subspaces of total dimension 3430
+[...f6_1d_spinach > evolution > reduce > path_trace ]  merging small subspaces into batches of dimension 1000...
+[...f6_1d_spinach > evolution > reduce > path_trace ]  working subspace 1, dim 3430
+[...un_comparison > zulf_pf6_1d_spinach > evolution ]  splitting the space...
+[...un_comparison > zulf_pf6_1d_spinach > evolution ]  evolving subspace 1 of 1...
+[...un_comparison > zulf_pf6_1d_spinach > evolution ]  building the propagator...
+[... > zulf_pf6_1d_spinach > evolution > propagator ]  generator dimension 3430, nnz 28800, density 0.2448%, sparsity 1
+[... > zulf_pf6_1d_spinach > evolution > propagator ]  scaling -i*L*dt down by 8 and squaring the propagator 3 times.
+[... > zulf_pf6_1d_spinach > evolution > propagator ]  Taylor series converged on CPU in 10 iterations.
+[... > zulf_pf6_1d_spinach > evolution > propagator ]  propagator dimension 3430, nnz 7710622, density 65.5392%, sparsity 0
+[... > zulf_pf6_1d_spinach > evolution > propagator ]  CPU squaring step 1...
+[... > zulf_pf6_1d_spinach > evolution > propagator ]  CPU squaring step 2...
+[... > zulf_pf6_1d_spinach > evolution > propagator ]  CPU squaring step 3...
+[... > zulf_pf6_1d_spinach > evolution > propagator ]  propagator dimension 3430, nnz 11764860, density 99.9997%, sparsity 0
+[...un_comparison > zulf_pf6_1d_spinach > evolution ]  propagating the system on CPU...
+[...un_comparison > zulf_pf6_1d_spinach > evolution ]  propagation finished.
+acquisition                          40.0 s
+[..._comparison > zulf_pf6_1d_spinach > apodisation ]  FID dimension 1, all first points divided by 2
+[..._comparison > zulf_pf6_1d_spinach > apodisation ]  FID dimension 1, exp window function applied.
+processing                            0.2 s
+[...rison > zulf_pf6_1d_spinach > plot_1d > axis_1d ]  offset + sweep frequency axis specification:
+[...rison > zulf_pf6_1d_spinach > plot_1d > axis_1d ]  16384-point axis from -3000 to 2999.6338 Hz
+plot                                  3.2 s
+total                                69.0 s
+== zulf_pf6_1d (Spinach /Users/alexej/Documents/PROG/spynach-spinach) -> /Users/alexej/Documents/PROG/spynach/comparison/runs/zulf_pf6_1d/spinach
+Running startup checks...
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  scratch location: /Users/alexej/Documents/PROG/spynach-spinach/scratch
+[...parison > zulf_pf6_1d_spinach > create > banner ]   
+[...parison > zulf_pf6_1d_spinach > create > banner ]  ============================================
+[...parison > zulf_pf6_1d_spinach > create > banner ]  =                                          =
+[...parison > zulf_pf6_1d_spinach > create > banner ]  =               SPINACH v2.13              =
+[...parison > zulf_pf6_1d_spinach > create > banner ]  =                                          =
+[...parison > zulf_pf6_1d_spinach > create > banner ]  =                <a href = "https://spindynamics.org/wiki/index.php?title=Spinach_developer_team">author list</a>               =
+[...parison > zulf_pf6_1d_spinach > create > banner ]  =                                          =
+[...parison > zulf_pf6_1d_spinach > create > banner ]  =               <a href = "https://spindynamics.org/wiki/index.php?title=Main_Page">documentation</a>              =
+[...parison > zulf_pf6_1d_spinach > create > banner ]  =                                          =
+[...parison > zulf_pf6_1d_spinach > create > banner ]  =                   <a href = "https://link.springer.com/book/10.1007/978-3-031-05607-9">book</a>                   =
+[...parison > zulf_pf6_1d_spinach > create > banner ]  =                                          =
+[...parison > zulf_pf6_1d_spinach > create > banner ]  =                MIT License               =
+[...parison > zulf_pf6_1d_spinach > create > banner ]  =                                          =
+[...parison > zulf_pf6_1d_spinach > create > banner ]  ============================================
+[...parison > zulf_pf6_1d_spinach > create > banner ]   
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Drop interaction tensors with 2-norms below (Hz)                 1.00000000e-10       (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Drop Liouvillian elements with norm below (rad/s)                1.00000000e-10       (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Drop relaxation superoperator elements with norm below (Hz)      1.00000000e-10       (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Drop propagator elements with norm below                         1.00000000e-10       (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Drop subspaces with populations below                            1.00000000e-10       (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Drop irreps with populations below                               1.00000000e-10       (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Steady state convergence tolerance                               1.00000000e-08       (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Number of time steps in ZTE sample                               32                   (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  ZTE track drop threshold                                         1.00000000e-24       (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  ZTE off for state vector densities above                         0.5                  (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Drop dipolar couplings over more than (Angstrom)                 100                  (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Krylov propagation for dimensions above                          10000                (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Basis set printing hush threshold                                256                  (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Collect small subspaces into bundles of dimension                1000                 (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Force sparse algebra for matrix density below                    0.15                 (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Force full algebra for matrix dimension below                    200                  (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Rel. acc. for the elements of Redfield superoperator             1.00000000e-04       (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Matrix exponential differentiation algorithm                     auxmat               (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Number of PBC images for DD couplings in PBC systems             2                    (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Number of days before a cache record is deleted                  365                  (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Planck constant (hbar)                                           1.05457182e-34      
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Boltzmann constant (k)                                           1.38064900e-23      
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Free electron g-factor                                           2.00231930e+00      
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Vacuum permeability                                              1.25663706e-06      
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Bohr magneton                                                    9.27401007e-24      
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  WARNING: the following functionality is enabled by the user
+[...> run_comparison > zulf_pf6_1d_spinach > create ]           > greedy parallelisation
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  job identifier: 5eb0c1775a01208805b8c2ea28368d39
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  random number generator shuffled
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  a running Spinach parallel pool found:
+[...> run_comparison > zulf_pf6_1d_spinach > create ]           > parallel profile: Processes
+[...> run_comparison > zulf_pf6_1d_spinach > create ]           > job identifier:   76d89cbcff75b94c1c58419eeaee3e32
+[...> run_comparison > zulf_pf6_1d_spinach > create ]           > worker processes: 11
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  WARNING - this pool will be re-used
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  parallel pool ValueStore cleared.
+[...parison > zulf_pf6_1d_spinach > create > banner ]   
+[...parison > zulf_pf6_1d_spinach > create > banner ]  ============================================
+[...parison > zulf_pf6_1d_spinach > create > banner ]  =                                          =
+[...parison > zulf_pf6_1d_spinach > create > banner ]  =               SPIN SYSTEM                =
+[...parison > zulf_pf6_1d_spinach > create > banner ]  =                                          =
+[...parison > zulf_pf6_1d_spinach > create > banner ]  ============================================
+[...parison > zulf_pf6_1d_spinach > create > banner ]   
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  a total of 7 particles in the simulation, of which 0 have a zero spin.
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  magnetic induction of 2.7e-06 Tesla (-0.00011496 MHz proton frequency, 7.5667e-05 GHz electron frequency).
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  WARNING - no Zeeman interactions supplied, magnet frequencies assumed.
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  WARNING - no giant spin terms supplied, zeros assumed.
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  initializing interaction arrays...
+[...f_pf6_1d_spinach > create > summary_coordinates ]  atomic coordinates (Angstrom)
+[...f_pf6_1d_spinach > create > summary_coordinates ]  ======================================
+[...f_pf6_1d_spinach > create > summary_coordinates ]  N    Spin     X         Y         Z   
+[...f_pf6_1d_spinach > create > summary_coordinates ]  --------------------------------------
+[...f_pf6_1d_spinach > create > summary_coordinates ]  1    31P   +0.000    +0.000    +0.000  
+[...f_pf6_1d_spinach > create > summary_coordinates ]  2    19F   -1.600    +0.000    +0.000  
+[...f_pf6_1d_spinach > create > summary_coordinates ]  3    19F   +1.600    +0.000    +0.000  
+[...f_pf6_1d_spinach > create > summary_coordinates ]  4    19F   +0.000    -1.600    +0.000  
+[...f_pf6_1d_spinach > create > summary_coordinates ]  5    19F   +0.000    +1.600    +0.000  
+[...f_pf6_1d_spinach > create > summary_coordinates ]  6    19F   +0.000    +0.000    -1.600  
+[...f_pf6_1d_spinach > create > summary_coordinates ]  7    19F   +0.000    +0.000    +1.600  
+[...f_pf6_1d_spinach > create > summary_coordinates ]  ======================================
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  periodic boundary conditions not specified, assuming a standalone spin system.
+[...arison > zulf_pf6_1d_spinach > create > dipolar ]  dipolar interaction distance threshold: 100 Angstrom.
+[...arison > zulf_pf6_1d_spinach > create > dipolar ]  running dipolar interaction network analysis...
+[...arison > zulf_pf6_1d_spinach > create > dipolar ]  found 21 spin pair(s) with distance under the threshold of 100 Angstrom.
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  processing coupling data...
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  summary of coupling tensors and their anisotropies (Hz)
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  ======================================================================================================
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  Spin A  Spin B                     Matrix                      Tr/3         norm[rank1]  norm[rank2]  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  ------------------------------------------------------------------------------------------------------
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  2       1       -1.118466e+04  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +5.592331e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +1.1185e+04  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +5.592331e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  3       1       -1.118466e+04  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +5.592331e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +1.1185e+04  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +5.592331e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  4       1       +5.592331e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  -1.118466e+04  +0.000000e+00    +0.0000e+00  +0.0000e+00  +1.1185e+04  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +5.592331e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  5       1       +5.592331e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  -1.118466e+04  +0.000000e+00    +0.0000e+00  +0.0000e+00  +1.1185e+04  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +5.592331e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  6       1       +5.592331e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +5.592331e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +1.1185e+04  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  -1.118466e+04
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  7       1       +5.592331e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +5.592331e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +1.1185e+04  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  -1.118466e+04
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  1       2       -1.047466e+04  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +6.302331e+03  +0.000000e+00    +7.1000e+02  +0.0000e+00  +1.1185e+04  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +6.302331e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  3       2       -3.247946e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +1.623973e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +3.2479e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +1.623973e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  4       2       -2.296645e+03  +6.889935e+03  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +6.889935e+03  -2.296645e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +4.593290e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  5       2       -2.296645e+03  -6.889935e+03  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  -6.889935e+03  -2.296645e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +4.593290e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  6       2       -2.296645e+03  +0.000000e+00  +6.889935e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +4.593290e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +6.889935e+03  +0.000000e+00  -2.296645e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  7       2       -2.296645e+03  +0.000000e+00  -6.889935e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +4.593290e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  -6.889935e+03  +0.000000e+00  -2.296645e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  1       3       -1.047466e+04  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +6.302331e+03  +0.000000e+00    +7.1000e+02  +0.0000e+00  +1.1185e+04  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +6.302331e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  2       3       -3.247946e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +1.623973e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +3.2479e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +1.623973e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  4       3       -2.296645e+03  -6.889935e+03  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  -6.889935e+03  -2.296645e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +4.593290e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  5       3       -2.296645e+03  +6.889935e+03  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +6.889935e+03  -2.296645e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +4.593290e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  6       3       -2.296645e+03  +0.000000e+00  -6.889935e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +4.593290e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  -6.889935e+03  +0.000000e+00  -2.296645e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  7       3       -2.296645e+03  +0.000000e+00  +6.889935e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +4.593290e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +6.889935e+03  +0.000000e+00  -2.296645e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  1       4       +6.302331e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  -1.047466e+04  +0.000000e+00    +7.1000e+02  +0.0000e+00  +1.1185e+04  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +6.302331e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  2       4       -2.296645e+03  +6.889935e+03  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +6.889935e+03  -2.296645e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +4.593290e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  3       4       -2.296645e+03  -6.889935e+03  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  -6.889935e+03  -2.296645e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +4.593290e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  5       4       +1.623973e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  -3.247946e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +3.2479e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +1.623973e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  6       4       +4.593290e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  -2.296645e+03  +6.889935e+03    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +6.889935e+03  -2.296645e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  7       4       +4.593290e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  -2.296645e+03  -6.889935e+03    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  -6.889935e+03  -2.296645e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  1       5       +6.302331e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  -1.047466e+04  +0.000000e+00    +7.1000e+02  +0.0000e+00  +1.1185e+04  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +6.302331e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  2       5       -2.296645e+03  -6.889935e+03  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  -6.889935e+03  -2.296645e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +4.593290e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  3       5       -2.296645e+03  +6.889935e+03  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +6.889935e+03  -2.296645e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +4.593290e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  4       5       +1.623973e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  -3.247946e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +3.2479e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +1.623973e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  6       5       +4.593290e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  -2.296645e+03  -6.889935e+03    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  -6.889935e+03  -2.296645e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  7       5       +4.593290e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  -2.296645e+03  +6.889935e+03    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +6.889935e+03  -2.296645e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  1       6       +6.302331e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +6.302331e+03  +0.000000e+00    +7.1000e+02  +0.0000e+00  +1.1185e+04  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  -1.047466e+04
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  2       6       -2.296645e+03  +0.000000e+00  +6.889935e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +4.593290e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +6.889935e+03  +0.000000e+00  -2.296645e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  3       6       -2.296645e+03  +0.000000e+00  -6.889935e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +4.593290e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  -6.889935e+03  +0.000000e+00  -2.296645e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  4       6       +4.593290e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  -2.296645e+03  +6.889935e+03    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +6.889935e+03  -2.296645e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  5       6       +4.593290e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  -2.296645e+03  -6.889935e+03    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  -6.889935e+03  -2.296645e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  7       6       +1.623973e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +1.623973e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +3.2479e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  -3.247946e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  1       7       +6.302331e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +6.302331e+03  +0.000000e+00    +7.1000e+02  +0.0000e+00  +1.1185e+04  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  -1.047466e+04
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  2       7       -2.296645e+03  +0.000000e+00  -6.889935e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +4.593290e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  -6.889935e+03  +0.000000e+00  -2.296645e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  3       7       -2.296645e+03  +0.000000e+00  +6.889935e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +4.593290e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +6.889935e+03  +0.000000e+00  -2.296645e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  4       7       +4.593290e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  -2.296645e+03  -6.889935e+03    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  -6.889935e+03  -2.296645e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  5       7       +4.593290e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  -2.296645e+03  +6.889935e+03    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +6.889935e+03  -2.296645e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  6       7       +1.623973e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +1.623973e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +3.2479e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  -3.247946e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  ======================================================================================================
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  spin temperature: 298 Kelvin
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  relaxation theory 1: redfield
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  chemical subsystem 1, rotational correlation time(s): 6.5e-11 seconds
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  terms to keep in the relaxation superoperator: labframe
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  action to take on dynamic frequency shifts: ignore
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  thermalisation method: dibari
+create                                0.8 s
+[...mparison > zulf_pf6_1d_spinach > basis > banner ]   
+[...mparison > zulf_pf6_1d_spinach > basis > banner ]  ============================================
+[...mparison > zulf_pf6_1d_spinach > basis > banner ]  =                                          =
+[...mparison > zulf_pf6_1d_spinach > basis > banner ]  =                BASIS SET                 =
+[...mparison > zulf_pf6_1d_spinach > basis > banner ]  =                                          =
+[...mparison > zulf_pf6_1d_spinach > basis > banner ]  ============================================
+[...mparison > zulf_pf6_1d_spinach > basis > banner ]   
+[...ulf_pf6_1d_spinach > basis > summary_basis_opts ]  spherical tensor basis set using Liouville space matrix formalism.
+[...ulf_pf6_1d_spinach > basis > summary_basis_opts ]  starting with complete basis set on all spins...
+[... > run_comparison > zulf_pf6_1d_spinach > basis ]  coupling tensors with norm below 1e-10 Hz will be ignored.
+[... > run_comparison > zulf_pf6_1d_spinach > basis ]  chemical substance 1, 7 spins:
+[... > run_comparison > zulf_pf6_1d_spinach > basis ]      keeping 1 subgraphs with 7 spins each.
+[... > run_comparison > zulf_pf6_1d_spinach > basis ]  building basis set descriptor...
+[... > run_comparison > zulf_pf6_1d_spinach > basis ]  eliminating redundant states...
+[... > run_comparison > zulf_pf6_1d_spinach > basis ]  sorting the basis...
+[... > run_comparison > zulf_pf6_1d_spinach > basis ]  chemical substance 1: 16383 states.
+[...n > zulf_pf6_1d_spinach > basis > summary_basis ]  over 256 states in the basis - printing suppressed.
+[...n > zulf_pf6_1d_spinach > basis > summary_basis ]  state space dimension 16384 (100% of the full state space).
+[...arison > zulf_pf6_1d_spinach > basis > symmetry ]  no symmetry information available.
+[... > run_comparison > zulf_pf6_1d_spinach > basis ]  caching Lie structure tables...
+basis                                 1.5 s
+[...> run_comparison > zulf_pf6_1d_spinach > assume ]  lab frame assumption set - no assumptions:
+[...> run_comparison > zulf_pf6_1d_spinach > assume ]    laboratory frame simulation for electrons,
+[...> run_comparison > zulf_pf6_1d_spinach > assume ]    laboratory frame simulation for nuclei,
+[...> run_comparison > zulf_pf6_1d_spinach > assume ]    all terms for electron Zeeman interactions,
+[...> run_comparison > zulf_pf6_1d_spinach > assume ]    all terms for nuclear Zeeman interactions,
+[...> run_comparison > zulf_pf6_1d_spinach > assume ]    all terms for giant spin model interactions,
+[...> run_comparison > zulf_pf6_1d_spinach > assume ]    all terms for all couplings.
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  building Hamiltonian descriptor...
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  complete isotropic Zeeman interaction for spin 1...
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]             (Lz) x -46.5789 Hz
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  complete isotropic Zeeman interaction for spin 2...
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]             (Lz) x -108.2094 Hz
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  complete isotropic Zeeman interaction for spin 3...
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]             (Lz) x -108.2094 Hz
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  complete isotropic Zeeman interaction for spin 4...
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]             (Lz) x -108.2094 Hz
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  complete isotropic Zeeman interaction for spin 5...
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]             (Lz) x -108.2094 Hz
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  complete isotropic Zeeman interaction for spin 6...
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]             (Lz) x -108.2094 Hz
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  complete isotropic Zeeman interaction for spin 7...
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]             (Lz) x -108.2094 Hz
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  complete isotropic coupling for spins 1,2...
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]             (LxSx+LySy+LzSz) x 710 Hz
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  complete isotropic coupling for spins 1,3...
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]             (LxSx+LySy+LzSz) x 710 Hz
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  complete isotropic coupling for spins 1,4...
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]             (LxSx+LySy+LzSz) x 710 Hz
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  complete isotropic coupling for spins 1,5...
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]             (LxSx+LySy+LzSz) x 710 Hz
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  complete isotropic coupling for spins 1,6...
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]             (LxSx+LySy+LzSz) x 710 Hz
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  complete isotropic coupling for spins 1,7...
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]             (LxSx+LySy+LzSz) x 710 Hz
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  25 unique operators in the Hamiltonian descriptor.
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  building individual operators...
+[...zulf_pf6_1d_spinach > hamiltonian > parfor/spmd ]  25/25 operators done, 75.2601 operators per second.
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  average worker process received 1.6038 MB and sent back 1.3145 MB
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  operator construction took 0.33891 seconds
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  operator array footprint: 0.014102 GB
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  assembling the Hamiltonian...
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  Hamiltonian assembly took 0.019172 seconds
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  WARNING - only the isotropic part has been returned.
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  memory footprint of I array: 0.0022643 GB
+hamiltonian                           0.4 s
+operators                             0.7 s
+[...un_comparison > zulf_pf6_1d_spinach > evolution ]  trying to reduce the problem dimension...
+[...un_comparison > zulf_pf6_1d_spinach > evolution ]  destination state screening is not applicable.
+[...ison > zulf_pf6_1d_spinach > evolution > reduce ]  no permutation symmetry information has been supplied.
+[...ison > zulf_pf6_1d_spinach > evolution > reduce ]  attempting zero track elimination...
+[... zulf_pf6_1d_spinach > evolution > reduce > zte ]  dropping states with amplitudes below 1e-24 within the first 0.00034239 seconds.
+[... zulf_pf6_1d_spinach > evolution > reduce > zte ]  a maximum of 32 steps shall be taken, 1.07e-05 seconds each.
+[... zulf_pf6_1d_spinach > evolution > reduce > zte ]  evolution step 0, active space dimension 3431
+[... zulf_pf6_1d_spinach > evolution > reduce > zte ]  evolution step 1, active space dimension 16384
+[... zulf_pf6_1d_spinach > evolution > reduce > zte ]  evolution step 2, active space dimension 16384
+[... zulf_pf6_1d_spinach > evolution > reduce > zte ]  state space dimension reduced from 16384 to 16384
+[...ison > zulf_pf6_1d_spinach > evolution > reduce ]  path-tracing subspace #1...
+[...f6_1d_spinach > evolution > reduce > path_trace ]  analyzing 16384-dimensional state space.
+[...f6_1d_spinach > evolution > reduce > path_trace ]  Liouvillian zero tolerance 1e-10
+[...f6_1d_spinach > evolution > reduce > path_trace ]  population tolerance for subspace drop 1e-10
+[...f6_1d_spinach > evolution > reduce > path_trace ]  found 2 non-interacting subspaces.
+[...f6_1d_spinach > evolution > reduce > path_trace ]  running subspace population analysis...
+[...f6_1d_spinach > evolution > reduce > path_trace ]  1 populated subspaces of dimension 1
+[...f6_1d_spinach > evolution > reduce > path_trace ]  1 populated subspaces of dimension 16383
+[...f6_1d_spinach > evolution > reduce > path_trace ]  keeping a total of 2 independent subspaces of total dimension 16384
+[...f6_1d_spinach > evolution > reduce > path_trace ]  merging small subspaces into batches of dimension 1000...
+[...f6_1d_spinach > evolution > reduce > path_trace ]  working subspace 1, dim 16383
+[...f6_1d_spinach > evolution > reduce > path_trace ]  working subspace 2, dim 1
+[...un_comparison > zulf_pf6_1d_spinach > evolution ]  splitting the space...
+[                                                   ]  evolving subspace 2 of 2...
+[                                                   ]  dim(L)=1, rho stack size 1, 1 substeps in optimal stepping.
+[                                                   ]  building the propagator...
+[                                                   ]  propagating the system on CPU...
+[                                                   ]  evolving subspace 1 of 2...
+[                                                   ]  large Liouvillian, propagating using Krylov algorithm... 
+[...un_comparison > zulf_pf6_1d_spinach > evolution ]  propagation finished.
+[...un_comparison > zulf_pf6_1d_spinach > evolution ]  recombining subspaces...
+[...un_comparison > zulf_pf6_1d_spinach > evolution ]  data retrieval finished.
+pulse                                 0.3 s
+[...un_comparison > zulf_pf6_1d_spinach > evolution ]  trying to reduce the problem dimension...
+[...un_comparison > zulf_pf6_1d_spinach > evolution ]  destination state screening using coil state.
+[...ison > zulf_pf6_1d_spinach > evolution > reduce ]  no permutation symmetry information has been supplied.
+[...ison > zulf_pf6_1d_spinach > evolution > reduce ]  attempting zero track elimination...
+[... zulf_pf6_1d_spinach > evolution > reduce > zte ]  dropping states with amplitudes below 1e-24 within the first 0.0010374 seconds.
+[... zulf_pf6_1d_spinach > evolution > reduce > zte ]  a maximum of 32 steps shall be taken, 3.2419e-05 seconds each.
+[... zulf_pf6_1d_spinach > evolution > reduce > zte ]  evolution step 0, active space dimension 7
+[... zulf_pf6_1d_spinach > evolution > reduce > zte ]  evolution step 1, active space dimension 3430
+[... zulf_pf6_1d_spinach > evolution > reduce > zte ]  evolution step 2, active space dimension 3430
+[... zulf_pf6_1d_spinach > evolution > reduce > zte ]  state space dimension reduced from 16384 to 3430
+[...ison > zulf_pf6_1d_spinach > evolution > reduce ]  path-tracing subspace #1...
+[...f6_1d_spinach > evolution > reduce > path_trace ]  analyzing 3430-dimensional state space.
+[...f6_1d_spinach > evolution > reduce > path_trace ]  Liouvillian zero tolerance 1e-10
+[...f6_1d_spinach > evolution > reduce > path_trace ]  population tolerance for subspace drop 1e-10
+[...f6_1d_spinach > evolution > reduce > path_trace ]  found 1 non-interacting subspaces.
+[...f6_1d_spinach > evolution > reduce > path_trace ]  running subspace population analysis...
+[...f6_1d_spinach > evolution > reduce > path_trace ]  1 populated subspaces of dimension 3430
+[...f6_1d_spinach > evolution > reduce > path_trace ]  keeping a total of 1 independent subspaces of total dimension 3430
+[...f6_1d_spinach > evolution > reduce > path_trace ]  merging small subspaces into batches of dimension 1000...
+[...f6_1d_spinach > evolution > reduce > path_trace ]  working subspace 1, dim 3430
+[...un_comparison > zulf_pf6_1d_spinach > evolution ]  splitting the space...
+[...un_comparison > zulf_pf6_1d_spinach > evolution ]  evolving subspace 1 of 1...
+[...un_comparison > zulf_pf6_1d_spinach > evolution ]  building the propagator...
+[... > zulf_pf6_1d_spinach > evolution > propagator ]  generator dimension 3430, nnz 28800, density 0.2448%, sparsity 1
+[... > zulf_pf6_1d_spinach > evolution > propagator ]  scaling -i*L*dt down by 8 and squaring the propagator 3 times.
+[... > zulf_pf6_1d_spinach > evolution > propagator ]  Taylor series converged on CPU in 10 iterations.
+[... > zulf_pf6_1d_spinach > evolution > propagator ]  propagator dimension 3430, nnz 7710622, density 65.5392%, sparsity 0
+[... > zulf_pf6_1d_spinach > evolution > propagator ]  CPU squaring step 1...
+[... > zulf_pf6_1d_spinach > evolution > propagator ]  CPU squaring step 2...
+[... > zulf_pf6_1d_spinach > evolution > propagator ]  CPU squaring step 3...
+[... > zulf_pf6_1d_spinach > evolution > propagator ]  propagator dimension 3430, nnz 11764860, density 99.9997%, sparsity 0
+[...un_comparison > zulf_pf6_1d_spinach > evolution ]  propagating the system on CPU...
+[...un_comparison > zulf_pf6_1d_spinach > evolution ]  propagation finished.
+acquisition                          42.0 s
+[..._comparison > zulf_pf6_1d_spinach > apodisation ]  FID dimension 1, all first points divided by 2
+[..._comparison > zulf_pf6_1d_spinach > apodisation ]  FID dimension 1, exp window function applied.
+processing                            0.1 s
+[...rison > zulf_pf6_1d_spinach > plot_1d > axis_1d ]  offset + sweep frequency axis specification:
+[...rison > zulf_pf6_1d_spinach > plot_1d > axis_1d ]  16384-point axis from -3000 to 2999.6338 Hz
+plot                                  0.1 s
+total                                45.9 s
+== zulf_pf6_1d (Spinach /Users/alexej/Documents/PROG/spynach-spinach) -> /Users/alexej/Documents/PROG/spynach/comparison/runs/zulf_pf6_1d/spinach
+Running startup checks...
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  scratch location: /Users/alexej/Documents/PROG/spynach-spinach/scratch
+[...parison > zulf_pf6_1d_spinach > create > banner ]   
+[...parison > zulf_pf6_1d_spinach > create > banner ]  ============================================
+[...parison > zulf_pf6_1d_spinach > create > banner ]  =                                          =
+[...parison > zulf_pf6_1d_spinach > create > banner ]  =               SPINACH v2.13              =
+[...parison > zulf_pf6_1d_spinach > create > banner ]  =                                          =
+[...parison > zulf_pf6_1d_spinach > create > banner ]  =                <a href = "https://spindynamics.org/wiki/index.php?title=Spinach_developer_team">author list</a>               =
+[...parison > zulf_pf6_1d_spinach > create > banner ]  =                                          =
+[...parison > zulf_pf6_1d_spinach > create > banner ]  =               <a href = "https://spindynamics.org/wiki/index.php?title=Main_Page">documentation</a>              =
+[...parison > zulf_pf6_1d_spinach > create > banner ]  =                                          =
+[...parison > zulf_pf6_1d_spinach > create > banner ]  =                   <a href = "https://link.springer.com/book/10.1007/978-3-031-05607-9">book</a>                   =
+[...parison > zulf_pf6_1d_spinach > create > banner ]  =                                          =
+[...parison > zulf_pf6_1d_spinach > create > banner ]  =                MIT License               =
+[...parison > zulf_pf6_1d_spinach > create > banner ]  =                                          =
+[...parison > zulf_pf6_1d_spinach > create > banner ]  ============================================
+[...parison > zulf_pf6_1d_spinach > create > banner ]   
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Drop interaction tensors with 2-norms below (Hz)                 1.00000000e-10       (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Drop Liouvillian elements with norm below (rad/s)                1.00000000e-10       (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Drop relaxation superoperator elements with norm below (Hz)      1.00000000e-10       (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Drop propagator elements with norm below                         1.00000000e-10       (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Drop subspaces with populations below                            1.00000000e-10       (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Drop irreps with populations below                               1.00000000e-10       (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Steady state convergence tolerance                               1.00000000e-08       (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Number of time steps in ZTE sample                               32                   (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  ZTE track drop threshold                                         1.00000000e-24       (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  ZTE off for state vector densities above                         0.5                  (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Drop dipolar couplings over more than (Angstrom)                 100                  (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Krylov propagation for dimensions above                          10000                (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Basis set printing hush threshold                                256                  (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Collect small subspaces into bundles of dimension                1000                 (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Force sparse algebra for matrix density below                    0.15                 (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Force full algebra for matrix dimension below                    200                  (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Rel. acc. for the elements of Redfield superoperator             1.00000000e-04       (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Matrix exponential differentiation algorithm                     auxmat               (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Number of PBC images for DD couplings in PBC systems             2                    (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Number of days before a cache record is deleted                  365                  (safe default)
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Planck constant (hbar)                                           1.05457182e-34      
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Boltzmann constant (k)                                           1.38064900e-23      
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Free electron g-factor                                           2.00231930e+00      
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Vacuum permeability                                              1.25663706e-06      
+[...son > zulf_pf6_1d_spinach > create > tolerances ]  Bohr magneton                                                    9.27401007e-24      
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  WARNING: the following functionality is enabled by the user
+[...> run_comparison > zulf_pf6_1d_spinach > create ]           > greedy parallelisation
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  job identifier: b17f176c6c3aaaea4035969ca4da60b8
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  random number generator shuffled
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  a running Spinach parallel pool found:
+[...> run_comparison > zulf_pf6_1d_spinach > create ]           > parallel profile: Processes
+[...> run_comparison > zulf_pf6_1d_spinach > create ]           > job identifier:   4eeb6af943e221a556f14be256709c6d
+[...> run_comparison > zulf_pf6_1d_spinach > create ]           > worker processes: 11
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  WARNING - this pool will be re-used
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  parallel pool ValueStore cleared.
+[...parison > zulf_pf6_1d_spinach > create > banner ]   
+[...parison > zulf_pf6_1d_spinach > create > banner ]  ============================================
+[...parison > zulf_pf6_1d_spinach > create > banner ]  =                                          =
+[...parison > zulf_pf6_1d_spinach > create > banner ]  =               SPIN SYSTEM                =
+[...parison > zulf_pf6_1d_spinach > create > banner ]  =                                          =
+[...parison > zulf_pf6_1d_spinach > create > banner ]  ============================================
+[...parison > zulf_pf6_1d_spinach > create > banner ]   
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  a total of 7 particles in the simulation, of which 0 have a zero spin.
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  magnetic induction of 2.7e-06 Tesla (-0.00011496 MHz proton frequency, 7.5667e-05 GHz electron frequency).
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  WARNING - no Zeeman interactions supplied, magnet frequencies assumed.
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  WARNING - no giant spin terms supplied, zeros assumed.
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  initializing interaction arrays...
+[...f_pf6_1d_spinach > create > summary_coordinates ]  atomic coordinates (Angstrom)
+[...f_pf6_1d_spinach > create > summary_coordinates ]  ======================================
+[...f_pf6_1d_spinach > create > summary_coordinates ]  N    Spin     X         Y         Z   
+[...f_pf6_1d_spinach > create > summary_coordinates ]  --------------------------------------
+[...f_pf6_1d_spinach > create > summary_coordinates ]  1    31P   +0.000    +0.000    +0.000  
+[...f_pf6_1d_spinach > create > summary_coordinates ]  2    19F   -1.600    +0.000    +0.000  
+[...f_pf6_1d_spinach > create > summary_coordinates ]  3    19F   +1.600    +0.000    +0.000  
+[...f_pf6_1d_spinach > create > summary_coordinates ]  4    19F   +0.000    -1.600    +0.000  
+[...f_pf6_1d_spinach > create > summary_coordinates ]  5    19F   +0.000    +1.600    +0.000  
+[...f_pf6_1d_spinach > create > summary_coordinates ]  6    19F   +0.000    +0.000    -1.600  
+[...f_pf6_1d_spinach > create > summary_coordinates ]  7    19F   +0.000    +0.000    +1.600  
+[...f_pf6_1d_spinach > create > summary_coordinates ]  ======================================
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  periodic boundary conditions not specified, assuming a standalone spin system.
+[...arison > zulf_pf6_1d_spinach > create > dipolar ]  dipolar interaction distance threshold: 100 Angstrom.
+[...arison > zulf_pf6_1d_spinach > create > dipolar ]  running dipolar interaction network analysis...
+[...arison > zulf_pf6_1d_spinach > create > dipolar ]  found 21 spin pair(s) with distance under the threshold of 100 Angstrom.
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  processing coupling data...
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  summary of coupling tensors and their anisotropies (Hz)
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  ======================================================================================================
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  Spin A  Spin B                     Matrix                      Tr/3         norm[rank1]  norm[rank2]  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  ------------------------------------------------------------------------------------------------------
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  2       1       -1.118466e+04  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +5.592331e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +1.1185e+04  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +5.592331e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  3       1       -1.118466e+04  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +5.592331e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +1.1185e+04  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +5.592331e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  4       1       +5.592331e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  -1.118466e+04  +0.000000e+00    +0.0000e+00  +0.0000e+00  +1.1185e+04  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +5.592331e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  5       1       +5.592331e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  -1.118466e+04  +0.000000e+00    +0.0000e+00  +0.0000e+00  +1.1185e+04  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +5.592331e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  6       1       +5.592331e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +5.592331e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +1.1185e+04  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  -1.118466e+04
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  7       1       +5.592331e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +5.592331e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +1.1185e+04  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  -1.118466e+04
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  1       2       -1.047466e+04  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +6.302331e+03  +0.000000e+00    +7.1000e+02  +0.0000e+00  +1.1185e+04  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +6.302331e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  3       2       -3.247946e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +1.623973e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +3.2479e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +1.623973e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  4       2       -2.296645e+03  +6.889935e+03  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +6.889935e+03  -2.296645e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +4.593290e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  5       2       -2.296645e+03  -6.889935e+03  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  -6.889935e+03  -2.296645e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +4.593290e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  6       2       -2.296645e+03  +0.000000e+00  +6.889935e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +4.593290e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +6.889935e+03  +0.000000e+00  -2.296645e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  7       2       -2.296645e+03  +0.000000e+00  -6.889935e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +4.593290e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  -6.889935e+03  +0.000000e+00  -2.296645e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  1       3       -1.047466e+04  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +6.302331e+03  +0.000000e+00    +7.1000e+02  +0.0000e+00  +1.1185e+04  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +6.302331e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  2       3       -3.247946e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +1.623973e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +3.2479e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +1.623973e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  4       3       -2.296645e+03  -6.889935e+03  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  -6.889935e+03  -2.296645e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +4.593290e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  5       3       -2.296645e+03  +6.889935e+03  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +6.889935e+03  -2.296645e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +4.593290e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  6       3       -2.296645e+03  +0.000000e+00  -6.889935e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +4.593290e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  -6.889935e+03  +0.000000e+00  -2.296645e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  7       3       -2.296645e+03  +0.000000e+00  +6.889935e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +4.593290e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +6.889935e+03  +0.000000e+00  -2.296645e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  1       4       +6.302331e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  -1.047466e+04  +0.000000e+00    +7.1000e+02  +0.0000e+00  +1.1185e+04  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +6.302331e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  2       4       -2.296645e+03  +6.889935e+03  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +6.889935e+03  -2.296645e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +4.593290e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  3       4       -2.296645e+03  -6.889935e+03  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  -6.889935e+03  -2.296645e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +4.593290e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  5       4       +1.623973e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  -3.247946e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +3.2479e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +1.623973e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  6       4       +4.593290e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  -2.296645e+03  +6.889935e+03    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +6.889935e+03  -2.296645e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  7       4       +4.593290e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  -2.296645e+03  -6.889935e+03    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  -6.889935e+03  -2.296645e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  1       5       +6.302331e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  -1.047466e+04  +0.000000e+00    +7.1000e+02  +0.0000e+00  +1.1185e+04  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +6.302331e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  2       5       -2.296645e+03  -6.889935e+03  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  -6.889935e+03  -2.296645e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +4.593290e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  3       5       -2.296645e+03  +6.889935e+03  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +6.889935e+03  -2.296645e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +4.593290e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  4       5       +1.623973e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  -3.247946e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +3.2479e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  +1.623973e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  6       5       +4.593290e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  -2.296645e+03  -6.889935e+03    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  -6.889935e+03  -2.296645e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  7       5       +4.593290e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  -2.296645e+03  +6.889935e+03    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +6.889935e+03  -2.296645e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  1       6       +6.302331e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +6.302331e+03  +0.000000e+00    +7.1000e+02  +0.0000e+00  +1.1185e+04  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  -1.047466e+04
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  2       6       -2.296645e+03  +0.000000e+00  +6.889935e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +4.593290e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +6.889935e+03  +0.000000e+00  -2.296645e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  3       6       -2.296645e+03  +0.000000e+00  -6.889935e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +4.593290e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  -6.889935e+03  +0.000000e+00  -2.296645e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  4       6       +4.593290e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  -2.296645e+03  +6.889935e+03    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +6.889935e+03  -2.296645e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  5       6       +4.593290e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  -2.296645e+03  -6.889935e+03    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  -6.889935e+03  -2.296645e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  7       6       +1.623973e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +1.623973e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +3.2479e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  -3.247946e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  1       7       +6.302331e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +6.302331e+03  +0.000000e+00    +7.1000e+02  +0.0000e+00  +1.1185e+04  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  -1.047466e+04
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  2       7       -2.296645e+03  +0.000000e+00  -6.889935e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +4.593290e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  -6.889935e+03  +0.000000e+00  -2.296645e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  3       7       -2.296645e+03  +0.000000e+00  +6.889935e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +4.593290e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +6.889935e+03  +0.000000e+00  -2.296645e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  4       7       +4.593290e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  -2.296645e+03  -6.889935e+03    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  -6.889935e+03  -2.296645e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  5       7       +4.593290e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  -2.296645e+03  +6.889935e+03    +0.0000e+00  +0.0000e+00  +9.1866e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +6.889935e+03  -2.296645e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]   
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  6       7       +1.623973e+03  +0.000000e+00  +0.000000e+00
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +1.623973e+03  +0.000000e+00    +0.0000e+00  +0.0000e+00  +3.2479e+03  
+[...ulf_pf6_1d_spinach > create > summary_couplings ]                  +0.000000e+00  +0.000000e+00  -3.247946e+03
+[...ulf_pf6_1d_spinach > create > summary_couplings ]  ======================================================================================================
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  spin temperature: 298 Kelvin
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  relaxation theory 1: redfield
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  chemical subsystem 1, rotational correlation time(s): 6.5e-11 seconds
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  terms to keep in the relaxation superoperator: labframe
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  action to take on dynamic frequency shifts: ignore
+[...> run_comparison > zulf_pf6_1d_spinach > create ]  thermalisation method: dibari
+create                                1.3 s
+[...mparison > zulf_pf6_1d_spinach > basis > banner ]   
+[...mparison > zulf_pf6_1d_spinach > basis > banner ]  ============================================
+[...mparison > zulf_pf6_1d_spinach > basis > banner ]  =                                          =
+[...mparison > zulf_pf6_1d_spinach > basis > banner ]  =                BASIS SET                 =
+[...mparison > zulf_pf6_1d_spinach > basis > banner ]  =                                          =
+[...mparison > zulf_pf6_1d_spinach > basis > banner ]  ============================================
+[...mparison > zulf_pf6_1d_spinach > basis > banner ]   
+[...ulf_pf6_1d_spinach > basis > summary_basis_opts ]  spherical tensor basis set using Liouville space matrix formalism.
+[...ulf_pf6_1d_spinach > basis > summary_basis_opts ]  starting with complete basis set on all spins...
+[... > run_comparison > zulf_pf6_1d_spinach > basis ]  coupling tensors with norm below 1e-10 Hz will be ignored.
+[... > run_comparison > zulf_pf6_1d_spinach > basis ]  chemical substance 1, 7 spins:
+[... > run_comparison > zulf_pf6_1d_spinach > basis ]      keeping 1 subgraphs with 7 spins each.
+[... > run_comparison > zulf_pf6_1d_spinach > basis ]  building basis set descriptor...
+[... > run_comparison > zulf_pf6_1d_spinach > basis ]  eliminating redundant states...
+[... > run_comparison > zulf_pf6_1d_spinach > basis ]  sorting the basis...
+[... > run_comparison > zulf_pf6_1d_spinach > basis ]  chemical substance 1: 16383 states.
+[...n > zulf_pf6_1d_spinach > basis > summary_basis ]  over 256 states in the basis - printing suppressed.
+[...n > zulf_pf6_1d_spinach > basis > summary_basis ]  state space dimension 16384 (100% of the full state space).
+[...arison > zulf_pf6_1d_spinach > basis > symmetry ]  no symmetry information available.
+[... > run_comparison > zulf_pf6_1d_spinach > basis ]  caching Lie structure tables...
+basis                                 2.0 s
+[...> run_comparison > zulf_pf6_1d_spinach > assume ]  lab frame assumption set - no assumptions:
+[...> run_comparison > zulf_pf6_1d_spinach > assume ]    laboratory frame simulation for electrons,
+[...> run_comparison > zulf_pf6_1d_spinach > assume ]    laboratory frame simulation for nuclei,
+[...> run_comparison > zulf_pf6_1d_spinach > assume ]    all terms for electron Zeeman interactions,
+[...> run_comparison > zulf_pf6_1d_spinach > assume ]    all terms for nuclear Zeeman interactions,
+[...> run_comparison > zulf_pf6_1d_spinach > assume ]    all terms for giant spin model interactions,
+[...> run_comparison > zulf_pf6_1d_spinach > assume ]    all terms for all couplings.
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  building Hamiltonian descriptor...
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  complete isotropic Zeeman interaction for spin 1...
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]             (Lz) x -46.5789 Hz
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  complete isotropic Zeeman interaction for spin 2...
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]             (Lz) x -108.2094 Hz
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  complete isotropic Zeeman interaction for spin 3...
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]             (Lz) x -108.2094 Hz
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  complete isotropic Zeeman interaction for spin 4...
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]             (Lz) x -108.2094 Hz
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  complete isotropic Zeeman interaction for spin 5...
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]             (Lz) x -108.2094 Hz
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  complete isotropic Zeeman interaction for spin 6...
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]             (Lz) x -108.2094 Hz
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  complete isotropic Zeeman interaction for spin 7...
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]             (Lz) x -108.2094 Hz
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  complete isotropic coupling for spins 1,2...
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]             (LxSx+LySy+LzSz) x 710 Hz
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  complete isotropic coupling for spins 1,3...
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]             (LxSx+LySy+LzSz) x 710 Hz
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  complete isotropic coupling for spins 1,4...
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]             (LxSx+LySy+LzSz) x 710 Hz
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  complete isotropic coupling for spins 1,5...
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]             (LxSx+LySy+LzSz) x 710 Hz
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  complete isotropic coupling for spins 1,6...
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]             (LxSx+LySy+LzSz) x 710 Hz
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  complete isotropic coupling for spins 1,7...
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]             (LxSx+LySy+LzSz) x 710 Hz
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  25 unique operators in the Hamiltonian descriptor.
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  building individual operators...
+[...zulf_pf6_1d_spinach > hamiltonian > parfor/spmd ]  25/25 operators done, 57.9608 operators per second.
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  average worker process received 1.6038 MB and sent back 1.3145 MB
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  operator construction took 0.44194 seconds
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  operator array footprint: 0.014102 GB
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  assembling the Hamiltonian...
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  Hamiltonian assembly took 0.022676 seconds
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  WARNING - only the isotropic part has been returned.
+[..._comparison > zulf_pf6_1d_spinach > hamiltonian ]  memory footprint of I array: 0.0022643 GB
+hamiltonian                           0.5 s
+operators                             0.8 s
+[...un_comparison > zulf_pf6_1d_spinach > evolution ]  trying to reduce the problem dimension...
+[...un_comparison > zulf_pf6_1d_spinach > evolution ]  destination state screening is not applicable.
+[...ison > zulf_pf6_1d_spinach > evolution > reduce ]  no permutation symmetry information has been supplied.
+[...ison > zulf_pf6_1d_spinach > evolution > reduce ]  attempting zero track elimination...
+[... zulf_pf6_1d_spinach > evolution > reduce > zte ]  dropping states with amplitudes below 1e-24 within the first 0.00034239 seconds.
+[... zulf_pf6_1d_spinach > evolution > reduce > zte ]  a maximum of 32 steps shall be taken, 1.07e-05 seconds each.
+[... zulf_pf6_1d_spinach > evolution > reduce > zte ]  evolution step 0, active space dimension 3431
+[... zulf_pf6_1d_spinach > evolution > reduce > zte ]  evolution step 1, active space dimension 16384
+[... zulf_pf6_1d_spinach > evolution > reduce > zte ]  evolution step 2, active space dimension 16384
+[... zulf_pf6_1d_spinach > evolution > reduce > zte ]  state space dimension reduced from 16384 to 16384
+[...ison > zulf_pf6_1d_spinach > evolution > reduce ]  path-tracing subspace #1...
+[...f6_1d_spinach > evolution > reduce > path_trace ]  analyzing 16384-dimensional state space.
+[...f6_1d_spinach > evolution > reduce > path_trace ]  Liouvillian zero tolerance 1e-10
+[...f6_1d_spinach > evolution > reduce > path_trace ]  population tolerance for subspace drop 1e-10
+[...f6_1d_spinach > evolution > reduce > path_trace ]  found 2 non-interacting subspaces.
+[...f6_1d_spinach > evolution > reduce > path_trace ]  running subspace population analysis...
+[...f6_1d_spinach > evolution > reduce > path_trace ]  1 populated subspaces of dimension 1
+[...f6_1d_spinach > evolution > reduce > path_trace ]  1 populated subspaces of dimension 16383
+[...f6_1d_spinach > evolution > reduce > path_trace ]  keeping a total of 2 independent subspaces of total dimension 16384
+[...f6_1d_spinach > evolution > reduce > path_trace ]  merging small subspaces into batches of dimension 1000...
+[...f6_1d_spinach > evolution > reduce > path_trace ]  working subspace 1, dim 16383
+[...f6_1d_spinach > evolution > reduce > path_trace ]  working subspace 2, dim 1
+[...un_comparison > zulf_pf6_1d_spinach > evolution ]  splitting the space...
+[                                                   ]  evolving subspace 2 of 2...
+[                                                   ]  dim(L)=1, rho stack size 1, 1 substeps in optimal stepping.
+[                                                   ]  building the propagator...
+[                                                   ]  propagating the system on CPU...
+[                                                   ]  evolving subspace 1 of 2...
+[                                                   ]  large Liouvillian, propagating using Krylov algorithm... 
+[...un_comparison > zulf_pf6_1d_spinach > evolution ]  propagation finished.
+[...un_comparison > zulf_pf6_1d_spinach > evolution ]  recombining subspaces...
+[...un_comparison > zulf_pf6_1d_spinach > evolution ]  data retrieval finished.
+pulse                                 0.3 s
+[...un_comparison > zulf_pf6_1d_spinach > evolution ]  trying to reduce the problem dimension...
+[...un_comparison > zulf_pf6_1d_spinach > evolution ]  destination state screening using coil state.
+[...ison > zulf_pf6_1d_spinach > evolution > reduce ]  no permutation symmetry information has been supplied.
+[...ison > zulf_pf6_1d_spinach > evolution > reduce ]  attempting zero track elimination...
+[... zulf_pf6_1d_spinach > evolution > reduce > zte ]  dropping states with amplitudes below 1e-24 within the first 0.0010374 seconds.
+[... zulf_pf6_1d_spinach > evolution > reduce > zte ]  a maximum of 32 steps shall be taken, 3.2419e-05 seconds each.
+[... zulf_pf6_1d_spinach > evolution > reduce > zte ]  evolution step 0, active space dimension 7
+[... zulf_pf6_1d_spinach > evolution > reduce > zte ]  evolution step 1, active space dimension 3430
+[... zulf_pf6_1d_spinach > evolution > reduce > zte ]  evolution step 2, active space dimension 3430
+[... zulf_pf6_1d_spinach > evolution > reduce > zte ]  state space dimension reduced from 16384 to 3430
+[...ison > zulf_pf6_1d_spinach > evolution > reduce ]  path-tracing subspace #1...
+[...f6_1d_spinach > evolution > reduce > path_trace ]  analyzing 3430-dimensional state space.
+[...f6_1d_spinach > evolution > reduce > path_trace ]  Liouvillian zero tolerance 1e-10
+[...f6_1d_spinach > evolution > reduce > path_trace ]  population tolerance for subspace drop 1e-10
+[...f6_1d_spinach > evolution > reduce > path_trace ]  found 1 non-interacting subspaces.
+[...f6_1d_spinach > evolution > reduce > path_trace ]  running subspace population analysis...
+[...f6_1d_spinach > evolution > reduce > path_trace ]  1 populated subspaces of dimension 3430
+[...f6_1d_spinach > evolution > reduce > path_trace ]  keeping a total of 1 independent subspaces of total dimension 3430
+[...f6_1d_spinach > evolution > reduce > path_trace ]  merging small subspaces into batches of dimension 1000...
+[...f6_1d_spinach > evolution > reduce > path_trace ]  working subspace 1, dim 3430
+[...un_comparison > zulf_pf6_1d_spinach > evolution ]  splitting the space...
+[...un_comparison > zulf_pf6_1d_spinach > evolution ]  evolving subspace 1 of 1...
+[...un_comparison > zulf_pf6_1d_spinach > evolution ]  building the propagator...
+[... > zulf_pf6_1d_spinach > evolution > propagator ]  generator dimension 3430, nnz 28800, density 0.2448%, sparsity 1
+[... > zulf_pf6_1d_spinach > evolution > propagator ]  scaling -i*L*dt down by 8 and squaring the propagator 3 times.
+[... > zulf_pf6_1d_spinach > evolution > propagator ]  Taylor series converged on CPU in 10 iterations.
+[... > zulf_pf6_1d_spinach > evolution > propagator ]  propagator dimension 3430, nnz 7710622, density 65.5392%, sparsity 0
+[... > zulf_pf6_1d_spinach > evolution > propagator ]  CPU squaring step 1...
+[... > zulf_pf6_1d_spinach > evolution > propagator ]  CPU squaring step 2...
+[... > zulf_pf6_1d_spinach > evolution > propagator ]  CPU squaring step 3...
+[... > zulf_pf6_1d_spinach > evolution > propagator ]  propagator dimension 3430, nnz 11764860, density 99.9997%, sparsity 0
+[...un_comparison > zulf_pf6_1d_spinach > evolution ]  propagating the system on CPU...
+[...un_comparison > zulf_pf6_1d_spinach > evolution ]  propagation finished.
+acquisition                          46.7 s
+[..._comparison > zulf_pf6_1d_spinach > apodisation ]  FID dimension 1, all first points divided by 2
+[..._comparison > zulf_pf6_1d_spinach > apodisation ]  FID dimension 1, exp window function applied.
+processing                            0.0 s
+[...rison > zulf_pf6_1d_spinach > plot_1d > axis_1d ]  offset + sweep frequency axis specification:
+[...rison > zulf_pf6_1d_spinach > plot_1d > axis_1d ]  16384-point axis from -3000 to 2999.6338 Hz
+plot                                  0.1 s
+total                                51.8 s

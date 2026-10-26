@@ -119,38 +119,54 @@ def spinach_summaries() -> list[dict]:
     return out
 
 
+def _total(summary: dict) -> dict:
+    return next((r for r in summary["stages"] if r["label"] == "total (wall clock)"), {})
+
+
+def _agreement(summary: dict) -> float | None:
+    rels = [a["rel"] for a in summary.get("arrays", []) if a.get("rel") is not None]
+    return max(rels) if rels else None
+
+
 def render_timing_spinach() -> str:
+    """One row per case: Spinach, Spynach on NumPy and SciPy (run ``<case>``), Spynach with Numba (run
+    ``<case>-numba``); the agreement is that of the fastest Spynach run."""
+    by_run = {s["run"]: s for s in spinach_summaries()}
     rows = []
-    for s in spinach_summaries():
-        stages = [r for r in s["stages"] if r["label"] != "total (wall clock)" and r.get("spynach") is not None]
-        total = next((r for r in s["stages"] if r["label"] == "total (wall clock)"), {})
-        dominant = max(stages, key=lambda r: r["spynach"]) if stages else None
-        rels = [a["rel"] for a in s.get("arrays", []) if a.get("rel") is not None]
-        note = esc(SPINACH_CASES.get(s["case"], ""))
-        if dominant and dominant.get("spinach") is not None and (total.get("spynach") or 0) >= 5:
-            note += (
-                f"; the {esc(dominant['label'])} stage takes {dominant['spinach']:.1f} s in Spinach "
-                f"and {dominant['spynach']:.1f} s in Spynach"
-            )
+    for case in sorted({s["case"] for s in by_run.values() if not s["run"].endswith(("-numba", "-nonumba"))}):
+        plain = by_run.get(case)
+        numba = by_run.get(f"{case}-numba")
+        if plain is None:
+            continue
+        note = esc(SPINACH_CASES.get(case, ""))
+        spinach_s = _total(plain).get("spinach")
+        plain_s = _total(plain).get("spynach")
+        numba_s = _total(numba).get("spynach") if numba else None
+        best = min((t for t in (plain_s, numba_s) if t is not None), default=None)
+        reports = f'<a href="comparison/runs/{esc(plain["run"])}/report.html">NumPy</a>' + (
+            f' · <a href="comparison/runs/{esc(numba["run"])}/report.html">Numba</a>' if numba else ""
+        )
         rows.append(
             "<tr>"
-            f'<td><code>{esc(s["case"])}</code><br><span class="note">{note}</span></td>'
-            + cell_s(total.get("spinach"))
-            + cell_s(total.get("spynach"))
-            + cell_ratio(total.get("spinach"), total.get("spynach"))
-            + cell_rel(max(rels) if rels else None)
-            + f'<td class="links"><a href="comparison/runs/{esc(s["run"])}/report.html">report</a></td>'
+            f'<td><code>{esc(case)}</code><br><span class="note">{note}</span></td>'
+            + cell_s(spinach_s)
+            + cell_s(plain_s)
+            + (cell_s(numba_s) if numba else '<td class="num na">not run</td>')
+            + cell_ratio(spinach_s, best)
+            + cell_rel(_agreement(numba if numba_s is not None and numba_s == best else plain))
+            + f'<td class="links">{reports}</td>'
             "</tr>"
         )
     if not rows:
         return '<p class="note">No comparison runs with a summary.json.</p>'
     return (
         '<div class="scroll"><table class="timing">\n<thead><tr><th>Case</th>'
-        '<th class="num">Spinach / s</th><th class="num">Spynach / s</th><th class="num">Spynach / Spinach</th>'
-        '<th class="num">Agreement</th><th>Report</th></tr></thead>\n<tbody>\n'
-        + "\n".join(rows)
-        + '\n</tbody></table></div>\n<p class="note">Wall clock of the whole case on each side; agreement is the '
-        "largest relative difference over the arrays both sides saved (FIDs, spectra, trajectories).</p>"
+        '<th class="num">Spinach / s</th><th class="num">Spynach, NumPy / s</th><th class="num">Spynach, Numba / s</th>'
+        '<th class="num">Fastest Spynach / Spinach</th><th class="num">Agreement</th><th>Reports</th></tr></thead>\n'
+        "<tbody>\n" + "\n".join(rows) + '\n</tbody></table></div>\n<p class="note">Wall clock of the whole case on '
+        "each side; agreement is the largest relative difference over the arrays both sides saved (FIDs, spectra, "
+        "trajectories) for the fastest Spynach run. The Numba column is the <code>fast</code> extra: threaded "
+        "compiled kernels for the sparse products, with the same numbers.</p>"
     )
 
 

@@ -1,0 +1,22 @@
+{
+  "side": "spinach",
+  "case": "maz_noesy_2",
+  "created_utc": "2026-10-14T17:53:22Z",
+  "spinach_root": "/Users/alexej/Documents/PROG/spynach-spinach",
+  "spinach_commit": "03a88b7e912ffbb3122dd24829cc5d216209c804",
+  "spinach_describe": "2.13",
+  "spinach_dirty": false,
+  "matlab_version": "26.2.0.3386108 (R2026b)",
+  "platform": "MACA64",
+  "hostname": "MacBook-Pro-8.local",
+  "cores": 12,
+  "blas": "Apple Accelerate BLAS (ILP64)",
+  "lapack": "NAG Performance Components (NPC) Release 1.4.1, supporting Linear Algebra PACKage (LAPACK 3.9.1)",
+  "comp_threads": 12,
+  "pool_workers": 11,
+  "gpu": false,
+  "gpu_device": "",
+  "options": {
+    "gpu": false
+  }
+}

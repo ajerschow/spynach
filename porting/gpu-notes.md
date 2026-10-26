@@ -26,8 +26,11 @@ small dense kernels, and Spynach keeps the same split.
 
 - `spynach.backend` is the single adapter: `get_backend()` returns an object
   with `xp` (array module), `issparse`, `csr`, `eye`, `dense`, `expm`,
-  `nnz`, `norm1`, `to_device`, `to_host`. Only `NumpyBackend` exists; the
-  CPU transfers are no-ops. `backend.use('cupy')` is reserved.
+  `nnz`, `norm1`, `to_device`, `to_host`, and the four kernel entry points
+  `round_array`, `spgemm_round`, `csr_times_dense`, `taylor_term` (threaded
+  Numba kernels in `spynach.kernels` on the CPU; a device backend implements
+  them with its own sparse products, or returns `None` to take the generic
+  path). Only `NumpyBackend` exists; the CPU transfers are no-ops. `backend.use('cupy')` is reserved.
 - The hot loops go through it: `propagator` (device transfer of the
   generator, Taylor loop, squarings, host return), `step` (generators and
   state to the device, host return), `krylov`, `evolution`, `_chop`,

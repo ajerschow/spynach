@@ -1,0 +1,25 @@
+{
+  "side": "spynach",
+  "case": "noesy_strychnine",
+  "created_utc": "2026-10-26T13:23:31Z",
+  "spynach_root": "/Users/alexej/Documents/PROG/spynach",
+  "spynach_commit": "2e8843cd088ebc17faf75fd8d06a6692f8507f71",
+  "spynach_describe": "v0.2.0-21-g2e8843c-dirty",
+  "spynach_dirty": true,
+  "spynach_version": "0.2.0",
+  "python_version": "3.12.5",
+  "numpy_version": "2.5.4",
+  "scipy_version": "1.18.1",
+  "numba_version": "0.68.0",
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "hostname": "jerschowlab25.chem.nyu.edu",
+  "cores": 12,
+  "blas": {
+    "numpy": "accelerate",
+    "scipy": "Accelerate"
+  },
+  "thread_env": {},
+  "gpu": false,
+  "gpu_device": "",
+  "options": {}
+}

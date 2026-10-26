@@ -17,7 +17,7 @@ import numpy as np
 
 from spynach.backend import get_backend
 from spynach.system import SpinSystem
-from spynach.utilities import Matrix, as_matrix, chop, clean_up, dagger, hdot, nnz
+from spynach.utilities import Matrix, as_matrix, chop, clean_up, dagger, hdot, matmul, matmul_clean, nnz
 
 log = logging.getLogger("spynach")
 
@@ -61,15 +61,17 @@ def propagator(spin_system: SpinSystem, L: Matrix, timestep: float) -> Matrix:
     next_term: Matrix = P
     n = 1
     while be.nnz(next_term) > 0:
-        next_term = ((1 / n) * A) @ next_term if be.issparse(A) else ((1 / n) * next_term) @ A
-        next_term = clean_up(tols, next_term, tols.prop_chop)
+        if be.issparse(A):
+            next_term = matmul_clean(tols, (1 / n) * A, next_term, tols.prop_chop)
+        else:
+            next_term = clean_up(tols, ((1 / n) * next_term) @ A, tols.prop_chop)
         P = _add(P, next_term)
         n += 1
     log.debug("Taylor series converged in %d iterations.", n)
 
     P = clean_up(tols, P, tols.prop_chop)
     for _ in range(n_squarings):
-        P = clean_up(tols, P @ P, tols.prop_chop)
+        P = matmul_clean(tols, P, P, tols.prop_chop)  # two sparse factors: one threaded pass, rounding included
     return be.to_host(P)  # GPU: propagators are returned to the host, as Spinach gathers them
 
 
@@ -125,11 +127,34 @@ def _reordered_taylor(generators: list[Matrix], rho: np.ndarray, t: float, nstep
     """Taylor series of expm(-1j*L*t) acting on rho, in nsteps substeps (step.m ``reordered_taylor``)."""
     eps = np.finfo(float).eps
     dt = t / nsteps
+    be = get_backend()
     for _ in range(nsteps):
         next_term, k = rho, 1
+        if len(generators) == 1 and be.issparse(generators[0]) and np.any(np.abs(next_term) > eps):
+            # One sparse generator: each term, the running sum and the convergence test in a single threaded
+            # pass (the sum is accumulated in place, so the start vector, which is also the first term, is kept)
+            total = np.array(rho, dtype=complex)
+            fused = True
+            while True:
+                step_result = be.taylor_term(generators[0], next_term, (-1j / k) * dt, total, eps)
+                if step_result is None:
+                    fused = False
+                    break
+                next_term, big = step_result
+                k += 1
+                if not big:
+                    break
+            if fused:
+                rho = total
+                if k > 32:
+                    log.warning(
+                        "loss of accuracy in the Taylor series, k=%d, use evolution() here instead of step()", k
+                    )
+                continue
+            next_term, k = rho, 1  # the kernel does not apply to this problem: the plain loop below
         while np.any(np.abs(next_term) > eps):
             if len(generators) == 1:
-                next_term = (-1j / k) * dt * (generators[0] @ next_term)
+                next_term = (-1j / k) * dt * matmul(generators[0], next_term)
             elif len(generators) == 2:
                 a, b = generators[0] @ next_term, generators[1] @ next_term
                 next_term = (-1j / 2) * (1 / k) * dt * (a + b) + (1 / 6) * (1 / k) * (t**2 / nsteps) * (
@@ -359,7 +384,7 @@ def _evolve_observable(spin_system, L, rho, coil, timestep, nsteps, krylov_path)
     answer = np.zeros((nsteps + 1, rho.shape[1]), dtype=complex)
     for n in range(nsteps + 1):
         answer[n] = _detect(coil, rho)
-        rho = prop @ rho
+        rho = matmul(prop, rho)
     return answer
 
 
@@ -371,7 +396,7 @@ def _evolve_multichannel(spin_system, L, rho, coil, timestep, nsteps, krylov_pat
     answer = np.zeros((coil.shape[1], nsteps + 1, rho.shape[1]), dtype=complex)
     for n in range(nsteps + 1):
         answer[:, n, :] = coil.conj().T @ rho
-        rho = prop @ rho
+        rho = matmul(prop, rho)
     return answer
 
 
@@ -383,7 +408,7 @@ def _evolve_final(spin_system, L, rho, coil, timestep, nsteps, krylov_path) -> n
     nsteps_opt = max(1, math.ceil(math.log2(L.shape[0] / (rho.shape[1] * math.log(2)))))
     prop = propagator(spin_system, L, timestep * nsteps / nsteps_opt)
     for _ in range(nsteps_opt):
-        rho = prop @ rho
+        rho = matmul(prop, rho)
     return rho
 
 
@@ -394,7 +419,7 @@ def _evolve_refocus(spin_system, L, rho, coil, timestep, nsteps, krylov_path) ->
     prop = propagator(spin_system, L, timestep)
     rho = rho.copy()
     for n in range(1, rho.shape[1]):
-        rho[:, n:] = prop @ rho[:, n:]
+        rho[:, n:] = matmul(prop, rho[:, n:])
     return rho
 
 
@@ -406,7 +431,7 @@ def _evolve_trajectory(spin_system, L, rho, coil, timestep, nsteps, krylov_path)
     traj = np.zeros((L.shape[0], nsteps + 1), dtype=complex)
     for n in range(nsteps + 1):
         traj[:, n] = rho[:, 0]
-        rho = prop @ rho
+        rho = matmul(prop, rho)
     return traj
 
 

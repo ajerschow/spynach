@@ -1,0 +1,566 @@
+{
+  "by_total": [
+    {
+      "function": "run",
+      "file": "/Applications/MATLAB_R2026b.app/toolbox/matlab/lang/run.m",
+      "calls": 1,
+      "total_s": 113.25947674999999,
+      "self_s": 7.12499999906413E-5
+    },
+    {
+      "function": "run_comparison",
+      "file": "/Users/alexej/Documents/PROG/spynach/comparison/matlab/run_comparison.m",
+      "calls": 1,
+      "total_s": 113.2594055,
+      "self_s": 0.050421208333332856
+    },
+    {
+      "function": "noesy_strychnine_spinach",
+      "file": "/Users/alexej/Documents/PROG/spynach/comparison/cases/noesy_strychnine/noesy_strychnine_spinach.m",
+      "calls": 1,
+      "total_s": 113.20898429166667,
+      "self_s": 0.22480050000000062
+    },
+    {
+      "function": "liquid",
+      "file": "/Users/alexej/Documents/PROG/spynach-spinach/kernel/contexts/liquid.m",
+      "calls": 1,
+      "total_s": 88.653643375,
+      "self_s": 0.021094791666669721
+    },
+    {
+      "function": "parallel_function",
+      "file": "/Applications/MATLAB_R2026b.app/toolbox/matlab/lang/parallel_function.m",
+      "calls": 47,
+      "total_s": 85.572540625,
+      "self_s": 0.041081500000018423
+    },
+    {
+      "function": "parallel_function>distributed_execution",
+      "file": "/Applications/MATLAB_R2026b.app/toolbox/matlab/lang/parallel_function.m",
+      "calls": 43,
+      "total_s": 85.069762416666649,
+      "self_s": 0.12677908333333221
+    },
+    {
+      "function": "ParforEngine>ParforEngine.getCompleteIntervals",
+      "file": "/Applications/MATLAB_R2026b.app/toolbox/parallel/cluster/+parallel/+internal/+parfor/ParforEngine.m",
+      "calls": 492,
+      "total_s": 80.666866125,
+      "self_s": 79.095598625
+    },
+    {
+      "function": "noesy",
+      "file": "/Users/alexej/Documents/PROG/spynach-spinach/experiments/nmr_liquids/noesy.m",
+      "calls": 1,
+      "total_s": 75.476501375,
+      "self_s": 0.052127791666649159
+    },
+    {
+      "function": "evolution",
+      "file": "/Users/alexej/Documents/PROG/spynach-spinach/kernel/evolution.m",
+      "calls": 12,
+      "total_s": 61.975103708333336,
+      "self_s": 0.24832658333334479
+    },
+    {
+      "function": "create",
+      "file": "/Users/alexej/Documents/PROG/spynach-spinach/kernel/create.m",
+      "calls": 1,
+      "total_s": 20.292935666666668,
+      "self_s": 0.068400625000009541
+    },
+    {
+      "function": "Cluster.parpool",
+      "file": "/Applications/MATLAB_R2026b.app/toolbox/parallel/cluster/+parallel/@Cluster/parpool.m",
+      "calls": 1,
+      "total_s": 17.526400083333332,
+      "self_s": 0.0028546249999976681
+    },
+    {
+      "function": "doParpool",
+      "file": "/Applications/MATLAB_R2026b.app/toolbox/parallel/cluster/+parallel/+internal/+pool/doParpool.m",
+      "calls": 1,
+      "total_s": 17.500087125,
+      "self_s": 0.015714458333334846
+    },
+    {
+      "function": "AbstractClusterPool.AbstractClusterPool>AbstractClusterPool.hBuildPool",
+      "file": "/Applications/MATLAB_R2026b.app/toolbox/parallel/cluster/+parallel/+internal/+pool/@AbstractClusterPool/AbstractClusterPool.m",
+      "calls": 1,
+      "total_s": 17.3263295,
+      "self_s": 0.029739625000001269
+    },
+    {
+      "function": "AbstractClusterPool.AbstractClusterPool>iStartClient",
+      "file": "/Applications/MATLAB_R2026b.app/toolbox/parallel/cluster/+parallel/+internal/+pool/@AbstractClusterPool/AbstractClusterPool.m",
+      "calls": 1,
+      "total_s": 16.456902375,
+      "self_s": 0.00091004166666763808
+    },
+    {
+      "function": "AbstractInteractiveClient>AbstractInteractiveClient.start",
+      "file": "/Applications/MATLAB_R2026b.app/toolbox/parallel/cluster/+parallel/+internal/+pool/AbstractInteractiveClient.m",
+      "calls": 1,
+      "total_s": 16.447122541666666,
+      "self_s": 0.031102416666669797
+    },
+    {
+      "function": "ClusterClientSession>ClusterClientSession.waitForConnections",
+      "file": "/Applications/MATLAB_R2026b.app/toolbox/parallel/cluster/+parallel/+internal/+pool/ClusterClientSession.m",
+      "calls": 1,
+      "total_s": 14.699235291666668,
+      "self_s": 0.15895920833333577
+    },
+    {
+      "function": "ClusterClientSession>iWaitForAllWorkerServices",
+      "file": "/Applications/MATLAB_R2026b.app/toolbox/parallel/cluster/+parallel/+internal/+pool/ClusterClientSession.m",
+      "calls": 1,
+      "total_s": 13.870292166666665,
+      "self_s": 13.729541708333333
+    },
+    {
+      "function": "step",
+      "file": "/Users/alexej/Documents/PROG/spynach-spinach/kernel/step.m",
+      "calls": 47,
+      "total_s": 13.216514666666665,
+      "self_s": 0.0876564999999978
+    },
+    {
+      "function": "relaxation",
+      "file": "/Users/alexej/Documents/PROG/spynach-spinach/kernel/relaxation.m",
+      "calls": 1,
+      "total_s": 10.610005124999999,
+      "self_s": 0.078967458333330853
+    },
+    {
+      "function": "hamiltonian",
+      "file": "/Users/alexej/Documents/PROG/spynach-spinach/kernel/hamiltonian.m",
+      "calls": 4,
+      "total_s": 10.094769291666665,
+      "self_s": 0.77170258333333663
+    },
+    {
+      "function": "ParforEngine>ParforEngine.addInterval",
+      "file": "/Applications/MATLAB_R2026b.app/toolbox/parallel/cluster/+parallel/+internal/+parfor/ParforEngine.m",
+      "calls": 1741,
+      "total_s": 3.014074416666666,
+      "self_s": 2.5968347499999993
+    },
+    {
+      "function": "redfield_integral_async",
+      "file": "/Users/alexej/Documents/PROG/spynach-spinach/kernel/includes/redfield_integral_async.m",
+      "calls": 1,
+      "total_s": 2.7973990416666665,
+      "self_s": 0.34253124999999951
+    },
+    {
+      "function": "basis",
+      "file": "/Users/alexej/Documents/PROG/spynach-spinach/kernel/basis.m",
+      "calls": 1,
+      "total_s": 2.2541063333333331,
+      "self_s": 0.050391458333332473
+    },
+    {
+      "function": "unihash",
+      "file": "/Users/alexej/Documents/PROG/spynach-spinach/kernel/utilities/unihash.m",
+      "calls": 1,
+      "total_s": 2.0240612083333334,
+      "self_s": 0.0015076249999999014
+    },
+    {
+      "function": "plot_2d",
+      "file": "/Users/alexej/Documents/PROG/spynach-spinach/kernel/plotting/plot_2d.m",
+      "calls": 1,
+      "total_s": 1.7414151249999998,
+      "self_s": 0.061710583333333568
+    },
+    {
+      "function": "contour",
+      "file": "/Applications/MATLAB_R2026b.app/toolbox/matlab/graphics/graphics/specgraph/contour.m",
+      "calls": 1,
+      "total_s": 1.4770026666666667,
+      "self_s": 0.04213937500000009
+    },
+    {
+      "function": "newplot",
+      "file": "/Applications/MATLAB_R2026b.app/toolbox/matlab/graphics/graphics/axis/newplot.m",
+      "calls": 1,
+      "total_s": 1.3805854999999998,
+      "self_s": 0.14312587499999951
+    },
+    {
+      "function": "reduce",
+      "file": "/Users/alexej/Documents/PROG/spynach-spinach/kernel/reduce.m",
+      "calls": 12,
+      "total_s": 1.3394813333333335,
+      "self_s": 0.024838708333333681
+    },
+    {
+      "function": "AbstractDataQueue>AbstractDataQueue.notifyQueue",
+      "file": "/Applications/MATLAB_R2026b.app/toolbox/matlab/parallel/+parallel/+internal/+dataqueue/AbstractDataQueue.m",
+      "calls": 478,
+      "total_s": 1.171569125,
+      "self_s": 0.050705291666666596
+    },
+    {
+      "function": "path_trace",
+      "file": "/Users/alexej/Documents/PROG/spynach-spinach/kernel/utilities/path_trace.m",
+      "calls": 12,
+      "total_s": 1.1583538749999998,
+      "self_s": 0.049177499999999874
+    },
+    {
+      "function": "HTMLCanvasPlugin.HTMLCanvasPlugin>HTMLCanvasPlugin.createCanvas",
+      "file": "/Applications/MATLAB_R2026b.app/toolbox/matlab/graphics/graphics/+matlab/+graphics/+controls/@HTMLCanvasPlugin/HTMLCanvasPlugin.p",
+      "calls": 1,
+      "total_s": 1.0976409583333335,
+      "self_s": 1.0477252500000003
+    },
+    {
+      "function": "CJSJobMixin>CJSJobMixin.hGetStateEnum",
+      "file": "/Applications/MATLAB_R2026b.app/toolbox/parallel/cluster/+parallel/+internal/+cluster/CJSJobMixin.m",
+      "calls": 18,
+      "total_s": 1.0550795,
+      "self_s": 0.0097924583333330872
+    },
+    {
+      "function": "CJSCluster>CJSCluster.updateJobAndTaskState",
+      "file": "/Applications/MATLAB_R2026b.app/toolbox/parallel/cluster/+parallel/+cluster/CJSCluster.m",
+      "calls": 20,
+      "total_s": 1.017698375,
+      "self_s": 0.042059291666666443
+    },
+    {
+      "function": "CJSCluster>CJSCluster.hGetJobState",
+      "file": "/Applications/MATLAB_R2026b.app/toolbox/parallel/cluster/+parallel/+cluster/CJSCluster.m",
+      "calls": 18,
+      "total_s": 0.97498433333333334,
+      "self_s": 0.025492375000000123
+    },
+    {
+      "function": "DataQueue>DataQueue.maybeDrainAndDispatchAllDataOnQueue",
+      "file": "/Applications/MATLAB_R2026b.app/toolbox/matlab/parallel/+parallel/+pool/DataQueue.m",
+      "calls": 478,
+      "total_s": 0.92707429166666666,
+      "self_s": 0.19159858333333324
+    },
+    {
+      "function": "parcluster",
+      "file": "/Applications/MATLAB_R2026b.app/toolbox/parallel/cluster/cluster/parcluster.m",
+      "calls": 1,
+      "total_s": 0.88849166666666657,
+      "self_s": 0.0050515833333333315
+    },
+    {
+      "function": "ValueStore>ValueStore.put",
+      "file": "/Applications/MATLAB_R2026b.app/toolbox/parallel/cluster/+parallel/ValueStore.m",
+      "calls": 25,
+      "total_s": 0.85312775,
+      "self_s": 0.016058541666666759
+    },
+    {
+      "function": "CJSKeyValueStore>CJSKeyValueStore.putVariable",
+      "file": "/Applications/MATLAB_R2026b.app/toolbox/parallel/cluster/+parallel/+internal/+keyvalue/CJSKeyValueStore.m",
+      "calls": 25,
+      "total_s": 0.82457049999999987,
+      "self_s": 0.00636374999999989
+    },
+    {
+      "function": "CJSKeyValueStore>CJSKeyValueStore.putSingleVariable",
+      "file": "/Applications/MATLAB_R2026b.app/toolbox/parallel/cluster/+parallel/+internal/+keyvalue/CJSKeyValueStore.m",
+      "calls": 100,
+      "total_s": 0.81820675,
+      "self_s": 0.27971337500000004
+    },
+    {
+      "function": "Job.Job>Job.get.StateEnum",
+      "file": "/Applications/MATLAB_R2026b.app/toolbox/parallel/cluster/+parallel/@Job/Job.m",
+      "calls": 15,
+      "total_s": 0.80694641666666667,
+      "self_s": 0.00060716666666671415
+    }
+  ],
+  "by_self": [
+    {
+      "function": "ParforEngine>ParforEngine.getCompleteIntervals",
+      "file": "/Applications/MATLAB_R2026b.app/toolbox/parallel/cluster/+parallel/+internal/+parfor/ParforEngine.m",
+      "calls": 492,
+      "total_s": 80.666866125,
+      "self_s": 79.095598625
+    },
+    {
+      "function": "ClusterClientSession>iWaitForAllWorkerServices",
+      "file": "/Applications/MATLAB_R2026b.app/toolbox/parallel/cluster/+parallel/+internal/+pool/ClusterClientSession.m",
+      "calls": 1,
+      "total_s": 13.870292166666665,
+      "self_s": 13.729541708333333
+    },
+    {
+      "function": "ParforEngine>ParforEngine.addInterval",
+      "file": "/Applications/MATLAB_R2026b.app/toolbox/parallel/cluster/+parallel/+internal/+parfor/ParforEngine.m",
+      "calls": 1741,
+      "total_s": 3.014074416666666,
+      "self_s": 2.5968347499999993
+    },
+    {
+      "function": "HTMLCanvasPlugin.HTMLCanvasPlugin>HTMLCanvasPlugin.createCanvas",
+      "file": "/Applications/MATLAB_R2026b.app/toolbox/matlab/graphics/graphics/+matlab/+graphics/+controls/@HTMLCanvasPlugin/HTMLCanvasPlugin.p",
+      "calls": 1,
+      "total_s": 1.0976409583333335,
+      "self_s": 1.0477252500000003
+    },
+    {
+      "function": "hamiltonian",
+      "file": "/Users/alexej/Documents/PROG/spynach-spinach/kernel/hamiltonian.m",
+      "calls": 4,
+      "total_s": 10.094769291666665,
+      "self_s": 0.77170258333333663
+    },
+    {
+      "function": "existentials",
+      "file": "/Users/alexej/Documents/PROG/spynach-spinach/kernel/integrity/existentials.m",
+      "calls": 1,
+      "total_s": 0.78928837499999993,
+      "self_s": 0.62494937499999992
+    },
+    {
+      "function": "CJSKeyValueStore>iWriteDataFile",
+      "file": "/Applications/MATLAB_R2026b.app/toolbox/parallel/cluster/+parallel/+internal/+keyvalue/CJSKeyValueStore.m",
+      "calls": 100,
+      "total_s": 0.49749875,
+      "self_s": 0.49749875
+    },
+    {
+      "function": "CJSKeyValueStore>iReadDataFile",
+      "file": "/Applications/MATLAB_R2026b.app/toolbox/parallel/cluster/+parallel/+internal/+keyvalue/CJSKeyValueStore.m",
+      "calls": 25,
+      "total_s": 0.45393220833333331,
+      "self_s": 0.45393220833333331
+    },
+    {
+      "function": "DataQueue>DataQueue.dispatchContinuation",
+      "file": "/Applications/MATLAB_R2026b.app/toolbox/matlab/parallel/+parallel/+pool/DataQueue.m",
+      "calls": 1483,
+      "total_s": 0.47414279166666673,
+      "self_s": 0.35798500000000005
+    },
+    {
+      "function": "redfield_integral_async",
+      "file": "/Users/alexej/Documents/PROG/spynach-spinach/kernel/includes/redfield_integral_async.m",
+      "calls": 1,
+      "total_s": 2.7973990416666665,
+      "self_s": 0.34253124999999951
+    },
+    {
+      "function": "AbstractClusterPool.AbstractClusterPool>iPostLaunchSetup",
+      "file": "/Applications/MATLAB_R2026b.app/toolbox/parallel/cluster/+parallel/+internal/+pool/@AbstractClusterPool/AbstractClusterPool.m",
+      "calls": 1,
+      "total_s": 0.42616516666666665,
+      "self_s": 0.33980658333333336
+    },
+    {
+      "function": "cell2mat>concatenateCellContents",
+      "file": "/Applications/MATLAB_R2026b.app/toolbox/matlab/datatypes/cell/cell2mat.m",
+      "calls": 22,
+      "total_s": 0.31622804166666663,
+      "self_s": 0.31622804166666663
+    },
+    {
+      "function": "CJSKeyValueStore>CJSKeyValueStore.putSingleVariable",
+      "file": "/Applications/MATLAB_R2026b.app/toolbox/parallel/cluster/+parallel/+internal/+keyvalue/CJSKeyValueStore.m",
+      "calls": 100,
+      "total_s": 0.81820675,
+      "self_s": 0.27971337500000004
+    },
+    {
+      "function": "table.saveobj",
+      "file": "/Applications/MATLAB_R2026b.app/toolbox/matlab/datatypes/tabular/@table/saveobj.p",
+      "calls": 1920,
+      "total_s": 0.41723966666666662,
+      "self_s": 0.26370004166666661
+    },
+    {
+      "function": "cheap_norm",
+      "file": "/Users/alexej/Documents/PROG/spynach-spinach/kernel/utilities/cheap_norm.m",
+      "calls": 718,
+      "total_s": 0.256254,
+      "self_s": 0.25266054166666663
+    },
+    {
+      "function": "evolution",
+      "file": "/Users/alexej/Documents/PROG/spynach-spinach/kernel/evolution.m",
+      "calls": 12,
+      "total_s": 61.975103708333336,
+      "self_s": 0.24832658333334479
+    },
+    {
+      "function": "report",
+      "file": "/Users/alexej/Documents/PROG/spynach-spinach/kernel/utilities/report.m",
+      "calls": 2387,
+      "total_s": 0.2734742916666667,
+      "self_s": 0.23857575000000003
+    },
+    {
+      "function": "noesy_strychnine_spinach",
+      "file": "/Users/alexej/Documents/PROG/spynach/comparison/cases/noesy_strychnine/noesy_strychnine_spinach.m",
+      "calls": 1,
+      "total_s": 113.20898429166667,
+      "self_s": 0.22480050000000062
+    },
+    {
+      "function": "clean_up",
+      "file": "/Users/alexej/Documents/PROG/spynach-spinach/kernel/utilities/clean_up.m",
+      "calls": 143,
+      "total_s": 0.22388504166666667,
+      "self_s": 0.21954
+    },
+    {
+      "function": "CJSKeyValueStore>CJSKeyValueStore.getSingleVariable",
+      "file": "/Applications/MATLAB_R2026b.app/toolbox/parallel/cluster/+parallel/+internal/+keyvalue/CJSKeyValueStore.m",
+      "calls": 25,
+      "total_s": 0.69517074999999984,
+      "self_s": 0.20429162499999987
+    },
+    {
+      "function": "tabular.parenReference",
+      "file": "/Applications/MATLAB_R2026b.app/toolbox/matlab/datatypes/tabular/@tabular/parenReference.m",
+      "calls": 244,
+      "total_s": 0.39099670833333333,
+      "self_s": 0.1953381666666667
+    },
+    {
+      "function": "step>(parfor body)",
+      "file": "/Users/alexej/Documents/PROG/spynach-spinach/kernel/step.m",
+      "calls": 1160,
+      "total_s": 0.22803912499999998,
+      "self_s": 0.19189329166666663
+    },
+    {
+      "function": "autoexec",
+      "file": "/Users/alexej/Documents/PROG/spynach-spinach/kernel/includes/autoexec.m",
+      "calls": 1,
+      "total_s": 0.35707912499999994,
+      "self_s": 0.19169099999999994
+    },
+    {
+      "function": "DataQueue>DataQueue.maybeDrainAndDispatchAllDataOnQueue",
+      "file": "/Applications/MATLAB_R2026b.app/toolbox/matlab/parallel/+parallel/+pool/DataQueue.m",
+      "calls": 478,
+      "total_s": 0.92707429166666666,
+      "self_s": 0.19159858333333324
+    },
+    {
+      "function": "tabular.dotParenReference",
+      "file": "/Applications/MATLAB_R2026b.app/toolbox/matlab/datatypes/tabular/@tabular/dotParenReference.m",
+      "calls": 159406,
+      "total_s": 0.17008525,
+      "self_s": 0.17008525
+    },
+    {
+      "function": "ClusterClientSession>ClusterClientSession.waitForConnections",
+      "file": "/Applications/MATLAB_R2026b.app/toolbox/parallel/cluster/+parallel/+internal/+pool/ClusterClientSession.m",
+      "calls": 1,
+      "total_s": 14.699235291666668,
+      "self_s": 0.15895920833333577
+    },
+    {
+      "function": "ClusterPoolEngine>ClusterPoolEngine.isSessionRunning",
+      "file": "/Applications/MATLAB_R2026b.app/toolbox/parallel/cluster/+parallel/+internal/+pool/ClusterPoolEngine.m",
+      "calls": 6159,
+      "total_s": 0.2483310416666667,
+      "self_s": 0.15743858333333335
+    },
+    {
+      "function": "States>States.isTerminal",
+      "file": "/Applications/MATLAB_R2026b.app/toolbox/parallel/cluster/+parallel/+internal/+types/States.m",
+      "calls": 102,
+      "total_s": 0.154020875,
+      "self_s": 0.154020875
+    },
+    {
+      "function": "EntitlementRetriever>EntitlementRetriever.EntitlementRetriever",
+      "file": "/Applications/MATLAB_R2026b.app/toolbox/parallel/cluster/+parallel/+internal/+mwa/EntitlementRetriever.m",
+      "calls": 1,
+      "total_s": 0.1518775,
+      "self_s": 0.15168920833333333
+    },
+    {
+      "function": "newplot",
+      "file": "/Applications/MATLAB_R2026b.app/toolbox/matlab/graphics/graphics/axis/newplot.m",
+      "calls": 1,
+      "total_s": 1.3805854999999998,
+      "self_s": 0.14312587499999951
+    },
+    {
+      "function": "+apishared/private/getJobInitData",
+      "file": "/Applications/MATLAB_R2026b.app/toolbox/parallel/cluster/+parallel/+internal/+apishared/private/getJobInitData.p",
+      "calls": 1,
+      "total_s": 0.14883495833333332,
+      "self_s": 0.14143479166666667
+    },
+    {
+      "function": "ParforEngine>ParforEngine.buildParforController",
+      "file": "/Applications/MATLAB_R2026b.app/toolbox/parallel/cluster/+parallel/+internal/+parfor/ParforEngine.m",
+      "calls": 43,
+      "total_s": 0.19686291666666667,
+      "self_s": 0.13591712500000003
+    },
+    {
+      "function": "parallel_function>distributed_execution",
+      "file": "/Applications/MATLAB_R2026b.app/toolbox/matlab/lang/parallel_function.m",
+      "calls": 43,
+      "total_s": 85.069762416666649,
+      "self_s": 0.12677908333333221
+    },
+    {
+      "function": "usejava",
+      "file": "/Applications/MATLAB_R2026b.app/toolbox/matlab/general/usejava.m",
+      "calls": 1,
+      "total_s": 0.11359154166666666,
+      "self_s": 0.11359154166666666
+    },
+    {
+      "function": "FlyweightRegistry>FlyweightRegistry.isKey",
+      "file": "/Applications/MATLAB_R2026b.app/toolbox/matlab/parallel/+matlab/+internal/+parallel/FlyweightRegistry.m",
+      "calls": 482,
+      "total_s": 0.10982800000000001,
+      "self_s": 0.10982800000000001
+    },
+    {
+      "function": "corrfun",
+      "file": "/Users/alexej/Documents/PROG/spynach-spinach/kernel/utilities/corrfun.m",
+      "calls": 625,
+      "total_s": 0.12637966666666664,
+      "self_s": 0.10699099999999998
+    },
+    {
+      "function": "AbstractDataQueue>AbstractDataQueue.pollImpl",
+      "file": "/Applications/MATLAB_R2026b.app/toolbox/matlab/parallel/+parallel/+internal/+dataqueue/AbstractDataQueue.m",
+      "calls": 1483,
+      "total_s": 0.17899254166666667,
+      "self_s": 0.10439233333333334
+    },
+    {
+      "function": "cpuinfo>callSysCtl",
+      "file": "/Applications/MATLAB_R2026b.app/toolbox/matlab/parallel/+matlab/+internal/+parallel/cpuinfo.m",
+      "calls": 1,
+      "total_s": 0.11605499999999999,
+      "self_s": 0.10436362499999999
+    },
+    {
+      "function": "ParforEngine>ParforEngine.isSessionValidAndRunning",
+      "file": "/Applications/MATLAB_R2026b.app/toolbox/parallel/cluster/+parallel/+internal/+parfor/ParforEngine.m",
+      "calls": 6013,
+      "total_s": 0.34883808333333333,
+      "self_s": 0.10251433333333335
+    },
+    {
+      "function": "hamiltonian>(parfor body)",
+      "file": "/Users/alexej/Documents/PROG/spynach-spinach/kernel/hamiltonian.m",
+      "calls": 484,
+      "total_s": 0.505673375,
+      "self_s": 0.10085183333333331
+    }
+  ]
+}

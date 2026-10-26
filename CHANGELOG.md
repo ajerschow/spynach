@@ -4,6 +4,13 @@ Releases are tagged `vX.Y.Z` on GitHub; the version is `spynach.__version__`.
 
 ## Unreleased
 
+- Threaded Numba kernels for the sparse linear algebra of `spynach` (`spynach.kernels`, the `fast`
+  extra): the product of two sparse matrices with the rounding of `clean_up` fused in (the squarings of
+  `propagator` and `expmint`), sparse-times-dense products, one fused term of the Taylor series of `step`, and the
+  rounding itself, routed through `spynach.backend`. Results agree with the SciPy code to the last bit apart from
+  elements within an ulp of a rounding boundary; below a size threshold, without Numba, and with
+  `SPYNACH_NUMBA=0` the NumPy and SciPy code runs as before. Full-size strychnine NOESY: 88 s to 68 s, the
+  rest being dense matrix products at BLAS speed; timings of the three long comparison cases are on the project site.
 - `epreasy` and `ctps` carry the distribution version, 0.2.0, as `spynach` does; tests keep the
   three equal to `[project].version`.
 - `epreasy`, a separate package beside Spynach that ports EasySpin (Stefan

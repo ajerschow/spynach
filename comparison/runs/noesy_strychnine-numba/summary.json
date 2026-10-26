@@ -1,0 +1,85 @@
+{
+ "case": "noesy_strychnine",
+ "run": "noesy_strychnine-numba",
+ "gpu": false,
+ "built_utc": "2026-10-26T13:29:05Z",
+ "stages": [
+  {
+   "label": "create",
+   "spinach": 20.31357575,
+   "spynach": 0.012739458121359348
+  },
+  {
+   "label": "basis",
+   "spinach": 2.261125333333333,
+   "spynach": 0.05778104206547141
+  },
+  {
+   "label": "liquid/noesy",
+   "spinach": 88.65565825,
+   "spynach": 68.31756812497042
+  },
+  {
+   "label": "processing",
+   "spinach": 0.118594875,
+   "spynach": 0.04152570804581046
+  },
+  {
+   "label": "plot",
+   "spinach": 1.85522575,
+   "spynach": 0.11116641596890986
+  },
+  {
+   "label": "total (wall clock)",
+   "spinach": 113.24006770833333,
+   "spynach": 68.5424028749112
+  }
+ ],
+ "arrays": [
+  {
+   "name": "fid_cos",
+   "rel": 2.186879884690997e-12,
+   "max_abs": 3.968179951296946e-16,
+   "note": ""
+  },
+  {
+   "name": "fid_sin",
+   "rel": 2.2673931934837546e-12,
+   "max_abs": 1.6273433920888467e-16,
+   "note": ""
+  },
+  {
+   "name": "spectrum",
+   "rel": 1.315926914268026e-12,
+   "max_abs": 1.2680761591078894e-12,
+   "note": ""
+  }
+ ],
+ "provenance": {
+  "spinach": {
+   "created_utc": "2026-10-14T17:38:16Z",
+   "spinach_describe": "2.13",
+   "matlab_version": "26.2.0.3386108 (R2026b)",
+   "hostname": "MacBook-Pro-8.local",
+   "platform": "MACA64",
+   "cores": 12,
+   "blas": "Apple Accelerate BLAS (ILP64)",
+   "pool_workers": 11
+  },
+  "spynach": {
+   "created_utc": "2026-10-26T13:23:31Z",
+   "spynach_describe": "v0.2.0-21-g2e8843c-dirty",
+   "python_version": "3.12.5",
+   "numpy_version": "2.5.4",
+   "scipy_version": "1.18.1",
+   "numba_version": "0.68.0",
+   "hostname": "jerschowlab25.chem.nyu.edu",
+   "platform": "macOS-26.6.2-arm64-arm-64bit",
+   "cores": 12,
+   "blas": {
+    "numpy": "accelerate",
+    "scipy": "Accelerate"
+   }
+  }
+ }
+}

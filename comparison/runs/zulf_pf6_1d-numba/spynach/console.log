@@ -1,0 +1,10 @@
+== zulf_pf6_1d (spynach at /Users/alexej/Documents/PROG/spynach) -> /Users/alexej/Documents/PROG/spynach/comparison/runs/zulf_pf6_1d-numba/spynach
+create                                0.0 s
+basis                                 0.0 s
+hamiltonian                           0.0 s
+operators                             0.0 s
+pulse                                 0.1 s
+acquisition                          42.2 s
+processing                            0.0 s
+plot                                  0.0 s
+total                                42.4 s

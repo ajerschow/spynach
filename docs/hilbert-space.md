@@ -42,6 +42,16 @@ The `docs` extra adds Plotly, JupyterLab, and what is needed to run the
 notebooks; only plots and notebooks need it (`.[plot]` installs Plotly
 alone). Start JupyterLab with `jupyter lab docs/notebooks/`.
 
+Large Liouville-space calculations run faster with Numba: the `fast` extra
+(`python -m pip install -e ".[fast]"`) compiles the sparse products of the
+exponential propagator, the Taylor stepping and the rounding to the grid
+(`spynach.kernels`) and runs them on all cores, with the same numbers; without
+it, or for small problems, the plain NumPy and SciPy code runs. Numba's
+threads and OpenBLAS's threads share the machine: `NUMBA_NUM_THREADS` sets the
+former, and `SPYNACH_NUMBA=0` switches the compiled path off. Numba's thread
+pool does not survive a `fork`: after the kernels have run, start worker
+processes with the `spawn` method (the default on macOS and Windows).
+
 A caveat for containers: when a container has a CPU quota below the number
 of cores it can see (a 4-CPU quota on a 12-core host, say), OpenBLAS starts
 one thread per visible core, oversubscribes the quota, and dense linear

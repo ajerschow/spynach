@@ -1,0 +1,25 @@
+{
+  "stages": [
+    {
+      "label": "create",
+      "seconds": 20.31357575
+    },
+    {
+      "label": "basis",
+      "seconds": 2.2611253333333332
+    },
+    {
+      "label": "liquid/noesy",
+      "seconds": 88.65565825
+    },
+    {
+      "label": "processing",
+      "seconds": 0.118594875
+    },
+    {
+      "label": "plot",
+      "seconds": 1.85522575
+    }
+  ],
+  "total_s": 113.24006770833333
+}

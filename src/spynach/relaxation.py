@@ -43,7 +43,7 @@ from spynach.operators import lin2lm
 from spynach.propagation import propagator, step
 from spynach.states import state
 from spynach.system import SpinSystem
-from spynach.utilities import Matrix, clean_up, nnz
+from spynach.utilities import Matrix, clean_up, matmul_clean, nnz
 
 log = logging.getLogger("spynach")
 
@@ -225,7 +225,7 @@ def expmint(spin_system: SpinSystem, A: Matrix, B: Matrix, C: Matrix, T: float) 
     aux = sps.csr_array(aux) if sps.issparse(aux) else np.asarray(aux)
     P = aux[:dim, :dim].conj().T
     Q = aux[:dim, dim:]
-    return clean_up(spin_system.tols, P @ Q, spin_system.tols.prop_chop)
+    return matmul_clean(spin_system.tols, P, Q, spin_system.tols.prop_chop)
 
 
 def _redfield(spin_system: SpinSystem) -> Matrix:

@@ -1,4 +1,4 @@
-== maz_noesy_2 (spynach at /Users/alexej/Documents/PROG/spynach) -> /Users/alexej/Documents/PROG/spynach/comparison/runs/maz_noesy_2/spynach
+== maz_noesy_2 (spynach at /Users/alexej/Documents/PROG/spynach) -> /Users/alexej/Documents/PROG/spynach/comparison/runs/maz_noesy_2-nonumba/spynach
 create                                0.0 s
 basis                                 0.0 s
 time step exceeds the timescale of system dynamics.
@@ -24,7 +24,7 @@ time step exceeds the timescale of system dynamics.
 time step exceeds the timescale of system dynamics.
 time step greatly exceeds the timescale of system dynamics; exponentiation tolerance tightened up to eps('double').
 time step exceeds the timescale of system dynamics.
-liquid/noesy                       1701.6 s
+liquid/noesy                       1631.3 s
 processing                            0.0 s
 plot                                  0.2 s
-total                              1701.9 s
+total                              1631.6 s

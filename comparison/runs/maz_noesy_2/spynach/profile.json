@@ -1,284 +1,284 @@
 {
   "by_total": [
     {
-      "function": "run (maz_noesy_2_spynach.py:13)",
+      "function": "run (maz_noesy_2_spynach.py:15)",
       "file": "/Users/alexej/Documents/PROG/spynach/comparison/cases/maz_noesy_2/maz_noesy_2_spynach.py",
       "calls": 1,
-      "total_s": 1701.8964335,
-      "self_s": 2.9583e-05
+      "total_s": 1631.5736437500002,
+      "self_s": 3.4042000000000004e-05
     },
     {
-      "function": "simulate (maz_noesy_2.py:132)",
+      "function": "simulate (maz_noesy_2.py:151)",
       "file": "/Users/alexej/Documents/PROG/spynach/examples/relaxation_theory/maz_noesy_2.py",
       "calls": 1,
-      "total_s": 1701.6723335000001,
-      "self_s": 0.000558084
+      "total_s": 1631.3881087080001,
+      "self_s": 0.000652205
     },
     {
       "function": "liquid (contexts.py:32)",
       "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/contexts.py",
       "calls": 1,
-      "total_s": 1701.604464209,
-      "self_s": 6.583500000000001e-05
+      "total_s": 1631.319716334,
+      "self_s": 8.820900000000001e-05
     },
     {
-      "function": "_dissipators (contexts.py:284)",
+      "function": "_dissipators (contexts.py:310)",
       "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/contexts.py",
       "calls": 1,
-      "total_s": 1628.011244708,
-      "self_s": 1.5999e-05
+      "total_s": 1558.677213875,
+      "self_s": 1.4708e-05
     },
     {
       "function": "relaxation (relaxation.py:51)",
       "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/relaxation.py",
       "calls": 2,
-      "total_s": 1628.011178834,
-      "self_s": 0.009129497
+      "total_s": 1558.6771640420002,
+      "self_s": 0.005789499
     },
     {
-      "function": "expmint (relaxation.py:197)",
+      "function": "matmul_clean (utilities.py:62)",
+      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/utilities.py",
+      "calls": 885,
+      "total_s": 1555.8579223680001,
+      "self_s": 0.024324748
+    },
+    {
+      "function": "expmint (relaxation.py:213)",
       "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/relaxation.py",
       "calls": 32,
-      "total_s": 1622.496259708,
-      "self_s": 0.0007635830000000001
+      "total_s": 1552.843006497,
+      "self_s": 0.000697694
     },
     {
-      "function": "_srfk (relaxation.py:294)",
+      "function": "_srfk (relaxation.py:325)",
       "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/relaxation.py",
       "calls": 1,
-      "total_s": 1618.162204333,
-      "self_s": 0.000329502
+      "total_s": 1548.4224833750002,
+      "self_s": 0.000240415
     },
     {
       "function": "__matmul__ (_base.py:1006)",
       "file": "/Users/alexej/Documents/PROG/spynach/.venv-mac/lib/python3.12/site-packages/scipy/sparse/_base.py",
       "calls": 6424,
-      "total_s": 1602.2962586340002,
-      "self_s": 0.003963421
+      "total_s": 1525.680096628,
+      "self_s": 0.0039628630000000005
     },
     {
       "function": "_matmul_dispatch (_base.py:875)",
       "file": "/Users/alexej/Documents/PROG/spynach/.venv-mac/lib/python3.12/site-packages/scipy/sparse/_base.py",
       "calls": 6541,
-      "total_s": 1602.284999742,
-      "self_s": 0.007849669
+      "total_s": 1525.672028318,
+      "self_s": 0.008049003
     },
     {
       "function": "_matmul_sparse (_compressed.py:415)",
       "file": "/Users/alexej/Documents/PROG/spynach/.venv-mac/lib/python3.12/site-packages/scipy/sparse/_compressed.py",
       "calls": 1186,
-      "total_s": 1547.7895240090002,
-      "self_s": 0.008253045
+      "total_s": 1472.1543857170002,
+      "self_s": 0.007888772
     },
     {
       "function": "propagator (propagation.py:25)",
       "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/propagation.py",
       "calls": 48,
-      "total_s": 1529.112323793,
-      "self_s": 0.045951085
+      "total_s": 1464.424170126,
+      "self_s": 0.205780542
     },
     {
       "function": "<built-in method scipy.sparse._sparsetools.csr_matmat>",
       "file": "~",
       "calls": 1186,
-      "total_s": 1119.098671831,
-      "self_s": 1119.098671831
+      "total_s": 1058.5872466590001,
+      "self_s": 1058.5872466590001
     },
     {
       "function": "<built-in method scipy.sparse._sparsetools.csr_matmat_maxnnz>",
       "file": "~",
       "calls": 1186,
-      "total_s": 428.412306503,
-      "self_s": 428.412306503
+      "total_s": 413.33165555700003,
+      "self_s": 413.33165555700003
     },
     {
-      "function": "clean_up (utilities.py:27)",
+      "function": "clean_up (utilities.py:25)",
       "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/utilities.py",
       "calls": 1168,
-      "total_s": 80.55155686100001,
-      "self_s": 4.958361962000001
+      "total_s": 86.871043814,
+      "self_s": 0.014760463000000001
     },
     {
-      "function": "noesy (sequences.py:80)",
+      "function": "noesy (sequences.py:96)",
       "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/sequences.py",
       "calls": 1,
-      "total_s": 73.527174042,
-      "self_s": 0.000589209
+      "total_s": 72.5615255,
+      "self_s": 0.00036712500000000005
+    },
+    {
+      "function": "matmul (utilities.py:72)",
+      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/utilities.py",
+      "calls": 5164,
+      "total_s": 53.518687578000005,
+      "self_s": 0.014205659
     },
     {
       "function": "_matmul_multivector (_compressed.py:399)",
       "file": "/Users/alexej/Documents/PROG/spynach/.venv-mac/lib/python3.12/site-packages/scipy/sparse/_compressed.py",
       "calls": 1928,
-      "total_s": 53.845459313000006,
-      "self_s": 0.009583597000000001
+      "total_s": 52.886187871000004,
+      "self_s": 0.010084663
     },
     {
       "function": "<built-in method scipy.sparse._sparsetools.csr_matvecs>",
       "file": "~",
       "calls": 1916,
-      "total_s": 53.217280068,
-      "self_s": 53.217280068
+      "total_s": 52.26450860200001,
+      "self_s": 52.26450860200001
     },
     {
-      "function": "evolution (propagation.py:208)",
+      "function": "round_array (backend.py:77)",
+      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/backend.py",
+      "calls": 1204,
+      "total_s": 51.102553135,
+      "self_s": 0.000703693
+    },
+    {
+      "function": "round_array (kernels.py:231)",
+      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/kernels.py",
+      "calls": 1204,
+      "total_s": 51.101849442,
+      "self_s": 0.00600304
+    },
+    {
+      "function": "_round_numpy (kernels.py:70)",
+      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/kernels.py",
+      "calls": 1204,
+      "total_s": 51.095593747,
+      "self_s": 8.757924231
+    },
+    {
+      "function": "evolution (propagation.py:245)",
       "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/propagation.py",
       "calls": 12,
-      "total_s": 48.728914045,
-      "self_s": 0.108702746
+      "total_s": 47.823777958,
+      "self_s": 0.038827162000000005
     },
     {
-      "function": "matlab_round (utilities.py:20)",
-      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/utilities.py",
+      "function": "_evolve_observable (propagation.py:379)",
+      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/propagation.py",
+      "calls": 4,
+      "total_s": 43.589383791,
+      "self_s": 0.048195542
+    },
+    {
+      "function": "matlab_round (kernels.py:63)",
+      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/kernels.py",
       "calls": 3608,
-      "total_s": 44.671367079,
-      "self_s": 44.669076851
+      "total_s": 42.337669516000005,
+      "self_s": 42.335437892
     },
     {
-      "function": "step (propagation.py:74)",
+      "function": "step (propagation.py:78)",
       "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/propagation.py",
       "calls": 85,
-      "total_s": 24.999740418000002,
-      "self_s": 0.14308963500000002
+      "total_s": 24.939430168,
+      "self_s": 0.140509568
     },
     {
-      "function": "_reordered_taylor (propagation.py:122)",
+      "function": "_reordered_taylor (propagation.py:126)",
       "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/propagation.py",
       "calls": 85,
-      "total_s": 24.809110208,
-      "self_s": 13.438347953000001
+      "total_s": 24.753500001000003,
+      "self_s": 13.617705976000002
     },
     {
       "function": "count_nonzero (_compressed.py:138)",
       "file": "/Users/alexej/Documents/PROG/spynach/.venv-mac/lib/python3.12/site-packages/scipy/sparse/_compressed.py",
       "calls": 3451,
-      "total_s": 17.516163215000002,
-      "self_s": 0.0038392760000000004
+      "total_s": 17.150387457,
+      "self_s": 0.004038966000000001
     },
     {
-      "function": "nnz (utilities.py:15)",
+      "function": "nnz (utilities.py:20)",
       "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/utilities.py",
-      "calls": 2196,
-      "total_s": 17.183072307,
-      "self_s": 0.0049813470000000006
+      "calls": 2941,
+      "total_s": 17.073254124,
+      "self_s": 0.003392458
+    },
+    {
+      "function": "_choose_storage (utilities.py:50)",
+      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/utilities.py",
+      "calls": 1168,
+      "total_s": 16.837036192,
+      "self_s": 0.0026301420000000002
     },
     {
       "function": "sum_duplicates (_compressed.py:1072)",
       "file": "/Users/alexej/Documents/PROG/spynach/.venv-mac/lib/python3.12/site-packages/scipy/sparse/_compressed.py",
       "calls": 3717,
-      "total_s": 15.625170048000001,
-      "self_s": 0.0021958290000000003
+      "total_s": 15.519208477000001,
+      "self_s": 0.0022787140000000003
     },
     {
       "function": "sort_indices (_compressed.py:1124)",
       "file": "/Users/alexej/Documents/PROG/spynach/.venv-mac/lib/python3.12/site-packages/scipy/sparse/_compressed.py",
       "calls": 666,
-      "total_s": 15.104303152000002,
-      "self_s": 0.000987933
+      "total_s": 14.967480739,
+      "self_s": 0.001051473
     },
     {
       "function": "<built-in method scipy.sparse._sparsetools.csr_sort_indices>",
       "file": "~",
       "calls": 665,
-      "total_s": 15.102036622000002,
-      "self_s": 15.102036622000002
-    },
-    {
-      "function": "_redfield (relaxation.py:215)",
-      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/relaxation.py",
-      "calls": 1,
-      "total_s": 9.636013625,
-      "self_s": 0.003063529
-    },
-    {
-      "function": "<method 'copy' of 'numpy.ndarray' objects>",
-      "file": "~",
-      "calls": 7717,
-      "total_s": 7.959407533,
-      "self_s": 7.959407533
-    },
-    {
-      "function": "__init__ (_compressed.py:30)",
-      "file": "/Users/alexej/Documents/PROG/spynach/.venv-mac/lib/python3.12/site-packages/scipy/sparse/_compressed.py",
-      "calls": 8528,
-      "total_s": 7.898636961,
-      "self_s": 0.022855772
+      "total_s": 14.965177256,
+      "self_s": 14.965177256
     },
     {
       "function": "eliminate_zeros (_compressed.py:1034)",
       "file": "/Users/alexej/Documents/PROG/spynach/.venv-mac/lib/python3.12/site-packages/scipy/sparse/_compressed.py",
       "calls": 1036,
-      "total_s": 7.5168401760000005,
-      "self_s": 0.001779923
+      "total_s": 10.974115724,
+      "self_s": 0.002886689
     },
     {
-      "function": "copy (_data.py:94)",
-      "file": "/Users/alexej/Documents/PROG/spynach/.venv-mac/lib/python3.12/site-packages/scipy/sparse/_data.py",
-      "calls": 996,
-      "total_s": 5.925281713,
-      "self_s": 0.000832901
+      "function": "_redfield (relaxation.py:231)",
+      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/relaxation.py",
+      "calls": 1,
+      "total_s": 10.070784083000001,
+      "self_s": 0.0029783640000000003
     },
     {
       "function": "<built-in method scipy.sparse._sparsetools.csr_eliminate_zeros>",
       "file": "~",
       "calls": 1036,
-      "total_s": 5.523206532000001,
-      "self_s": 5.523206532000001
+      "total_s": 9.88622198,
+      "self_s": 9.88622198
     },
     {
-      "function": "count_nonzero (numeric.py:483)",
-      "file": "/Users/alexej/Documents/PROG/spynach/.venv-mac/lib/python3.12/site-packages/numpy/_core/numeric.py",
-      "calls": 3640,
-      "total_s": 2.918130585,
-      "self_s": 0.001356203
+      "function": "__init__ (_compressed.py:30)",
+      "file": "/Users/alexej/Documents/PROG/spynach/.venv-mac/lib/python3.12/site-packages/scipy/sparse/_compressed.py",
+      "calls": 8528,
+      "total_s": 9.843346254,
+      "self_s": 0.023068637000000003
     },
     {
-      "function": "<built-in method numpy._core._multiarray_umath.count_nonzero>",
+      "function": "<method 'copy' of 'numpy.ndarray' objects>",
       "file": "~",
-      "calls": 3639,
-      "total_s": 2.916664924,
-      "self_s": 2.916664924
+      "calls": 7717,
+      "total_s": 8.883204246,
+      "self_s": 8.883204246
     },
     {
-      "function": "hamiltonian (hamiltonian.py:87)",
-      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/hamiltonian.py",
-      "calls": 4,
-      "total_s": 2.130986167,
-      "self_s": 0.002123696
+      "function": "copy (_data.py:94)",
+      "file": "/Users/alexej/Documents/PROG/spynach/.venv-mac/lib/python3.12/site-packages/scipy/sparse/_data.py",
+      "calls": 996,
+      "total_s": 7.781173209,
+      "self_s": 0.001087136
     },
     {
-      "function": "prune (_compressed.py:1132)",
-      "file": "/Users/alexej/Documents/PROG/spynach/.venv-mac/lib/python3.12/site-packages/scipy/sparse/_compressed.py",
-      "calls": 10901,
-      "total_s": 2.037903934,
-      "self_s": 0.020547882
-    },
-    {
-      "function": "_prune_array (_util.py:95)",
-      "file": "/Users/alexej/Documents/PROG/spynach/.venv-mac/lib/python3.12/site-packages/scipy/_lib/_util.py",
-      "calls": 22058,
-      "total_s": 1.9957841330000001,
-      "self_s": 0.0044598910000000005
-    },
-    {
-      "function": "asformat (_base.py:471)",
-      "file": "/Users/alexej/Documents/PROG/spynach/.venv-mac/lib/python3.12/site-packages/scipy/sparse/_base.py",
-      "calls": 2848,
-      "total_s": 1.877240288,
-      "self_s": 0.0010178820000000001
-    },
-    {
-      "function": "_with_data (_compressed.py:1189)",
-      "file": "/Users/alexej/Documents/PROG/spynach/.venv-mac/lib/python3.12/site-packages/scipy/sparse/_compressed.py",
-      "calls": 2158,
-      "total_s": 1.7755805240000002,
-      "self_s": 0.0033666010000000003
-    },
-    {
-      "function": "assemble (hamiltonian.py:174)",
-      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/hamiltonian.py",
-      "calls": 38,
-      "total_s": 1.56095666,
-      "self_s": 0.11538706300000001
+      "function": "_evolve_trajectory (propagation.py:426)",
+      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/propagation.py",
+      "calls": 8,
+      "total_s": 3.5220313770000002,
+      "self_s": 0.012313566000000001
     }
   ],
   "by_self": [
@@ -286,281 +286,281 @@
       "function": "<built-in method scipy.sparse._sparsetools.csr_matmat>",
       "file": "~",
       "calls": 1186,
-      "total_s": 1119.098671831,
-      "self_s": 1119.098671831
+      "total_s": 1058.5872466590001,
+      "self_s": 1058.5872466590001
     },
     {
       "function": "<built-in method scipy.sparse._sparsetools.csr_matmat_maxnnz>",
       "file": "~",
       "calls": 1186,
-      "total_s": 428.412306503,
-      "self_s": 428.412306503
+      "total_s": 413.33165555700003,
+      "self_s": 413.33165555700003
     },
     {
       "function": "<built-in method scipy.sparse._sparsetools.csr_matvecs>",
       "file": "~",
       "calls": 1916,
-      "total_s": 53.217280068,
-      "self_s": 53.217280068
+      "total_s": 52.26450860200001,
+      "self_s": 52.26450860200001
     },
     {
-      "function": "matlab_round (utilities.py:20)",
-      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/utilities.py",
+      "function": "matlab_round (kernels.py:63)",
+      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/kernels.py",
       "calls": 3608,
-      "total_s": 44.671367079,
-      "self_s": 44.669076851
+      "total_s": 42.337669516000005,
+      "self_s": 42.335437892
     },
     {
       "function": "<built-in method scipy.sparse._sparsetools.csr_sort_indices>",
       "file": "~",
       "calls": 665,
-      "total_s": 15.102036622000002,
-      "self_s": 15.102036622000002
+      "total_s": 14.965177256,
+      "self_s": 14.965177256
     },
     {
-      "function": "_reordered_taylor (propagation.py:122)",
+      "function": "_reordered_taylor (propagation.py:126)",
       "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/propagation.py",
       "calls": 85,
-      "total_s": 24.809110208,
-      "self_s": 13.438347953000001
-    },
-    {
-      "function": "<method 'copy' of 'numpy.ndarray' objects>",
-      "file": "~",
-      "calls": 7717,
-      "total_s": 7.959407533,
-      "self_s": 7.959407533
+      "total_s": 24.753500001000003,
+      "self_s": 13.617705976000002
     },
     {
       "function": "<built-in method scipy.sparse._sparsetools.csr_eliminate_zeros>",
       "file": "~",
       "calls": 1036,
-      "total_s": 5.523206532000001,
-      "self_s": 5.523206532000001
+      "total_s": 9.88622198,
+      "self_s": 9.88622198
     },
     {
-      "function": "clean_up (utilities.py:27)",
-      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/utilities.py",
-      "calls": 1168,
-      "total_s": 80.55155686100001,
-      "self_s": 4.958361962000001
+      "function": "<method 'copy' of 'numpy.ndarray' objects>",
+      "file": "~",
+      "calls": 7717,
+      "total_s": 8.883204246,
+      "self_s": 8.883204246
+    },
+    {
+      "function": "_round_numpy (kernels.py:70)",
+      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/kernels.py",
+      "calls": 1204,
+      "total_s": 51.095593747,
+      "self_s": 8.757924231
     },
     {
       "function": "<built-in method numpy._core._multiarray_umath.count_nonzero>",
       "file": "~",
       "calls": 3639,
-      "total_s": 2.916664924,
-      "self_s": 2.916664924
-    },
-    {
-      "function": "<built-in method scipy.sparse._sparsetools.get_csr_submatrix>",
-      "file": "~",
-      "calls": 64,
-      "total_s": 1.007298544,
-      "self_s": 1.007298544
+      "total_s": 2.866528986,
+      "self_s": 2.866528986
     },
     {
       "function": "<built-in method scipy.sparse._sparsetools.csr_plus_csr>",
       "file": "~",
       "calls": 632,
-      "total_s": 0.7298970090000001,
-      "self_s": 0.7298970090000001
+      "total_s": 0.71374579,
+      "self_s": 0.71374579
     },
     {
       "function": "<built-in method numpy.zeros>",
       "file": "~",
-      "calls": 20151,
-      "total_s": 0.624870041,
-      "self_s": 0.624870041
-    },
-    {
-      "function": "<built-in method scipy.sparse._sparsetools.csr_tocsc>",
-      "file": "~",
-      "calls": 146,
-      "total_s": 0.598977204,
-      "self_s": 0.598977204
+      "calls": 20155,
+      "total_s": 0.617092788,
+      "self_s": 0.617092788
     },
     {
       "function": "<built-in method scipy.sparse._sparsetools.csr_matvec>",
       "file": "~",
       "calls": 2970,
-      "total_s": 0.5725454040000001,
-      "self_s": 0.5725454040000001
+      "total_s": 0.560911224,
+      "self_s": 0.560911224
     },
     {
       "function": "<built-in method scipy.sparse._sparsetools.csr_sum_duplicates>",
       "file": "~",
       "calls": 666,
-      "total_s": 0.465896427,
-      "self_s": 0.465896427
+      "total_s": 0.49539422200000005,
+      "self_s": 0.49539422200000005
+    },
+    {
+      "function": "<built-in method scipy.sparse._sparsetools.csr_tocsc>",
+      "file": "~",
+      "calls": 146,
+      "total_s": 0.46208662300000003,
+      "self_s": 0.46208662300000003
+    },
+    {
+      "function": "<built-in method scipy.sparse._sparsetools.get_csr_submatrix>",
+      "file": "~",
+      "calls": 64,
+      "total_s": 0.295926872,
+      "self_s": 0.295926872
     },
     {
       "function": "<built-in method scipy.sparse._sparsetools.coo_tocsr>",
       "file": "~",
       "calls": 131,
-      "total_s": 0.256831166,
-      "self_s": 0.256831166
+      "total_s": 0.27133354000000004,
+      "self_s": 0.27133354000000004
     },
     {
-      "function": "_superop_side_build (operators.py:280)",
+      "function": "_superop_side_build (operators.py:290)",
       "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/operators.py",
       "calls": 553,
-      "total_s": 0.49274280600000003,
-      "self_s": 0.209352647
-    },
-    {
-      "function": "step (propagation.py:74)",
-      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/propagation.py",
-      "calls": 85,
-      "total_s": 24.999740418000002,
-      "self_s": 0.14308963500000002
-    },
-    {
-      "function": "assemble (hamiltonian.py:174)",
-      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/hamiltonian.py",
-      "calls": 38,
-      "total_s": 1.56095666,
-      "self_s": 0.11538706300000001
-    },
-    {
-      "function": "<method 'reduce' of 'numpy.ufunc' objects>",
-      "file": "~",
-      "calls": 44286,
-      "total_s": 0.109640519,
-      "self_s": 0.109640519
-    },
-    {
-      "function": "evolution (propagation.py:208)",
-      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/propagation.py",
-      "calls": 12,
-      "total_s": 48.728914045,
-      "self_s": 0.108702746
-    },
-    {
-      "function": "<method 'searchsorted' of 'numpy.ndarray' objects>",
-      "file": "~",
-      "calls": 12160,
-      "total_s": 0.087232898,
-      "self_s": 0.087232898
-    },
-    {
-      "function": "<method 'nonzero' of 'numpy.ndarray' objects>",
-      "file": "~",
-      "calls": 14020,
-      "total_s": 0.076525804,
-      "self_s": 0.076525804
-    },
-    {
-      "function": "_mul_scalar (_data.py:140)",
-      "file": "/Users/alexej/Documents/PROG/spynach/.venv-mac/lib/python3.12/site-packages/scipy/sparse/_data.py",
-      "calls": 809,
-      "total_s": 0.1338069,
-      "self_s": 0.074544924
-    },
-    {
-      "function": "_detect (propagation.py:355)",
-      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/propagation.py",
-      "calls": 1024,
-      "total_s": 0.079573508,
-      "self_s": 0.07410815200000001
-    },
-    {
-      "function": "<method 'conjugate' of 'numpy.ndarray' objects>",
-      "file": "~",
-      "calls": 110,
-      "total_s": 0.054023258000000005,
-      "self_s": 0.054023258000000005
-    },
-    {
-      "function": "<built-in method scipy.sparse._sparsetools.csc_matvec>",
-      "file": "~",
-      "calls": 457,
-      "total_s": 0.050447217,
-      "self_s": 0.050447217
+      "total_s": 0.612336172,
+      "self_s": 0.26003854800000004
     },
     {
       "function": "propagator (propagation.py:25)",
       "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/propagation.py",
       "calls": 48,
-      "total_s": 1529.112323793,
-      "self_s": 0.045951085
+      "total_s": 1464.424170126,
+      "self_s": 0.205780542
     },
     {
-      "function": "<built-in method _io.open_code>",
+      "function": "step (propagation.py:78)",
+      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/propagation.py",
+      "calls": 85,
+      "total_s": 24.939430168,
+      "self_s": 0.140509568
+    },
+    {
+      "function": "<method 'reduce' of 'numpy.ufunc' objects>",
       "file": "~",
-      "calls": 118,
-      "total_s": 0.044303505,
-      "self_s": 0.044303505
+      "calls": 44416,
+      "total_s": 0.118435883,
+      "self_s": 0.118435883
+    },
+    {
+      "function": "<method 'searchsorted' of 'numpy.ndarray' objects>",
+      "file": "~",
+      "calls": 12160,
+      "total_s": 0.10895360600000001,
+      "self_s": 0.10895360600000001
+    },
+    {
+      "function": "assemble (hamiltonian.py:189)",
+      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/hamiltonian.py",
+      "calls": 38,
+      "total_s": 1.813778292,
+      "self_s": 0.10670979600000001
+    },
+    {
+      "function": "<method 'nonzero' of 'numpy.ndarray' objects>",
+      "file": "~",
+      "calls": 14020,
+      "total_s": 0.092138024,
+      "self_s": 0.092138024
+    },
+    {
+      "function": "<built-in method numpy.array>",
+      "file": "~",
+      "calls": 19454,
+      "total_s": 0.09177461,
+      "self_s": 0.09177461
+    },
+    {
+      "function": "_detect (propagation.py:447)",
+      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/propagation.py",
+      "calls": 1024,
+      "total_s": 0.095602356,
+      "self_s": 0.08801684500000001
+    },
+    {
+      "function": "_mul_scalar (_data.py:140)",
+      "file": "/Users/alexej/Documents/PROG/spynach/.venv-mac/lib/python3.12/site-packages/scipy/sparse/_data.py",
+      "calls": 809,
+      "total_s": 0.13045829,
+      "self_s": 0.072471412
+    },
+    {
+      "function": "_evolve_observable (propagation.py:379)",
+      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/propagation.py",
+      "calls": 4,
+      "total_s": 43.589383791,
+      "self_s": 0.048195542
+    },
+    {
+      "function": "<built-in method scipy.sparse._sparsetools.csc_matvec>",
+      "file": "~",
+      "calls": 457,
+      "total_s": 0.043547952,
+      "self_s": 0.043547952
     },
     {
       "function": "<built-in method scipy.sparse._sparsetools.csr_has_canonical_format>",
       "file": "~",
       "calls": 1374,
-      "total_s": 0.041727440000000005,
-      "self_s": 0.041727440000000005
-    },
-    {
-      "function": "reduce (reduction.py:29)",
-      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/reduction.py",
-      "calls": 12,
-      "total_s": 0.32097141700000004,
-      "self_s": 0.040769918
-    },
-    {
-      "function": "<built-in method builtins.abs>",
-      "file": "~",
-      "calls": 20184,
-      "total_s": 0.05011355,
-      "self_s": 0.040401132
-    },
-    {
-      "function": "_isin (_arraysetops_impl.py:806)",
-      "file": "/Users/alexej/Documents/PROG/spynach/.venv-mac/lib/python3.12/site-packages/numpy/lib/_arraysetops_impl.py",
-      "calls": 4,
-      "total_s": 0.037733875,
-      "self_s": 0.037136670000000004
-    },
-    {
-      "function": "superop (operators.py:242)",
-      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/operators.py",
-      "calls": 637,
-      "total_s": 0.531905292,
-      "self_s": 0.035149799
-    },
-    {
-      "function": "_triplets (hamiltonian.py:195)",
-      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/hamiltonian.py",
-      "calls": 593,
-      "total_s": 0.561389739,
-      "self_s": 0.034134202
-    },
-    {
-      "function": "get_index_dtype (_sputils.py:263)",
-      "file": "/Users/alexej/Documents/PROG/spynach/.venv-mac/lib/python3.12/site-packages/scipy/sparse/_sputils.py",
-      "calls": 9187,
-      "total_s": 0.047998484,
-      "self_s": 0.032836427
-    },
-    {
-      "function": "_chop (propagation.py:360)",
-      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/propagation.py",
-      "calls": 36,
-      "total_s": 0.16515500000000002,
-      "self_s": 0.032828663
+      "total_s": 0.042035681000000005,
+      "self_s": 0.042035681000000005
     },
     {
       "function": "<method 'sort' of 'numpy.ndarray' objects>",
       "file": "~",
       "calls": 137,
-      "total_s": 0.032805422,
-      "self_s": 0.032805422
+      "total_s": 0.040171793000000004,
+      "self_s": 0.040171793000000004
     },
     {
-      "function": "<built-in method scipy.sparse._sparsetools.csr_minus_csr>",
+      "function": "<built-in method builtins.abs>",
       "file": "~",
-      "calls": 39,
-      "total_s": 0.024970541000000002,
-      "self_s": 0.024970541000000002
+      "calls": 20184,
+      "total_s": 0.049301621000000004,
+      "self_s": 0.039904167000000004
+    },
+    {
+      "function": "reduce (reduction.py:30)",
+      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/reduction.py",
+      "calls": 12,
+      "total_s": 0.315452709,
+      "self_s": 0.039438127
+    },
+    {
+      "function": "superop (operators.py:252)",
+      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/operators.py",
+      "calls": 637,
+      "total_s": 0.656237303,
+      "self_s": 0.039150103000000006
+    },
+    {
+      "function": "evolution (propagation.py:245)",
+      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/propagation.py",
+      "calls": 12,
+      "total_s": 47.823777958,
+      "self_s": 0.038827162000000005
+    },
+    {
+      "function": "_triplets (hamiltonian.py:210)",
+      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/hamiltonian.py",
+      "calls": 593,
+      "total_s": 0.6904278460000001,
+      "self_s": 0.036590819000000004
+    },
+    {
+      "function": "get_index_dtype (_sputils.py:263)",
+      "file": "/Users/alexej/Documents/PROG/spynach/.venv-mac/lib/python3.12/site-packages/scipy/sparse/_sputils.py",
+      "calls": 9187,
+      "total_s": 0.048231919000000005,
+      "self_s": 0.033024961000000005
+    },
+    {
+      "function": "_isin (_arraysetops_impl.py:806)",
+      "file": "/Users/alexej/Documents/PROG/spynach/.venv-mac/lib/python3.12/site-packages/numpy/lib/_arraysetops_impl.py",
+      "calls": 4,
+      "total_s": 0.032151666,
+      "self_s": 0.031646752
+    },
+    {
+      "function": "matmul_clean (utilities.py:62)",
+      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/utilities.py",
+      "calls": 885,
+      "total_s": 1555.8579223680001,
+      "self_s": 0.024324748
+    },
+    {
+      "function": "__init__ (_compressed.py:30)",
+      "file": "/Users/alexej/Documents/PROG/spynach/.venv-mac/lib/python3.12/site-packages/scipy/sparse/_compressed.py",
+      "calls": 8528,
+      "total_s": 9.843346254,
+      "self_s": 0.023068637000000003
     }
   ]
 }

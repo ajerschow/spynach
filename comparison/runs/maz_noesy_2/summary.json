@@ -2,37 +2,37 @@
  "case": "maz_noesy_2",
  "run": "maz_noesy_2",
  "gpu": false,
- "built_utc": "2026-10-24T22:04:16Z",
+ "built_utc": "2026-10-26T13:57:01Z",
  "stages": [
   {
    "label": "create",
    "spinach": 1.2636935416666666,
-   "spynach": 0.005312916997354478
+   "spynach": 0.003019375028088689
   },
   {
    "label": "basis",
    "spinach": 3.727274291666667,
-   "spynach": 0.043514917022548616
+   "spynach": 0.047827500151470304
   },
   {
    "label": "liquid/noesy",
    "spinach": 840.808407,
-   "spynach": 1701.604523874994
+   "spynach": 1631.3197797080502
   },
   {
    "label": "processing",
    "spinach": 0.011591625,
-   "spynach": 0.010430791997350752
+   "spynach": 0.010864249896258116
   },
   {
    "label": "plot",
    "spinach": 0.14788370833333334,
-   "spynach": 0.18110970896668732
+   "spynach": 0.18311416707001626
   },
   {
    "label": "total (wall clock)",
    "spinach": 846.1510452916667,
-   "spynach": 1701.8968153329915
+   "spynach": 1631.574059916893
   }
  ],
  "arrays": [
@@ -67,12 +67,13 @@
    "pool_workers": 11
   },
   "spynach": {
-   "created_utc": "2026-10-14T19:19:37Z",
-   "spynach_describe": "074f4d2-dirty",
+   "created_utc": "2026-10-26T13:56:34Z",
+   "spynach_describe": "v0.2.0-21-g2e8843c-dirty",
    "python_version": "3.12.5",
    "numpy_version": "2.5.4",
    "scipy_version": "1.18.1",
-   "hostname": "MacBook-Pro-8.local",
+   "numba_version": null,
+   "hostname": "jerschowlab25.chem.nyu.edu",
    "platform": "macOS-26.6.2-arm64-arm-64bit",
    "cores": 12,
    "blas": {

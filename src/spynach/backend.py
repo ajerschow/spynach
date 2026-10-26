@@ -26,6 +26,8 @@ import numpy as np
 import scipy.linalg as sla
 import scipy.sparse as sps
 
+from spynach import kernels
+
 
 @dataclass(frozen=True)
 class NumpyBackend:
@@ -71,6 +73,29 @@ class NumpyBackend:
     @staticmethod
     def nnz(x: Any) -> int:
         return int(x.count_nonzero()) if sps.issparse(x) else int(np.count_nonzero(x))
+
+    @staticmethod
+    def round_array(values: Any, scale: float, tol: float, *, divide: bool = False) -> Any:
+        """``tol * matlab_round(scale * values)`` (``values / scale`` with ``divide``): the rounding grid of
+        ``clean_up`` and ``chop``. Threaded Numba kernel for large arrays, NumPy otherwise."""
+        return kernels.round_array(values, scale, tol, divide=divide)
+
+    @staticmethod
+    def spgemm_round(A: Any, B: Any, scale: float, tol: float) -> Any:
+        """``A @ B`` for two CSR matrices, rounded to the grid ``tol`` with zeros dropped, in one threaded pass
+        (``cupyx`` sparse products on a GPU backend); ``None`` where the compiled kernel does not apply."""
+        return kernels.spgemm_round(A, B, scale, tol)
+
+    @staticmethod
+    def csr_times_dense(A: Any, X: Any) -> Any:
+        """``A @ X`` for a CSR matrix and a dense stack, threaded; ``None`` where the kernel does not apply."""
+        return kernels.csr_times_dense(A, X)
+
+    @staticmethod
+    def taylor_term(A: Any, term: Any, coef: complex, rho: Any, eps: float) -> Any:
+        """One fused term of the Taylor series of ``step``: ``(coef * (A @ term), any(|.| > eps))``, adding the
+        term to ``rho`` in place; ``None`` where the kernel does not apply."""
+        return kernels.taylor_term(A, term, coef, rho, eps)
 
     @staticmethod
     def norm1(x: Any) -> float:

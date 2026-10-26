@@ -146,6 +146,17 @@ def thread_env() -> dict:
     return {var: os.environ[var] for var in THREAD_VARIABLES if var in os.environ}
 
 
+def numba_version() -> str | None:
+    """The Numba version when spynach's compiled kernels are in use (``spynach.kernels.HAVE_NUMBA``), else None."""
+    from spynach import kernels
+
+    if not kernels.HAVE_NUMBA:
+        return None
+    import numba
+
+    return numba.__version__
+
+
 def make_meta(case: str, options: dict) -> dict:
     import scipy
 
@@ -170,6 +181,7 @@ def make_meta(case: str, options: dict) -> dict:
         "python_version": platform.python_version(),
         "numpy_version": np.__version__,
         "scipy_version": scipy.__version__,
+        "numba_version": numba_version(),
         "platform": platform.platform(),
         "hostname": socket.gethostname(),
         "cores": os.cpu_count(),

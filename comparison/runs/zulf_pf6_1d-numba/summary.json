@@ -1,0 +1,118 @@
+{
+ "case": "zulf_pf6_1d",
+ "run": "zulf_pf6_1d-numba",
+ "gpu": false,
+ "built_utc": "2026-10-26T13:29:05Z",
+ "stages": [
+  {
+   "label": "create",
+   "spinach": 1.270601,
+   "spynach": 0.0017946669831871986
+  },
+  {
+   "label": "basis",
+   "spinach": 2.0075989583333333,
+   "spynach": 0.011931959073990583
+  },
+  {
+   "label": "hamiltonian",
+   "spinach": 0.505912,
+   "spynach": 0.04636641591787338
+  },
+  {
+   "label": "operators",
+   "spinach": 0.7629805833333333,
+   "spynach": 0.033103666035458446
+  },
+  {
+   "label": "pulse",
+   "spinach": 0.320652625,
+   "spynach": 0.05469799996353686
+  },
+  {
+   "label": "acquisition",
+   "spinach": 46.67684333333333,
+   "spynach": 42.191413667052984
+  },
+  {
+   "label": "processing",
+   "spinach": 0.02800325,
+   "spynach": 0.0003552089910954237
+  },
+  {
+   "label": "plot",
+   "spinach": 0.09281608333333333,
+   "spynach": 0.037120207911357284
+  },
+  {
+   "label": "total (wall clock)",
+   "spinach": 51.830286875,
+   "spynach": 42.386868292000145
+  }
+ ],
+ "arrays": [
+  {
+   "name": "coil_x",
+   "rel": 0.0,
+   "max_abs": 0.0,
+   "note": "compared after squeezing singleton dimensions"
+  },
+  {
+   "name": "coil_z",
+   "rel": 0.0,
+   "max_abs": 0.0,
+   "note": "compared after squeezing singleton dimensions"
+  },
+  {
+   "name": "fid",
+   "rel": 1.5205116710574192e-12,
+   "max_abs": 1.4456532571100176e-17,
+   "note": "compared after squeezing singleton dimensions"
+  },
+  {
+   "name": "rho0",
+   "rel": 0.0,
+   "max_abs": 0.0,
+   "note": "compared after squeezing singleton dimensions"
+  },
+  {
+   "name": "rho_pulse",
+   "rel": 2.4194934185649157e-22,
+   "max_abs": 5.294900309401146e-23,
+   "note": "compared after squeezing singleton dimensions"
+  },
+  {
+   "name": "spectrum",
+   "rel": 8.075218208154653e-11,
+   "max_abs": 2.0385038038922194e-14,
+   "note": "compared after squeezing singleton dimensions"
+  }
+ ],
+ "provenance": {
+  "spinach": {
+   "created_utc": "2026-10-14T17:39:14Z",
+   "spinach_describe": "2.13",
+   "matlab_version": "26.2.0.3386108 (R2026b)",
+   "hostname": "MacBook-Pro-8.local",
+   "platform": "MACA64",
+   "cores": 12,
+   "blas": "Apple Accelerate BLAS (ILP64)",
+   "pool_workers": 11
+  },
+  "spynach": {
+   "created_utc": "2026-10-26T13:24:14Z",
+   "spynach_describe": "v0.2.0-21-g2e8843c-dirty",
+   "python_version": "3.12.5",
+   "numpy_version": "2.5.4",
+   "scipy_version": "1.18.1",
+   "numba_version": "0.68.0",
+   "hostname": "jerschowlab25.chem.nyu.edu",
+   "platform": "macOS-26.6.2-arm64-arm-64bit",
+   "cores": 12,
+   "blas": {
+    "numpy": "accelerate",
+    "scipy": "Accelerate"
+   }
+  }
+ }
+}

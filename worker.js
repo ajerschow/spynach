@@ -16,6 +16,7 @@ const SOURCE = [
   "src/spynach/filters.py",
   "src/spynach/hamiltonian.py",
   "src/spynach/isotopes.py",
+  "src/spynach/kernels.py",
   "src/spynach/kinetics.py",
   "src/spynach/molecules.py",
   "src/spynach/operators.py",
