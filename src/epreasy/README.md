@@ -129,6 +129,15 @@ distribution needs only NumPy and SciPy, with `easyspyn[fast]` adding Numba). `p
 builds it into `dist/easyspyn/` from a staged copy of this package and `packaging/easyspyn/`; the version there
 is kept equal to the repository's by `tests/unit/test_version.py`.
 
+Releases go out from GitHub through PyPI's Trusted Publishing, with no token: publishing a GitHub release tagged
+`easyspyn-vX.Y.Z` (the version in `packaging/easyspyn/pyproject.toml`) runs
+`.github/workflows/publish-easyspyn.yml`, which tests and builds that commit and, once the reviewer of the `pypi`
+environment approves, uploads it. One-time setup: a pending publisher on PyPI (project `easyspyn`, owner
+`ajerschow`, repository `spynach`, workflow `publish-easyspyn.yml`, environment `pypi`) and an environment named
+`pypi` in the repository settings. Spynach's own `vX.Y.Z` releases do not start it. A version can be uploaded only
+once: bump it in `packaging/easyspyn/pyproject.toml`, `src/epreasy/__init__.py`, `pyproject.toml`,
+`CITATION.cff` and the CHANGELOG (the version test lists what disagrees) before the next release.
+
 ## Rolling it back
 
 The package touches nothing in `src/spynach`. To remove it:
