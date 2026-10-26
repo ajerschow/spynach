@@ -22,7 +22,7 @@ Spinach authors, by original file (headers of Spinach 2.13; see docs/spinach-cre
   evolution.m: Ilya Kuprov, Luke Edwards, Ohad Levinkron
   krylov.m: Ilya Kuprov
   propagator.m: Ilya Kuprov, Luke Edwards
-  step.m: Ilya Kuprov, Luke Edwards, Anupama Acharya, one contributor listed only by email address
+  step.m: Ilya Kuprov, Luke Edwards, Anupama Acharya, Callum Musselwhite
 """
 
 from __future__ import annotations

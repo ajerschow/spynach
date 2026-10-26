@@ -33,7 +33,8 @@ JSON_PATH = ROOT / "porting" / "spinach_authors.json"
 PAGE = ROOT / "docs" / "spinach-credits.md"
 TEAM_URL = "https://spindynamics.org/wiki/index.php?title=Spinach_developer_team"
 
-# Header address -> name as on the Spinach developer team page; None where the page does not list the person.
+# Header address -> name as on the Spinach developer team page (three supplied by the project owner); None where
+# a name is not known, in which case the address is counted but not named.
 NAMES: dict[str, str | None] = {
     "ilya.kuprov@weizmann.ac.il": "Ilya Kuprov",
     "ledwards@cbs.mpg.de": "Luke Edwards",
@@ -52,10 +53,10 @@ NAMES: dict[str, str | None] = {
     "walter.kockenberger@nottingham.ac.uk": "Walter Kockenberger",
     "a.biternas@soton.ac.uk": "Andreas Biternas",
     "a.acharya@soton.ac.uk": "Anupama Acharya",
-    # not on the developer team page: to be named by the project owner
-    "stst@uw.edu": None,
-    "c.musselwhite@soton.ac.uk": None,
-    "fije@inano.au.dk": None,
+    # not on the developer team page; names supplied by the project owner
+    "stst@uw.edu": "Stefan Stoll",
+    "c.musselwhite@soton.ac.uk": "Callum Musselwhite",
+    "fije@inano.au.dk": "Filip Vestergaard Jensen",
 }
 # Files whose header names its authors in text instead of by address.
 FILE_AUTHORS = {"fourdif.m": ["J.A.C. Weideman", "S.C. Reddy"]}

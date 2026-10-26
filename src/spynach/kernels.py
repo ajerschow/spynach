@@ -27,7 +27,7 @@ rare case that the sum sits within an ulp of a rounding boundary.
 Spinach authors, by original file (headers of Spinach 2.13; see docs/spinach-credits.md):
   clean_up.m: Ilya Kuprov, Alex Nevzorov
   propagator.m: Ilya Kuprov, Luke Edwards
-  step.m: Ilya Kuprov, Luke Edwards, Anupama Acharya, one contributor listed only by email address
+  step.m: Ilya Kuprov, Luke Edwards, Anupama Acharya, Callum Musselwhite
 """
 
 from __future__ import annotations
@@ -327,7 +327,7 @@ def taylor_term(A: sps.csr_array, term: np.ndarray, coef: complex, rho: np.ndarr
     term to ``rho`` in place; ``None`` when the compiled path does not apply (the caller uses NumPy).
 
     Spinach authors (step.m, one term of subfunction reordered_taylor, fused): Ilya Kuprov, Luke Edwards,
-      Anupama Acharya, one contributor listed only by email address.
+      Anupama Acharya, Callum Musselwhite.
     """
     if not _use_compiled(A.nnz * (term.shape[1] if term.ndim == 2 else 1), MIN_NNZ):
         return None

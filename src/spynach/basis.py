@@ -19,7 +19,7 @@ the basis is a direct sum over substances with one common unit state.
 
 Spinach authors, by original file (headers of Spinach 2.13; see docs/spinach-credits.md):
   basis.m: Ilya Kuprov
-  dfpt.m: Ilya Kuprov, one contributor listed only by email address
+  dfpt.m: Ilya Kuprov, Stefan Stoll
   prune_subgraphs.m: Ilya Kuprov
 """
 
@@ -234,7 +234,7 @@ def dfpt(conmatrix: np.ndarray, max_size: int) -> np.ndarray:
     subgraphs are kept as they are. Returns a boolean matrix with one
     subgraph per row.
 
-    Spinach authors (dfpt.m): Ilya Kuprov, one contributor listed only by email address.
+    Spinach authors (dfpt.m): Ilya Kuprov, Stefan Stoll.
     """
     nspins = conmatrix.shape[0]
     subgraphs = np.arange(nspins)[:, None]

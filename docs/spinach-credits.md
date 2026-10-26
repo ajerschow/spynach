@@ -20,7 +20,7 @@ Functions of Spynach with no Spinach counterpart at all are listed with a dash. 
 | `spynach.backend.get_backend` | — | new | — |
 | `spynach.backend.use` | — | new | — |
 | `spynach.basis.basis` | `kernel/basis.m` | port | Ilya Kuprov |
-| `spynach.basis.dfpt` | `kernel/utilities/dfpt.m` | port | Ilya Kuprov, one contributor listed only by email address |
+| `spynach.basis.dfpt` | `kernel/utilities/dfpt.m` | port | Ilya Kuprov, Stefan Stoll |
 | `spynach.basis.prune_subgraphs` | `kernel/utilities/prune_subgraphs.m` | port | Ilya Kuprov |
 | `spynach.basis.row_hashes` | — | new | — |
 | `spynach.contexts.crystal` | `kernel/contexts/crystal.m` | port | Ilya Kuprov |
@@ -47,7 +47,7 @@ Functions of Spynach with no Spinach counterpart at all are listed with a dash. 
 | `spynach.kernels.round_array` | `kernel/utilities/clean_up.m` (the rounding, as a compiled kernel) | derived | Ilya Kuprov, Alex Nevzorov |
 | `spynach.kernels.spgemm_round` | `kernel/utilities/clean_up.m` (product and rounding in one pass) | new | Ilya Kuprov, Alex Nevzorov |
 | `spynach.kernels.spgemm_round` | `kernel/propagator.m` (the squarings) | new | Ilya Kuprov, Luke Edwards |
-| `spynach.kernels.taylor_term` | `kernel/step.m` (one term of subfunction reordered_taylor, fused) | derived | Ilya Kuprov, Luke Edwards, Anupama Acharya, one contributor listed only by email address |
+| `spynach.kernels.taylor_term` | `kernel/step.m` (one term of subfunction reordered_taylor, fused) | derived | Ilya Kuprov, Luke Edwards, Anupama Acharya, Callum Musselwhite |
 | `spynach.kinetics.equilibrate` | `kernel/kinetics/equilibrate.m` | port | Ilya Kuprov |
 | `spynach.kinetics.kinetics` | `kernel/kinetics/kinetics.m` | port | Ilya Kuprov, Luke Edwards, Hannah Hogben |
 | `spynach.molecules.strychnine` | `etc/molecules/strychnine.m` | port | Luke Edwards, Ilya Kuprov |
@@ -70,12 +70,12 @@ Functions of Spynach with no Spinach counterpart at all are listed with a dash. 
 | `spynach.plotting.plot_time_series` | — | new | — |
 | `spynach.plotting.plot_trajan` | — | new | — |
 | `spynach.processing.apodisation` | `kernel/utilities/apodisation.m` | port | Ilya Kuprov |
-| `spynach.propagation._commutator_series` | `kernel/step.m` (subfunction comm_series) | derived | Ilya Kuprov, Luke Edwards, Anupama Acharya, one contributor listed only by email address |
-| `spynach.propagation._reordered_taylor` | `kernel/step.m` (subfunction reordered_taylor) | derived | Ilya Kuprov, Luke Edwards, Anupama Acharya, one contributor listed only by email address |
+| `spynach.propagation._commutator_series` | `kernel/step.m` (subfunction comm_series) | derived | Ilya Kuprov, Luke Edwards, Anupama Acharya, Callum Musselwhite |
+| `spynach.propagation._reordered_taylor` | `kernel/step.m` (subfunction reordered_taylor) | derived | Ilya Kuprov, Luke Edwards, Anupama Acharya, Callum Musselwhite |
 | `spynach.propagation.evolution` | `kernel/evolution.m` | port | Ilya Kuprov, Luke Edwards, Ohad Levinkron |
 | `spynach.propagation.krylov` | `kernel/krylov.m` | port | Ilya Kuprov |
 | `spynach.propagation.propagator` | `kernel/propagator.m` | port | Ilya Kuprov, Luke Edwards |
-| `spynach.propagation.step` | `kernel/step.m` | port | Ilya Kuprov, Luke Edwards, Anupama Acharya, one contributor listed only by email address |
+| `spynach.propagation.step` | `kernel/step.m` | port | Ilya Kuprov, Luke Edwards, Anupama Acharya, Callum Musselwhite |
 | `spynach.reduction.binpack` | `kernel/utilities/binpack.m` | port | Ilya Kuprov |
 | `spynach.reduction.path_trace` | `kernel/utilities/path_trace.m` | port | Ilya Kuprov, Matthew Krzystyniak |
 | `spynach.reduction.reduce` | `kernel/reduce.m` | port | Ilya Kuprov, Matthew Krzystyniak, Luke Edwards |
@@ -88,7 +88,7 @@ Functions of Spynach with no Spinach counterpart at all are listed with a dash. 
 | `spynach.relaxation.equilibrium` | `kernel/states/equilibrium.m` | port | Luke Edwards, Ilya Kuprov |
 | `spynach.relaxation.expmint` | `kernel/utilities/expmint.m` | port | Luke Edwards, David Goodwin, Ilya Kuprov |
 | `spynach.relaxation.relaxation` | `kernel/relaxation.m` | port | Ilya Kuprov, Luke Edwards, Alexander Karabanov, Walter Kockenberger |
-| `spynach.relaxation.thermalize` | `kernel/thermalize.m` | port | Ilya Kuprov, one contributor listed only by email address |
+| `spynach.relaxation.thermalize` | `kernel/thermalize.m` | port | Ilya Kuprov, Filip Vestergaard Jensen |
 | `spynach.sequences.acquire` | `experiments/acquire.m` | port | Ilya Kuprov, Luke Edwards |
 | `spynach.sequences.cosy` | `experiments/nmr_liquids/cosy.m` | port | Gareth Charnock, Ilya Kuprov |
 | `spynach.sequences.hsqc` | `experiments/nmr_liquids/hsqc.m` | port | Ilya Kuprov, Luke Edwards |
@@ -162,15 +162,15 @@ Functions of Spynach with no Spinach counterpart at all are listed with a dash. 
 | `kernel/state.m` | Dmitry Savostyanov, Luke Edwards, Ilya Kuprov |
 | `kernel/states/equilibrium.m` | Luke Edwards, Ilya Kuprov |
 | `kernel/states/stateinfo.m` | Ilya Kuprov, Konstantin Pervushin |
-| `kernel/step.m` | Ilya Kuprov, Luke Edwards, Anupama Acharya, one contributor listed only by email address |
-| `kernel/thermalize.m` | Ilya Kuprov, one contributor listed only by email address |
+| `kernel/step.m` | Ilya Kuprov, Luke Edwards, Anupama Acharya, Callum Musselwhite |
+| `kernel/thermalize.m` | Ilya Kuprov, Filip Vestergaard Jensen |
 | `kernel/trajan.m` | Gareth Charnock, Ilya Kuprov, Luke Edwards |
 | `kernel/utilities/apodisation.m` | Ilya Kuprov |
 | `kernel/utilities/binpack.m` | Ilya Kuprov |
 | `kernel/utilities/cheap_norm.m` | Ilya Kuprov |
 | `kernel/utilities/clean_up.m` | Ilya Kuprov, Alex Nevzorov |
 | `kernel/utilities/corrfun.m` | Ilya Kuprov |
-| `kernel/utilities/dfpt.m` | Ilya Kuprov, one contributor listed only by email address |
+| `kernel/utilities/dfpt.m` | Ilya Kuprov, Stefan Stoll |
 | `kernel/utilities/dilute.m` | Ilya Kuprov, Luke Edwards, Bud Macaulay |
 | `kernel/utilities/dipolar.m` | Ilya Kuprov |
 | `kernel/utilities/expmint.m` | Luke Edwards, David Goodwin, Ilya Kuprov |

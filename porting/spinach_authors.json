@@ -126,9 +126,10 @@
   "dfpt.m": {
    "path": "kernel/utilities/dfpt.m",
    "authors": [
-    "Ilya Kuprov"
+    "Ilya Kuprov",
+    "Stefan Stoll"
    ],
-   "unnamed": 1
+   "unnamed": 0
   },
   "dilute.m": {
    "path": "kernel/utilities/dilute.m",
@@ -471,9 +472,10 @@
    "authors": [
     "Ilya Kuprov",
     "Luke Edwards",
-    "Anupama Acharya"
+    "Anupama Acharya",
+    "Callum Musselwhite"
    ],
-   "unnamed": 1
+   "unnamed": 0
   },
   "strychnine.m": {
    "path": "etc/molecules/strychnine.m",
@@ -494,9 +496,10 @@
   "thermalize.m": {
    "path": "kernel/thermalize.m",
    "authors": [
-    "Ilya Kuprov"
+    "Ilya Kuprov",
+    "Filip Vestergaard Jensen"
    ],
-   "unnamed": 1
+   "unnamed": 0
   },
   "tolerances.m": {
    "path": "kernel/utilities/tolerances.m",

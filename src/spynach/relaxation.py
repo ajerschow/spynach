@@ -33,7 +33,7 @@ Spinach authors, by original file (headers of Spinach 2.13; see docs/spinach-cre
   redfield_integral_serial.m: Ilya Kuprov
   relaxation.m: Ilya Kuprov, Luke Edwards, Alexander Karabanov, Walter Kockenberger
   rlx_scalar.m: Ilya Kuprov
-  thermalize.m: Ilya Kuprov, one contributor listed only by email address
+  thermalize.m: Ilya Kuprov, Filip Vestergaard Jensen
 """
 
 from __future__ import annotations
@@ -198,7 +198,7 @@ def thermalize(
     ``R -> R expm(-H_left beta)`` with ``beta = hbar / (k T)``. Spinach's
     signature is ``thermalize(spin_system, R, HLSPS, T, rho_eq, method)``.
 
-    Spinach authors (thermalize.m): Ilya Kuprov, one contributor listed only by email address.
+    Spinach authors (thermalize.m): Ilya Kuprov, Filip Vestergaard Jensen.
     """
     if spin_system.basis is None or spin_system.basis.formalism != "sphten-liouv":
         raise NotImplementedError("thermalize() is only ported for the sphten-liouv formalism.")

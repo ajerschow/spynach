@@ -9,7 +9,7 @@ Spinach authors, by original file (headers of Spinach 2.13; see docs/spinach-cre
   evolution.m: Ilya Kuprov, Luke Edwards, Ohad Levinkron
   krylov.m: Ilya Kuprov
   propagator.m: Ilya Kuprov, Luke Edwards
-  step.m: Ilya Kuprov, Luke Edwards, Anupama Acharya, one contributor listed only by email address
+  step.m: Ilya Kuprov, Luke Edwards, Anupama Acharya, Callum Musselwhite
 """
 
 from __future__ import annotations
@@ -94,8 +94,7 @@ def step(spin_system: SpinSystem, L: Matrix | Sequence[Matrix], rho: Matrix, tim
     density matrix, propagated by a dense exponential below
     ``tols.small_matrix`` and by the commutator series above it.
 
-    Spinach authors (step.m): Ilya Kuprov, Luke Edwards, Anupama Acharya, one contributor listed only by email
-      address.
+    Spinach authors (step.m): Ilya Kuprov, Luke Edwards, Anupama Acharya, Callum Musselwhite.
     """
     if not np.isscalar(timestep) or not np.isfinite(timestep):
         raise ValueError("timestep must be a finite scalar.")
@@ -137,8 +136,8 @@ def step(spin_system: SpinSystem, L: Matrix | Sequence[Matrix], rho: Matrix, tim
 def _reordered_taylor(generators: list[Matrix], rho: np.ndarray, t: float, nsteps: int) -> np.ndarray:
     """Taylor series of expm(-1j*L*t) acting on rho, in nsteps substeps (step.m ``reordered_taylor``).
 
-    Spinach authors (step.m, subfunction reordered_taylor): Ilya Kuprov, Luke Edwards, Anupama Acharya, one
-      contributor listed only by email address.
+    Spinach authors (step.m, subfunction reordered_taylor): Ilya Kuprov, Luke Edwards, Anupama Acharya, Callum
+      Musselwhite.
     """
     eps = np.finfo(float).eps
     dt = t / nsteps
@@ -190,8 +189,8 @@ def _reordered_taylor(generators: list[Matrix], rho: np.ndarray, t: float, nstep
 def _commutator_series(H: Matrix, rho: Matrix, t: float, nsteps: int) -> Matrix:
     """Hilbert-space step by the nested commutator series (step.m ``comm_series``).
 
-    Spinach authors (step.m, subfunction comm_series): Ilya Kuprov, Luke Edwards, Anupama Acharya, one
-      contributor listed only by email address.
+    Spinach authors (step.m, subfunction comm_series): Ilya Kuprov, Luke Edwards, Anupama Acharya, Callum
+      Musselwhite.
     """
     eps = np.finfo(float).eps
     scaling = get_backend().norm1(rho)

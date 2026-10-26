@@ -7,7 +7,7 @@ Releases are tagged `vX.Y.Z` on GitHub; the version is `spynach.__version__`.
 - The Spinach authors of every translated function are acknowledged by name: a `Spinach authors (propagator.m): ...`
   line in its docstring (and a module line for each module), and the generated page `docs/spinach-credits.md`
   (65 ports, 9 derived functions, 17 without a Spinach counterpart). Names come from the Spinach developer team
-  page; three header addresses that it does not list are counted, not named, until names are supplied.
+  page, plus three contributors it does not list (Stefan Stoll, Callum Musselwhite, Filip Vestergaard Jensen).
   `porting/tools/gen_spinach_authors.py` reads the headers of a Spinach checkout into
   `porting/spinach_authors.json` and writes the docstrings and the page; `tests/unit/test_credits.py` keeps them
   current without a checkout. Function names are unchanged.
