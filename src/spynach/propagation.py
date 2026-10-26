@@ -4,6 +4,12 @@ Liouville-space states are dense vectors ``(nstates,)`` or stacks
 ``(nstates, k)``; ``step`` applies ``expm(-1j * L * dt)`` to them without
 forming the exponential, and ``evolution`` reduces the problem with
 :mod:`spynach.reduction` before propagating each subspace.
+
+Spinach authors, by original file (headers of Spinach 2.13; see docs/spinach-credits.md):
+  evolution.m: Ilya Kuprov, Luke Edwards, Ohad Levinkron
+  krylov.m: Ilya Kuprov
+  propagator.m: Ilya Kuprov, Luke Edwards
+  step.m: Ilya Kuprov, Luke Edwards, Anupama Acharya, one contributor listed only by email address
 """
 
 from __future__ import annotations
@@ -28,6 +34,8 @@ def propagator(spin_system: SpinSystem, L: Matrix, timestep: float) -> Matrix:
     Below ``tols.small_matrix`` this is a dense Pade exponential. Larger
     generators use Spinach's scaled and squared Taylor series, rounding each
     term to ``tols.prop_chop`` so that sparsity is kept where it exists.
+
+    Spinach authors (propagator.m): Ilya Kuprov, Luke Edwards.
     """
     if L.ndim != 2 or L.shape[0] != L.shape[1]:
         raise ValueError("L argument must be a square matrix.")
@@ -85,6 +93,9 @@ def step(spin_system: SpinSystem, L: Matrix | Sequence[Matrix], rho: Matrix, tim
     quadratures of Rasulov et al. 2023). In ``zeeman-hilb`` ``rho`` is a
     density matrix, propagated by a dense exponential below
     ``tols.small_matrix`` and by the commutator series above it.
+
+    Spinach authors (step.m): Ilya Kuprov, Luke Edwards, Anupama Acharya, one contributor listed only by email
+      address.
     """
     if not np.isscalar(timestep) or not np.isfinite(timestep):
         raise ValueError("timestep must be a finite scalar.")
@@ -124,7 +135,11 @@ def step(spin_system: SpinSystem, L: Matrix | Sequence[Matrix], rho: Matrix, tim
 
 
 def _reordered_taylor(generators: list[Matrix], rho: np.ndarray, t: float, nsteps: int) -> np.ndarray:
-    """Taylor series of expm(-1j*L*t) acting on rho, in nsteps substeps (step.m ``reordered_taylor``)."""
+    """Taylor series of expm(-1j*L*t) acting on rho, in nsteps substeps (step.m ``reordered_taylor``).
+
+    Spinach authors (step.m, subfunction reordered_taylor): Ilya Kuprov, Luke Edwards, Anupama Acharya, one
+      contributor listed only by email address.
+    """
     eps = np.finfo(float).eps
     dt = t / nsteps
     be = get_backend()
@@ -173,7 +188,11 @@ def _reordered_taylor(generators: list[Matrix], rho: np.ndarray, t: float, nstep
 
 
 def _commutator_series(H: Matrix, rho: Matrix, t: float, nsteps: int) -> Matrix:
-    """Hilbert-space step by the nested commutator series (step.m ``comm_series``)."""
+    """Hilbert-space step by the nested commutator series (step.m ``comm_series``).
+
+    Spinach authors (step.m, subfunction comm_series): Ilya Kuprov, Luke Edwards, Anupama Acharya, one
+      contributor listed only by email address.
+    """
     eps = np.finfo(float).eps
     scaling = get_backend().norm1(rho)
     if scaling == 0:
@@ -207,6 +226,8 @@ def krylov(
     """Propagation by repeated :func:`step` calls, for generators too large to exponentiate (port of ``krylov.m``).
 
     Same outputs as :func:`evolution`; ``coil`` is needed for ``'observable'`` and ``'multichannel'``.
+
+    Spinach authors (krylov.m): Ilya Kuprov.
     """
     if spin_system.basis is None or spin_system.basis.formalism != "sphten-liouv":
         raise NotImplementedError("krylov() is only ported for the sphten-liouv formalism.")
@@ -277,6 +298,8 @@ def evolution(
     k)``, as in Spinach), ``'refocus'`` (column ``k`` of the stack propagated
     for ``k`` steps, the second half of a constant-time or refocused
     indirect dimension; ``nsteps`` is ignored).
+
+    Spinach authors (evolution.m): Ilya Kuprov, Luke Edwards, Ohad Levinkron.
     """
     if spin_system.basis is None:
         raise ValueError("basis set information is missing, run basis() before calling this function.")

@@ -7,6 +7,13 @@ Fokker-Planck space ``rotor phase (x) spin``: the state vector is the stack
 of the spin state at every rotor phase grid point (spin index fastest, see
 ``porting/design-notes.md``), ``parameters['spc_dim']`` is the number of
 rotor phases and ``parameters['spn_dim']`` the spin state space dimension.
+
+Spinach authors, by original file (headers of Spinach 2.13; see docs/spinach-credits.md):
+  crystal.m: Ilya Kuprov
+  fourdif.m: J.A.C. Weideman, S.C. Reddy
+  liquid.m: Ilya Kuprov
+  powder.m: Luke Edwards, Ilya Kuprov
+  singlerot.m: Ilya Kuprov
 """
 
 from __future__ import annotations
@@ -36,6 +43,8 @@ def liquid(spin_system: SpinSystem, pulse_sequence: PulseSequence, parameters: d
     and may contain ``'offset'`` (Hz per channel). ``K`` is
     :func:`spynach.kinetics` in Liouville space and zero in Hilbert space,
     where exchange cannot be described.
+
+    Spinach authors (liquid.m): Ilya Kuprov.
     """
     parameters = _defaults(spin_system, parameters)
     spin_system = assume(spin_system, assumptions)
@@ -53,6 +62,8 @@ def crystal(
 
     The Hamiltonian is the isotropic part plus the anisotropic components
     rotated to that orientation (:func:`spynach.orientation`), Hermitised.
+
+    Spinach authors (crystal.m): Ilya Kuprov.
     """
     parameters = _defaults(spin_system, parameters)
     if "orientation" not in parameters:
@@ -80,6 +91,8 @@ def powder(spin_system: SpinSystem, pulse_sequence: PulseSequence, parameters: d
     list of per-orientation results. Orientations run serially; Spinach
     uses a parallel pool and computes the same sum. ``parameters['progress']``,
     if set, is called as ``progress(done, total)`` after each orientation.
+
+    Spinach authors (powder.m): Luke Edwards, Ilya Kuprov.
     """
     parameters = _defaults(spin_system, parameters)
     parameters.setdefault("sum_up", True)
@@ -136,6 +149,8 @@ def singlerot(
     orientation and the results are weighted and summed (``'sum_up'``).
     ``parameters['progress']``, if set, is called as ``progress(done, total)``
     after each orientation.
+
+    Spinach authors (singlerot.m): Ilya Kuprov.
     """
     parameters = _defaults(spin_system, parameters)
     parameters.setdefault("sum_up", True)
@@ -216,6 +231,8 @@ def fourdif(npoints: int, order: int) -> tuple[np.ndarray, np.ndarray]:
     Returns the grid ``2 pi k / N`` and the dense ``N x N`` matrix of the
     ``order``-th derivative, exact for trigonometric polynomials the grid
     resolves.
+
+    Spinach authors (fourdif.m): J.A.C. Weideman, S.C. Reddy.
     """
     N, m = int(npoints), int(order)
     if N < 1 or m < 1:

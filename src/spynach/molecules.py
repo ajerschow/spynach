@@ -2,6 +2,9 @@
 
 Each function returns the ``(sys, inter)`` dictionaries that
 :func:`spynach.create` takes, with Spinach's data and 0-based spin numbers.
+
+Spinach authors, by original file (headers of Spinach 2.13; see docs/spinach-credits.md):
+  strychnine.m: Luke Edwards, Ilya Kuprov
 """
 
 from __future__ import annotations
@@ -110,6 +113,8 @@ def strychnine(spins: Sequence[str]) -> tuple[dict, dict]:
     Returns ``(sys, inter)`` with ``sys["isotopes"]`` and the ``zeeman``,
     ``coupling`` and ``coordinates`` fields of ``inter``; ``sys["magnet"]``
     is left for the caller to set, as in Spinach.
+
+    Spinach authors (strychnine.m): Luke Edwards, Ilya Kuprov.
     """
     if list(spins) != ["1H"]:
         raise NotImplementedError(

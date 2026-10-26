@@ -4,6 +4,12 @@ Euler angles are Spinach's active ZYZ convention: ``euler2dcm(alpha,
 beta, gamma)`` is ``Rz(alpha) Ry(beta) Rz(gamma)``, counter-clockwise.
 Irreducible spherical components follow Mueller's convention, with the
 projection index running from ``+l`` down to ``-l``.
+
+Spinach authors, by original file (headers of Spinach 2.13; see docs/spinach-credits.md):
+  eeqq2nqi.m: Ilya Kuprov
+  euler2dcm.m: Ilya Kuprov
+  mat2sphten.m: Ilya Kuprov
+  wigner.m: Ilya Kuprov
 """
 
 from __future__ import annotations
@@ -15,7 +21,10 @@ import scipy.linalg as sla
 
 
 def euler2dcm(angles: Sequence[float]) -> np.ndarray:
-    """Direction cosine matrix of ZYZ Euler angles ``(alpha, beta, gamma)`` in radians."""
+    """Direction cosine matrix of ZYZ Euler angles ``(alpha, beta, gamma)`` in radians.
+
+    Spinach authors (euler2dcm.m): Ilya Kuprov.
+    """
     alpha, beta, gamma = (float(a) for a in angles)
     ca, sa, cb, sb, cg, sg = np.cos(alpha), np.sin(alpha), np.cos(beta), np.sin(beta), np.cos(gamma), np.sin(gamma)
     r_alpha = np.array([[ca, -sa, 0], [sa, ca, 0], [0, 0, 1]])
@@ -25,7 +34,10 @@ def euler2dcm(angles: Sequence[float]) -> np.ndarray:
 
 
 def mat2sphten(M: np.ndarray | None) -> tuple[float, np.ndarray, np.ndarray]:
-    """Isotropic part, rank-1 components ``[+1, 0, -1]`` and rank-2 components ``[+2, ..., -2]`` of a 3x3 tensor."""
+    """Isotropic part, rank-1 components ``[+1, 0, -1]`` and rank-2 components ``[+2, ..., -2]`` of a 3x3 tensor.
+
+    Spinach authors (mat2sphten.m): Ilya Kuprov.
+    """
     M = np.zeros((3, 3)) if M is None else np.asarray(M, dtype=float)
     if M.shape != (3, 3):
         raise ValueError("the argument must be a real 3x3 matrix.")
@@ -54,6 +66,8 @@ def wigner(rank: int, alpha: float, beta: float, gamma: float) -> np.ndarray:
 
     Ranks 1 and 2 use closed forms (as ``wigner.m``); higher ranks use the
     exponentials of the spin operators of multiplicity ``2*rank + 1``.
+
+    Spinach authors (wigner.m): Ilya Kuprov.
     """
     if rank < 0 or rank != int(rank):
         raise ValueError("rank must be a non-negative integer.")
@@ -122,7 +136,10 @@ def wigner(rank: int, alpha: float, beta: float, gamma: float) -> np.ndarray:
 
 def eeqq2nqi(eeqq: float, eta: float, spin: float, euler: Sequence[float]) -> np.ndarray:
     """Quadrupolar coupling tensor (Hz, traceless) from the quadrupolar constant ``eeqq`` (Hz),
-    asymmetry ``eta``, spin quantum number and Euler angles of the principal frame (port of ``eeqq2nqi.m``)."""
+    asymmetry ``eta``, spin quantum number and Euler angles of the principal frame (port of ``eeqq2nqi.m``).
+
+    Spinach authors (eeqq2nqi.m): Ilya Kuprov.
+    """
     if spin < 1 or spin != round(2 * spin) / 2:
         raise ValueError("quadrupolar coupling needs a spin of at least 1.")
     R = euler2dcm(euler)

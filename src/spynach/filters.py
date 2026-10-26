@@ -8,6 +8,12 @@ ported yet.
 State arrays may hold several vectors or a Fokker-Planck stack: the last
 axis must be the spin state space (``(..., nstates)``), which is spynach's
 layout for composite spaces with the spin index varying fastest.
+
+Spinach authors, by original file (headers of Spinach 2.13; see docs/spinach-credits.md):
+  coherence.m: Ilya Kuprov, Luke Edwards
+  correlation.m: Ilya Kuprov, Luke Edwards
+  decouple.m: Ilya Kuprov
+  homospoil.m: Ilya Kuprov
 """
 
 from __future__ import annotations
@@ -30,6 +36,8 @@ def correlation(
 
     ``spins`` is ``'all'``, an isotope name, or a list of 0-based spin
     numbers; ``orders`` are non-negative integers.
+
+    Spinach authors (correlation.m): Ilya Kuprov, Luke Edwards.
     """
     _check(spin_system, rho)
     orders = np.atleast_1d(np.asarray(orders))
@@ -47,6 +55,8 @@ def coherence(spin_system: SpinSystem, rho: np.ndarray, spec: Sequence[tuple[Any
     ``[("13C", [1, -1]), ("1H", -1)]``: the total coherence order over the
     named spins (``'all'``, ``'electrons'``, ``'nuclei'``, an isotope, or
     0-based spin numbers) must be one of ``orders``.
+
+    Spinach authors (coherence.m): Ilya Kuprov, Luke Edwards.
     """
     _check(spin_system, rho)
     _, projections = lin2lm(spin_system.basis.basis)
@@ -104,6 +114,8 @@ def homospoil(spin_system: SpinSystem, rho: np.ndarray, zqc_flag: str) -> np.nda
     (``sum(basefrq * m)``), keeping zero-quantum coherences; ``'destroy'``
     zeroes every state with a non-zero coherence order on any spin,
     keeping only longitudinal states and the unit state.
+
+    Spinach authors (homospoil.m): Ilya Kuprov.
     """
     _check(spin_system, rho)
     _, projections = lin2lm(spin_system.basis.basis)
@@ -127,6 +139,8 @@ def decouple(
     ``L`` and its entries of the state ``rho`` are zeroed. Both ``L`` and
     ``rho`` may span a Fokker-Planck space (``spc_dim`` copies of the spin
     state space, spin index fastest).
+
+    Spinach authors (decouple.m): Ilya Kuprov.
     """
     spins = list(spins)
     if not spins:

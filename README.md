@@ -112,6 +112,8 @@ Add-ons originating here, with no Spinach counterpart, each with an example in t
 - **Interactive Plotly figures** from `spynach.plotting`, `plot_fid`,
   `plot_time_series` and `plot_trajan` with no Spinach equivalent, and
   `figure_png` for static copies.
+- **Credits**: the Spinach authors of every translated function, by name, in its docstring
+  (`help(spynach.propagator)`) and in [`docs/spinach-credits.md`](docs/spinach-credits.md).
 - **Verification tooling**: `spynach.oracle.compare` for checking any result
   against a Spinach run, the generated parity page `docs/parity.md`, and the
   timed, profiled comparison protocol in `comparison/`.

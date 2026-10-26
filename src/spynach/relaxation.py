@@ -25,6 +25,15 @@ Then the retention policy ``rlx_keep`` (``'diagonal'``, ``'kite'``,
 thermalisation ``equilibrium`` (``'zero'``, ``'IME'``, ``'dibari'``) are
 applied. Everything is ``sphten-liouv`` only, except ``'damp'`` and
 :func:`equilibrium`, which also work in Hilbert space.
+
+Spinach authors, by original file (headers of Spinach 2.13; see docs/spinach-credits.md):
+  corrfun.m: Ilya Kuprov
+  equilibrium.m: Luke Edwards, Ilya Kuprov
+  expmint.m: Luke Edwards, David Goodwin, Ilya Kuprov
+  redfield_integral_serial.m: Ilya Kuprov
+  relaxation.m: Ilya Kuprov, Luke Edwards, Alexander Karabanov, Walter Kockenberger
+  rlx_scalar.m: Ilya Kuprov
+  thermalize.m: Ilya Kuprov, one contributor listed only by email address
 """
 
 from __future__ import annotations
@@ -54,6 +63,8 @@ def relaxation(spin_system: SpinSystem, euler_angles: Sequence[float] | None = N
     ``euler_angles`` select the orientation for anisotropic rate tensors
     and for the thermal equilibrium of anisotropic systems. The result is
     a dissipative generator: the Liouvillian is ``H + 1j * R + 1j * K``.
+
+    Spinach authors (relaxation.m): Ilya Kuprov, Luke Edwards, Alexander Karabanov, Walter Kockenberger.
     """
     if spin_system.basis is None:
         raise ValueError("basis set information is missing, run basis() before calling this function.")
@@ -131,6 +142,8 @@ def equilibrium(
     Without ``I`` the isotropic lab-frame Hamiltonian is built here. The
     Liouville-space result has unit coefficient on the unit state; the
     Hilbert-space density matrix has unit trace.
+
+    Spinach authors (equilibrium.m): Luke Edwards, Ilya Kuprov.
     """
     if spin_system.basis is None:
         raise ValueError("basis set information is missing, run basis() before calling this function.")
@@ -184,6 +197,8 @@ def thermalize(
     (Spinach's ``HLSPS``), and the ``temperature`` in K:
     ``R -> R expm(-H_left beta)`` with ``beta = hbar / (k T)``. Spinach's
     signature is ``thermalize(spin_system, R, HLSPS, T, rho_eq, method)``.
+
+    Spinach authors (thermalize.m): Ilya Kuprov, one contributor listed only by email address.
     """
     if spin_system.basis is None or spin_system.basis.formalism != "sphten-liouv":
         raise NotImplementedError("thermalize() is only ported for the sphten-liouv formalism.")
@@ -216,6 +231,8 @@ def expmint(spin_system: SpinSystem, A: Matrix, B: Matrix, C: Matrix, T: float) 
     The auxiliary matrix ``[[-A, iB], [0, -C]]`` is exponentiated with
     :func:`propagator` over ``T``; the result is ``P^H Q`` with ``P`` the
     upper-left and ``Q`` the upper-right block.
+
+    Spinach authors (expmint.m): Luke Edwards, David Goodwin, Ilya Kuprov.
     """
     dim = B.shape[0]
     if T == 0 or nnz(B) == 0:
@@ -229,7 +246,10 @@ def expmint(spin_system: SpinSystem, A: Matrix, B: Matrix, C: Matrix, T: float) 
 
 
 def _redfield(spin_system: SpinSystem) -> Matrix:
-    """The BRW relaxation integral (``redfield_integral_serial.m``) for rotational diffusion."""
+    """The BRW relaxation integral (``redfield_integral_serial.m``) for rotational diffusion.
+
+    Spinach authors (redfield_integral_serial.m): Ilya Kuprov.
+    """
     tols = spin_system.tols
     labframe = assume(spin_system, "labframe")
     L0, Q = hamiltonian(labframe, "comm", aniso=True)
@@ -278,6 +298,8 @@ def _corrfun(spin_system: SpinSystem, rank: int, k: int, m: int, p: int, q: int)
 
     Indices ``k, m, p, q`` are 0-based positions in the ``(2*rank + 1)``
     component lists (``+rank`` first).
+
+    Spinach authors (corrfun.m): Ilya Kuprov.
     """
     out = []
     for tau in spin_system.rlx.tau_c:
@@ -329,6 +351,10 @@ def _srfk(spin_system: SpinSystem) -> Matrix:
     the one of the modulated scalar couplings alone, each
     ``2*pi*mdepth`` (rad/s) times the unit tensor, with every other
     interaction removed.
+
+    Spinach authors (relaxation.m, a branch of the original): Ilya Kuprov, Luke Edwards, Alexander Karabanov,
+      Walter Kockenberger.
+    Spinach authors (rlx_scalar.m, a branch of the original): Ilya Kuprov.
     """
     rlx, tols = spin_system.rlx, spin_system.tols
     log.info("scalar relaxation of the first kind...")
@@ -371,6 +397,8 @@ def _srsk(spin_system: SpinSystem, R: Matrix) -> Matrix:
     Abragam's expressions give R1 and R2 contributions to every spin of a
     different isotope that is scalar-coupled to it, and those rates enter
     through a recursive call with the extended T1/T2 model.
+
+    Spinach authors (relaxation.m): Ilya Kuprov, Luke Edwards, Alexander Karabanov, Walter Kockenberger.
     """
     rlx = spin_system.rlx
     log.info("scalar relaxation of the second kind...")

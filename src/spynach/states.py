@@ -4,6 +4,11 @@ In ``zeeman-hilb`` a state is the operator itself (a density matrix). In
 ``sphten-liouv`` it is a dense 1-D complex vector of coefficients in the
 orthonormal basis of :mod:`spynach.basis`; its first element is the
 coefficient of the unit state ``E / sqrt(dim)``.
+
+Spinach authors, by original file (headers of Spinach 2.13; see docs/spinach-credits.md):
+  state.m: Dmitry Savostyanov, Luke Edwards, Ilya Kuprov
+  stateinfo.m: Ilya Kuprov, Konstantin Pervushin
+  trajan.m: Gareth Charnock, Ilya Kuprov, Luke Edwards
 """
 
 from __future__ import annotations
@@ -43,6 +48,8 @@ def state(
       state is not in the basis;
     * ``'chem'``: ``'exact'`` with each term multiplied by the concentration
       of the chemical subsystem its spins belong to.
+
+    Spinach authors (state.m): Dmitry Savostyanov, Luke Edwards, Ilya Kuprov.
     """
     if spin_system.basis is None:
         raise ValueError("basis set information is missing, run basis() before calling this function.")
@@ -97,6 +104,8 @@ def trajan(spin_system: SpinSystem, traj: np.ndarray, property: str) -> tuple[np
 
     Spinach's ``'level_populations'`` (Zeeman-basis populations) is not ported.
     :func:`spynach.plotting.plot_trajan` draws the result.
+
+    Spinach authors (trajan.m): Gareth Charnock, Ilya Kuprov, Luke Edwards.
     """
     if spin_system.basis is None or spin_system.basis.formalism != "sphten-liouv":
         raise NotImplementedError("trajectory analysis is only available for the sphten-liouv formalism.")
@@ -144,6 +153,8 @@ def stateinfo(
     where ``state`` holds ``(l, m)`` of every spin (``(0, 0)`` for a spin
     that is not involved) and ``index`` the 0-based basis row, and logs
     them as Spinach reports them.
+
+    Spinach authors (stateinfo.m): Ilya Kuprov, Konstantin Pervushin.
     """
     if spin_system.basis is None or spin_system.basis.formalism != "sphten-liouv":
         raise NotImplementedError("state analysis is only available for sphten-liouv formalism.")

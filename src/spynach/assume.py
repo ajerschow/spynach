@@ -2,6 +2,9 @@
 
 Ported: the ``'nmr'``, ``'esr'``, ``'deer'``, ``'deer-zz'`` and ``'labframe'``
 assumption sets and the ``'zeeman'``/``'couplings'`` retention options.
+
+Spinach authors, by original file (headers of Spinach 2.13; see docs/spinach-credits.md):
+  assume.m: Ilya Kuprov
 """
 
 from __future__ import annotations
@@ -24,6 +27,8 @@ def assume(spin_system: SpinSystem, assumptions: str, retention: str | None = No
 
     ``retention='zeeman'`` drops all couplings; ``'couplings'`` drops all
     Zeeman interactions.
+
+    Spinach authors (assume.m): Ilya Kuprov.
     """
     if any(t != "S" for t in spin_system.types):
         raise ValueError("Cavities, phonons, and transmons are not allowed under this assumption set.")

@@ -1,4 +1,8 @@
-"""Isotope database: multiplicity and magnetogyric ratio (port of ``spin.m``)."""
+"""Isotope database: multiplicity and magnetogyric ratio (port of ``spin.m``).
+
+Spinach authors, by original file (headers of Spinach 2.13; see docs/spinach-credits.md):
+  spin.m: Matthew Krzystyniak, Andreas Biternas, Ilya Kuprov
+"""
 
 from __future__ import annotations
 
@@ -15,6 +19,8 @@ def spin(name: str) -> tuple[float, int]:
     Special names follow Spinach: ``'G'`` ghost spin, ``'E'`` electron,
     ``'E<n>'`` electron with multiplicity n, ``'C<n>'``, ``'V<n>'``, ``'T<n>'``
     bosonic modes (cavity, phonon, transmon) with n levels and zero gamma.
+
+    Spinach authors (spin.m): Matthew Krzystyniak, Andreas Biternas, Ilya Kuprov.
     """
     if not isinstance(name, str):
         raise TypeError("isotope specification must be a character string.")

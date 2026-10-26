@@ -4,6 +4,13 @@ Releases are tagged `vX.Y.Z` on GitHub; the version is `spynach.__version__`.
 
 ## Unreleased
 
+- The Spinach authors of every translated function are acknowledged by name: a `Spinach authors (propagator.m): ...`
+  line in its docstring (and a module line for each module), and the generated page `docs/spinach-credits.md`
+  (65 ports, 9 derived functions, 17 without a Spinach counterpart). Names come from the Spinach developer team
+  page; three header addresses that it does not list are counted, not named, until names are supplied.
+  `porting/tools/gen_spinach_authors.py` reads the headers of a Spinach checkout into
+  `porting/spinach_authors.json` and writes the docstrings and the page; `tests/unit/test_credits.py` keeps them
+  current without a checkout. Function names are unchanged.
 - EPReasy has a PyPI distribution, `easyspyn` (import name `epreasy`, NumPy and SciPy only; `easyspyn[fast]` adds
   Numba), built by `scripts/build_easyspyn.py` from `packaging/easyspyn/`; the name is held for an initial 0.2.0
   release while the final name of the package is decided.

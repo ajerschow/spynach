@@ -13,6 +13,16 @@ product of two spherical tensors on one spin is a known linear combination
 of spherical tensors on that spin (the structure coefficients in
 :func:`ist_product_table`), so the action of an operator on a product basis
 state factorises over spins and never needs the full Liouville space.
+
+Spinach authors, by original file (headers of Spinach 2.13; see docs/spinach-credits.md):
+  human2opspec.m: Ilya Kuprov, Luke Edwards
+  irr_sph_ten.m: Ilya Kuprov, Hannah Hogben
+  ist_product_table.m: Hannah Hogben, Ilya Kuprov
+  lin2lm.m: Ilya Kuprov
+  lm2lin.m: Ilya Kuprov
+  operator.m: Luke Edwards, Ilya Kuprov
+  pauli.m: Ilya Kuprov
+  superop.m: Ilya Kuprov, Hannah Hogben
 """
 
 from __future__ import annotations
@@ -34,6 +44,8 @@ def pauli(mult: int) -> dict[str, sps.csr_array]:
     """Spin operators ``'u'`` (unit), ``'p'``, ``'m'``, ``'z'``, ``'x'``, ``'y'`` for a multiplicity.
 
     Basis order is descending projection, m = s, s-1, ..., -s.
+
+    Spinach authors (pauli.m): Ilya Kuprov.
     """
     if mult < 1:
         raise ValueError("mult must be a positive real integer.")
@@ -54,7 +66,10 @@ def pauli(mult: int) -> dict[str, sps.csr_array]:
 
 @cache
 def irr_sph_ten(mult: int, rank: int) -> tuple[sps.csr_array, ...]:
-    """Irreducible spherical tensor operators T(rank, m) for m = rank, rank-1, ..., -rank."""
+    """Irreducible spherical tensor operators T(rank, m) for m = rank, rank-1, ..., -rank.
+
+    Spinach authors (irr_sph_ten.m): Ilya Kuprov, Hannah Hogben.
+    """
     if not 0 <= rank < mult:
         raise ValueError("k must be an integer between 0 and mult-1.")
     if rank == 0:
@@ -69,7 +84,10 @@ def irr_sph_ten(mult: int, rank: int) -> tuple[sps.csr_array, ...]:
 
 
 def lin2lm(index):
-    """Linear spherical tensor index to (l, m): index = l*l + l - m. Works on ints and arrays."""
+    """Linear spherical tensor index to (l, m): index = l*l + l - m. Works on ints and arrays.
+
+    Spinach authors (lin2lm.m): Ilya Kuprov.
+    """
     if isinstance(index, (int, np.integer)):
         rank = int(np.sqrt(index))
         return rank, rank * rank + rank - index
@@ -97,6 +115,8 @@ def human2opspec(
     * ``(['Lz', 'L+'], [0, 1])``: product operator Lz(0) L+(1).
 
     Operator labels: ``'E'``, ``'Lz'``, ``'Lx'``, ``'Ly'``, ``'L+'``, ``'L-'``, ``'Tl,m'``.
+
+    Spinach authors (human2opspec.m): Ilya Kuprov, Luke Edwards.
     """
     if isinstance(operators, str):
         specs: list[np.ndarray] = []
@@ -163,6 +183,8 @@ def operator(
     superoperator in the restricted basis: ``'left'`` (``Q rho``),
     ``'right'`` (``rho Q``), ``'comm'`` (``[Q, rho]``, the default) or
     ``'acomm'`` (``{Q, rho}``).
+
+    Spinach authors (operator.m): Luke Edwards, Ilya Kuprov.
     """
     if spin_system.basis is None:
         raise ValueError("basis set information is missing, run basis() before calling this function.")
@@ -205,6 +227,8 @@ def ist_product_table(mult: int) -> tuple[np.ndarray, np.ndarray]:
     the unnormalised operator acting on a basis state in basis states.
     Elements below 1e-14 are rounding residue and are set to zero. The
     spin-1/2 tables are hard-coded, as in Spinach, so that they are exact.
+
+    Spinach authors (ist_product_table.m): Hannah Hogben, Ilya Kuprov.
     """
     if mult < 2:
         raise ValueError("mult must be a real integer greater than 1.")
@@ -255,6 +279,8 @@ def superop(spin_system: SpinSystem, opspec: np.ndarray, side: str) -> tuple[np.
     ``side`` is ``'left'``, ``'right'``, ``'comm'`` or ``'acomm'``. Returns
     ``(rows, cols, vals)`` with ``A[row, col] = val`` for ``A`` acting on
     column vectors; duplicates may occur and are to be summed.
+
+    Spinach authors (superop.m): Ilya Kuprov, Hannah Hogben.
     """
     if side == "comm":
         rows_l, cols_l, vals_l = _superop_side(spin_system, opspec, "left", commutator=True)

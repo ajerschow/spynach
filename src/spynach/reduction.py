@@ -9,6 +9,12 @@ ones. Permutation symmetry is not ported yet.
 Projectors are sparse ``(nstates, k)`` selection matrices, as in Spinach:
 the reduced generator is ``P.conj().T @ L @ P`` and the reduced state is
 ``P.conj().T @ rho``.
+
+Spinach authors, by original file (headers of Spinach 2.13; see docs/spinach-credits.md):
+  binpack.m: Ilya Kuprov
+  path_trace.m: Ilya Kuprov, Matthew Krzystyniak
+  reduce.m: Ilya Kuprov, Matthew Krzystyniak, Luke Edwards
+  zte.m: Ilya Kuprov
 """
 
 from __future__ import annotations
@@ -34,6 +40,8 @@ def reduce(spin_system: SpinSystem, L: Matrix, rho: np.ndarray) -> list[sps.csc_
     tracing. A state stack ``(nstates, k)`` is represented by the mean of
     its absolute values. ``'trajlevel'`` in ``sys['disable']`` switches the
     reduction off (one projector, the identity).
+
+    Spinach authors (reduce.m): Ilya Kuprov, Matthew Krzystyniak, Luke Edwards.
     """
     if L.ndim != 2 or L.shape[0] != L.shape[1]:
         raise ValueError("L must be a square matrix.")
@@ -64,6 +72,8 @@ def zte(spin_system: SpinSystem, L: Matrix, rho: np.ndarray) -> sps.csc_array:
     ``tols.zte_tol`` stops growing, and drops the states never reached.
     Skipped (identity returned) when disabled, when ``rho`` is denser than
     ``tols.zte_maxden``, or when its 1-norm is below ``tols.zte_tol``.
+
+    Spinach authors (zte.m): Ilya Kuprov.
     """
     rho = np.asarray(rho).reshape(-1)
     dim = L.shape[0]
@@ -105,6 +115,8 @@ def path_trace(spin_system: SpinSystem, L: Matrix, rho: np.ndarray | None) -> li
     small ones are merged into batches of at most ``tols.merge_dim`` states
     (``'merge'`` in ``sys['disable']`` keeps them separate). Skipped below
     ``tols.merge_dim`` states or when ``'pt'`` is disabled.
+
+    Spinach authors (path_trace.m): Ilya Kuprov, Matthew Krzystyniak.
     """
     tols = spin_system.tols
     dim = L.shape[0]
@@ -134,6 +146,8 @@ def binpack(sizes: list[int], bin_size: int) -> list[list[int]]:
     Items larger than a bin get a bin of their own; the rest are packed in
     order, each bin taking the longest prefix of the remaining items that
     fits.
+
+    Spinach authors (binpack.m): Ilya Kuprov.
     """
     index = list(range(len(sizes)))
     bins = [[i] for i in index if sizes[i] > bin_size]

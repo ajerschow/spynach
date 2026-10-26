@@ -146,6 +146,7 @@ plot_1d(spin_system, spectrum.real, parameters, title="Styrene, 1H, 7.046 T")
 | sparse matrices | MATLAB sparse | `scipy.sparse.csr_array` |
 | time-domain results | `n x 1` column vectors | 1-D arrays of length `n` |
 | function handles | `@acquire` | `spynach.acquire` |
+| authors of a function | the email addresses at the end of its header | by name in its docstring (`help(spynach.propagator)`), and in [Spinach function authors](spinach-credits.md); function names are Spinach's and carry no authors |
 | units | ppm, Hz, Tesla, Bohr magneton; rad/s internally | the same |
 | tolerances | `sys.tols.<name>` | `sys["tols"]["<name>"]`, same names and defaults |
 

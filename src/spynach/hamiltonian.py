@@ -11,6 +11,11 @@ of the interaction (``ist_coeff``) together with those components
 Hamiltonian is ``sum(iso * op)``; the anisotropic part at a given
 orientation is ``sum_{r,k,m} D^r(k, m) Q[r][k][m]`` with Wigner matrices
 ``D^r`` and ``Q[r][k][m] = sum_n ist_coeff[n, r, k] irr_comp[n, r, m] op_n``.
+
+Spinach authors, by original file (headers of Spinach 2.13; see docs/spinach-credits.md):
+  frqoffset.m: Ilya Kuprov
+  hamiltonian.m: Ilya Kuprov, Luke Edwards, Hannah Hogben, Dmitry Savostyanov
+  orientation.m: Ilya Kuprov
 """
 
 from __future__ import annotations
@@ -109,6 +114,8 @@ def hamiltonian(
     :func:`orientation` contracts with Wigner matrices (Spinach's second
     output). Quadratic (quadrupolar, zero-field) couplings
     ``inter['coupling']['matrix'][n][n]`` only enter through ``Q``.
+
+    Spinach authors (hamiltonian.m): Ilya Kuprov, Luke Edwards, Hannah Hogben, Dmitry Savostyanov.
     """
     if spin_system.assumptions is None:
         raise ValueError("assumption information is missing, run assume() before calling this function.")
@@ -225,7 +232,10 @@ def _triplets(
 
 
 def orientation(Q: list, euler_angles: Sequence[float]) -> Matrix:
-    """Anisotropic part of the Hamiltonian at the orientation of ZYZ Euler angles in rad (port of ``orientation.m``)."""
+    """Anisotropic part of the Hamiltonian at the orientation of ZYZ Euler angles in rad (port of ``orientation.m``).
+
+    Spinach authors (orientation.m): Ilya Kuprov.
+    """
     euler_angles = np.asarray(euler_angles, dtype=float).reshape(-1)
     if euler_angles.size != 3:
         raise ValueError("euler_angles must be a three-element real vector.")
@@ -244,7 +254,10 @@ def orientation(Q: list, euler_angles: Sequence[float]) -> Matrix:
 
 
 def frqoffset(spin_system: SpinSystem, H: Matrix, parameters: dict[str, Any]) -> Matrix:
-    """Add rotating-frame offsets ``parameters['offset']`` (Hz) on ``parameters['spins']`` (isotopes)."""
+    """Add rotating-frame offsets ``parameters['offset']`` (Hz) on ``parameters['spins']`` (isotopes).
+
+    Spinach authors (frqoffset.m): Ilya Kuprov.
+    """
     spins = list(parameters["spins"])
     offsets = np.atleast_1d(np.asarray(parameters["offset"], dtype=float))
     if not spins:

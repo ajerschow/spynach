@@ -3,6 +3,9 @@
 Spinach keeps these in ``spin_system.tols``. Only the "safe default" set is
 ported; the ``'paranoia'`` and ``'cowboy'`` presets are not. Individual
 values can be overridden through ``sys['tols']`` in :func:`spynach.create`.
+
+Spinach authors, by original file (headers of Spinach 2.13; see docs/spinach-credits.md):
+  tolerances.m: Ilya Kuprov, Hannah Hogben
 """
 
 from __future__ import annotations
@@ -42,7 +45,10 @@ class Tolerances:
 
 
 def tolerances(overrides: dict[str, Any] | None = None) -> Tolerances:
-    """Default tolerances, with user overrides (Spinach ``sys.tols``) applied."""
+    """Default tolerances, with user overrides (Spinach ``sys.tols``) applied.
+
+    Spinach authors (tolerances.m): Ilya Kuprov, Hannah Hogben.
+    """
     if not overrides:
         return Tolerances()
     known = {f.name for f in fields(Tolerances)}

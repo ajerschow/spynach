@@ -9,6 +9,12 @@ the ``'trajectory'`` output of :func:`spynach.evolution`, so the second
 dimension is propagated for all `t1` increments at once. 2-D FIDs are
 ``(npoints[1], npoints[0])`` arrays: rows run along the direct dimension
 ``t2``, columns along ``t1``, as in Spinach.
+
+Spinach authors, by original file (headers of Spinach 2.13; see docs/spinach-credits.md):
+  acquire.m: Ilya Kuprov, Luke Edwards
+  cosy.m: Gareth Charnock, Ilya Kuprov
+  hsqc.m: Ilya Kuprov, Luke Edwards
+  noesy.m: Ilya Kuprov, Luke Edwards, Hannah Hogben
 """
 
 from __future__ import annotations
@@ -34,6 +40,8 @@ def acquire(spin_system: SpinSystem, parameters: dict[str, Any], H: Matrix, R: M
     (s, free evolution before acquisition), ``'homodec_oper'`` with
     ``'homodec_pwr'`` (Hz, a homodecoupling operator added to the
     Liouvillian). Returns ``npoints`` complex points.
+
+    Spinach authors (acquire.m): Ilya Kuprov, Luke Edwards.
     """
     for key in ("sweep", "npoints", "rho0", "coil"):
         if key not in parameters:
@@ -71,6 +79,8 @@ def cosy(spin_system: SpinSystem, parameters: dict[str, Any], H: Matrix, R: Matr
     (two values), ``'spins'`` (one isotope), ``'angle'`` (rad; ``pi/2`` for
     COSY-90, ``pi/4`` for COSY-45). Returns a ``(npoints[1], npoints[0])``
     FID; process with ``fft2``.
+
+    Spinach authors (cosy.m): Gareth Charnock, Ilya Kuprov.
     """
     _check_2d(spin_system, parameters, nspins=1, sweeps=1, extra=("angle",))
     L = H + 1j * R + 1j * K
@@ -104,6 +114,8 @@ def noesy(
     (keep the Hamiltonian during mixing instead of a homospoil and
     relaxation only). Returns ``{'cos': fid, 'sin': fid}`` for the States
     processing of the indirect dimension.
+
+    Spinach authors (noesy.m): Ilya Kuprov, Luke Edwards, Hannah Hogben.
     """
     _check_2d(spin_system, parameters, nspins=1, sweeps=2, extra=("tmix", "rho0"))
     oldschool = bool(parameters.get("oldschool", False))
@@ -151,6 +163,8 @@ def hsqc(spin_system: SpinSystem, parameters: dict[str, Any], H: Matrix, R: Matr
     optional ``'rho0'`` and ``'coil'`` (defaults: ``Lz`` and ``L+`` of the
     detected isotope). Returns ``{'pos': fid, 'neg': fid}`` for the
     echo-antiecho processing of the indirect dimension.
+
+    Spinach authors (hsqc.m): Ilya Kuprov, Luke Edwards.
     """
     _check_2d(spin_system, parameters, nspins=2, sweeps=2, extra=("J", "decouple_f1", "decouple_f2"))
     if parameters["spins"][0] == parameters["spins"][1]:

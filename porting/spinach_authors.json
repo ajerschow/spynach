@@ -1,0 +1,1505 @@
+{
+ "spinach_version": "2.13",
+ "spinach_commit": "03a88b7e912ffbb3122dd24829cc5d216209c804",
+ "team_page": "https://spindynamics.org/wiki/index.php?title=Spinach_developer_team",
+ "files": {
+  "acquire.m": {
+   "path": "experiments/acquire.m",
+   "authors": [
+    "Ilya Kuprov",
+    "Luke Edwards"
+   ],
+   "unnamed": 0
+  },
+  "apodisation.m": {
+   "path": "kernel/utilities/apodisation.m",
+   "authors": [
+    "Ilya Kuprov"
+   ],
+   "unnamed": 0
+  },
+  "assume.m": {
+   "path": "kernel/assume.m",
+   "authors": [
+    "Ilya Kuprov"
+   ],
+   "unnamed": 0
+  },
+  "axis_1d.m": {
+   "path": "kernel/plotting/axis_1d.m",
+   "authors": [
+    "Ilya Kuprov"
+   ],
+   "unnamed": 0
+  },
+  "basis.m": {
+   "path": "kernel/basis.m",
+   "authors": [
+    "Ilya Kuprov"
+   ],
+   "unnamed": 0
+  },
+  "binpack.m": {
+   "path": "kernel/utilities/binpack.m",
+   "authors": [
+    "Ilya Kuprov"
+   ],
+   "unnamed": 0
+  },
+  "cheap_norm.m": {
+   "path": "kernel/utilities/cheap_norm.m",
+   "authors": [
+    "Ilya Kuprov"
+   ],
+   "unnamed": 0
+  },
+  "clean_up.m": {
+   "path": "kernel/utilities/clean_up.m",
+   "authors": [
+    "Ilya Kuprov",
+    "Alex Nevzorov"
+   ],
+   "unnamed": 0
+  },
+  "coherence.m": {
+   "path": "kernel/coherence.m",
+   "authors": [
+    "Ilya Kuprov",
+    "Luke Edwards"
+   ],
+   "unnamed": 0
+  },
+  "contspacing.m": {
+   "path": "kernel/plotting/contspacing.m",
+   "authors": [
+    "Ilya Kuprov"
+   ],
+   "unnamed": 0
+  },
+  "correlation.m": {
+   "path": "kernel/correlation.m",
+   "authors": [
+    "Ilya Kuprov",
+    "Luke Edwards"
+   ],
+   "unnamed": 0
+  },
+  "corrfun.m": {
+   "path": "kernel/utilities/corrfun.m",
+   "authors": [
+    "Ilya Kuprov"
+   ],
+   "unnamed": 0
+  },
+  "cosy.m": {
+   "path": "experiments/nmr_liquids/cosy.m",
+   "authors": [
+    "Gareth Charnock",
+    "Ilya Kuprov"
+   ],
+   "unnamed": 0
+  },
+  "create.m": {
+   "path": "kernel/create.m",
+   "authors": [
+    "Ilya Kuprov",
+    "Hannah Hogben",
+    "Konstantin Pervushin",
+    "Luke Edwards"
+   ],
+   "unnamed": 0
+  },
+  "crystal.m": {
+   "path": "kernel/contexts/crystal.m",
+   "authors": [
+    "Ilya Kuprov"
+   ],
+   "unnamed": 0
+  },
+  "decouple.m": {
+   "path": "kernel/decouple.m",
+   "authors": [
+    "Ilya Kuprov"
+   ],
+   "unnamed": 0
+  },
+  "dfpt.m": {
+   "path": "kernel/utilities/dfpt.m",
+   "authors": [
+    "Ilya Kuprov"
+   ],
+   "unnamed": 1
+  },
+  "dilute.m": {
+   "path": "kernel/utilities/dilute.m",
+   "authors": [
+    "Ilya Kuprov",
+    "Luke Edwards",
+    "Bud Macaulay"
+   ],
+   "unnamed": 0
+  },
+  "dipolar.m": {
+   "path": "kernel/utilities/dipolar.m",
+   "authors": [
+    "Ilya Kuprov"
+   ],
+   "unnamed": 0
+  },
+  "eeqq2nqi.m": {
+   "path": "kernel/conventions/transforms/eeqq2nqi.m",
+   "authors": [
+    "Ilya Kuprov"
+   ],
+   "unnamed": 0
+  },
+  "equilibrate.m": {
+   "path": "kernel/kinetics/equilibrate.m",
+   "authors": [
+    "Ilya Kuprov"
+   ],
+   "unnamed": 0
+  },
+  "equilibrium.m": {
+   "path": "kernel/states/equilibrium.m",
+   "authors": [
+    "Luke Edwards",
+    "Ilya Kuprov"
+   ],
+   "unnamed": 0
+  },
+  "euler2dcm.m": {
+   "path": "kernel/conventions/transforms/euler2dcm.m",
+   "authors": [
+    "Ilya Kuprov"
+   ],
+   "unnamed": 0
+  },
+  "evolution.m": {
+   "path": "kernel/evolution.m",
+   "authors": [
+    "Ilya Kuprov",
+    "Luke Edwards",
+    "Ohad Levinkron"
+   ],
+   "unnamed": 0
+  },
+  "expmint.m": {
+   "path": "kernel/utilities/expmint.m",
+   "authors": [
+    "Luke Edwards",
+    "David Goodwin",
+    "Ilya Kuprov"
+   ],
+   "unnamed": 0
+  },
+  "fourdif.m": {
+   "path": "kernel/derivatives/fourdif.m",
+   "authors": [
+    "J.A.C. Weideman",
+    "S.C. Reddy"
+   ],
+   "unnamed": 0
+  },
+  "frqoffset.m": {
+   "path": "kernel/frqoffset.m",
+   "authors": [
+    "Ilya Kuprov"
+   ],
+   "unnamed": 0
+  },
+  "ft_axis.m": {
+   "path": "kernel/plotting/ft_axis.m",
+   "authors": [
+    "Ilya Kuprov"
+   ],
+   "unnamed": 0
+  },
+  "hamiltonian.m": {
+   "path": "kernel/hamiltonian.m",
+   "authors": [
+    "Ilya Kuprov",
+    "Luke Edwards",
+    "Hannah Hogben",
+    "Dmitry Savostyanov"
+   ],
+   "unnamed": 0
+  },
+  "hdot.m": {
+   "path": "kernel/utilities/hdot.m",
+   "authors": [
+    "Ilya Kuprov"
+   ],
+   "unnamed": 0
+  },
+  "homospoil.m": {
+   "path": "kernel/homospoil.m",
+   "authors": [
+    "Ilya Kuprov"
+   ],
+   "unnamed": 0
+  },
+  "hsqc.m": {
+   "path": "experiments/nmr_liquids/hsqc.m",
+   "authors": [
+    "Ilya Kuprov",
+    "Luke Edwards"
+   ],
+   "unnamed": 0
+  },
+  "human2opspec.m": {
+   "path": "kernel/utilities/human2opspec.m",
+   "authors": [
+    "Ilya Kuprov",
+    "Luke Edwards"
+   ],
+   "unnamed": 0
+  },
+  "irr_sph_ten.m": {
+   "path": "kernel/operators/irr_sph_ten.m",
+   "authors": [
+    "Ilya Kuprov",
+    "Hannah Hogben"
+   ],
+   "unnamed": 0
+  },
+  "ist_product_table.m": {
+   "path": "kernel/cache/ist_product_table.m",
+   "authors": [
+    "Hannah Hogben",
+    "Ilya Kuprov"
+   ],
+   "unnamed": 0
+  },
+  "kill_spin.m": {
+   "path": "kernel/utilities/kill_spin.m",
+   "authors": [
+    "Ilya Kuprov",
+    "Luke Edwards"
+   ],
+   "unnamed": 0
+  },
+  "kinetics.m": {
+   "path": "kernel/kinetics/kinetics.m",
+   "authors": [
+    "Ilya Kuprov",
+    "Luke Edwards",
+    "Hannah Hogben"
+   ],
+   "unnamed": 0
+  },
+  "krylov.m": {
+   "path": "kernel/krylov.m",
+   "authors": [
+    "Ilya Kuprov"
+   ],
+   "unnamed": 0
+  },
+  "lin2lm.m": {
+   "path": "kernel/indexing/lin2lm.m",
+   "authors": [
+    "Ilya Kuprov"
+   ],
+   "unnamed": 0
+  },
+  "liquid.m": {
+   "path": "kernel/contexts/liquid.m",
+   "authors": [
+    "Ilya Kuprov"
+   ],
+   "unnamed": 0
+  },
+  "lm2lin.m": {
+   "path": "kernel/indexing/lm2lin.m",
+   "authors": [
+    "Ilya Kuprov"
+   ],
+   "unnamed": 0
+  },
+  "mat2sphten.m": {
+   "path": "kernel/conventions/transforms/mat2sphten.m",
+   "authors": [
+    "Ilya Kuprov"
+   ],
+   "unnamed": 0
+  },
+  "noesy.m": {
+   "path": "experiments/nmr_liquids/noesy.m",
+   "authors": [
+    "Ilya Kuprov",
+    "Luke Edwards",
+    "Hannah Hogben"
+   ],
+   "unnamed": 0
+  },
+  "operator.m": {
+   "path": "kernel/operator.m",
+   "authors": [
+    "Luke Edwards",
+    "Ilya Kuprov"
+   ],
+   "unnamed": 0
+  },
+  "orientation.m": {
+   "path": "kernel/orientation.m",
+   "authors": [
+    "Ilya Kuprov"
+   ],
+   "unnamed": 0
+  },
+  "path_trace.m": {
+   "path": "kernel/utilities/path_trace.m",
+   "authors": [
+    "Ilya Kuprov",
+    "Matthew Krzystyniak"
+   ],
+   "unnamed": 0
+  },
+  "pauli.m": {
+   "path": "kernel/operators/pauli.m",
+   "authors": [
+    "Ilya Kuprov"
+   ],
+   "unnamed": 0
+  },
+  "plot_1d.m": {
+   "path": "kernel/plotting/plot_1d.m",
+   "authors": [
+    "Ilya Kuprov",
+    "Luke Edwards"
+   ],
+   "unnamed": 0
+  },
+  "plot_2d.m": {
+   "path": "kernel/plotting/plot_2d.m",
+   "authors": [
+    "Ilya Kuprov"
+   ],
+   "unnamed": 0
+  },
+  "powder.m": {
+   "path": "kernel/contexts/powder.m",
+   "authors": [
+    "Luke Edwards",
+    "Ilya Kuprov"
+   ],
+   "unnamed": 0
+  },
+  "propagator.m": {
+   "path": "kernel/propagator.m",
+   "authors": [
+    "Ilya Kuprov",
+    "Luke Edwards"
+   ],
+   "unnamed": 0
+  },
+  "prune_subgraphs.m": {
+   "path": "kernel/utilities/prune_subgraphs.m",
+   "authors": [
+    "Ilya Kuprov"
+   ],
+   "unnamed": 0
+  },
+  "redfield_integral_serial.m": {
+   "path": "kernel/includes/redfield_integral_serial.m",
+   "authors": [
+    "Ilya Kuprov"
+   ],
+   "unnamed": 0
+  },
+  "reduce.m": {
+   "path": "kernel/reduce.m",
+   "authors": [
+    "Ilya Kuprov",
+    "Matthew Krzystyniak",
+    "Luke Edwards"
+   ],
+   "unnamed": 0
+  },
+  "relaxation.m": {
+   "path": "kernel/relaxation.m",
+   "authors": [
+    "Ilya Kuprov",
+    "Luke Edwards",
+    "Alexander Karabanov",
+    "Walter Kockenberger"
+   ],
+   "unnamed": 0
+  },
+  "rlx_scalar.m": {
+   "path": "kernel/utilities/rlx_scalar.m",
+   "authors": [
+    "Ilya Kuprov"
+   ],
+   "unnamed": 0
+  },
+  "singlerot.m": {
+   "path": "kernel/contexts/singlerot.m",
+   "authors": [
+    "Ilya Kuprov"
+   ],
+   "unnamed": 0
+  },
+  "spin.m": {
+   "path": "kernel/spin.m",
+   "authors": [
+    "Matthew Krzystyniak",
+    "Andreas Biternas",
+    "Ilya Kuprov"
+   ],
+   "unnamed": 0
+  },
+  "state.m": {
+   "path": "kernel/state.m",
+   "authors": [
+    "Dmitry Savostyanov",
+    "Luke Edwards",
+    "Ilya Kuprov"
+   ],
+   "unnamed": 0
+  },
+  "stateinfo.m": {
+   "path": "kernel/states/stateinfo.m",
+   "authors": [
+    "Ilya Kuprov",
+    "Konstantin Pervushin"
+   ],
+   "unnamed": 0
+  },
+  "step.m": {
+   "path": "kernel/step.m",
+   "authors": [
+    "Ilya Kuprov",
+    "Luke Edwards",
+    "Anupama Acharya"
+   ],
+   "unnamed": 1
+  },
+  "strychnine.m": {
+   "path": "etc/molecules/strychnine.m",
+   "authors": [
+    "Luke Edwards",
+    "Ilya Kuprov"
+   ],
+   "unnamed": 0
+  },
+  "superop.m": {
+   "path": "kernel/operators/superop.m",
+   "authors": [
+    "Ilya Kuprov",
+    "Hannah Hogben"
+   ],
+   "unnamed": 0
+  },
+  "thermalize.m": {
+   "path": "kernel/thermalize.m",
+   "authors": [
+    "Ilya Kuprov"
+   ],
+   "unnamed": 1
+  },
+  "tolerances.m": {
+   "path": "kernel/utilities/tolerances.m",
+   "authors": [
+    "Ilya Kuprov",
+    "Hannah Hogben"
+   ],
+   "unnamed": 0
+  },
+  "trajan.m": {
+   "path": "kernel/trajan.m",
+   "authors": [
+    "Gareth Charnock",
+    "Ilya Kuprov",
+    "Luke Edwards"
+   ],
+   "unnamed": 0
+  },
+  "wigner.m": {
+   "path": "kernel/utilities/wigner.m",
+   "authors": [
+    "Ilya Kuprov"
+   ],
+   "unnamed": 0
+  },
+  "zte.m": {
+   "path": "kernel/utilities/zte.m",
+   "authors": [
+    "Ilya Kuprov"
+   ],
+   "unnamed": 0
+  }
+ },
+ "functions": {
+  "spynach.assume.assume": {
+   "files": [
+    {
+     "file": "assume.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.backend.get_backend": {
+   "files": [],
+   "relation": "new",
+   "note": ""
+  },
+  "spynach.backend.use": {
+   "files": [],
+   "relation": "new",
+   "note": ""
+  },
+  "spynach.basis.basis": {
+   "files": [
+    {
+     "file": "basis.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.basis.dfpt": {
+   "files": [
+    {
+     "file": "dfpt.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.basis.prune_subgraphs": {
+   "files": [
+    {
+     "file": "prune_subgraphs.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.basis.row_hashes": {
+   "files": [],
+   "relation": "new",
+   "note": ""
+  },
+  "spynach.contexts.crystal": {
+   "files": [
+    {
+     "file": "crystal.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.contexts.fourdif": {
+   "files": [
+    {
+     "file": "fourdif.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.contexts.liquid": {
+   "files": [
+    {
+     "file": "liquid.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.contexts.load_grid": {
+   "files": [],
+   "relation": "new",
+   "note": ""
+  },
+  "spynach.contexts.powder": {
+   "files": [
+    {
+     "file": "powder.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.contexts.singlerot": {
+   "files": [
+    {
+     "file": "singlerot.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.conventions.eeqq2nqi": {
+   "files": [
+    {
+     "file": "eeqq2nqi.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.conventions.euler2dcm": {
+   "files": [
+    {
+     "file": "euler2dcm.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.conventions.mat2sphten": {
+   "files": [
+    {
+     "file": "mat2sphten.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.conventions.wigner": {
+   "files": [
+    {
+     "file": "wigner.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.filters.coherence": {
+   "files": [
+    {
+     "file": "coherence.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.filters.correlation": {
+   "files": [
+    {
+     "file": "correlation.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.filters.decouple": {
+   "files": [
+    {
+     "file": "decouple.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.filters.homospoil": {
+   "files": [
+    {
+     "file": "homospoil.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.hamiltonian.frqoffset": {
+   "files": [
+    {
+     "file": "frqoffset.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.hamiltonian.hamiltonian": {
+   "files": [
+    {
+     "file": "hamiltonian.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.hamiltonian.orientation": {
+   "files": [
+    {
+     "file": "orientation.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.isotopes.particle_type": {
+   "files": [],
+   "relation": "new",
+   "note": ""
+  },
+  "spynach.isotopes.spin": {
+   "files": [
+    {
+     "file": "spin.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.kernels.csr_times_dense": {
+   "files": [],
+   "relation": "new",
+   "note": ""
+  },
+  "spynach.kernels.matlab_round": {
+   "files": [],
+   "relation": "new",
+   "note": ""
+  },
+  "spynach.kernels.round_array": {
+   "files": [
+    {
+     "file": "clean_up.m",
+     "note": "the rounding, as a compiled kernel"
+    }
+   ],
+   "relation": "derived",
+   "note": ""
+  },
+  "spynach.kernels.spgemm_round": {
+   "files": [
+    {
+     "file": "clean_up.m",
+     "note": "product and rounding in one pass"
+    },
+    {
+     "file": "propagator.m",
+     "note": "the squarings"
+    }
+   ],
+   "relation": "new",
+   "note": ""
+  },
+  "spynach.kernels.taylor_term": {
+   "files": [
+    {
+     "file": "step.m",
+     "note": "one term of subfunction reordered_taylor, fused"
+    }
+   ],
+   "relation": "derived",
+   "note": ""
+  },
+  "spynach.kinetics.equilibrate": {
+   "files": [
+    {
+     "file": "equilibrate.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.kinetics.kinetics": {
+   "files": [
+    {
+     "file": "kinetics.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.molecules.strychnine": {
+   "files": [
+    {
+     "file": "strychnine.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.operators.human2opspec": {
+   "files": [
+    {
+     "file": "human2opspec.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.operators.irr_sph_ten": {
+   "files": [
+    {
+     "file": "irr_sph_ten.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.operators.ist_product_table": {
+   "files": [
+    {
+     "file": "ist_product_table.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.operators.lin2lm": {
+   "files": [
+    {
+     "file": "lin2lm.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.operators.lm2lin": {
+   "files": [
+    {
+     "file": "lm2lin.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.operators.operator": {
+   "files": [
+    {
+     "file": "operator.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.operators.pauli": {
+   "files": [
+    {
+     "file": "pauli.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.operators.superop": {
+   "files": [
+    {
+     "file": "superop.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.plotting.axis_1d": {
+   "files": [
+    {
+     "file": "axis_1d.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.plotting.axis_2d": {
+   "files": [
+    {
+     "file": "plot_2d.m",
+     "note": "the axis calculation of plot_2d.m"
+    }
+   ],
+   "relation": "derived",
+   "note": ""
+  },
+  "spynach.plotting.contspacing": {
+   "files": [
+    {
+     "file": "contspacing.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.plotting.figure_png": {
+   "files": [],
+   "relation": "new",
+   "note": ""
+  },
+  "spynach.plotting.ft_axis": {
+   "files": [
+    {
+     "file": "ft_axis.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.plotting.plot_1d": {
+   "files": [
+    {
+     "file": "plot_1d.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.plotting.plot_2d": {
+   "files": [
+    {
+     "file": "plot_2d.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.plotting.plot_fid": {
+   "files": [],
+   "relation": "new",
+   "note": ""
+  },
+  "spynach.plotting.plot_time_series": {
+   "files": [],
+   "relation": "new",
+   "note": ""
+  },
+  "spynach.plotting.plot_trajan": {
+   "files": [],
+   "relation": "new",
+   "note": ""
+  },
+  "spynach.processing.apodisation": {
+   "files": [
+    {
+     "file": "apodisation.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.propagation._commutator_series": {
+   "files": [
+    {
+     "file": "step.m",
+     "note": "subfunction comm_series"
+    }
+   ],
+   "relation": "derived",
+   "note": ""
+  },
+  "spynach.propagation._reordered_taylor": {
+   "files": [
+    {
+     "file": "step.m",
+     "note": "subfunction reordered_taylor"
+    }
+   ],
+   "relation": "derived",
+   "note": ""
+  },
+  "spynach.propagation.evolution": {
+   "files": [
+    {
+     "file": "evolution.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.propagation.krylov": {
+   "files": [
+    {
+     "file": "krylov.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.propagation.propagator": {
+   "files": [
+    {
+     "file": "propagator.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.propagation.step": {
+   "files": [
+    {
+     "file": "step.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.reduction.binpack": {
+   "files": [
+    {
+     "file": "binpack.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.reduction.path_trace": {
+   "files": [
+    {
+     "file": "path_trace.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.reduction.reduce": {
+   "files": [
+    {
+     "file": "reduce.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.reduction.zte": {
+   "files": [
+    {
+     "file": "zte.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.relaxation._corrfun": {
+   "files": [
+    {
+     "file": "corrfun.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.relaxation._redfield": {
+   "files": [
+    {
+     "file": "redfield_integral_serial.m",
+     "note": ""
+    }
+   ],
+   "relation": "derived",
+   "note": ""
+  },
+  "spynach.relaxation._srfk": {
+   "files": [
+    {
+     "file": "relaxation.m",
+     "note": "a branch of the original"
+    },
+    {
+     "file": "rlx_scalar.m",
+     "note": "a branch of the original"
+    }
+   ],
+   "relation": "derived",
+   "note": ""
+  },
+  "spynach.relaxation._srsk": {
+   "files": [
+    {
+     "file": "relaxation.m",
+     "note": ""
+    }
+   ],
+   "relation": "derived",
+   "note": ""
+  },
+  "spynach.relaxation.equilibrium": {
+   "files": [
+    {
+     "file": "equilibrium.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.relaxation.expmint": {
+   "files": [
+    {
+     "file": "expmint.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.relaxation.relaxation": {
+   "files": [
+    {
+     "file": "relaxation.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.relaxation.thermalize": {
+   "files": [
+    {
+     "file": "thermalize.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.sequences.acquire": {
+   "files": [
+    {
+     "file": "acquire.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.sequences.cosy": {
+   "files": [
+    {
+     "file": "cosy.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.sequences.hsqc": {
+   "files": [
+    {
+     "file": "hsqc.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.sequences.noesy": {
+   "files": [
+    {
+     "file": "noesy.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.states.state": {
+   "files": [
+    {
+     "file": "state.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.states.stateinfo": {
+   "files": [
+    {
+     "file": "stateinfo.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.states.trajan": {
+   "files": [
+    {
+     "file": "trajan.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.system._dipolar": {
+   "files": [
+    {
+     "file": "dipolar.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.system.create": {
+   "files": [
+    {
+     "file": "create.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.system.dilute": {
+   "files": [
+    {
+     "file": "dilute.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.system.kill_spin": {
+   "files": [
+    {
+     "file": "kill_spin.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.tolerances.tolerances": {
+   "files": [
+    {
+     "file": "tolerances.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.utilities.as_matrix": {
+   "files": [],
+   "relation": "new",
+   "note": ""
+  },
+  "spynach.utilities.chop": {
+   "files": [
+    {
+     "file": "clean_up.m",
+     "note": "the rounding of clean_up.m without the storage decision"
+    }
+   ],
+   "relation": "derived",
+   "note": ""
+  },
+  "spynach.utilities.clean_up": {
+   "files": [
+    {
+     "file": "clean_up.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.utilities.dagger": {
+   "files": [],
+   "relation": "new",
+   "note": ""
+  },
+  "spynach.utilities.hdot": {
+   "files": [
+    {
+     "file": "hdot.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.utilities.matmul": {
+   "files": [],
+   "relation": "new",
+   "note": ""
+  },
+  "spynach.utilities.matmul_clean": {
+   "files": [
+    {
+     "file": "clean_up.m",
+     "note": "fused with the product of the propagator's squarings"
+    },
+    {
+     "file": "propagator.m",
+     "note": "the squarings"
+    }
+   ],
+   "relation": "new",
+   "note": ""
+  },
+  "spynach.utilities.nnz": {
+   "files": [],
+   "relation": "new",
+   "note": ""
+  }
+ },
+ "modules": {
+  "spynach.assume": [
+   "assume.m"
+  ],
+  "spynach.backend": [
+   "cheap_norm.m",
+   "clean_up.m",
+   "evolution.m",
+   "krylov.m",
+   "propagator.m",
+   "step.m"
+  ],
+  "spynach.basis": [
+   "basis.m",
+   "dfpt.m",
+   "prune_subgraphs.m"
+  ],
+  "spynach.contexts": [
+   "crystal.m",
+   "fourdif.m",
+   "liquid.m",
+   "powder.m",
+   "singlerot.m"
+  ],
+  "spynach.conventions": [
+   "eeqq2nqi.m",
+   "euler2dcm.m",
+   "mat2sphten.m",
+   "wigner.m"
+  ],
+  "spynach.filters": [
+   "coherence.m",
+   "correlation.m",
+   "decouple.m",
+   "homospoil.m"
+  ],
+  "spynach.hamiltonian": [
+   "frqoffset.m",
+   "hamiltonian.m",
+   "orientation.m"
+  ],
+  "spynach.isotopes": [
+   "spin.m"
+  ],
+  "spynach.kernels": [
+   "clean_up.m",
+   "propagator.m",
+   "step.m"
+  ],
+  "spynach.kinetics": [
+   "equilibrate.m",
+   "kinetics.m"
+  ],
+  "spynach.molecules": [
+   "strychnine.m"
+  ],
+  "spynach.operators": [
+   "human2opspec.m",
+   "irr_sph_ten.m",
+   "ist_product_table.m",
+   "lin2lm.m",
+   "lm2lin.m",
+   "operator.m",
+   "pauli.m",
+   "superop.m"
+  ],
+  "spynach.plotting": [
+   "axis_1d.m",
+   "contspacing.m",
+   "ft_axis.m",
+   "plot_1d.m",
+   "plot_2d.m"
+  ],
+  "spynach.processing": [
+   "apodisation.m"
+  ],
+  "spynach.propagation": [
+   "evolution.m",
+   "krylov.m",
+   "propagator.m",
+   "step.m"
+  ],
+  "spynach.reduction": [
+   "binpack.m",
+   "path_trace.m",
+   "reduce.m",
+   "zte.m"
+  ],
+  "spynach.relaxation": [
+   "corrfun.m",
+   "equilibrium.m",
+   "expmint.m",
+   "redfield_integral_serial.m",
+   "relaxation.m",
+   "rlx_scalar.m",
+   "thermalize.m"
+  ],
+  "spynach.sequences": [
+   "acquire.m",
+   "cosy.m",
+   "hsqc.m",
+   "noesy.m"
+  ],
+  "spynach.states": [
+   "state.m",
+   "stateinfo.m",
+   "trajan.m"
+  ],
+  "spynach.system": [
+   "create.m",
+   "dilute.m",
+   "dipolar.m",
+   "kill_spin.m"
+  ],
+  "spynach.tolerances": [
+   "tolerances.m"
+  ],
+  "spynach.utilities": [
+   "clean_up.m",
+   "hdot.m",
+   "propagator.m"
+  ]
+ }
+}

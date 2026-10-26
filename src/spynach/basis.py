@@ -16,6 +16,11 @@ operator ``kron(T_i0, ..., T_iN)`` divided by its Frobenius norm. Rows are
 the lexicographically sorted set of unique states, so the unit state is
 always first. Chemical subsystems (``spin_system.chem.parts``) never share a row:
 the basis is a direct sum over substances with one common unit state.
+
+Spinach authors, by original file (headers of Spinach 2.13; see docs/spinach-credits.md):
+  basis.m: Ilya Kuprov
+  dfpt.m: Ilya Kuprov, one contributor listed only by email address
+  prune_subgraphs.m: Ilya Kuprov
 """
 
 from __future__ import annotations
@@ -74,6 +79,8 @@ def basis(spin_system: SpinSystem, bas: dict[str, Any]) -> SpinSystem:
     names, that only carry longitudinal states), ``bas['zero_quantum']``
     (spins whose total coherence order must be zero). ``bas['manual']`` is a
     boolean matrix of extra subgraphs (rows) over all spins.
+
+    Spinach authors (basis.m): Ilya Kuprov.
     """
     _grumble(spin_system, bas)
     formalism = bas["formalism"]
@@ -226,6 +233,8 @@ def dfpt(conmatrix: np.ndarray, max_size: int) -> np.ndarray:
     Grows every subgraph by every neighbour, one spin at a time; isolated
     subgraphs are kept as they are. Returns a boolean matrix with one
     subgraph per row.
+
+    Spinach authors (dfpt.m): Ilya Kuprov, one contributor listed only by email address.
     """
     nspins = conmatrix.shape[0]
     subgraphs = np.arange(nspins)[:, None]
@@ -246,7 +255,10 @@ def dfpt(conmatrix: np.ndarray, max_size: int) -> np.ndarray:
 
 
 def prune_subgraphs(subgraphs: np.ndarray) -> np.ndarray:
-    """Drop subgraphs that are strict subsets of another subgraph (port of ``prune_subgraphs.m``)."""
+    """Drop subgraphs that are strict subsets of another subgraph (port of ``prune_subgraphs.m``).
+
+    Spinach authors (prune_subgraphs.m): Ilya Kuprov.
+    """
     if subgraphs.shape[0] < 2 or subgraphs.shape[1] < 2:
         return subgraphs
     counts = subgraphs.sum(axis=1)

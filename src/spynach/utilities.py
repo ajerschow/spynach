@@ -3,6 +3,11 @@
 Everything here is storage-agnostic: a ``Matrix`` is a dense ``np.ndarray`` or a
 sparse ``csr_array``, and :func:`chop`, :func:`as_matrix` and :func:`nnz` go through
 :mod:`spynach.backend` so that they work on device arrays as well.
+
+Spinach authors, by original file (headers of Spinach 2.13; see docs/spinach-credits.md):
+  clean_up.m: Ilya Kuprov, Alex Nevzorov
+  hdot.m: Ilya Kuprov
+  propagator.m: Ilya Kuprov, Luke Edwards
 """
 
 from __future__ import annotations
@@ -29,6 +34,8 @@ def clean_up(tols: Tolerances, matrix: Matrix, nonzero_tol: float) -> Matrix:
     any dimension below ``tols.small_matrix``, or with density above
     ``tols.dense_matrix``, are returned dense (``np.ndarray``); large matrices
     below that density are returned sparse (``csr_array``).
+
+    Spinach authors (clean_up.m): Ilya Kuprov, Alex Nevzorov.
     """
     if nonzero_tol == 0 or np.isnan(nonzero_tol):
         return matrix
@@ -61,7 +68,12 @@ def _choose_storage(tols: Tolerances, matrix: Matrix) -> Matrix:
 
 def matmul_clean(tols: Tolerances, A: Matrix, B: Matrix, nonzero_tol: float) -> Matrix:
     """``clean_up(tols, A @ B, nonzero_tol)``; two sparse factors are multiplied and rounded in one threaded
-    pass where the compiled kernel applies (:mod:`spynach.kernels`), with the same result."""
+    pass where the compiled kernel applies (:mod:`spynach.kernels`), with the same result.
+
+    Spinach authors (clean_up.m, fused with the product of the propagator's squarings): Ilya Kuprov, Alex
+      Nevzorov.
+    Spinach authors (propagator.m, the squarings): Ilya Kuprov, Luke Edwards.
+    """
     if sps.issparse(A) and sps.issparse(B) and nonzero_tol > 0 and not np.isnan(nonzero_tol):
         product = get_backend().spgemm_round(A, B, 1 / nonzero_tol, nonzero_tol)
         if product is not None:
@@ -84,6 +96,9 @@ def chop(x: Matrix, tol: float) -> Matrix:
     :func:`clean_up` without the storage decision: sparse stays sparse (zeros
     dropped), dense stays dense. Used on state vectors and reduced generators
     in :mod:`spynach.propagation`.
+
+    Spinach authors (clean_up.m, the rounding of clean_up.m without the storage decision): Ilya Kuprov, Alex
+      Nevzorov.
     """
     be = get_backend()
     if be.issparse(x):
@@ -101,7 +116,10 @@ def as_matrix(x: Matrix) -> Matrix:
 
 
 def hdot(a: Matrix, b: Matrix) -> complex:
-    """Hilbert-Schmidt inner product ``sum(conj(a) * b)``."""
+    """Hilbert-Schmidt inner product ``sum(conj(a) * b)``.
+
+    Spinach authors (hdot.m): Ilya Kuprov.
+    """
     if a.shape != b.shape:
         raise ValueError("the two inputs must have identical dimensions.")
     if sps.issparse(a):

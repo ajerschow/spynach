@@ -4,6 +4,10 @@ Ported: first-order exchange between chemical subsystems (``inter['chem']
 ['rates']``). Magnetisation flux and radical-pair kinetics are refused by
 :func:`spynach.create`. The superoperator is dissipative and enters the
 Liouvillian as ``L = H + 1j * R + 1j * K``, as in Spinach.
+
+Spinach authors, by original file (headers of Spinach 2.13; see docs/spinach-credits.md):
+  equilibrate.m: Ilya Kuprov
+  kinetics.m: Ilya Kuprov, Luke Edwards, Hannah Hogben
 """
 
 from __future__ import annotations
@@ -22,6 +26,8 @@ def kinetics(spin_system: SpinSystem) -> sps.csr_array:
     states of part ``i``: ``K[states_i, states_j] += rates[i, j]``. The
     diagonal rates give the drain on each part's own states. The unit
     state is never touched. With no rates the result is the zero matrix.
+
+    Spinach authors (kinetics.m): Ilya Kuprov, Luke Edwards, Hannah Hogben.
     """
     if spin_system.basis is None:
         raise ValueError("basis set information is missing, run basis() before calling this function.")
@@ -55,6 +61,8 @@ def equilibrate(K: np.ndarray, c0: np.ndarray) -> np.ndarray:
     ``K`` must conserve matter (zero column sums). Each connected group of
     reactions is solved separately: the total concentration of the group is
     kept and ``K c = 0`` is imposed. The result keeps the shape of ``c0``.
+
+    Spinach authors (equilibrate.m): Ilya Kuprov.
     """
     from scipy.sparse.csgraph import connected_components
 

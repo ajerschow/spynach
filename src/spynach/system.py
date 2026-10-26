@@ -18,6 +18,12 @@ theories, ``rlx_keep``, ``equilibrium``, ``tau_c``, ``temperature``,
 ``damp_rate``, ``r1_rates``/``r2_rates``, ``rlx_dfs``, ``srfk_tau_c``,
 ``srfk_mdepth``, ``srsk_sources``). Every other ``sys`` or ``inter``
 field raises ``NotImplementedError`` rather than being ignored.
+
+Spinach authors, by original file (headers of Spinach 2.13; see docs/spinach-credits.md):
+  create.m: Ilya Kuprov, Hannah Hogben, Konstantin Pervushin, Luke Edwards
+  dilute.m: Ilya Kuprov, Luke Edwards, Bud Macaulay
+  dipolar.m: Ilya Kuprov
+  kill_spin.m: Ilya Kuprov, Luke Edwards
 """
 
 from __future__ import annotations
@@ -199,6 +205,8 @@ def create(sys: dict[str, Any], inter: dict[str, Any]) -> SpinSystem:
     per-spin 3x3 tensors in the same units. ``inter['coupling']['scalar']``:
     nspins x nspins nested list of couplings in Hz (``None`` or 0 for none);
     ``inter['coupling']['matrix']``: same layout with 3x3 tensors in Hz.
+
+    Spinach authors (create.m): Ilya Kuprov, Hannah Hogben, Konstantin Pervushin, Luke Edwards.
     """
     _reject_unported(sys, SYS_FIELDS, "sys")
     _reject_unported(inter, INTER_FIELDS, "inter")
@@ -615,6 +623,8 @@ def _dipolar(
     ``tols.prox_cutoff`` Angstrom are proximate and get the dipolar tensor
     ``A (1 - 3 n n^T)`` with ``A = mu0 hbar g1 g2 / (8 pi r^3)``. Without
     coordinates the proximity matrix is the identity, as in Spinach.
+
+    Spinach authors (dipolar.m): Ilya Kuprov.
     """
     nspins = len(coordinates)
     tensors = [[np.zeros((3, 3)) for _ in range(nspins)] for _ in range(nspins)]
@@ -657,6 +667,8 @@ def kill_spin(spin_system: SpinSystem, hit_list: Sequence[int]) -> SpinSystem:
     Interaction tensors, coordinates, the proximity matrix, chemical parts
     and per-spin relaxation rates are reindexed; the basis is dropped and
     must be built again with :func:`spynach.basis`.
+
+    Spinach authors (kill_spin.m): Ilya Kuprov, Luke Edwards.
     """
     hit = sorted({int(n) for n in hit_list})
     if any(n < 0 or n >= spin_system.nspins for n in hit):
@@ -697,6 +709,8 @@ def dilute(spin_system: SpinSystem, isotope: str, tuples: int = 1) -> list[SpinS
     Returns one spin system per combination of ``tuples`` spins of
     ``isotope``, with every other spin of that isotope removed; the
     natural-abundance spectrum is the sum over the subsystems.
+
+    Spinach authors (dilute.m): Ilya Kuprov, Luke Edwards, Bud Macaulay.
     """
     from itertools import combinations
 

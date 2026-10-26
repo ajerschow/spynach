@@ -23,6 +23,11 @@ Each compiled row accumulates its products in the order of SciPy's ``csr_matmat`
 ``A`` in storage order, then the entries of the row of ``B``), so results agree with SciPy to the last bit
 except where the compiler fuses a multiply-add; a rounded element can then differ by one grid step in the
 rare case that the sum sits within an ulp of a rounding boundary.
+
+Spinach authors, by original file (headers of Spinach 2.13; see docs/spinach-credits.md):
+  clean_up.m: Ilya Kuprov, Alex Nevzorov
+  propagator.m: Ilya Kuprov, Luke Edwards
+  step.m: Ilya Kuprov, Luke Edwards, Anupama Acharya, one contributor listed only by email address
 """
 
 from __future__ import annotations
@@ -233,6 +238,8 @@ def round_array(values: np.ndarray, scale: float, tol: float, *, divide: bool = 
 
     ``clean_up`` rounds with the multiplication (``scale = 1 / tol``), ``chop`` with the division; the two
     differ in the last bit and are kept apart because the results are rounded to the grid.
+
+    Spinach authors (clean_up.m, the rounding, as a compiled kernel): Ilya Kuprov, Alex Nevzorov.
     """
     values = np.asarray(values)
     if not (_use_compiled(values.size, MIN_ELEMENTS) and values.dtype in (np.complex128, np.float64)):
@@ -248,6 +255,9 @@ def spgemm_round(A: sps.csr_array, B: sps.csr_array, scale: float, tol: float, *
 
     Returns a ``csr_array`` with sorted column indices, or ``None`` when the compiled path does not apply
     (no Numba, or a problem below the size thresholds), in which case the caller runs the SciPy code.
+
+    Spinach authors (clean_up.m, product and rounding in one pass): Ilya Kuprov, Alex Nevzorov.
+    Spinach authors (propagator.m, the squarings): Ilya Kuprov, Luke Edwards.
     """
     if not _use_compiled(max(A.nnz, B.nnz), MIN_NNZ) or A.shape[1] != B.shape[0]:
         return None
@@ -314,7 +324,11 @@ def csr_times_dense(A: sps.csr_array, X: np.ndarray):
 
 def taylor_term(A: sps.csr_array, term: np.ndarray, coef: complex, rho: np.ndarray, eps: float):
     """One term of the Taylor series: returns ``(coef * (A @ term), any(|new term| > eps))`` and adds the new
-    term to ``rho`` in place; ``None`` when the compiled path does not apply (the caller uses NumPy)."""
+    term to ``rho`` in place; ``None`` when the compiled path does not apply (the caller uses NumPy).
+
+    Spinach authors (step.m, one term of subfunction reordered_taylor, fused): Ilya Kuprov, Luke Edwards,
+      Anupama Acharya, one contributor listed only by email address.
+    """
     if not _use_compiled(A.nnz * (term.shape[1] if term.ndim == 2 else 1), MIN_NNZ):
         return None
     if A.dtype not in (np.float64, np.complex128) or term.dtype != np.complex128 or rho.dtype != np.complex128:

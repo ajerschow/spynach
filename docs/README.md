@@ -28,6 +28,11 @@ set `OPENBLAS_NUM_THREADS` to the quota first; see the setup section of the
 [ajerschow.github.io/spynach](https://ajerschow.github.io/spynach/)
 links every notebook through nbviewer as well.
 
+[`spinach-credits.md`](spinach-credits.md) is a generated table of the Spinach authors of every Spynach
+function that translates or derives from one (names from the Spinach developer team page, taken from the headers
+of the original functions); `porting/tools/gen_spinach_authors.py` writes it, and the same lines, into the
+docstrings.
+
 [`parity.md`](parity.md) is not a guide but a generated table: every fixture
 case, tolerance and measured difference of the parity suite, written by
 `oracle/parity_summary.py` from a test run together with the summary

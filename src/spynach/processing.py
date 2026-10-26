@@ -2,6 +2,9 @@
 
 Window functions are Spinach's, applied along every non-singleton
 dimension of the FID with one specification per dimension.
+
+Spinach authors, by original file (headers of Spinach 2.13; see docs/spinach-credits.md):
+  apodisation.m: Ilya Kuprov
 """
 
 from __future__ import annotations
@@ -24,6 +27,8 @@ def apodisation(fid: np.ndarray, window_functions: Sequence[Sequence[Any] | None
     (with beta). With ``fp_half`` (default) the first point of every
     processed dimension is divided by two, as Spinach does before Fourier
     transforms.
+
+    Spinach authors (apodisation.m): Ilya Kuprov.
     """
     fid = np.array(fid, dtype=complex)
     relevant = [axis for axis, n in enumerate(fid.shape) if n > 1]

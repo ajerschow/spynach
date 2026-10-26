@@ -15,6 +15,14 @@ on the CPU, as in Spinach: it is index arithmetic, not linear algebra.
 Lines marked ``# GPU:`` elsewhere in the package are the points where the
 device backend will matter (transfers, exponentials, dense/sparse
 decisions).
+
+Spinach authors, by original file (headers of Spinach 2.13; see docs/spinach-credits.md):
+  cheap_norm.m: Ilya Kuprov
+  clean_up.m: Ilya Kuprov, Alex Nevzorov
+  evolution.m: Ilya Kuprov, Luke Edwards, Ohad Levinkron
+  krylov.m: Ilya Kuprov
+  propagator.m: Ilya Kuprov, Luke Edwards
+  step.m: Ilya Kuprov, Luke Edwards, Anupama Acharya, one contributor listed only by email address
 """
 
 from __future__ import annotations

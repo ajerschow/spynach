@@ -12,6 +12,13 @@ Matplotlib redraw when Kaleido cannot run).
 
 The plotting functions need Plotly (``pip install -e ".[plot]"``); the axis
 functions need only NumPy.
+
+Spinach authors, by original file (headers of Spinach 2.13; see docs/spinach-credits.md):
+  axis_1d.m: Ilya Kuprov
+  contspacing.m: Ilya Kuprov
+  ft_axis.m: Ilya Kuprov
+  plot_1d.m: Ilya Kuprov, Luke Edwards
+  plot_2d.m: Ilya Kuprov
 """
 
 from __future__ import annotations
@@ -79,6 +86,8 @@ def ft_axis(offset: float, sweep: float, npoints: int) -> np.ndarray:
     ``npoints`` points spaced ``sweep / npoints`` apart, centred on
     ``offset``; for even ``npoints`` the axis starts at ``offset - sweep/2``.
     This is the axis of ``np.fft.fftshift(np.fft.fft(fid, npoints))``.
+
+    Spinach authors (ft_axis.m): Ilya Kuprov.
     """
     if not np.isscalar(offset) or np.iscomplexobj(offset):
         raise ValueError("offset must be a real scalar.")
@@ -102,6 +111,8 @@ def axis_1d(spin_system: SpinSystem, parameters: dict[str, Any]) -> tuple[np.nda
     (one isotope), and ``parameters['axis_units']``: ``'ppm'``, ``'Hz'``,
     ``'kHz'``, ``'MHz'``, ``'GHz'``, ``'MHz-labframe'``, ``'GHz-labframe'``,
     ``'Gauss'``, ``'mT'``, ``'gtensor'``, or ``'points'``.
+
+    Spinach authors (axis_1d.m): Ilya Kuprov.
     """
     sweep = np.atleast_1d(np.asarray(parameters.get("sweep"), dtype=float)) if "sweep" in parameters else None
     if sweep is None:
@@ -171,6 +182,8 @@ def plot_1d(
     hover box reads off every spectrum at the cursor. Returns a ``plotly.graph_objects.Figure``: display
     it by making it the last expression of a notebook cell, or call
     ``fig.show()`` or ``fig.write_html(path)``.
+
+    Spinach authors (plot_1d.m): Ilya Kuprov, Luke Edwards.
     """
     traces = _as_traces(spectrum, names)
     npts = traces[0][1].size
@@ -213,6 +226,8 @@ def contspacing(
     as the ``k``-th power of a linear grid of ``ncont`` points; ``signs``
     is ``'positive'``, ``'negative'`` or ``'both'``. Returns all levels in
     ascending order, then the positive and the negative sets.
+
+    Spinach authors (contspacing.m): Ilya Kuprov.
     """
     delta = np.asarray(delta, dtype=float)
     if delta.size != 4 or np.any(delta < 0) or np.any(delta > 1) or delta[0] > delta[1] or delta[2] > delta[3]:
@@ -246,6 +261,8 @@ def axis_2d(
     (``parameters['sweep'][1]``, ``['offset'][1]``, ``['spins'][1]``),
     columns the indirect dimension F1. Scalar ``spins``, ``offset`` and
     ``sweep`` apply to both dimensions.
+
+    Spinach authors (plot_2d.m, the axis calculation of plot_2d.m): Ilya Kuprov.
     """
     spins = list(parameters["spins"]) * 2 if len(parameters["spins"]) == 1 else list(parameters["spins"])
     offset = np.atleast_1d(np.asarray(parameters.get("offset", 0.0), dtype=float))
@@ -309,6 +326,8 @@ def plot_2d(
     preserved, the contour levels are those of the full spectrum). A
     2048 x 2048 spectrum reduces to 512 x 512 and a few MB of HTML;
     ``max_points=None`` draws every point.
+
+    Spinach authors (plot_2d.m): Ilya Kuprov.
     """
     try:
         import plotly.graph_objects as go
