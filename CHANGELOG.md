@@ -2,7 +2,7 @@
 
 Releases are tagged `vX.Y.Z` on GitHub; the version is `spynach.__version__`.
 
-## 0.3.1 - 2026-10-27
+## 0.4.0 - 2026-10-27
 
 - The browser playground (`try.html`) has a Parameters view: a form of the main settings of an example, each with its
   unit and a description, toggled with "Prefer GUI" / "Prefer code" (shown only for examples that have a form). The code stays the only state: a form edit rewrites
