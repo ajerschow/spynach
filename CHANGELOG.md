@@ -8,7 +8,9 @@ Releases are tagged `vX.Y.Z` on GitHub; the version is `spynach.__version__`.
   unit and a description, toggled with "Prefer GUI" / "Prefer code" (shown only for examples that have a form). The code stays the only state: a form edit rewrites
   one number in the source, an edit in the source updates the form. Parameters are plain assignments with a
   `# GUI: label | unit | description | range` comment, read by `assets/playground-params.js`; every example has them,
-  and `tests/unit/test_playground_params.py` runs every example at the ends of each parameter's range.
+  and `tests/unit/test_playground_params.py` runs every example at the ends of each parameter's range. When the code
+  is rewritten under the form, a parameter the code no longer reads is greyed out, a name assigned twice is read-only,
+  and if no parameter lines are left a notice offers "Restore example".
 
 - Numba is installed by default: `pip install easyspyn` (and the git install of `spynach`) bring it, so the compiled
   kernels of both packages are used without the `fast` extra, which stays as an empty alias. It is skipped on

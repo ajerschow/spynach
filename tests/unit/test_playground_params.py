@@ -24,6 +24,8 @@ const out = {};
 for (const { id, source } of examples) {
   const params = parseParams(source);
   const entry = { params, identity: true, refused: [], variants: [] };
+  entry.unused = params.filter((p) => !p.used).map((p) => p.name);
+  entry.duplicates = params.filter((p) => p.duplicate).map((p) => p.name);
   for (const p of params) {
     if (!p.editable) { entry.identity = false; continue; }
     if (setParam(source, p.name, p.value, p) !== source) entry.identity = false;
@@ -39,6 +41,17 @@ for (const { id, source } of examples) {
   }
   out[id] = entry;
 }
+// What the form does when the code is rewritten under it
+const base = "J = 12.0  # GUI: J | Hz | Coupling | 0..30\\nK = 3.0  # GUI: K | Hz | Other | 0..30\\nprint(J, K)\\n";
+const flags = (src) =>
+  parseParams(src).map((p) => ({ name: p.name, used: p.used, duplicate: p.duplicate, editable: p.editable }));
+out.synthetic = {
+  intact: flags(base),
+  oneUseRemoved: flags(base.replace("print(J, K)", "print(K)")),
+  onlyInComment: flags(base.replace("print(J, K)", "print(K)  # J is gone")),
+  repeated: flags(base + "K = 5.0  # GUI: K | Hz | Again | 0..30\\n"),
+  noLines: flags("print(1)\\n"),
+};
 console.log(JSON.stringify(out));
 """
 
@@ -59,7 +72,7 @@ def parsed() -> dict:
 
 
 def test_parameters_are_documented(parsed):
-    converted = {k: v for k, v in parsed.items() if v["params"]}
+    converted = {k: v for k, v in parsed.items() if k != "synthetic" and v["params"]}
     assert {"ex-epr-pepper", "ex-cosy", "ex-epr-saffron"} <= set(converted)
     for example_id, entry in converted.items():
         names = [p["name"] for p in entry["params"]]
@@ -78,9 +91,28 @@ def test_parameters_are_documented(parsed):
                 assert p["value"] in p["choices"], f"{where}: the default is not among the choices"
 
 
+def test_every_shipped_parameter_is_used_and_listed_once(parsed):
+    for example_id, entry in parsed.items():
+        if example_id == "synthetic":
+            continue
+        assert not entry["unused"], f"{example_id}: {entry['unused']} are not used by the code"
+        assert not entry["duplicates"], f"{example_id}: {entry['duplicates']} are assigned twice"
+
+
+def test_a_rewritten_source_is_flagged_not_rejected(parsed):
+    synthetic = parsed["synthetic"]
+    assert all(p["used"] and not p["duplicate"] and p["editable"] for p in synthetic["intact"])
+    by_name = {p["name"]: p for p in synthetic["oneUseRemoved"]}
+    assert by_name["J"]["used"] is False and by_name["K"]["used"] is True
+    assert {p["name"]: p["used"] for p in synthetic["onlyInComment"]}["J"] is False  # a comment is not a use
+    repeated = synthetic["repeated"]
+    assert [p["duplicate"] for p in repeated] == [False, False, True] and not repeated[2]["editable"]
+    assert synthetic["noLines"] == []
+
+
 def test_defaults_write_back_unchanged_and_out_of_range_is_refused(parsed):
     for example_id, entry in parsed.items():
-        if entry["params"]:
+        if example_id != "synthetic" and entry["params"]:
             assert entry["identity"], f"{example_id}: setting the default changed the source"
             ranged = [p["name"] for p in entry["params"] if p["min"] is not None]
             assert sorted(entry["refused"]) == sorted(ranged), f"{example_id}: a value below the range was accepted"
@@ -91,6 +123,8 @@ def _variants() -> list[tuple[str, str, str]]:
         return []
     out = []
     for example_id, entry in _run_node().items():
+        if example_id == "synthetic":
+            continue
         slow = any(e[0] == example_id and e[2] for e in ALL)
         if slow:
             continue

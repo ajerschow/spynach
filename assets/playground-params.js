@@ -10,7 +10,10 @@
 // A dimensionless parameter has "-" as its unit (the form shows no unit for it).
 // A range is min..max or min..max..step, choices are a comma-separated list. A line "# --- Sample ---" starts a
 // section of the form. The code stays the only state: the form is parsed from it and an edit rewrites just the
-// literal of one line, so the comment, the spacing and every other line are untouched.
+// literal of one line, so the comment, the spacing and every other line are untouched. What the form cannot read
+// stays in the code: a literal that is no longer a number, list, bool or listed choice is "edited in the code", a
+// name assigned twice is flagged `duplicate`, and a parameter that no other line mentions is flagged `used: false`
+// (the code was rewritten and no longer reads it), so the page can grey it out instead of offering a dead control.
 // No dependencies, so the same file runs in the page and under Node (tests/unit/test_playground_params.py).
 
 const LINE = /^(\s*[A-Za-z_]\w*\s*=\s*)(.*?)(\s*#\s*GUI:\s*)(.*)$/;
@@ -18,7 +21,7 @@ const SECTION = /^\s*#\s*---\s*(.*?)\s*-*\s*$/;
 const NUMBER = /^[-+]?(?:\d+\.?\d*|\.\d+)(?:[eE][-+]?\d+)?$/;
 
 /** All parameters of a source, in order: {name, line, kind, value, label, unit, description, min, max, step,
- *  choices, section, editable}. kind is "number", "list", "choice" or "bool"; editable is false when the literal on
+ *  choices, section, editable, used, duplicate}. kind is "number", "list", "choice" or "bool"; editable is false when the literal on
  *  the line is not one of those (the form then shows it greyed out, "edited in code"). */
 export function parseParams(source) {
   const params = [];
@@ -42,6 +45,17 @@ export function parseParams(source) {
     }
     params.push(param);
   });
+  const lines = source.split("\n");
+  const seen = new Set();
+  for (const p of params) {
+    p.duplicate = seen.has(p.name);
+    if (p.duplicate) p.editable = false;
+    seen.add(p.name);
+    // Used when another line mentions the name as a word, comments aside; a false "used" (the name in a string)
+    // is harmless, a false "unused" would disable a working control, so strings are not stripped
+    const word = new RegExp(`\\b${p.name}\\b`);
+    p.used = lines.some((text, i) => i !== p.line && !params.some((q) => q.line === i) && word.test(text.split("#")[0]));
+  }
   return params;
 }
 

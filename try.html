@@ -98,6 +98,10 @@ figure.plot figcaption { font-family: var(--mono); font-size: 0.75rem; color: va
 .param .desc.err { color: #a33b32; }
 .param .reset { border: 0; background: transparent; color: var(--accent-ink); cursor: pointer; font-size: 0.85rem; padding: 0 0.2rem; }
 .param .reset[hidden] { display: none; }
+.param.unused .name, .param.unused .unit { opacity: 0.55; }
+.param.unused input, .param.unused select { opacity: 0.45; }
+#params .notice { display: grid; gap: 0.6rem; justify-items: start; padding: 0.8rem 0; }
+#params .notice p { margin: 0; color: var(--muted); font-size: 0.9rem; }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) .param input.invalid, :root:not([data-theme="light"]) .param .desc.err { color: #f0a8a2; border-color: #f0a8a2; }
 }
@@ -145,7 +149,7 @@ figure.plot figcaption { font-family: var(--mono); font-size: 0.75rem; color: va
     </div>
     <div id="params" aria-label="Parameters" hidden></div>
     <textarea id="editor" spellcheck="false" wrap="off" aria-label="Python source"></textarea>
-    <p class="hint">Ctrl+Enter runs. <code>show_spectrum</code>, <code>show_fid</code> and <code>show_image</code> draw on the right; an <code>easyspyn</code> spectrum can be passed as is, and EPR axes run left to right. The 12800-orientation powder is the slow one, about a minute; the 1600-point powder, magic-angle spinning and the fit take a few seconds. Grid names such as <code>leb_2ang_rank_17</code> are loaded from <code>src/spynach/grids</code>. A link such as <code>try.html#ex-epr-hyscore</code> opens and runs one example. <b>Prefer GUI</b> shows the main settings of an example as a form, with units and a description for each, and <b>Prefer code</b> goes back; an edit in the form rewrites the number in the code, and an edit in the code updates the form. <code>?view=params</code> opens the form.</p>
+    <p class="hint">Ctrl+Enter runs. <code>show_spectrum</code>, <code>show_fid</code> and <code>show_image</code> draw on the right; an <code>easyspyn</code> spectrum can be passed as is, and EPR axes run left to right. The 12800-orientation powder is the slow one, about a minute; the 1600-point powder, magic-angle spinning and the fit take a few seconds. Grid names such as <code>leb_2ang_rank_17</code> are loaded from <code>src/spynach/grids</code>. A link such as <code>try.html#ex-epr-hyscore</code> opens and runs one example. <b>Prefer GUI</b> shows the main settings of an example as a form, with units and a description for each, and <b>Prefer code</b> goes back; an edit in the form rewrites the number in the code, and an edit in the code updates the form, and a parameter the code no longer uses is greyed out. If you rewrite the code until no parameter lines are left, <b>Restore example</b> brings the original and its form back, as does reloading the page. <code>?view=params</code> opens the form.</p>
   </section>
   <div id="plots"><p class="empty">The spectrum will land here.</p></div>
   <div id="console" role="log" aria-live="polite"></div>
@@ -1136,7 +1140,27 @@ function fieldValue(param, inputs) {
 function renderParams() {
   const params = parseParams(editor.value);
   const none = params.length === 0;
-  toggleBtn.hidden = none;
+  // An example that had parameters keeps the toggle, so that the way back is findable after a big rewrite
+  const rewritten = none && defaults.size > 0;
+  toggleBtn.hidden = none && !rewritten;
+  if (rewritten) {
+    const note = document.createElement("div");
+    note.className = "notice";
+    const text = document.createElement("p");
+    text.textContent = "The code no longer has parameter lines (comments starting with # GUI:), so there is no form. Restore the example to get it back.";
+    const restore = document.createElement("button");
+    restore.type = "button";
+    restore.className = "btn";
+    restore.textContent = "Restore example";
+    restore.addEventListener("click", () => {
+      if (!window.confirm("Replace the editor contents with the original example?")) return;
+      loadExample(currentExample().id);
+    });
+    note.append(text, restore);
+    paramsEl.replaceChildren(note);
+    applyMode(mode);
+    return;
+  }
   if (none) {
     paramsEl.replaceChildren();
     applyMode("code");
@@ -1160,7 +1184,7 @@ function renderParams() {
     let source = editor.value;
     for (const p of params) {
       const d = defaults.get(p.name);
-      if (d && p.editable) source = setParam(source, p.name, d.value, d);
+      if (d && p.editable && p.used && !p.duplicate) source = setParam(source, p.name, d.value, d);
     }
     editor.value = source;
     afterParamEdit();
@@ -1204,7 +1228,7 @@ function paramRow(p) {
   if (!p.editable) {
     const fixed = document.createElement("span");
     fixed.className = "fixed";
-    fixed.textContent = "edited in the code";
+    fixed.textContent = p.duplicate ? "defined twice, edit in the code" : "edited in the code";
     head.append(fixed);
   } else if (p.kind === "bool") {
     const box = document.createElement("input");
@@ -1267,6 +1291,13 @@ function paramRow(p) {
   });
   head.append(reset);
   row.append(head, desc);
+  if (p.editable && !p.used) {
+    // The code was rewritten and no longer reads this variable: a control would change nothing
+    row.classList.add("unused");
+    desc.textContent = "Not used by the code any more; edit the code to use it again.";
+    head.querySelectorAll("input, select, button").forEach((el) => { el.disabled = true; });
+    return row;
+  }
   inputs.forEach((input) => {
     input.setAttribute("aria-describedby", desc.id);
     const onEdit = () => {
