@@ -1,10 +1,10 @@
-"""Fixture-free tests of the epreasy foundation: constants and units, nuclear data, rotations, spin and
+"""Fixture-free tests of the easyspyn foundation: constants and units, nuclear data, rotations, spin and
 Stevens operators, spin system validation, Hamiltonian components and energy levels against closed forms."""
 
 import numpy as np
 import pytest
 
-import epreasy as es
+import easyspyn as es
 from spynach.conventions import euler2dcm
 
 

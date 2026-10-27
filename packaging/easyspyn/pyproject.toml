@@ -1,13 +1,13 @@
-# The PyPI distribution "easyspyn": EPReasy, the Python port of EasySpin in this repository. Built from a staged
-# copy of src/epreasy by scripts/build_easyspyn.py; the import name is epreasy.
+# The PyPI distribution "easyspyn": EasySpyn, the Python port of EasySpin in this repository. Built from a staged
+# copy of src/easyspyn by scripts/build_easyspyn.py.
 [build-system]
 requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "easyspyn"
-version = "0.3.0"  # keep equal to epreasy.__version__ and the repository version (tests/unit/test_version.py)
-description = "EasySpin's EPR simulators in Python (EPReasy): cw EPR, ENDOR, slow motion, pulse EPR, fitting"
+version = "0.3.0"  # keep equal to easyspyn.__version__ and the repository version (tests/unit/test_version.py)
+description = "EasySpin's EPR simulators in Python (EasySpyn): cw EPR, ENDOR, slow motion, pulse EPR, fitting"
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
@@ -25,17 +25,17 @@ classifiers = [
 
 [project.optional-dependencies]
 fast = ["numba>=0.60"]
-# the parity helpers (epreasy.oracle) read EasySpin reference data through spynach
+# the parity helpers (easyspyn.oracle) read EasySpin reference data through spynach
 test = ["pytest>=8", "spynach", "h5py>=3.10"]
 
 [project.urls]
 Homepage = "https://ajerschow.github.io/spynach/easyspin.html"
-Documentation = "https://github.com/ajerschow/spynach/blob/main/docs/epreasy.md"
+Documentation = "https://github.com/ajerschow/spynach/blob/main/docs/easyspyn.md"
 Source = "https://github.com/ajerschow/spynach"
 Changelog = "https://github.com/ajerschow/spynach/blob/main/CHANGELOG.md"
 
 [tool.setuptools]
-packages = ["epreasy"]
+packages = ["easyspyn"]
 
 [tool.setuptools.package-data]
-epreasy = ["data/*.txt"]
+easyspyn = ["data/*.txt"]

@@ -5,7 +5,7 @@
   "version": "6.0.15",
   "matlab_version": "26.2.0.3386108 (R2026b)"
  },
- "epreasy": {
+ "easyspyn": {
   "version": "0.3.0",
   "python": "3.12.5",
   "numpy": "2.5.4",
@@ -23,8 +23,8 @@
    "example": "ex-epr-pepper",
    "uses_kernels": true,
    "easyspin_s": 0.136334,
-   "epreasy_numpy_s": 0.09892629203386605,
-   "epreasy_numba_s": 0.0815977081656456,
+   "easyspyn_numpy_s": 0.09892629203386605,
+   "easyspyn_numba_s": 0.0815977081656456,
    "rel_err": 4.4874118299913893e-13
   },
   {
@@ -34,8 +34,8 @@
    "example": "ex-epr-pepper",
    "uses_kernels": true,
    "easyspin_s": 0.04188304166666667,
-   "epreasy_numpy_s": 0.011720458045601845,
-   "epreasy_numba_s": 0.010037499945610762,
+   "easyspyn_numpy_s": 0.011720458045601845,
+   "easyspyn_numba_s": 0.010037499945610762,
    "rel_err": 1.6411639457435707e-13
   },
   {
@@ -45,8 +45,8 @@
    "example": "ex-epr-cu4n",
    "uses_kernels": true,
    "easyspin_s": 0.12277066666666667,
-   "epreasy_numpy_s": 0.17101716599427164,
-   "epreasy_numba_s": 0.13392683397978544,
+   "easyspyn_numpy_s": 0.17101716599427164,
+   "easyspyn_numba_s": 0.13392683397978544,
    "rel_err": 4.341500851863774e-13
   },
   {
@@ -56,8 +56,8 @@
    "example": "ex-epr-cu4n",
    "uses_kernels": true,
    "easyspin_s": 0.04554483333333333,
-   "epreasy_numpy_s": 0.042867250042036176,
-   "epreasy_numba_s": 0.02930212509818375,
+   "easyspyn_numpy_s": 0.042867250042036176,
+   "easyspyn_numba_s": 0.02930212509818375,
    "rel_err": 6.822021245249172e-14
   },
   {
@@ -67,8 +67,8 @@
    "example": "ex-epr-garlic",
    "uses_kernels": true,
    "easyspin_s": 0.009905083333333333,
-   "epreasy_numpy_s": 0.0004946661647409201,
-   "epreasy_numba_s": 0.0004818749148398638,
+   "easyspyn_numpy_s": 0.0004946661647409201,
+   "easyspyn_numba_s": 0.0004818749148398638,
    "rel_err": 6.016492252711282e-16
   },
   {
@@ -78,8 +78,8 @@
    "example": null,
    "uses_kernels": true,
    "easyspin_s": 0.010292,
-   "epreasy_numpy_s": 0.0005435000639408827,
-   "epreasy_numba_s": 0.0005326659884303808,
+   "easyspyn_numpy_s": 0.0005435000639408827,
+   "easyspyn_numba_s": 0.0005326659884303808,
    "rel_err": 7.183499711552258e-16
   },
   {
@@ -89,8 +89,8 @@
    "example": "ex-epr-esfit",
    "uses_kernels": true,
    "easyspin_s": 4.146102291666667,
-   "epreasy_numpy_s": 0.6376535000745207,
-   "epreasy_numba_s": 0.5144250830635428,
+   "easyspyn_numpy_s": 0.6376535000745207,
+   "easyspyn_numba_s": 0.5144250830635428,
    "rel_err": 0.0
   },
   {
@@ -100,8 +100,8 @@
    "example": "ex-epr-salt",
    "uses_kernels": true,
    "easyspin_s": 0.156434625,
-   "epreasy_numpy_s": 0.1661386250052601,
-   "epreasy_numba_s": 0.09358608396723866,
+   "easyspyn_numpy_s": 0.1661386250052601,
+   "easyspyn_numba_s": 0.09358608396723866,
    "rel_err": 1.3747701358051783e-11
   },
   {
@@ -111,8 +111,8 @@
    "example": "ex-epr-curry",
    "uses_kernels": false,
    "easyspin_s": 0.010246791666666666,
-   "epreasy_numpy_s": 0.0077596670016646385,
-   "epreasy_numba_s": null,
+   "easyspyn_numpy_s": 0.0077596670016646385,
+   "easyspyn_numba_s": null,
    "rel_err": 1.3405566024387614e-12
   },
   {
@@ -122,8 +122,8 @@
    "example": "ex-epr-chili",
    "uses_kernels": false,
    "easyspin_s": 0.08148825,
-   "epreasy_numpy_s": 0.10889579216018319,
-   "epreasy_numba_s": null,
+   "easyspyn_numpy_s": 0.10889579216018319,
+   "easyspyn_numba_s": null,
    "rel_err": 7.641885891653835e-09
   },
   {
@@ -133,8 +133,8 @@
    "example": "ex-epr-chili",
    "uses_kernels": false,
    "easyspin_s": 0.052516291666666666,
-   "epreasy_numpy_s": 0.11057879100553691,
-   "epreasy_numba_s": null,
+   "easyspyn_numpy_s": 0.11057879100553691,
+   "easyspyn_numba_s": null,
    "rel_err": 1.5392877646718949e-10
   },
   {
@@ -144,8 +144,8 @@
    "example": null,
    "uses_kernels": false,
    "easyspin_s": 0.25344475,
-   "epreasy_numpy_s": 0.23348941700533032,
-   "epreasy_numba_s": null,
+   "easyspyn_numpy_s": 0.23348941700533032,
+   "easyspyn_numba_s": null,
    "rel_err": 6.18779768004932e-10
   },
   {
@@ -155,8 +155,8 @@
    "example": "ex-epr-saffron",
    "uses_kernels": false,
    "easyspin_s": 0.018433291666666667,
-   "epreasy_numpy_s": 0.002019291976466775,
-   "epreasy_numba_s": null,
+   "easyspyn_numpy_s": 0.002019291976466775,
+   "easyspyn_numba_s": null,
    "rel_err": 3.17409307304978e-16
   },
   {
@@ -166,8 +166,8 @@
    "example": "ex-epr-hyscore",
    "uses_kernels": false,
    "easyspin_s": 0.023648625,
-   "epreasy_numpy_s": 0.003077167086303234,
-   "epreasy_numba_s": null,
+   "easyspyn_numpy_s": 0.003077167086303234,
+   "easyspyn_numba_s": null,
    "rel_err": 5.889910708971062e-16
   }
  ]

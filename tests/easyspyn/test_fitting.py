@@ -4,8 +4,8 @@ global fits, the uncertainty estimate against EasySpin's reference values, and t
 import numpy as np
 import pytest
 
-import epreasy as es
-from epreasy import fitting
+import easyspyn as es
+from easyspyn import fitting
 
 X = np.linspace(300, 400, 100)
 

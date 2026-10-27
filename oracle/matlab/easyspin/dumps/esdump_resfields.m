@@ -1,4 +1,4 @@
-% EasySpin reference data for the epreasy resonance-field layer: resfields
+% EasySpin reference data for the easyspyn resonance-field layer: resfields
 % (matrix and hybrid methods, strains, Boltzmann populations, excitation
 % modes, photoselection) on crystal orientations, resfields_eig, the line
 % shapes (gaussian, lorentzian, lshape, voigtian, convspec), sphgrid, the
@@ -8,7 +8,7 @@
 %
 % version_dir is <fixtures_root>/<easyspin version>. One directory per case
 % is written below it with data.h5 and meta.json; the inputs of each case
-% are recorded in meta.json, from which tests/epreasy/test_parity_resfields.py
+% are recorded in meta.json, from which tests/easyspyn/test_parity_resfields.py
 % rebuilds the case. Opt.FuzzLevel is 0 everywhere, since EasySpin's
 % default adds random noise to the Hamiltonian. Cases whose directory
 % already exists are skipped, never overwritten.

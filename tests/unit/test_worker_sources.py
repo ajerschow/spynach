@@ -1,4 +1,4 @@
-"""The browser playground (try.html) runs Spynach, epreasy and ctps in Pyodide; worker.js fetches the sources
+"""The browser playground (try.html) runs Spynach, easyspyn and ctps in Pyodide; worker.js fetches the sources
 from a list that scripts/build_site.py generates, which has to name every module and data file of the three
 packages or the import fails in the browser only."""
 
@@ -6,7 +6,7 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-PACKAGES = ("spynach", "ctps", "epreasy")
+PACKAGES = ("spynach", "ctps", "easyspyn")
 SUFFIXES = {".py", ".txt"}
 
 
@@ -20,4 +20,4 @@ def test_worker_fetches_every_module_and_data_file():
         if path.suffix in SUFFIXES and "__pycache__" not in path.parts
     }
     assert listed == on_disk, f"worker.js SOURCE: missing {sorted(on_disk - listed)}, stale {sorted(listed - on_disk)}"
-    assert "src/epreasy/data/isotopedata.txt" in listed
+    assert "src/easyspyn/data/isotopedata.txt" in listed

@@ -6,8 +6,8 @@ analytic models follow the same deterministic algorithm steps and agree at 1e-6 
 import numpy as np
 import pytest
 
-import epreasy as es
-from epreasy.oracle import assert_matches, fixture_root, load_fixture
+import easyspyn as es
+from easyspyn.oracle import assert_matches, fixture_root, load_fixture
 
 ROOT = fixture_root()
 ALL = (
@@ -69,7 +69,7 @@ def test_esfit(case):
     fcn = _models(inputs.get("extra") or {})[inputs["fcn"]]
     opt = dict(inputs["FitOpt"])
     # EasySpin 6.0.15 swaps the two targets: its 'diff' keyword takes the Fourier magnitude of the residuals and
-    # 'fft' the derivative; epreasy uses the names as meant, so the keyword is swapped to compare like with like
+    # 'fft' the derivative; easyspyn uses the names as meant, so the keyword is swapped to compare like with like
     method = opt.get("Method", "")
     if "diff" in method.split():
         opt["Method"] = method.replace("diff", "fft")

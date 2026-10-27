@@ -25,7 +25,7 @@ where = ["src"]
 
 [tool.setuptools.package-data]
 spynach = ["grids/*.npz"]
-epreasy = ["data/*.txt"]
+easyspyn = ["data/*.txt"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

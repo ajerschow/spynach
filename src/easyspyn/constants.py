@@ -1,7 +1,7 @@
 """Physical constants with EasySpin's names and values.
 
 EasySpin exposes each constant as a function (``bmagn()``); here they are
-module attributes (``epreasy.bmagn``). Values are those of EasySpin 6.0.15
+module attributes (``easyspyn.bmagn``). Values are those of EasySpin 6.0.15
 (CODATA 2022 where not exact by the 2019 SI redefinition).
 """
 

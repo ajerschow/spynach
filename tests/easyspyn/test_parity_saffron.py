@@ -6,8 +6,8 @@ exponfit at 1e-6 (two Levenberg-Marquardt implementations converge to the same m
 import numpy as np
 import pytest
 
-import epreasy as es
-from epreasy.oracle import assert_matches, fixture_root, load_fixture
+import easyspyn as es
+from easyspyn.oracle import assert_matches, fixture_root, load_fixture
 
 ROOT = fixture_root()
 ALL = (

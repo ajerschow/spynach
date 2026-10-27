@@ -1,15 +1,15 @@
-"""Parity of the epreasy foundation with EasySpin: every case written by oracle/matlab/easyspin/dumps/esdump_ham.m.
+"""Parity of the easyspyn foundation with EasySpin: every case written by oracle/matlab/easyspin/dumps/esdump_ham.m.
 
 Each case is rebuilt from the inputs recorded in its meta.json and compared stage by stage. Tolerances:
 operators, rotations and units at 1e-14 (the same arithmetic), Hamiltonians at 1e-12, levels at 1e-12.
-Skips when no fixtures are present under $EPREASY_FIXTURES (default /easyspin-fixtures).
+Skips when no fixtures are present under $EASYSPYN_FIXTURES (default /easyspin-fixtures).
 """
 
 import numpy as np
 import pytest
 
-import epreasy as es
-from epreasy.oracle import assert_matches, fixture_root, load_fixture
+import easyspyn as es
+from easyspyn.oracle import assert_matches, fixture_root, load_fixture
 
 ROOT = fixture_root()
 CASES = (

@@ -1,14 +1,14 @@
 """Parity of pepper, garlic, fastmotion, hamsymm, fieldmod and equivcouple with EasySpin 6.0.15: the cases of
 esdump_pepper.m. pepper spectra are compared normwise at 1e-5 relative: the resonance positions of both sides
-carry the cancellation error of the closed-form cubic roots (about 1e-6 mT; epreasy polishes its roots, EasySpin's
+carry the cancellation error of the closed-form cubic roots (about 1e-6 mT; easyspyn polishes its roots, EasySpin's
 MEX does not), which the sharp turning points of a powder spectrum amplify to a few 1e-6 of the norm. garlic
 spectra agree at 1e-8; fast-motion widths, symmetry frames, modulation and coupling at 1e-12."""
 
 import numpy as np
 import pytest
 
-import epreasy as es
-from epreasy.oracle import assert_matches, fixture_root, load_fixture
+import easyspyn as es
+from easyspyn.oracle import assert_matches, fixture_root, load_fixture
 
 ROOT = fixture_root()
 ALL = (

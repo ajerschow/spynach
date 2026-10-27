@@ -1,4 +1,4 @@
-% EasySpin reference data for epreasy's pulse-EPR simulator saffron (phase 6,
+% EasySpin reference data for easyspyn's pulse-EPR simulator saffron (phase 6,
 % fast engine): predefined ESEEM/HYSCORE/Mims-ENDOR experiments, custom
 % sequences with ideal and real pulses, orientation selection, relaxation
 % decays, the product rule, time-domain evolution, crystals, components,
@@ -8,7 +8,7 @@
 %
 % version_dir is <fixtures_root>/<easyspin version>. One directory per case
 % is written below it with data.h5 and meta.json; the inputs of each case
-% are recorded in meta.json, from which tests/epreasy/test_parity_saffron.py
+% are recorded in meta.json, from which tests/easyspyn/test_parity_saffron.py
 % rebuilds the case. Cases whose directory already exists are skipped.
 
 function esdump_saffron(version_dir)

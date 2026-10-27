@@ -27,7 +27,7 @@ pyodide.FS.mount(pyodide.FS.filesystems.NODEFS, { root: root }, "/repo");
 await pyodide.runPythonAsync(`
 import sys
 sys.path.insert(0, "/repo/src")
-import numpy as np, spynach, ctps, epreasy
+import numpy as np, spynach, ctps, easyspyn
 print("python", sys.version.split()[0], "numpy", np.__version__, "intp", np.dtype(np.intp))
 calls = []
 def show_spectrum(y, x=None, **kw): calls.append(("line", np.asarray(getattr(y, "spec", y)).shape))

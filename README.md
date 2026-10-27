@@ -9,7 +9,7 @@ page at [ajerschow.github.io/spynach](https://ajerschow.github.io/spynach/) link
 guides, the notebooks (rendered by nbviewer) and the Spinach comparison reports, and
 has an "Open in Google Colab" button that runs the quick-start example without a local
 install ([`docs/colab/quick-start.ipynb`](docs/colab/quick-start.ipynb)), and a page that
-runs Spynach, `epreasy` and `ctps` in the browser through Pyodide
+runs Spynach, `easyspyn` and `ctps` in the browser through Pyodide
 ([try.html](https://ajerschow.github.io/spynach/try.html), contributed by Moritz Zaiss). See `HANDOFF.md` for goals and design decisions, and
 `oracle/README.md` for the reference-data ("fixture") harness.
 
@@ -113,7 +113,7 @@ Add-ons originating here, with no Spinach counterpart, each with an example in t
   `plot_time_series` and `plot_trajan` with no Spinach equivalent, and
   `figure_png` for static copies.
 - **Credits**: the Spinach authors of every translated function, by name, in its docstring
-  (`help(spynach.propagator)`) and in [`docs/spinach-credits.md`](docs/spinach-credits.md); for EPReasy, the
+  (`help(spynach.propagator)`) and in [`docs/spinach-credits.md`](docs/spinach-credits.md); for EasySpyn, the
   EasySpin contributors to each original file ([`docs/easyspin-credits.md`](docs/easyspin-credits.md)).
 - **Verification tooling**: `spynach.oracle.compare` for checking any result
   against a Spinach run, the generated parity page `docs/parity.md`, and the
@@ -122,10 +122,10 @@ Add-ons originating here, with no Spinach counterpart, each with an example in t
   generated with outputs, a Colab quick start, and contributed notebooks in
   `user_py/`.
 - **Browser-based execution**: [try.html](https://ajerschow.github.io/spynach/try.html)
-  runs Spynach, `epreasy` and `ctps` in the browser through Pyodide, with
+  runs Spynach, `easyspyn` and `ctps` in the browser through Pyodide, with
   nothing installed, and plots spectra, FIDs and 2D contours from an editor
   preloaded with NMR, EPR and pathway examples (contributed by Moritz Zaiss).
-- **`epreasy`**, a separate package (`import epreasy`, depends on `spynach`,
+- **`easyspyn`**, a separate package (`import easyspyn`, depends on `spynach`,
   never the reverse) that ports [EasySpin](https://easyspin.org) to Python
   with EasySpin's interface: the foundation (spin systems, `sop`, `stev`,
   `ham` with the field split, `levels`, rotations, units, nuclear data),
@@ -134,9 +134,9 @@ Add-ons originating here, with no Spinach counterpart, each with an example in t
   `esfit`, ENDOR with `salt`, magnetometry with `curry`, slow-motion
   spectra with `chili` and pulse EPR (ESEEM, HYSCORE, Mims ENDOR) with
   `saffron`, verified against EasySpin 6.0.15
-  ([docs/epreasy.md](docs/epreasy.md),
+  ([docs/easyspyn.md](docs/easyspyn.md),
   [docs/coming-from-easyspin.md](docs/coming-from-easyspin.md),
-  `src/epreasy/README.md` for how to remove it without touching Spynach).
+  `src/easyspyn/README.md` for how to remove it without touching Spynach).
 
 ## Accuracy notes
 
@@ -212,7 +212,7 @@ GitHub Pages from the root of `main` (Settings > Pages > Deploy from a
 branch > `main`, `/ (root)`; `.nojekyll` keeps Pages from preprocessing the
 tree): `index.html` (landing page), `spinach.html`, `easyspin.html`,
 `extras.html`, `docs.html`, and `try.html`, the playground that runs
-Spynach, `epreasy` and `ctps` in the browser (`worker.js` loads Pyodide in a
+Spynach, `easyspyn` and `ctps` in the browser (`worker.js` loads Pyodide in a
 web worker and fetches the sources). They share `assets/site.css`. The parts
 that are data rather than prose sit between `<!-- site:... -->` markers and
 are written by `scripts/build_site.py`: the navigation, the guide tables of

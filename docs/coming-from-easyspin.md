@@ -1,9 +1,9 @@
 # Coming from EasySpin
 
-What carries over from [EasySpin](https://easyspin.org) 6.0.15 to `epreasy`,
+What carries over from [EasySpin](https://easyspin.org) 6.0.15 to `easyspyn`,
 what differs, and what is not ported. The guides are
-[EPR spin systems with `epreasy`](epreasy.md) and
-[EPR simulations with `epreasy`](epreasy-simulators.md); this page is the reference,
+[EPR spin systems with EasySpyn](easyspyn.md) and
+[EPR simulations with EasySpyn](easyspyn-simulators.md); this page is the reference,
 updated with every ported function. The companion notebook is
 [`notebooks/coming-from-easyspin.ipynb`](notebooks/coming-from-easyspin.ipynb).
 
@@ -44,15 +44,15 @@ updated with every ported function. The companion notebook is
   below.
 - **Errors are EasySpin's messages**, raised as `ValueError`; features that
   are not ported raise `NotImplementedError`.
-- **Authors are credited by name, not in function names.** EasySpin's headers name no authors, so each EPReasy
-  function's docstring (`help(epreasy.pepper)`) and the page [EasySpin function authors](easyspin-credits.md) name
+- **Authors are credited by name, not in function names.** EasySpin's headers name no authors, so each EasySpyn
+  function's docstring (`help(easyspyn.pepper)`) and the page [EasySpin function authors](easyspin-credits.md) name
   the people who authored commits to the original file up to release 6.0.15, and any author its source names;
   function names stay EasySpin's.
 
 ```python
 import numpy as np
 
-import epreasy as es
+import easyspyn as es
 
 spin_system = {"S": 1 / 2, "g": [2.0088, 2.0061, 2.0027], "Nucs": "14N", "A": [16, 16, 86]}
 H0, mux, muy, muz = es.ham(spin_system)  # EasySpin: [H0,mux,muy,muz] = ham(Sys)
@@ -62,7 +62,7 @@ print(H.shape, np.allclose(H, H0 - 350 * muz))
 
 ## Spin systems
 
-| EasySpin | EPReasy |
+| EasySpin | EasySpyn |
 |---|---|
 | `Sys` structure with fields `S`, `g`, `gFrame`, `Nucs`, `A`, `AFrame`, `D`, `DFrame`, `Q`, `QFrame`, `ee`/`J`/`dip`/`dvec`, `eeFrame`, `ee2`, `nn`, `nnFrame`, `B1`..`B12`, `sigma`, `gnscale`, `n`, `lw`, `lwpp`, `lwEndor`, `gStrain`, `DStrain`, `HStrain`, `AStrain` | a dict with the same keys and the same size rules and shorthands (`g_`, `D_`, `A_` spherical forms, `D=[D, E]`, `Q=[eeqQ, eta]`) |
 | `validatespinsys(Sys)` (private) returns `[FullSys, err]` | `validatespinsys(sys)` is public and returns the processed dict; errors raise |
@@ -72,7 +72,7 @@ print(H.shape, np.allclose(H, H0 - 350 * muz))
 
 ## Spin operators and rotations
 
-| EasySpin | EPReasy |
+| EasySpin | EasySpyn |
 |---|---|
 | `sop(Spins,'xye')`, `sop(Spins,'x1,y2')`, `sop(Spins,'x(1|3)')`, `sop(Spins,[1 1; 2 3])` | the same strings and the same `(N, 2)` numeric array; `[Sx,Sy,Sz] = sop(S,'x','y','z')` is `Sx, Sy, Sz = sop(S, "x", "y", "z")` |
 | `sop(...,'sparse')` | `sop(..., sparse=True)` returns `scipy.sparse` CSR |
@@ -85,7 +85,7 @@ print(H.shape, np.allclose(H, H0 - 350 * muz))
 
 ## Hamiltonians and energy levels
 
-| EasySpin | EPReasy |
+| EasySpin | EasySpyn |
 |---|---|
 | `[H0,mux,muy,muz] = ham(Sys)`, `H = ham(Sys,B0)`, `[H0,muzL] = ham(Sys,B0)` | `ham(sys)` returns the 4-tuple; `ham(sys, B0)` returns `H`; `ham(sys, B0, split=True)` returns `(H0, muzL)` |
 | `ham(...,'sparse')` and the same option on every component | `sparse=True` keyword |
@@ -96,16 +96,16 @@ print(H.shape, np.allclose(H, H0 - 350 * muz))
 
 ## Units, constants, nuclear data
 
-| EasySpin | EPReasy |
+| EasySpin | EasySpyn |
 |---|---|
 | `bmagn`, `nmagn`, `planck`, `hbar`, `gfree`, `clight`, `mu0`, `boltzm`, `evolt`, `echarge`, `amu`, `avogadro` as functions | module attributes with the same values (`es.bmagn`) |
 | `unitconvert(value,'cm^-1->MHz')`, `unitconvert(value,'mT->MHz',g)`, `mt2mhz`, `mhz2mt` | the same |
 | `nucdata('14N,1H')` returns up to five outputs; `nucspin`, `nucgval`, `nucqmom`, `nucabund` | `nucdata` returns a named tuple `(spin, gn, qm, abund, nucs)`; the wrappers are the same |
-| the isotope table `private/isotopedata.txt` | shipped verbatim as `epreasy/data/isotopedata.txt`; `isotopes()` returns it. It differs from `spynach`'s table (from Spinach) in some values, so each package keeps its own |
+| the isotope table `private/isotopedata.txt` | shipped verbatim as `easyspyn/data/isotopedata.txt`; `isotopes()` returns it. It differs from `spynach`'s table (from Spinach) in some values, so each package keeps its own |
 
 ## Resonance fields
 
-| EasySpin | EPReasy |
+| EasySpin | EasySpyn |
 |---|---|
 | `[Pos,Int,Wid,Trans] = resfields(Sys,Exp,Opt)` with outputs chosen by `nargout` | `resfields(sys, exp, opt)` returns `Resonances(pos, int, wid, trans)`; `wid` is `None` without strains. The gradient output (`nargout>4`) is not returned (EasySpin leaves it unsorted and `pepper` does not use it) |
 | `Exp.mwFreq`, `Range`, `CenterSweep`, `Temperature`, `mwMode` (`'perpendicular'`, `'parallel'`, `{k alpha}`, `{k 'unpolarized'}`, `{k 'circular+'}`), `SampleFrame`, `MolFrame`, `lightBeam`, `lightScatter` | the same keys; `mwMode` cells become lists `[k, alpha]` |
@@ -120,7 +120,7 @@ print(H.shape, np.allclose(H, H0 - 350 * muz))
 
 ## Line shapes and grids
 
-| EasySpin | EPReasy |
+| EasySpin | EasySpyn |
 |---|---|
 | `gaussian(x,x0,fwhm,diff,phase)`, `[ya,yd] = gaussian(...)`; the same for `lorentzian`, `voigtian` | the same arguments; `dispersion=True` returns `(absorption, dispersion)`; the Gaussian dispersion integral (`diff=-1`) raises `NotImplementedError` (EasySpin needs the Symbolic Toolbox) |
 | `lshape(x,x0,fwhm,diff,alpha,phase)` | the same |
@@ -130,7 +130,7 @@ print(H.shape, np.allclose(H, H0 - 350 * muz))
 
 ## Powder and crystal spectra: pepper
 
-| EasySpin | EPReasy |
+| EasySpin | EasySpyn |
 |---|---|
 | `[B,spc,info] = pepper(Sys,Exp,Opt)`, outputs by `nargout`, a plot without outputs | `pepper(sys, exp, opt)` returns `Spectrum(x, spec, info)`; no plotting |
 | `Exp.mwFreq`, `Range`/`CenterSweep`, `nPoints`, `Harmonic`, `ModAmp`, `mwPhase`, `Temperature`, `mwMode`, `SampleFrame`, `MolFrame`, `lightBeam`, `lightScatter` | the same keys |
@@ -140,9 +140,9 @@ print(H.shape, np.allclose(H, H0 - 350 * muz))
 | the matrix and hybrid methods search `Exp.Range` only (6.0.15's `resfields` ignores `Exp.SearchRange`), the perturbation methods search 20 % beyond it | the same, so that lines just outside the range enter the spectrum only in the perturbation methods |
 | `Sys.Nucs = 'Cu'` and other isotope mixtures (`isotopologues`) | `ValueError` naming the isotopes to choose from; mixtures are not ported |
 | `Opt.FuzzLevel = 1e-10` by default | the same; use 0 for reproducible numbers |
-| the MEX kernels `lisum1i`, `projecttriangles`, `projectzones` | `epreasy.kernels`, bit-exact with the MEX and as fast when Numba is installed (`pip install spynach-spin[fast]`), 5 to 12 times slower in the pure NumPy fallback |
+| the MEX kernels `lisum1i`, `projecttriangles`, `projectzones` | `easyspyn.kernels`, bit-exact with the MEX and as fast when Numba is installed (`pip install spynach-spin[fast]`), 5 to 12 times slower in the pure NumPy fallback |
 | `hamsymm(Sys)` returns `[Group,R]` | `hamsymm(sys)` returns `(group, R)`, with EasySpin's `isisotropic` test as it is in 6.0.15 (inverted logic, so a full `g` with equal eigenvalues is not reduced to `O3`) |
-| `gridinterp`, `esspline1d`, `esspline2d` (private) | public in `epreasy.interp`; the spline end conditions are EasySpin's (not-a-knot, clamped, periodic) |
+| `gridinterp`, `esspline1d`, `esspline2d` (private) | public in `easyspyn.interp`; the spline end conditions are EasySpin's (not-a-knot, clamped, periodic) |
 | `fieldmod(B,spc,ModAmp,Harmonic)` | the same, Bessel-function pseudo-modulation in the Fourier domain |
 | run time | the nitroxide at X band takes 0.19 s against EasySpin's 0.06 s (the per-orientation loop is Python); Cu(II) with four 14N takes 0.05 s by second-order perturbation theory (EasySpin 0.04 s) and 0.3 s by the hybrid method (EasySpin 0.08 s), where full diagonalisation takes about a minute on either side |
 
@@ -155,7 +155,7 @@ print(spectrum.x.shape, spectrum.spec.shape, spectrum.info["Transitions"].tolist
 
 ## Solution spectra: garlic
 
-| EasySpin | EPReasy |
+| EasySpin | EasySpyn |
 |---|---|
 | `[B,spc,info] = garlic(Sys,Exp,Opt)` | `garlic(sys, exp, opt)` returns `Spectrum(x, spec, info)`; `info["resfields"]` are the line positions, `info["intensities"]` their amplitudes |
 | `Sys.g` (isotropic, or principal values whose mean is used), `Nucs`, `A`, `n`, `lw`, `lwpp`, `tcorr`/`logtcorr`, `Q` | the same |
@@ -174,7 +174,7 @@ print("three lines at", np.sort(lines.info["resfields"]).round(3), "mT")
 
 ## Fitting: esfit
 
-| EasySpin | EPReasy |
+| EasySpin | EasySpyn |
 |---|---|
 | `esfit(data,fcn,p0,vary)`, `esfit(data,fcn,p0,lb,ub)`, `esfit(___,FitOpt)`; `result = esfit(...)`, or the GUI without an output | the same positional forms (`vary`, `lb`, `ub`, `opt` also as keywords) returning a `FitResult` dataclass with EasySpin's fields; no GUI |
 | `pepper({Sys1,Sys2},Exp)` with `Sys.weight`, `Opt.separate = 'components'` | `pepper([sys1, sys2], exp)` and the same for `garlic`; isotopologues are not expanded |
@@ -199,7 +199,7 @@ print(result.pnames, result.pfit.round(5), f"rmsd {result.rmsd:.1e}")
 
 ## ENDOR: endorfrq, salt, orisel
 
-| EasySpin | EPReasy |
+| EasySpin | EasySpyn |
 |---|---|
 | `[Pos,Int,Tra,Info] = endorfrq(Sys,Exp,Opt)`, intensities only with two or more outputs | `endorfrq(sys, exp, opt)` returns `EndorResonances(pos, int, trans, info)`; `int` is `None` with `Opt.Intensity = 'off'` |
 | `Exp.Field`, `mwFreq`, `ExciteWidth`, `Temperature`, `Range`, `rf`, `SampleFrame`, `MolFrame`; `Opt.Transitions`, `Threshold`, `Nuclei`, `Intensity`, `Enhancement`, `OriWeights`, `OriThreshold` | the same keys |
@@ -219,7 +219,7 @@ print(spectrum.x.shape, spectrum.info["Transitions"].tolist())
 
 ## Magnetometry: curry
 
-| EasySpin | EPReasy |
+| EasySpin | EasySpyn |
 |---|---|
 | `curry(Sys,Exp,Opt)` with outputs chosen by `Opt.Output` and `nargout` (`'muBM chimol'` for two outputs) | `curry(sys, exp, opt)`; `Opt.Output` defaults to `'muBM chimol'`; one keyword returns the array, several the tuple in that order; shapes are `(nFields, nTemperatures)` as in EasySpin |
 | `Exp.Field`, `Temperature`, `SampleFrame`, `MolFrame`, `CrystalSymmetry` (P1); `Sys.TIP`; `Opt.Output`, `Units`, `Method`, `GridSize`, `GridSymmetry`, `GridFrame`, `Spins`, `deltaB` | the same keys; `Exp.Ordering` and `SampleRotation` raise `NotImplementedError` |
@@ -233,7 +233,7 @@ print(chi.shape, chi.round(12))
 
 ## Slow motion: chili
 
-| EasySpin | EPReasy |
+| EasySpin | EasySpyn |
 |---|---|
 | `[B,spc,info] = chili(Sys,Exp,Opt)`, a plot without outputs | `chili(sys, exp, opt)` returns `Spectrum(x, spec, info)`; `info` carries the basis size, the norm of the equilibrium vector and a `warning` string where EasySpin prints one |
 | `Opt.LiouvMethod`: `'fast'` (C kernel, default for S = 1/2 with up to two nuclei) or `'general'` | the general method only; `'fast'` raises `NotImplementedError`. EasySpin's own test requires the two to agree at 1e-3 |
@@ -243,7 +243,7 @@ print(chi.shape, chi.round(12))
 | `wigner3j`, `wigner6j` (`'f'`/`'r'` methods) | exact integer arithmetic for every rank; the same call forms |
 | `wignerd(J,...)`, `wignerd([J m1 m2],...)`, phase `'+'`/`'-'` | the same, `phase=` keyword; single elements are vectorised over the angles |
 | `tensor_cart2sph`, `tensor_sph2cart` | the same |
-| `istotensor`, `hil2liouv`, `generateoribasis`, `jjjsymbol`, `liouvhamiltonian`, `diffsuperop`, `chili_xlmk`, `chili_eqpopvec`, `chili_lanczos`, `chili_conjgrad`, `chili_contfracspec`, `pqorder`, `magint`, `rbos` (private) | private functions of `epreasy.slowmotion` |
+| `istotensor`, `hil2liouv`, `generateoribasis`, `jjjsymbol`, `liouvhamiltonian`, `diffsuperop`, `chili_xlmk`, `chili_eqpopvec`, `chili_lanczos`, `chili_conjgrad`, `chili_contfracspec`, `pqorder`, `magint`, `rbos` (private) | private functions of `easyspyn.slowmotion` |
 
 ```python
 slow = {"g": [2.008, 2.0061, 2.0027], "Nucs": "14N", "A": [16, 16, 86], "lw": 0.1, "tcorr": 1e-9}
@@ -253,7 +253,7 @@ print(spectrum.spec.shape, spectrum.info["nBasis"])
 
 ## Pulse EPR: saffron
 
-| EasySpin | EPReasy |
+| EasySpin | EasySpyn |
 |---|---|
 | `[t,td,info] = saffron(Sys,Exp,Opt)`, `{t1,t2}` for 2-D experiments, a plot without outputs | `saffron(sys, exp, opt)` returns `Spectrum(x, spec, info)`; `x` is the time axis or a tuple of two, `spec` the complex modulation signal (the ENDOR spectrum for Mims ENDOR), `info` holds `td`, `fd`, `f`/`f1`/`f2` and `nSkippedOrientations` |
 | `Opt.SimulationMode = 'fast'` (ideal pulses, frequency-domain histogram) or `'thyme'` (explicit propagation with shaped pulses) | the fast engine only; `'thyme'`, shaped pulses, `Exp.DetWindow`, resonators and the pulse-parameter dimensions raise `NotImplementedError` |
@@ -264,7 +264,7 @@ print(spectrum.spec.shape, spectrum.info["nBasis"])
 | `Opt.ProductRule`, `Opt.Nuclei`, `Opt.TimeDomain`, `Opt.Expand`, `Opt.EndorMethod`, `Opt.Window`, `Opt.ZeroFillFactor`, `Opt.GridSize`, `Opt.GridSymmetry`, `Opt.GridFrame` | the same keys |
 | `Exp.SampleFrame`, `Exp.MolFrame` (crystals), `Exp.CrystalSymmetry` | P1 only; `Exp.Ordering` and `SampleRotation` are not ported |
 | `Sys = {Sys1, Sys2}` with `Sys.weight` | a list of dicts; `info["fd"]` is the weighted sum |
-| `sf_peaks` (C), `sf_evolve`, `sf_pathways`, `pathwayparser` (private) | NumPy; `sf_pathways` is public, the rest private in `epreasy.pulsed` |
+| `sf_peaks` (C), `sf_evolve`, `sf_pathways`, `pathwayparser` (private) | NumPy; `sf_pathways` is public, the rest private in `easyspyn.pulsed` |
 | `larmorfrq`, `apowin`, `fdaxis`, `exponfit`, `basecorr` | the same; `exponfit(x, y, n, noconst=True)` instead of the `'noconst'` flag |
 | isotope mixtures in `Sys.Nucs` (`'N'`, `'Cu'`) | not ported; give isotopes |
 
@@ -296,7 +296,7 @@ Reference data are written by EasySpin itself: the dump scripts in
 `esdump_pepper.m`, `esdump_esfit.m`, `esdump_endor.m`, `esdump_chili.m`,
 `esdump_saffron.m`) run in MATLAB with the installed EasySpin on the path
 (read-only) and write one case per spin system or spectrum to
-`$EPREASY_FIXTURES/<version>/<case>/`, with the inputs recorded in
-`meta.json` so that `tests/epreasy/test_parity*.py` rebuild each case from
+`$EASYSPYN_FIXTURES/<version>/<case>/`, with the inputs recorded in
+`meta.json` so that `tests/easyspyn/test_parity*.py` rebuild each case from
 the same input. The cases and the measured agreement are listed in
 [`porting/EASYSPIN_FIXTURES.md`](../porting/EASYSPIN_FIXTURES.md).

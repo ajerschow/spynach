@@ -2,7 +2,7 @@
 
 Fixtures are written by ``oracle/matlab/easyspin/dumps/esdump_*.m`` running
 EasySpin in MATLAB, in the HDF5 layout of ``oracle/matlab/lib/oracle_write.m``,
-under ``<root>/<easyspin version>/<case>/``. The root is ``$EPREASY_FIXTURES``
+under ``<root>/<easyspin version>/<case>/``. The root is ``$EASYSPYN_FIXTURES``
 (default ``/easyspin-fixtures``), separate from the Spinach fixtures of
 ``spynach.oracle``; the reader and the comparison helpers are shared.
 """
@@ -33,8 +33,11 @@ DEFAULT_FIXTURE_ROOT = Path("/easyspin-fixtures")
 
 
 def fixture_root() -> Path:
-    """Root of the EasySpin fixture tree: ``$EPREASY_FIXTURES`` or ``/easyspin-fixtures``."""
-    return Path(os.environ.get("EPREASY_FIXTURES", DEFAULT_FIXTURE_ROOT))
+    """Root of the EasySpin fixture tree: ``$EASYSPYN_FIXTURES`` or ``/easyspin-fixtures``.
+
+    ``$EPREASY_FIXTURES``, the variable of the package's former name, is still read when the new one is not set,
+    so that a parity run does not silently skip its tests after the rename."""
+    return Path(os.environ.get("EASYSPYN_FIXTURES") or os.environ.get("EPREASY_FIXTURES") or DEFAULT_FIXTURE_ROOT)
 
 
 def find_case(case: str, version: str | None = None) -> Path | None:
@@ -50,7 +53,7 @@ def find_case(case: str, version: str | None = None) -> Path | None:
 
 
 def _lists(d: dict, keys: tuple[str, ...]) -> dict:
-    """meta.json stores a one-element MATLAB vector as a scalar; these fields are lists in epreasy."""
+    """meta.json stores a one-element MATLAB vector as a scalar; these fields are lists in easyspyn."""
     out = dict(d or {})
     for key in keys:
         if key in out:
@@ -86,12 +89,12 @@ def _tuples(obj):
 
 
 def case_call(fixture: Fixture) -> tuple[Callable[[], np.ndarray], np.ndarray]:
-    """The epreasy call of a fixture case rebuilt from its recorded inputs: ``(run, reference)``.
+    """The easyspyn call of a fixture case rebuilt from its recorded inputs: ``(run, reference)``.
 
     ``run()`` executes the simulator on the inputs of ``meta.json`` and returns the array the parity tests
     compare (the spectrum, the first curry output, the fitted parameters); ``reference`` is EasySpin's.
     Serves the timing script of the project page; the parity tests keep their own, finer comparisons."""
-    import epreasy as es
+    import easyspyn as es
 
     inputs = fixture.meta["inputs"]
     fn = inputs.get("fn") or ("esfit" if "fcn" in inputs else None)  # esfit cases record the model as "fcn"
@@ -140,7 +143,7 @@ def case_call(fixture: Fixture) -> tuple[Callable[[], np.ndarray], np.ndarray]:
             k += 1
         fit_opt = dict(inputs["FitOpt"])
         method = fit_opt.get("Method", "")
-        # EasySpin 6.0.15 swaps its 'diff' and 'fft' targets; epreasy uses the names as meant
+        # EasySpin 6.0.15 swaps its 'diff' and 'fft' targets; easyspyn uses the names as meant
         if "diff" in method.split():
             fit_opt["Method"] = method.replace("diff", "fft")
         elif "fft" in method.split():

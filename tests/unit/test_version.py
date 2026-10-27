@@ -26,7 +26,7 @@ def test_ctps_carries_the_distribution_version():
 
 
 def test_easyspyn_distribution_carries_the_distribution_version():
-    """packaging/easyspyn builds the PyPI distribution of EPReasy; its version follows the repository's."""
+    """packaging/easyspyn builds the PyPI distribution of EasySpyn; its version follows the repository's."""
     pyproject = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))["project"]["version"]
     easyspyn = tomllib.loads((ROOT / "packaging" / "easyspyn" / "pyproject.toml").read_text(encoding="utf-8"))
     assert easyspyn["project"]["name"] == "easyspyn" and easyspyn["project"]["version"] == pyproject

@@ -4,8 +4,8 @@ the orientation interpolation, the Hamiltonian symmetry, field modulation and eq
 import numpy as np
 import pytest
 
-import epreasy as es
-from epreasy import interp, kernels
+import easyspyn as es
+from easyspyn import interp, kernels
 
 NITROXIDE = {"g": [2.0088, 2.0061, 2.0027], "Nucs": "14N", "A": [16, 16, 86], "lwpp": 0.3}
 XBAND = {"mwFreq": 9.5, "Range": [330, 350], "nPoints": 1024}

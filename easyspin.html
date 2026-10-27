@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Spynach: the EasySpin port</title>
-<meta name="description" content="EPReasy: EasySpin's EPR simulators in Python with EasySpin's interface, verified against EasySpin 6.0.15, with timing comparisons.">
+<meta name="description" content="EasySpyn: EasySpin's EPR simulators in Python with EasySpin's interface, verified against EasySpin 6.0.15, with timing comparisons.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap">
@@ -28,9 +28,9 @@
 <div class="lede-page">
   <span class="eyebrow">EasySpin port</span>
   <h1>EasySpin's simulators in Python</h1>
-  <p class="lede"><code>epreasy</code> ports <a href="https://easyspin.org">EasySpin</a> 6.0.15, the MATLAB toolbox for EPR spectral simulation by Stefan Stoll and co-workers, keeping its interface: spin systems as dicts with EasySpin's field names, fields in mT, couplings in MHz, 1-based spin numbers. Every simulator is verified against EasySpin on reference data EasySpin wrote itself.</p>
+  <p class="lede"><code>easyspyn</code> ports <a href="https://easyspin.org">EasySpin</a> 6.0.15, the MATLAB toolbox for EPR spectral simulation by Stefan Stoll and co-workers, keeping its interface: spin systems as dicts with EasySpin's field names, fields in mT, couplings in MHz, 1-based spin numbers. Every simulator is verified against EasySpin on reference data EasySpin wrote itself.</p>
   <div class="actions">
-    <a class="btn primary" href="https://github.com/ajerschow/spynach/blob/main/docs/epreasy.md">Start with the first guide</a>
+    <a class="btn primary" href="https://github.com/ajerschow/spynach/blob/main/docs/easyspyn.md">Start with the first guide</a>
     <a class="btn" href="https://github.com/ajerschow/spynach/blob/main/docs/coming-from-easyspin.md">Coming from EasySpin</a>
     <a class="btn" href="try.html#ex-epr-pepper">Run a powder spectrum in the browser</a>
   </div>
@@ -39,7 +39,7 @@
 <section id="about">
   <header><span class="eyebrow">Package</span><h2>A separate package beside Spynach</h2></header>
   <div>
-    <p><code>epreasy</code> is its own package in the same repository and distribution, imported as <code>import epreasy</code>. It depends on <code>spynach</code> (for the oracle reader and comparison tools), never the reverse: a test walks the sources and fails if anything in the Spinach port imports it. The Spinach port stays a pure mirror of Spinach; EasySpin's methods, which do not fit Spinach's create, basis, sequence, context pipeline (field sweeps, resonance-field search, perturbation theory, orientation interpolation, the Wigner-function slow-motion basis, fitting), live here with their own isotope table, units and angle conventions.</p>
+    <p><code>easyspyn</code> is its own package in the same repository and distribution, imported as <code>import easyspyn</code>. It depends on <code>spynach</code> (for the oracle reader and comparison tools), never the reverse: a test walks the sources and fails if anything in the Spinach port imports it. The Spinach port stays a pure mirror of Spinach; EasySpin's methods, which do not fit Spinach's create, basis, sequence, context pipeline (field sweeps, resonance-field search, perturbation theory, orientation interpolation, the Wigner-function slow-motion basis, fitting), live here with their own isotope table, units and angle conventions.</p>
     <p>The port works from EasySpin's readable source at tag v6.0.15 (MIT licence; the attribution is kept in <a href="https://github.com/ajerschow/spynach/blob/main/LICENSE">LICENSE</a>). EasySpin's seven C kernels (line summation, triangle projection, cubic roots, peak binning, the slow-motion Liouvillian) are rewritten in NumPy, with a Numba path for the three that pepper and garlic use, bit-exact with the MEX files. Algorithms, not compiled code, give EasySpin its speed, and the algorithms are ported.</p>
   </div>
 </section>
@@ -48,15 +48,15 @@
   <header><span class="eyebrow">Scope</span><h2>What is ported</h2></header>
   <div>
     <div class="figures">
-      <figure><img src="docs/figures/epreasy-simulators-pepper.png" alt="Nitroxide powder spectrum by matrix diagonalisation and second-order perturbation theory" loading="lazy"><figcaption><code>pepper</code>: cw EPR of powders and crystals by the matrix, hybrid, perturbation and eigenfield methods, with orientation interpolation, triangle projection, strains, convolution, field modulation.</figcaption></figure>
-      <figure><img src="docs/figures/epreasy-simulators-garlic.png" alt="Nitroxide solution spectra at two correlation times" loading="lazy"><figcaption><code>garlic</code>: isotropic solutions with Breit-Rabi and perturbation line positions, equivalent nuclei, fast-motion widths, frequency sweeps.</figcaption></figure>
-      <figure><img src="docs/figures/epreasy-simulators-esfit.png" alt="A fitted powder spectrum with residuals" loading="lazy"><figcaption><code>esfit</code>: least-squares fitting of any simulator or custom model with EasySpin's algorithms (simplex, Levenberg-Marquardt, Monte Carlo, genetic, grid, particle swarm), uncertainties, baselines, masks, global fits.</figcaption></figure>
-      <figure><img src="docs/figures/epreasy-simulators-salt.png" alt="14N ENDOR spectra with and without orientation selection" loading="lazy"><figcaption><code>salt</code>, <code>endorfrq</code>: ENDOR frequencies and powder or crystal spectra, orientation selection, hyperfine enhancement, pulse-ENDOR flip angles.</figcaption></figure>
-      <figure><img src="docs/figures/epreasy-simulators-curry.png" alt="Susceptibility times temperature of a dimer against the Curie law" loading="lazy"><figcaption><code>curry</code>: magnetic moments and susceptibilities in SI and CGS by the operator or partition-function method.</figcaption></figure>
-      <figure><img src="docs/figures/epreasy-simulators-chili.png" alt="Nitroxide slow-motion spectra at four correlation times" loading="lazy"><figcaption><code>chili</code>: the stochastic Liouville equation in the Wigner basis, Brownian diffusion, ordering potentials, MOMD, Lanczos with continued fraction and the other solvers.</figcaption></figure>
-      <figure><img src="docs/figures/epreasy-simulators-saffron.png" alt="Three-pulse ESEEM trace and HYSCORE spectrum of 14N" loading="lazy"><figcaption><code>saffron</code>: pulse EPR with ideal and rectangular pulses, ESEEM, HYSCORE, Mims ENDOR and custom sequences with coherence transfer pathways, relaxation decays, product rule.</figcaption></figure>
+      <figure><img src="docs/figures/easyspyn-simulators-pepper.png" alt="Nitroxide powder spectrum by matrix diagonalisation and second-order perturbation theory" loading="lazy"><figcaption><code>pepper</code>: cw EPR of powders and crystals by the matrix, hybrid, perturbation and eigenfield methods, with orientation interpolation, triangle projection, strains, convolution, field modulation.</figcaption></figure>
+      <figure><img src="docs/figures/easyspyn-simulators-garlic.png" alt="Nitroxide solution spectra at two correlation times" loading="lazy"><figcaption><code>garlic</code>: isotropic solutions with Breit-Rabi and perturbation line positions, equivalent nuclei, fast-motion widths, frequency sweeps.</figcaption></figure>
+      <figure><img src="docs/figures/easyspyn-simulators-esfit.png" alt="A fitted powder spectrum with residuals" loading="lazy"><figcaption><code>esfit</code>: least-squares fitting of any simulator or custom model with EasySpin's algorithms (simplex, Levenberg-Marquardt, Monte Carlo, genetic, grid, particle swarm), uncertainties, baselines, masks, global fits.</figcaption></figure>
+      <figure><img src="docs/figures/easyspyn-simulators-salt.png" alt="14N ENDOR spectra with and without orientation selection" loading="lazy"><figcaption><code>salt</code>, <code>endorfrq</code>: ENDOR frequencies and powder or crystal spectra, orientation selection, hyperfine enhancement, pulse-ENDOR flip angles.</figcaption></figure>
+      <figure><img src="docs/figures/easyspyn-simulators-curry.png" alt="Susceptibility times temperature of a dimer against the Curie law" loading="lazy"><figcaption><code>curry</code>: magnetic moments and susceptibilities in SI and CGS by the operator or partition-function method.</figcaption></figure>
+      <figure><img src="docs/figures/easyspyn-simulators-chili.png" alt="Nitroxide slow-motion spectra at four correlation times" loading="lazy"><figcaption><code>chili</code>: the stochastic Liouville equation in the Wigner basis, Brownian diffusion, ordering potentials, MOMD, Lanczos with continued fraction and the other solvers.</figcaption></figure>
+      <figure><img src="docs/figures/easyspyn-simulators-saffron.png" alt="Three-pulse ESEEM trace and HYSCORE spectrum of 14N" loading="lazy"><figcaption><code>saffron</code>: pulse EPR with ideal and rectangular pulses, ESEEM, HYSCORE, Mims ENDOR and custom sequences with coherence transfer pathways, relaxation decays, product rule.</figcaption></figure>
     </div>
-    <p>Underneath: EasySpin's spin-system validation, <code>sop</code> and the Stevens operators, <code>ham</code> with the field split that makes field sweeps cheap, <code>levels</code>, <code>resfields</code> with its adaptive spline modelling of the energy level diagram, the eigenfield method, line shapes, the SOPHE grids, rotations, units and EasySpin's isotope table. The EasySpin contributors to the original of every translated function are named in its docstring and on the <a href="https://github.com/ajerschow/spynach/blob/main/docs/easyspin-credits.md">EasySpin authors</a> page. The function-by-function list is in the package <a href="https://github.com/ajerschow/spynach/blob/main/src/epreasy/README.md">README</a>.</p>
+    <p>Underneath: EasySpin's spin-system validation, <code>sop</code> and the Stevens operators, <code>ham</code> with the field split that makes field sweeps cheap, <code>levels</code>, <code>resfields</code> with its adaptive spline modelling of the energy level diagram, the eigenfield method, line shapes, the SOPHE grids, rotations, units and EasySpin's isotope table. The EasySpin contributors to the original of every translated function are named in its docstring and on the <a href="https://github.com/ajerschow/spynach/blob/main/docs/easyspin-credits.md">EasySpin authors</a> page. The function-by-function list is in the package <a href="https://github.com/ajerschow/spynach/blob/main/src/easyspyn/README.md">README</a>.</p>
     <h3>Not ported</h3>
     <p>The <code>thyme</code> engine of <code>saffron</code> (shaped pulses, explicit propagation, resonators) and <code>spidyan</code>; <code>esfit</code>'s window and the other GUIs; <code>chili</code>'s C kernel for the Liouvillian (the general method, which the kernel reproduces to 1e-3, is the ported one), Heisenberg exchange and the LMK basis; isotope mixtures, partial ordering and sample rotations; orbital angular momentum, higher-order Zeeman terms, crystal symmetries beyond P1; the MD-trajectory methods and Bruker file readers. The guide <a href="https://github.com/ajerschow/spynach/blob/main/docs/coming-from-easyspin.md">Coming from EasySpin</a> keeps the list current, simulator by simulator.</p>
   </div>
@@ -69,7 +69,7 @@
       <li><b>EasySpin's names, fields and units.</b> Functions keep their names, spin systems are dicts with EasySpin's field names, fields in mT, couplings in MHz, angles in radians, spin and level numbers 1-based.</li>
       <li><b>MATLAB shapes.</b> A scalar or a flat list is one row, a list of lists one row per spin, a 3n x 3 array a stack of full tensors, exactly EasySpin's size rules.</li>
       <li><b>Python idioms where MATLAB's calling conventions do not carry over.</b> Options are keyword arguments, outputs are named tuples (<code>Spectrum(x, spec, info)</code>, <code>FitResult</code>), nothing plots by itself. Each such deviation is recorded in the comparison guide.</li>
-      <li><b>Separate from Spynach.</b> Spynach uses Spinach's 0-based indices, T and Hz, and its own isotope table; EPReasy converts in one direction only when it reuses Spynach code.</li>
+      <li><b>Separate from Spynach.</b> Spynach uses Spinach's 0-based indices, T and Hz, and its own isotope table; EasySpyn converts in one direction only when it reuses Spynach code.</li>
     </ul>
   </div>
 </section>
@@ -78,7 +78,7 @@
   <header><span class="eyebrow">Quick start</span><h2>A nitroxide at X band</h2></header>
   <div>
     <p>After <a href="index.html#install">installing</a> (the <code>fast</code> extra adds Numba for the kernels): energy levels, then a powder spectrum.</p>
-<pre><code>import epreasy as es
+<pre><code>import easyspyn as es
 
 nitroxide = {"g": [2.0088, 2.0061, 2.0027], "Nucs": "14N", "A": [16, 16, 86]}
 print("levels at 340 mT along z (MHz):", es.levels(nitroxide, "z", 340).round(1))
@@ -100,17 +100,17 @@ print(powder.spec.shape, "points; extrema at", powder.x[[powder.spec.argmax(), p
       <li><b><code>chili</code>:</b> 1e-5 of the norm with EasySpin's general method (the Lanczos convergence threshold sets the floor), 1e-3 against its fast C kernel, which EasySpin's own test demands.</li>
       <li><b><code>saffron</code>:</b> 1e-6 on every signal and spectrum.</li>
     </ul>
-    <p>Every case, with the measured agreement, is listed in <a href="https://github.com/ajerschow/spynach/blob/main/porting/EASYSPIN_FIXTURES.md">porting/EASYSPIN_FIXTURES.md</a>; the harness is described in the package <a href="https://github.com/ajerschow/spynach/blob/main/src/epreasy/README.md#reference-data">README</a>.</p>
+    <p>Every case, with the measured agreement, is listed in <a href="https://github.com/ajerschow/spynach/blob/main/porting/EASYSPIN_FIXTURES.md">porting/EASYSPIN_FIXTURES.md</a>; the harness is described in the package <a href="https://github.com/ajerschow/spynach/blob/main/src/easyspyn/README.md#reference-data">README</a>.</p>
   </div>
 </section>
 
 <section id="timing">
-  <header><span class="eyebrow">Timing</span><h2>EasySpin against epreasy</h2></header>
+  <header><span class="eyebrow">Timing</span><h2>EasySpin against EasySpyn</h2></header>
   <div>
-    <p>Representative fixture cases, timed on the same machine: EasySpin as shipped (MATLAB with its MEX kernels), EPReasy with the faster of its NumPy and Numba kernels where a kernel is on the path. The table is generated from <code>comparison/easyspin/timings.json</code> by <code>scripts/easyspin-timings.py</code>, which also records the agreement of the two results.</p>
+    <p>Representative fixture cases, timed on the same machine: EasySpin as shipped (MATLAB with its MEX kernels), EasySpyn with the faster of its NumPy and Numba kernels where a kernel is on the path. The table is generated from <code>comparison/easyspin/timings.json</code> by <code>scripts/easyspin-timings.py</code>, which also records the agreement of the two results.</p>
     <!-- site:timing-easyspin -->
 <div class="scroll"><table class="timing">
-<thead><tr><th>Case</th><th class="num">EasySpin / s</th><th class="num">EPReasy / s</th><th class="num">EPReasy / EasySpin</th><th class="num">Agreement</th><th>Browser</th></tr></thead>
+<thead><tr><th>Case</th><th class="num">EasySpin / s</th><th class="num">EasySpyn / s</th><th class="num">EasySpyn / EasySpin</th><th class="num">Agreement</th><th>Browser</th></tr></thead>
 <tbody>
 <tr><td><code>pepper</code><br><span class="note">nitroxide powder at X band, matrix diagonalisation, 1024 points</span></td><td class="num">0.14</td><td class="num">0.082</td><td class="num">0.60x</td><td class="num">4.5e-13</td><td class="links"><a href="try.html#ex-epr-pepper">run</a></td></tr>
 <tr><td><code>pepper</code><br><span class="note">the same spectrum by second-order perturbation theory</span></td><td class="num">0.042</td><td class="num">0.010</td><td class="num">0.24x</td><td class="num">1.6e-13</td><td class="links"><a href="try.html#ex-epr-pepper">run</a></td></tr>
@@ -127,7 +127,7 @@ print(powder.spec.shape, "points; extrema at", powder.x[[powder.spec.argmax(), p
 <tr><td><code>saffron</code><br><span class="note">three-pulse ESEEM of 14N, 200 points</span></td><td class="num">0.018</td><td class="num">0.002</td><td class="num">0.11x</td><td class="num">3.2e-16</td><td class="links"><a href="try.html#ex-epr-saffron">run</a></td></tr>
 <tr><td><code>saffron</code><br><span class="note">HYSCORE of 14N, 48 x 48 points</span></td><td class="num">0.024</td><td class="num">0.003</td><td class="num">0.13x</td><td class="num">5.9e-16</td><td class="links"><a href="try.html#ex-epr-hyscore">run</a></td></tr>
 </tbody></table></div>
-<p class="note">EasySpin 6.0.15 in MATLAB 26.2.0.3386108 (R2026b); EPReasy 0.3.0 with Python 3.12.5, NumPy 2.5.4, SciPy 1.18.1 on accelerate, Numba 0.68.0; macOS-26.6.2-arm64-arm-64bit, 12 cores. EasySpin times are one call inside the fixture run after a warm-up call (a fit is timed once); EPReasy times are the median of 5 calls after a warm-up, the faster of the NumPy and the Numba kernels where a kernel is on the path. Generated 2026-10-24.</p>
+<p class="note">EasySpin 6.0.15 in MATLAB 26.2.0.3386108 (R2026b); EasySpyn 0.3.0 with Python 3.12.5, NumPy 2.5.4, SciPy 1.18.1 on accelerate, Numba 0.68.0; macOS-26.6.2-arm64-arm-64bit, 12 cores. EasySpin times are one call inside the fixture run after a warm-up call (a fit is timed once); EasySpyn times are the median of 5 calls after a warm-up, the faster of the NumPy and the Numba kernels where a kernel is on the path. Generated 2026-10-24.</p>
 <!-- /site:timing-easyspin -->
     <p class="note">The browser column runs the same simulator on a guide-sized example in the playground, where the NumPy kernels are the only path.</p>
   </div>

@@ -45,7 +45,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 EasySpin
 ========
 
-The `epreasy` package (src/epreasy), its tests and its isotope table were
+The `easyspyn` package (src/easyspyn), its tests and its isotope table were
 written by reading and translating EasySpin (https://easyspin.org), which
 is distributed under the MIT License with the following notice, reproduced
 here as that licence requires and to be kept with any copy or substantial

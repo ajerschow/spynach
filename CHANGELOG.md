@@ -4,12 +4,16 @@ Releases are tagged `vX.Y.Z` on GitHub; the version is `spynach.__version__`.
 
 ## 0.3.0 - 2026-10-26
 
-- The EasySpin contributors behind every function that EPReasy translates are acknowledged by name, as the Spinach
+- The EasySpin port is called EasySpyn (formerly EPReasy, `epreasy`) everywhere: the import name and the PyPI
+  distribution are both `easyspyn`, the source is `src/easyspyn`, the tests `tests/easyspyn`, the guides
+  `docs/easyspyn*.md`, and the fixture variable `EASYSPYN_FIXTURES` (the old `EPREASY_FIXTURES` is still read).
+  This breaks `import epreasy` of the 0.2.0 PyPI release; nothing else in the repository uses the old name.
+- The EasySpin contributors behind every function that EasySpyn translates are acknowledged by name, as the Spinach
   authors are in Spynach: an `EasySpin authors (pepper.m): ...` line in the docstring of each function (113 functions
   from 103 EasySpin files), a block per module, and the generated page `docs/easyspin-credits.md`. EasySpin's headers
   name no authors, so the lists are the people who authored commits to each original file up to release 6.0.15,
   plus authors the source names (John D'Errico for `jacobianest.m`).
-  `porting/tools/gen_easyspin_authors.py` reads the history through the `gh` CLI; `tests/epreasy/test_credits.py`
+  `porting/tools/gen_easyspin_authors.py` reads the history through the `gh` CLI; `tests/easyspyn/test_credits.py`
   keeps docstrings and page current offline. The shared code of both credits tools is in
   `porting/tools/credits_common.py`.
 - The Spinach authors of every translated function are acknowledged by name: a `Spinach authors (propagator.m): ...`
@@ -19,7 +23,7 @@ Releases are tagged `vX.Y.Z` on GitHub; the version is `spynach.__version__`.
   `porting/tools/gen_spinach_authors.py` reads the headers of a Spinach checkout into
   `porting/spinach_authors.json` and writes the docstrings and the page; `tests/unit/test_credits.py` keeps them
   current without a checkout. Function names are unchanged.
-- EPReasy has a PyPI distribution, `easyspyn` (import name `epreasy`, NumPy and SciPy only; `easyspyn[fast]` adds
+- EasySpyn has a PyPI distribution, `easyspyn` (NumPy and SciPy only; `easyspyn[fast]` adds
   Numba), built by `scripts/build_easyspyn.py` from `packaging/easyspyn/`; the name is held for an initial 0.2.0
   release while the final name of the package is decided.
   A GitHub Actions workflow (`.github/workflows/publish-easyspyn.yml`) publishes it through PyPI's Trusted
@@ -31,18 +35,18 @@ Releases are tagged `vX.Y.Z` on GitHub; the version is `spynach.__version__`.
   elements within an ulp of a rounding boundary; below a size threshold, without Numba, and with
   `SPYNACH_NUMBA=0` the NumPy and SciPy code runs as before. Full-size strychnine NOESY: 88 s to 68 s, the
   rest being dense matrix products at BLAS speed; timings of the three long comparison cases are on the project site.
-- `epreasy` and `ctps` carry the distribution version, 0.2.0, as `spynach` does; tests keep the
+- `easyspyn` and `ctps` carry the distribution version, 0.2.0, as `spynach` does; tests keep the
   three equal to `[project].version`.
-- `epreasy`, a separate package beside Spynach that ports EasySpin (Stefan
-  Stoll and co-workers, MIT) to Python, imported as `epreasy` and depending
+- `easyspyn`, a separate package beside Spynach that ports EasySpin (Stefan
+  Stoll and co-workers, MIT) to Python, imported as `easyspyn` and depending
   on `spynach` (never the reverse; a test enforces it). This first step is
   the foundation: spin systems as dicts with EasySpin's fields
   (`validatespinsys`), `sop` and `stev`, `ham` with the field split and its
   components, `levels`, `erot`/`eulang`, units, constants and EasySpin's
   isotope table; verified against EasySpin 6.0.15 on five spin systems
-  (`oracle/matlab/easyspin/`). Guides `docs/epreasy.md` and
+  (`oracle/matlab/easyspin/`). Guides `docs/easyspyn.md` and
   `docs/coming-from-easyspin.md`.
-- `epreasy` resonance-field layer: `resfields` (EasySpin's adaptive spline
+- `easyspyn` resonance-field layer: `resfields` (EasySpin's adaptive spline
   modelling of the energy level diagram, matrix and hybrid methods, H/g/A/D
   strains, Boltzmann and non-equilibrium populations, excitation modes,
   photoselection; crystal symmetry P1), `resfields_eig` (the eigenfield
@@ -50,7 +54,7 @@ Releases are tagged `vX.Y.Z` on GitHub; the version is `spynach.__version__`.
   `gaussian`, `lorentzian`, `lshape`, `voigtian`, `convspec`, and `sphgrid`
   with its triangulation; verified against EasySpin on a nitroxide, Cu(II)
   with two 14N, Mn(II) and a radical pair.
-- `epreasy` simulators `pepper` (cw EPR of powders and crystals: matrix,
+- `easyspyn` simulators `pepper` (cw EPR of powders and crystals: matrix,
   hybrid, perturbation and eigenfield methods, orientation interpolation
   and triangle projection, strain summation, convolution, derivatives,
   field modulation) and `garlic` (isotropic solutions: Breit-Rabi and
@@ -60,7 +64,7 @@ Releases are tagged `vX.Y.Z` on GitHub; the version is `spynach.__version__`.
   `projectzones` in NumPy with an optional Numba path (`spynach-spin[fast]`)
   that is bit-exact with EasySpin's C code; verified against EasySpin on 32
   `pepper` and 14 `garlic` spectra.
-- `epreasy` fitting: `esfit` without the GUI (EasySpin-style parameter
+- `easyspyn` fitting: `esfit` without the GUI (EasySpin-style parameter
   dicts for `pepper` and `garlic` or custom model functions, global fits,
   autoscaling, baselines, masks, weights, standard deviations and
   confidence intervals), the algorithms `esfit_simplex`, `esfit_levmar`,
@@ -69,7 +73,7 @@ Releases are tagged `vX.Y.Z` on GitHub; the version is `spynach.__version__`.
   helpers `rescaledata`, `basecorr`, `deriv`, `addnoise`, and several
   component systems in `pepper` and `garlic` (`Sys.weight`); verified
   against EasySpin on 33 fits of the same data.
-- `epreasy` ENDOR and magnetometry: `endorfrq` (matrix diagonalisation
+- `easyspyn` ENDOR and magnetometry: `endorfrq` (matrix diagonalisation
   with transition pre-selection, hyperfine enhancement, orientation
   selection, populations, flip angles), `endorfrq_perturb` (Iwasaki's
   first and second order), `orisel`, `anisosubsys`, `salt` (powder and
@@ -77,33 +81,33 @@ Releases are tagged `vX.Y.Z` on GitHub; the version is `spynach.__version__`.
   susceptibilities in SI and CGS by the operator or partition-function
   method); verified against EasySpin on 14 `endorfrq`, 23 `salt` and 14
   `curry` cases.
-- `epreasy` slow motion: `chili` solves the stochastic Liouville equation
+- `easyspyn` slow motion: `chili` solves the stochastic Liouville equation
   in the K-symmetrised Wigner basis (EasySpin's general Liouvillian method:
   Brownian diffusion, orientational potentials, MOMD, Lanczos with
   continued fraction and the direct, eigenvalue, conjugate-gradient and
   BiCGSTAB solvers, approximate and explicit field sweeps, frequency sweeps,
   post-convolution), with `wigner3j` (exact for every rank), `wigner6j`,
   `wignerd`, `tensor_cart2sph` and `tensor_sph2cart`; verified against
-  EasySpin on 48 spectra and the helpers. The `epreasy` guide is split:
-  `docs/epreasy.md` keeps the foundation, `docs/epreasy-simulators.md`
+  EasySpin on 48 spectra and the helpers. The `easyspyn` guide is split:
+  `docs/easyspyn.md` keeps the foundation, `docs/easyspyn-simulators.md`
   holds the simulators.
 - Project site restructured: a one-screen landing page naming the Spinach
   port, the EasySpin port and the extras, with pages for each (`spinach.html`,
   `easyspin.html`, `extras.html`) and a documentation page listing the guides
   by package; the timing tables (Spinach vs Spynach from the comparison
-  reports' new `summary.json`, EasySpin vs `epreasy` from
+  reports' new `summary.json`, EasySpin vs `easyspyn` from
   `scripts/easyspin-timings.py` on the fixtures, which now record EasySpin's
   wall clock) and the navigation are generated by `scripts/build_site.py`,
   checked by `tests/unit/test_site.py`; the comparison reports carry the
-  site's stylesheet and navigation. The browser playground runs `epreasy`
+  site's stylesheet and navigation. The browser playground runs `easyspyn`
   too: eleven EPR examples (powder, solution, slow motion, ESEEM, HYSCORE,
   Mims ENDOR, cw ENDOR, magnetometry, energy levels, Cu(II) with four 14N, a
   fit with an iteration counter) in a grouped example list with deep links
   such as `try.html#ex-epr-hyscore`; every example is run natively by
   `tests/unit/test_playground_examples.py` and in Pyodide under Node by
-  `scripts/pyodide-examples.mjs`. EPReasy's kernels index with `np.intp`
+  `scripts/pyodide-examples.mjs`. EasySpyn's kernels index with `np.intp`
   instead of `np.int64`, which the 32-bit WebAssembly NumPy refused.
-- `epreasy` pulse EPR: `saffron` with EasySpin's fast engine (ideal and
+- `easyspyn` pulse EPR: `saffron` with EasySpin's fast engine (ideal and
   rectangular pulses, the predefined 2-, 3- and 4-pulse ESEEM, HYSCORE and
   Mims ENDOR experiments, custom sequences with coherence transfer
   pathways, filters and phases, orientation selection, product rule,

@@ -1,79 +1,79 @@
-# EPReasy: EasySpin's EPR functions in Python
+# EasySpyn: EasySpin's EPR functions in Python
 
 A port of [EasySpin](https://easyspin.org) (Stefan Stoll and contributors, MIT
 licence), the MATLAB toolbox for EPR spectral simulation, to Python. It lives
-beside Spynach in this repository, is imported as `epreasy`, and depends on
+beside Spynach in this repository, is imported as `easyspyn`, and depends on
 `spynach` (for the oracle reader and comparison, and later for Liouville-space
 propagation); nothing in `spynach` depends on it, and a test enforces that.
-The Spinach port is the core of this repository: `epreasy` adapts to it and
+The Spinach port is the core of this repository: `easyspyn` adapts to it and
 changes nothing in it.
 
-The user guides are [`docs/epreasy.md`](../../docs/epreasy.md) (foundation) and
-[`docs/epreasy-simulators.md`](../../docs/epreasy-simulators.md) (simulators), the comparison
+The user guides are [`docs/easyspyn.md`](../../docs/easyspyn.md) (foundation) and
+[`docs/easyspyn-simulators.md`](../../docs/easyspyn-simulators.md) (simulators), the comparison
 with EasySpin [`docs/coming-from-easyspin.md`](../../docs/coming-from-easyspin.md)
-(notebooks under `docs/notebooks/`); the tests are in `tests/epreasy/`.
+(notebooks under `docs/notebooks/`); the tests are in `tests/easyspyn/`.
 
 ## What is here
 
-- `epreasy.spinsystem`: `validatespinsys`, `spinvec`, `hsdim`. A spin system
+- `easyspyn.spinsystem`: `validatespinsys`, `spinvec`, `hsdim`. A spin system
   is a dict with EasySpin's field names.
-- `epreasy.spinops`: `sop` (EasySpin's operator syntax) and `stev` (extended
+- `easyspyn.spinops`: `sop` (EasySpin's operator syntax) and `stev` (extended
   Stevens operators).
-- `epreasy.hamiltonian`: `ham` with the field split `H = H0 - B·mu`, the
+- `easyspyn.hamiltonian`: `ham` with the field split `H = H0 - B·mu`, the
   components `ham_ez`, `ham_nz`, `ham_hf`, `ham_zf`, `ham_nq`, `ham_ee`,
   `ham_nn`, and `levels`.
-- `epreasy.resfields`: `resfields` (adaptive spline modelling of the energy
+- `easyspyn.resfields`: `resfields` (adaptive spline modelling of the energy
   level diagram; matrix and hybrid methods, strains, populations, excitation
   modes, photoselection), `resfields_eig` (the eigenfield method),
   `cubicsolve`, `photoselect`, `nucspinrmv`.
-- `epreasy.lineshapes`: `gaussian`, `lorentzian`, `lshape`, `voigtian`,
+- `easyspyn.lineshapes`: `gaussian`, `lorentzian`, `lshape`, `voigtian`,
   `convspec`.
-- `epreasy.grids`: `sphgrid` (the SOPHE grid with its triangulation),
+- `easyspyn.grids`: `sphgrid` (the SOPHE grid with its triangulation),
   `gridparam`.
-- `epreasy.pepper`: `pepper`, cw EPR spectra of powders and crystals by the
+- `easyspyn.pepper`: `pepper`, cw EPR spectra of powders and crystals by the
   matrix, hybrid, perturbation and eigenfield methods, with orientation
   interpolation, triangle projection, strain summation, convolution,
-  derivatives and field modulation; `epreasy.perturb` holds
+  derivatives and field modulation; `easyspyn.perturb` holds
   `resfields_perturb`.
-- `epreasy.garlic`: `garlic` (isotropic cw spectra: Breit-Rabi and
+- `easyspyn.garlic`: `garlic` (isotropic cw spectra: Breit-Rabi and
   perturbation positions, equivalent nuclei, fast-motion widths, frequency
   sweeps), `fastmotion`, `equivcouple`.
-- `epreasy.kernels`: `lisum1i`, `projecttriangles`, `projectzones`, the MEX
+- `easyspyn.kernels`: `lisum1i`, `projecttriangles`, `projectzones`, the MEX
   kernels in NumPy with a Numba path (`fast` extra) that is bit-exact with
   the MEX.
-- `epreasy.interp`: `gridinterp`, `esspline1d`, `esspline2d`;
-  `epreasy.symmetry`: `hamsymm`; `epreasy.processing`: `fieldmod`;
-  `epreasy.components`: the loop over component systems
+- `easyspyn.interp`: `gridinterp`, `esspline1d`, `esspline2d`;
+  `easyspyn.symmetry`: `hamsymm`; `easyspyn.processing`: `fieldmod`;
+  `easyspyn.components`: the loop over component systems
   (`pepper([sys1, sys2], exp)`).
-- `epreasy.fitting`: `esfit` without the GUI (EasySpin-style and custom
+- `easyspyn.fitting`: `esfit` without the GUI (EasySpin-style and custom
   models, global fits, scaling, baselines, masks, uncertainties), the
   algorithms `esfit_simplex`, `esfit_levmar`, `esfit_montecarlo`,
   `esfit_genetic`, `esfit_grid`, `esfit_swarm` (and SciPy's least squares
   for `lsqnonlin`), `jacobianest`, `hccm`, and the data helpers
   `rescaledata`, `basecorr`, `deriv`, `addnoise`.
-- `epreasy.endor`: `endorfrq` (ENDOR frequencies and intensities by matrix
+- `easyspyn.endor`: `endorfrq` (ENDOR frequencies and intensities by matrix
   diagonalisation: transition pre-selection, enhancement, orientation
   selection, populations, flip angles), `endorfrq_perturb` (Iwasaki's first
   and second order), `orisel`, `anisosubsys`, and `salt` (powder and
   crystal ENDOR spectra).
-- `epreasy.magnetometry`: `curry` (magnetic moments and susceptibilities,
+- `easyspyn.magnetometry`: `curry` (magnetic moments and susceptibilities,
   SI and CGS, operator and partition-function methods).
-- `epreasy.slowmotion`: `chili` (the stochastic Liouville equation in the
+- `easyspyn.slowmotion`: `chili` (the stochastic Liouville equation in the
   K-symmetrised Wigner basis: Brownian diffusion, orientational potentials,
   MOMD, Lanczos/continued-fraction and the other solvers, post-convolution;
   EasySpin's general Liouvillian method), `wigner3j`, `wigner6j`,
   `wignerd`, `tensor_cart2sph`, `tensor_sph2cart`.
-- `epreasy.pulsed`: `saffron` (pulse EPR with EasySpin's fast engine:
+- `easyspyn.pulsed`: `saffron` (pulse EPR with EasySpin's fast engine:
   ideal and rectangular pulses, the predefined ESEEM, HYSCORE and Mims
   ENDOR experiments and custom sequences, coherence transfer pathways,
   orientation selection, product rule, relaxation decays, time-domain
   evolution), `sf_pathways`, `larmorfrq`, `apowin`, `fdaxis`, `exponfit`.
-- `epreasy.rotations`: `erot`, `eulang`, `ang2vec`, `vec2ang`, `letter2vec`.
-- `epreasy.units`, `epreasy.constants`: `unitconvert`, `mt2mhz`, `mhz2mt`,
+- `easyspyn.rotations`: `erot`, `eulang`, `ang2vec`, `vec2ang`, `letter2vec`.
+- `easyspyn.units`, `easyspyn.constants`: `unitconvert`, `mt2mhz`, `mhz2mt`,
   the physical constants as module attributes.
-- `epreasy.nucdata`: EasySpin's isotope table (`data/isotopedata.txt`, kept
+- `easyspyn.nucdata`: EasySpin's isotope table (`data/isotopedata.txt`, kept
   verbatim) and `nucdata`, `nucspin`, `nucgval`, `nucqmom`, `nucabund`.
-- `epreasy.oracle`: the fixture root (`$EPREASY_FIXTURES`, default
+- `easyspyn.oracle`: the fixture root (`$EASYSPYN_FIXTURES`, default
   `/easyspin-fixtures`) for the parity tests against EasySpin.
 
 ## Not here (yet, or on purpose)
@@ -105,7 +105,7 @@ couplings in MHz, magnetic moments in MHz/mT; Euler angles are EasySpin's
 passive rotations (`erot`); spin and level numbers are 1-based (`'x2'` is the
 second spin). This differs from `spynach`, which uses Spinach's conventions
 (T, Hz, rad/s, active rotations, 0-based spins); the two packages are not
-mixed in one call, and conversions will live on the `epreasy` side.
+mixed in one call, and conversions will live on the `easyspyn` side.
 
 Numbers follow MATLAB's shapes: a scalar or a flat list is one row
 (`g=[2.0088, 2.0061, 2.0027]` is one electron's principal values; `A=[16, 86]`
@@ -129,12 +129,12 @@ EasySpin's function headers name no authors, so every function that translates a
 release 6.0.15 (and any author the source names, such as John D'Errico for `jacobianest`), a block per module, and
 the generated page [`docs/easyspin-credits.md`](../../docs/easyspin-credits.md).
 `porting/tools/gen_easyspin_authors.py --fetch` reads the history through the `gh` CLI into
-`porting/easyspin_authors.json`; `--write` writes the docstrings and the page; `tests/epreasy/test_credits.py` keeps
+`porting/easyspin_authors.json`; `--write` writes the docstrings and the page; `tests/easyspyn/test_credits.py` keeps
 them current without network access. The lists show who changed a file, not who wrote which algorithm.
 
 ## On PyPI
 
-EPReasy is published on PyPI as `easyspyn` (`pip install easyspyn`; the import name stays `epreasy`; the
+EasySpyn is published on PyPI as `easyspyn` (`pip install easyspyn`; the import name is the same; the
 distribution needs only NumPy and SciPy, with `easyspyn[fast]` adding Numba). `python scripts/build_easyspyn.py`
 builds it into `dist/easyspyn/` from a staged copy of this package and `packaging/easyspyn/`; the version there
 is kept equal to the repository's by `tests/unit/test_version.py`.
@@ -145,7 +145,7 @@ Releases go out from GitHub through PyPI's Trusted Publishing, with no token: pu
 environment approves, uploads it. One-time setup: a pending publisher on PyPI (project `easyspyn`, owner
 `ajerschow`, repository `spynach`, workflow `publish-easyspyn.yml`, environment `pypi`) and an environment named
 `pypi` in the repository settings. Spynach's own `vX.Y.Z` releases do not start it. A version can be uploaded only
-once: bump it in `packaging/easyspyn/pyproject.toml`, `src/epreasy/__init__.py`, `pyproject.toml`,
+once: bump it in `packaging/easyspyn/pyproject.toml`, `src/easyspyn/__init__.py`, `pyproject.toml`,
 `CITATION.cff` and the CHANGELOG (the version test lists what disagrees) before the next release.
 
 ## Rolling it back
@@ -153,15 +153,15 @@ once: bump it in `packaging/easyspyn/pyproject.toml`, `src/epreasy/__init__.py`,
 The package touches nothing in `src/spynach`. To remove it:
 
 ```
-git rm -r src/epreasy tests/epreasy oracle/matlab/easyspin oracle/run_easyspin_fixtures.sh \
-          docs/epreasy.md docs/epreasy-simulators.md docs/coming-from-easyspin.md docs/notebooks/epreasy.ipynb \
-          docs/notebooks/epreasy-simulators.ipynb docs/notebooks/coming-from-easyspin.ipynb \
-          docs/figures/epreasy-*.png porting/EASYSPIN_FIXTURES.md
+git rm -r src/easyspyn tests/easyspyn oracle/matlab/easyspin oracle/run_easyspin_fixtures.sh \
+          docs/easyspyn.md docs/easyspyn-simulators.md docs/coming-from-easyspin.md docs/notebooks/easyspyn.ipynb \
+          docs/notebooks/easyspyn-simulators.ipynb docs/notebooks/coming-from-easyspin.ipynb \
+          docs/figures/easyspyn-*.png porting/EASYSPIN_FIXTURES.md
 ```
 
 then revert the one-line mentions in `README.md`, `docs/README.md`,
 `docs/beyond-the-port.md`, `CHANGELOG.md`, `porting/ROADMAP.md`, the
-`epreasy` package-data line in `pyproject.toml` and the EasySpin section of
+`easyspyn` package-data line in `pyproject.toml` and the EasySpin section of
 `LICENSE`, and run the test suite.
 
 ## Licence

@@ -1,4 +1,4 @@
-% EasySpin reference data for epreasy's slow-motion simulator chili (phase 5):
+% EasySpin reference data for easyspyn's slow-motion simulator chili (phase 5):
 % spectra with the general Liouvillian method (Opt.LiouvMethod='general',
 % the method that is ported), the same cases with EasySpin's default fast
 % method for the cross-method comparison, and the angular-momentum helpers
@@ -8,7 +8,7 @@
 %
 % version_dir is <fixtures_root>/<easyspin version>. One directory per case
 % is written below it with data.h5 and meta.json; the inputs of each case
-% are recorded in meta.json, from which tests/epreasy/test_parity_chili.py
+% are recorded in meta.json, from which tests/easyspyn/test_parity_chili.py
 % rebuilds the case. Cases whose directory already exists are skipped.
 
 function esdump_chili(version_dir)

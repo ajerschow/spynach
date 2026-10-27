@@ -1,4 +1,4 @@
-% EasySpin reference data for the epreasy foundation: spin vectors and
+% EasySpin reference data for the easyspyn foundation: spin vectors and
 % state counts of validated spin systems, spin operators (sop), extended
 % Stevens operators (stev), the Hamiltonian components (ham_ez, ham_nz,
 % ham_hf, ham_zf, ham_nq, ham_ee, ham_nn), ham() with and without a field,
@@ -10,7 +10,7 @@
 % version_dir is <fixtures_root>/<easyspin version>. One directory per case
 % is written below it with data.h5 and meta.json; the spin system and the
 % parameters of each case are recorded in meta.json (inputs), from which
-% tests/epreasy/test_parity.py rebuilds the case. Cases whose directory
+% tests/easyspyn/test_parity.py rebuilds the case. Cases whose directory
 % already exists are skipped, never overwritten.
 
 function esdump_ham(version_dir)
@@ -161,6 +161,6 @@ cases{end+1}=struct('name','triplet_full_tensors','Sys',Sys);
 % Not a case: a system listing spin-zero nuclei with one A row per nucleus
 % ('12C,13C,16O', A 3x3) errors in EasySpin 6.0.15's ham_hf, which takes
 % the row count of the unprocessed A for the full-matrix test while the
-% nuclei were already removed. epreasy handles it; tests/epreasy covers it.
+% nuclei were already removed. easyspyn handles it; tests/easyspyn covers it.
 
 end

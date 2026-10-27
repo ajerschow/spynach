@@ -1,4 +1,4 @@
-% EasySpin reference data for the epreasy simulators of phase 2: pepper
+% EasySpin reference data for the easyspyn simulators of phase 2: pepper
 % (matrix, perturbation, hybrid and eigenfield methods; projection and
 % summation paths; axial and rhombic grids; crystals; separate transitions;
 % field modulation; dispersion), garlic (Breit-Rabi and perturbation
@@ -9,7 +9,7 @@
 %
 % version_dir is <fixtures_root>/<easyspin version>. One directory per case
 % is written below it with data.h5 and meta.json; the inputs of each case
-% are recorded in meta.json, from which tests/epreasy/test_parity_pepper.py
+% are recorded in meta.json, from which tests/easyspyn/test_parity_pepper.py
 % rebuilds the case. Opt.FuzzLevel is 0 in every pepper case. Cases whose
 % directory already exists are skipped, never overwritten.
 

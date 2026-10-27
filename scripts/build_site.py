@@ -50,7 +50,7 @@ GROUPS = {
         "pulse-sequences",
         "coming-from-spinach",
     ],
-    "easyspin": ["epreasy", "epreasy-simulators", "coming-from-easyspin"],
+    "easyspin": ["easyspyn", "easyspyn-simulators", "coming-from-easyspin"],
     "extras": ["ctps", "ctps-examples", "beyond-the-port"],
 }
 # One line per Spinach comparison case, the only prose in the timing table.
@@ -64,7 +64,7 @@ SPINACH_CASES = {
     "maz_noesy_2": "methylaziridine, 7 protons + 14N with DFT shielding tensors and the 14N quadrupole: Redfield "
     "theory with scalar relaxation of both kinds, IK-2 basis (19 314 states), 2 s NOESY",
 }
-SOURCE_PACKAGES = ("spynach", "ctps", "epreasy")
+SOURCE_PACKAGES = ("spynach", "ctps", "easyspyn")
 SOURCE_SUFFIXES = {".py", ".txt"}
 
 
@@ -172,7 +172,7 @@ def render_timing_easyspin() -> str:
         return '<p class="note">No EasySpin timings yet: run scripts/easyspin-timings.py with the fixtures.</p>'
     rows = []
     for c in data["cases"]:
-        times = [t for t in (c.get("epreasy_numpy_s"), c.get("epreasy_numba_s")) if t is not None]
+        times = [t for t in (c.get("easyspyn_numpy_s"), c.get("easyspyn_numba_s")) if t is not None]
         best = min(times) if times else None
         browser = (
             f'<td class="links"><a href="try.html#{esc(c["example"])}">run</a></td>'
@@ -190,19 +190,19 @@ def render_timing_easyspin() -> str:
             + "</tr>"
         )
     es_ = data["easyspin"]
-    ep = data["epreasy"]
+    ep = data["easyspyn"]
     numba = f", Numba {ep['numba']}" if ep.get("numba") else ""
     machine = (
-        f"EasySpin {esc(es_['version'])} in MATLAB {esc(es_['matlab_version'])}; EPReasy {esc(ep['version'])} with "
+        f"EasySpin {esc(es_['version'])} in MATLAB {esc(es_['matlab_version'])}; EasySpyn {esc(ep['version'])} with "
         f"Python {esc(ep['python'])}, NumPy {esc(ep['numpy'])}, SciPy {esc(ep['scipy'])} on "
         f"{esc(ep['blas'])}{esc(numba)}; {esc(ep['platform'])}, {ep['cores']} cores. "
         f"EasySpin times are one call inside the fixture run after a warm-up call (a fit is timed once); "
-        f"EPReasy times are the median of {data['repeats']} calls after a warm-up, the faster of the NumPy and "
+        f"EasySpyn times are the median of {data['repeats']} calls after a warm-up, the faster of the NumPy and "
         f"the Numba kernels where a kernel is on the path. Generated {esc(data['generated'])}."
     )
     return (
         '<div class="scroll"><table class="timing">\n<thead><tr><th>Case</th><th class="num">EasySpin / s</th>'
-        '<th class="num">EPReasy / s</th><th class="num">EPReasy / EasySpin</th><th class="num">Agreement</th>'
+        '<th class="num">EasySpyn / s</th><th class="num">EasySpyn / EasySpin</th><th class="num">Agreement</th>'
         "<th>Browser</th></tr></thead>\n"
         "<tbody>\n" + "\n".join(rows) + f'\n</tbody></table></div>\n<p class="note">{machine}</p>'
     )

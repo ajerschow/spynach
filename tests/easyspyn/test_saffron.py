@@ -6,7 +6,7 @@ components, the helpers apowin, fdaxis, exponfit, larmorfrq and sf_pathways, and
 import numpy as np
 import pytest
 
-import epreasy as es
+import easyspyn as es
 
 N14 = {"Nucs": "14N", "A": [0.3, 0.3, 1.8], "Q": 1}
 H1 = {"Nucs": "1H", "A": [1, 1, 5]}

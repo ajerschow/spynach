@@ -1,9 +1,9 @@
-"""Builds the PyPI distribution "easyspyn" (EPReasy, import name ``epreasy``) into dist/easyspyn/.
+"""Builds the PyPI distribution "easyspyn" (EasySpyn, the package ``easyspyn``) into dist/easyspyn/.
 
     python scripts/build_easyspyn.py
 
 The package is built from a staged copy so that the source tree stays untouched and the distribution holds
-exactly ``src/epreasy`` (with its isotope table), the repository ``LICENSE`` (which carries the Spinach and
+exactly ``src/easyspyn`` (with its isotope table), the repository ``LICENSE`` (which carries the Spinach and
 EasySpin notices), and the README and project file of ``packaging/easyspyn``. Needs the ``build`` package.
 Uploading is a separate step, with the owner's PyPI token:
 
@@ -25,7 +25,9 @@ OUT = ROOT / "dist" / "easyspyn"
 
 def stage(target: Path) -> None:
     shutil.copytree(
-        ROOT / "src" / "epreasy", target / "epreasy", ignore=shutil.ignore_patterns("__pycache__", "*.pyc", "README.md")
+        ROOT / "src" / "easyspyn",
+        target / "easyspyn",
+        ignore=shutil.ignore_patterns("__pycache__", "*.pyc", "README.md"),
     )
     for name in ("pyproject.toml", "README.md"):
         shutil.copy2(PACKAGING / name, target / name)

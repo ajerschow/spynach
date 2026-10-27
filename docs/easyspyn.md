@@ -1,6 +1,6 @@
-# EPR spin systems with `epreasy`
+# EPR spin systems with EasySpyn
 
-`epreasy` is a separate package in this repository (`import epreasy`) that
+`easyspyn` is a separate package in this repository (`import easyspyn`) that
 ports [EasySpin](https://easyspin.org), the MATLAB toolbox for EPR spectral
 simulation by Stefan Stoll and co-workers, to Python. It keeps EasySpin's
 interface: spin systems are dicts with EasySpin's field names, fields are in
@@ -9,11 +9,11 @@ numbers are 1-based. This guide covers the foundation (spin systems, spin
 operators, the spin Hamiltonian and its field split, energy levels,
 rotations, units and nuclear data) and the resonance-field layer; the
 simulators (`pepper`, `garlic`, `esfit`, `salt`, `curry`, `chili`) have
-their own guide, [EPR simulations with `epreasy`](epreasy-simulators.md).
-The companion notebook is [`notebooks/epreasy.ipynb`](notebooks/epreasy.ipynb)
-([interactive figures on nbviewer](https://nbviewer.org/github/ajerschow/spynach/blob/main/docs/notebooks/epreasy.ipynb)).
+their own guide, [EPR simulations with EasySpyn](easyspyn-simulators.md).
+The companion notebook is [`notebooks/easyspyn.ipynb`](notebooks/easyspyn.ipynb)
+([interactive figures on nbviewer](https://nbviewer.org/github/ajerschow/spynach/blob/main/docs/notebooks/easyspyn.ipynb)).
 
-`epreasy` depends on `spynach` and changes nothing in it; the Spinach port
+`easyspyn` depends on `spynach` and changes nothing in it; the Spinach port
 stays the core of this repository. For what carries over from EasySpin and
 what differs, see [Coming from EasySpin](coming-from-easyspin.md).
 
@@ -44,7 +44,7 @@ fields `I`, `gn`, `Spins` and `nStates` added.
 ```python
 import numpy as np
 
-import epreasy as es
+import easyspyn as es
 
 print(es.__version__)
 
@@ -179,7 +179,7 @@ fig.update_layout(title="Mn(II), S = 5/2 with 55Mn: energy levels along z", xaxi
 fig
 ```
 
-![Zeeman diagram of an S = 5/2 Mn(II) with a 55Mn hyperfine coupling, field along z](figures/epreasy-levels.png)
+![Zeeman diagram of an S = 5/2 Mn(II) with a 55Mn hyperfine coupling, field along z](figures/easyspyn-levels.png)
 
 ## Rotations, units, nuclear data
 
@@ -314,9 +314,9 @@ print("first knots (phi, theta):", np.column_stack([grid.phi, grid.theta])[:4].r
 
 ## What is checked, and what is pending
 
-`tests/epreasy/test_foundation.py`, `tests/epreasy/test_resfields.py`,
-`tests/epreasy/test_pepper.py`, `tests/epreasy/test_fitting.py`, `tests/epreasy/test_endor.py` and
-`tests/epreasy/test_chili.py` check the closed forms (angular momentum algebra, Stevens operators against
+`tests/easyspyn/test_foundation.py`, `tests/easyspyn/test_resfields.py`,
+`tests/easyspyn/test_pepper.py`, `tests/easyspyn/test_fitting.py`, `tests/easyspyn/test_endor.py` and
+`tests/easyspyn/test_chili.py` check the closed forms (angular momentum algebra, Stevens operators against
 their polynomial forms, the free-electron and proton Zeeman energies,
 first-order hyperfine splittings, the zero-field levels of a triplet, tensor
 frames; the free-electron resonance field and intensity, the spline method
@@ -337,10 +337,10 @@ orientation selection, `curry` against the Curie law, the Brillouin function
 and its unit conversions; 3j symbols against Clebsch-Gordan coefficients,
 Wigner matrices against their defining properties, `chili`'s solvers and
 field-sweep methods against each other, its double integral against the
-nuclear spin, its fast limit against `garlic`) and `tests/epreasy/test_parity.py`,
-`tests/epreasy/test_parity_resfields.py`, `tests/epreasy/test_parity_pepper.py`,
-`tests/epreasy/test_parity_esfit.py`, `tests/epreasy/test_parity_endor.py` and
-`tests/epreasy/test_parity_chili.py` compare every stage with EasySpin 6.0.15
+nuclear spin, its fast limit against `garlic`) and `tests/easyspyn/test_parity.py`,
+`tests/easyspyn/test_parity_resfields.py`, `tests/easyspyn/test_parity_pepper.py`,
+`tests/easyspyn/test_parity_esfit.py`, `tests/easyspyn/test_parity_endor.py` and
+`tests/easyspyn/test_parity_chili.py` compare every stage with EasySpin 6.0.15
 on the cases written by `oracle/matlab/easyspin/dumps/esdump_ham.m`,
 `esdump_resfields.m`, `esdump_pepper.m`, `esdump_esfit.m`, `esdump_endor.m`
 and `esdump_chili.m`: a nitroxide with tilted frames, a Cu(II) with two 14N, an S = 5/2 Mn(II) with

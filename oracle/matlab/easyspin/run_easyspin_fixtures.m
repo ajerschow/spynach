@@ -1,5 +1,5 @@
 % Start script for EasySpin fixture generation (the reference data of the
-% epreasy parity tests). Puts EasySpin and the harness on the Matlab path,
+% easyspyn parity tests). Puts EasySpin and the harness on the Matlab path,
 % runs every EasySpin dump script, and makes the new fixtures read-only.
 % Edit the settings block below, then run it from Matlab with
 %

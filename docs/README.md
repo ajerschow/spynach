@@ -12,9 +12,9 @@
 | [Coherence transfer pathways: worked examples](ctps-examples.md) | [ctps-examples.ipynb](notebooks/ctps-examples.ipynb) · [nbviewer](https://nbviewer.org/github/ajerschow/spynach/blob/main/docs/notebooks/ctps-examples.ipynb) | a cookbook for `ctps`: double-quantum filter, imperfect spin echo, stimulated echo, NOESY-sized enumeration, HSQC, MQMAS nested versus cogwheel, multi-echo trains, cogwheel plus gradients, MRS crushers; then every check of the module's tests as a runnable example |
 | [Beyond the port](beyond-the-port.md) | [beyond-the-port.ipynb](notebooks/beyond-the-port.ipynb) · [nbviewer](https://nbviewer.org/github/ajerschow/spynach/blob/main/docs/notebooks/beyond-the-port.ipynb) | features with no Spinach counterpart, each with an example: `ctps`, non-ideal pulses and cogwheel search, interactive figures and `figure_png`, `compare` and the parity page, executable documentation |
 | [Coming from Spinach](coming-from-spinach.md) | [coming-from-spinach.ipynb](notebooks/coming-from-spinach.ipynb) · [nbviewer](https://nbviewer.org/github/ajerschow/spynach/blob/main/docs/notebooks/coming-from-spinach.ipynb) | what carries over from Spinach and what differs: spin systems, basis, operators, Hamiltonians, parameters, calculation modalities, processing |
-| [EPR spin systems with `epreasy`](epreasy.md) | [epreasy.ipynb](notebooks/epreasy.ipynb) · [nbviewer](https://nbviewer.org/github/ajerschow/spynach/blob/main/docs/notebooks/epreasy.ipynb) | the EasySpin port beside Spynach: spin systems as dicts with EasySpin's fields, `sop` and `stev`, `ham` with the field split, `levels`, `resfields`, line shapes and grids |
-| [EPR simulations with `epreasy`](epreasy-simulators.md) | [epreasy-simulators.ipynb](notebooks/epreasy-simulators.ipynb) · [nbviewer](https://nbviewer.org/github/ajerschow/spynach/blob/main/docs/notebooks/epreasy-simulators.ipynb) | `pepper` for powders and crystals, `garlic` for solutions, `esfit` for fitting, `salt` for ENDOR, `curry` for magnetometry, `chili` for slow motion |
-| [Coming from EasySpin](coming-from-easyspin.md) | [coming-from-easyspin.ipynb](notebooks/coming-from-easyspin.ipynb) · [nbviewer](https://nbviewer.org/github/ajerschow/spynach/blob/main/docs/notebooks/coming-from-easyspin.ipynb) | what carries over from EasySpin to `epreasy`, what differs, and what is not ported |
+| [EPR spin systems with EasySpyn](easyspyn.md) | [easyspyn.ipynb](notebooks/easyspyn.ipynb) · [nbviewer](https://nbviewer.org/github/ajerschow/spynach/blob/main/docs/notebooks/easyspyn.ipynb) | the EasySpin port beside Spynach: spin systems as dicts with EasySpin's fields, `sop` and `stev`, `ham` with the field split, `levels`, `resfields`, line shapes and grids |
+| [EPR simulations with EasySpyn](easyspyn-simulators.md) | [easyspyn-simulators.ipynb](notebooks/easyspyn-simulators.ipynb) · [nbviewer](https://nbviewer.org/github/ajerschow/spynach/blob/main/docs/notebooks/easyspyn-simulators.ipynb) | `pepper` for powders and crystals, `garlic` for solutions, `esfit` for fitting, `salt` for ENDOR, `curry` for magnetometry, `chili` for slow motion |
+| [Coming from EasySpin](coming-from-easyspin.md) | [coming-from-easyspin.ipynb](notebooks/coming-from-easyspin.ipynb) · [nbviewer](https://nbviewer.org/github/ajerschow/spynach/blob/main/docs/notebooks/coming-from-easyspin.ipynb) | what carries over from EasySpin to `easyspyn`, what differs, and what is not ported |
 
 The notebooks are saved with their outputs, plots included. On GitHub the
 guides show each figure as a static image from `docs/figures/` and the
@@ -31,7 +31,7 @@ links every notebook through nbviewer as well.
 [`spinach-credits.md`](spinach-credits.md) is a generated table of the Spinach authors of every Spynach
 function that translates or derives from one (names from the Spinach developer team page, taken from the headers
 of the original functions); `porting/tools/gen_spinach_authors.py` writes it, and the same lines, into the
-docstrings. [`easyspin-credits.md`](easyspin-credits.md) is the same for `epreasy` and EasySpin; EasySpin's
+docstrings. [`easyspin-credits.md`](easyspin-credits.md) is the same for `easyspyn` and EasySpin; EasySpin's
 headers name no authors, so it lists the people who authored commits to each original file up to release 6.0.15
 (and authors the source itself names), written by `porting/tools/gen_easyspin_authors.py`.
 
@@ -47,7 +47,7 @@ it installs Spynach from GitHub and runs the project page's two-spin
 example with a plot. It is the one hand-written notebook (it is not
 generated from a guide and is saved without outputs, since Colab runs it);
 keep its example in step with the quick start on `index.html` and in the
-README. `try.html` at the repository root runs Spynach, `epreasy` and `ctps`
+README. `try.html` at the repository root runs Spynach, `easyspyn` and `ctps`
 in the browser (Pyodide, `worker.js`) with NMR, EPR and pathway examples in an
 editor, written into the page itself and run natively by
 `tests/unit/test_playground_examples.py`; see the guide

@@ -8,8 +8,8 @@ line shapes and grids at 1e-13 and photoselection weights at 1e-13 (cubicsolve w
 import numpy as np
 import pytest
 
-import epreasy as es
-from epreasy.oracle import assert_matches, fixture_root, load_fixture
+import easyspyn as es
+from easyspyn.oracle import assert_matches, fixture_root, load_fixture
 
 ROOT = fixture_root()
 ALL = (

@@ -1,7 +1,7 @@
-# EPR simulations with `epreasy`
+# EPR simulations with EasySpyn
 
 The simulators of [EasySpin](https://easyspin.org) in Python, on the
-foundation described in [EPR spin systems with `epreasy`](epreasy.md):
+foundation described in [EPR spin systems with EasySpyn](easyspyn.md):
 `pepper` for powders and crystals, `garlic` for isotropic solutions, `esfit`
 for least-squares fitting, `salt` for ENDOR, `curry` for magnetometry and
 `chili` for the slow-motion regime and `saffron` for pulse EPR (ESEEM,
@@ -9,8 +9,8 @@ HYSCORE, Mims ENDOR). Every function keeps EasySpin's
 interface (dicts with EasySpin's field names, mT and MHz, 1-based spin
 numbers) and is verified against EasySpin 6.0.15; what differs is listed in
 [Coming from EasySpin](coming-from-easyspin.md). The companion notebook is
-[`notebooks/epreasy-simulators.ipynb`](notebooks/epreasy-simulators.ipynb)
-([interactive figures on nbviewer](https://nbviewer.org/github/ajerschow/spynach/blob/main/docs/notebooks/epreasy-simulators.ipynb)).
+[`notebooks/easyspyn-simulators.ipynb`](notebooks/easyspyn-simulators.ipynb)
+([interactive figures on nbviewer](https://nbviewer.org/github/ajerschow/spynach/blob/main/docs/notebooks/easyspyn-simulators.ipynb)).
 
 ## Contents
 
@@ -27,7 +27,7 @@ The examples share one spin system, the nitroxide of the foundation guide:
 ```python
 import numpy as np
 
-import epreasy as es
+import easyspyn as es
 
 nitroxide = {"g": [2.0088, 2.0061, 2.0027], "Nucs": "14N", "A": [16, 16, 86]}
 ```
@@ -73,7 +73,7 @@ fig.update_layout(title="Nitroxide powder spectrum at X band", xaxis_title="B / 
 fig
 ```
 
-![Nitroxide powder spectrum at X band from pepper, matrix diagonalisation and second-order perturbation theory](figures/epreasy-simulators-pepper.png)
+![Nitroxide powder spectrum at X band from pepper, matrix diagonalisation and second-order perturbation theory](figures/easyspyn-simulators-pepper.png)
 
 The methods are chosen as in EasySpin: for Cu(II) with four 14N (648
 states) full diagonalisation takes a minute, the hybrid method and
@@ -133,7 +133,7 @@ fig.update_layout(title="Nitroxide in solution: fast-motion broadening", xaxis_t
 fig
 ```
 
-![Nitroxide solution spectra from garlic at two rotational correlation times](figures/epreasy-simulators-garlic.png)
+![Nitroxide solution spectra from garlic at two rotational correlation times](figures/easyspyn-simulators-garlic.png)
 
 ```python
 protons = es.garlic({"g": 2.0, "Nucs": "1H,1H", "n": [3, 2], "A": [30, 12], "lw": [0.2, 0]}, {"mwFreq": 9.5, "Range": [325, 352], "Harmonic": 0})
@@ -189,7 +189,7 @@ fig.update_layout(title="esfit: g and line width of an axial S = 1/2 powder", xa
 fig
 ```
 
-![Least-squares fit of a noisy axial powder spectrum with esfit](figures/epreasy-simulators-esfit.png)
+![Least-squares fit of a noisy axial powder spectrum with esfit](figures/easyspyn-simulators-esfit.png)
 
 The algorithms are also available on their own, for any function:
 `esfit_simplex` and `esfit_levmar` start from a point, `esfit_montecarlo`,
@@ -252,7 +252,7 @@ fig.update_layout(title="14N ENDOR of an axial Cu(II)-like centre: orientation s
 fig
 ```
 
-![14N powder ENDOR spectra with and without orientation selection](figures/epreasy-simulators-salt.png)
+![14N powder ENDOR spectra with and without orientation selection](figures/easyspyn-simulators-salt.png)
 
 ## Magnetometry: `curry`
 
@@ -289,7 +289,7 @@ fig.update_layout(title="Susceptibility of an antiferromagnetic dimer (curry)", 
 fig
 ```
 
-![Temperature dependence of chi T for an antiferromagnetically coupled dimer](figures/epreasy-simulators-curry.png)
+![Temperature dependence of chi T for an antiferromagnetically coupled dimer](figures/easyspyn-simulators-curry.png)
 
 ## Slow motion: `chili`
 
@@ -338,7 +338,7 @@ fig.update_layout(title="Nitroxide from fast to slow tumbling (chili)", xaxis_ti
 fig
 ```
 
-![Nitroxide slow-motion spectra for correlation times from 0.1 to 100 ns](figures/epreasy-simulators-chili.png)
+![Nitroxide slow-motion spectra for correlation times from 0.1 to 100 ns](figures/easyspyn-simulators-chili.png)
 
 ```python
 momd = {"g": [2.008, 2.006, 2.003], "Nucs": "14N", "A": [20, 20, 85], "lw": 0.3, "tcorr": 1e-8, "Potential": [[2, 0, 0, 1]]}
@@ -401,7 +401,7 @@ fig.update_layout(title="14N ESEEM with saffron", width=820, height=400)
 fig
 ```
 
-![Three-pulse ESEEM trace and HYSCORE spectrum of a weakly coupled 14N](figures/epreasy-simulators-saffron.png)
+![Three-pulse ESEEM trace and HYSCORE spectrum of a weakly coupled 14N](figures/easyspyn-simulators-saffron.png)
 
 ```python
 mims = es.saffron({"Nucs": "1H", "A": [1, 1, 5], "lwEndor": 0.1}, {"Sequence": "MimsENDOR", "Field": 325, "tau": 0.1, "Range": [5, 25], "nPoints": 401})

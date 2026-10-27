@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Spynach in the browser</title>
-<meta name="description" content="Run Spynach, EPReasy and ctps in the browser: NMR, EPR and coherence-pathway examples in Pyodide, in a web worker, nothing to install.">
+<meta name="description" content="Run Spynach, EasySpyn and ctps in the browser: NMR, EPR and coherence-pathway examples in Pyodide, in a web worker, nothing to install.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap">
@@ -101,7 +101,7 @@ figure.plot figcaption { font-family: var(--mono); font-size: 0.75rem; color: va
 <!-- /site:nav -->
 <header class="head">
   <h1>Try it</h1>
-  <p>Spynach, EPReasy and ctps running in Pyodide. Pick an NMR, EPR or pathway example, edit it, run it. Every calculation goes to a web worker, so the page stays responsive.</p>
+  <p>Spynach, EasySpyn and ctps running in Pyodide. Pick an NMR, EPR or pathway example, edit it, run it. Every calculation goes to a web worker, so the page stays responsive.</p>
 </header>
 <div id="status" data-phase="loading">Starting…</div>
 <p class="banner" id="file-warn" hidden>This page needs a web server rooted at the repository, not a file:// address, so the worker can load <code>src/</code>.</p>
@@ -117,7 +117,7 @@ figure.plot figcaption { font-family: var(--mono); font-size: 0.75rem; color: va
       </div>
     </div>
     <textarea id="editor" spellcheck="false" aria-label="Python source"></textarea>
-    <p class="hint">Ctrl+Enter runs. <code>show_spectrum</code>, <code>show_fid</code> and <code>show_image</code> draw on the right; an <code>epreasy</code> spectrum can be passed as is, and EPR axes run left to right. The 12800-orientation powder is the slow one, about a minute; the 1600-point powder, magic-angle spinning and the fit take a few seconds. Grid names such as <code>leb_2ang_rank_17</code> are loaded from <code>src/spynach/grids</code>. A link such as <code>try.html#ex-epr-hyscore</code> opens and runs one example.</p>
+    <p class="hint">Ctrl+Enter runs. <code>show_spectrum</code>, <code>show_fid</code> and <code>show_image</code> draw on the right; an <code>easyspyn</code> spectrum can be passed as is, and EPR axes run left to right. The 12800-orientation powder is the slow one, about a minute; the 1600-point powder, magic-angle spinning and the fit take a few seconds. Grid names such as <code>leb_2ang_rank_17</code> are loaded from <code>src/spynach/grids</code>. A link such as <code>try.html#ex-epr-hyscore</code> opens and runs one example.</p>
   </section>
   <div id="plots"><p class="empty">The spectrum will land here.</p></div>
   <div id="console" role="log" aria-live="polite"></div>
@@ -319,9 +319,9 @@ print(f"{spin_system.basis.nstates} Liouville states, FID {fid.shape}, spectrum 
 show_image(spectrum.real.T, axis, axis, title="COSY-90", xlabel="F2: " + xlabel, ylabel="F1: " + xlabel)
 </script>
 
-<script type="text/plain" class="example" id="ex-epr-pepper" data-group="EPR (EPReasy)" data-title="Nitroxide powder spectrum (pepper)">
+<script type="text/plain" class="example" id="ex-epr-pepper" data-group="EPR (EasySpyn)" data-title="Nitroxide powder spectrum (pepper)">
 import numpy as np
-import epreasy as es
+import easyspyn as es
 
 # A nitroxide: rhombic g, 14N hyperfine in MHz, peak-to-peak line width in mT
 nitroxide = {"g": [2.0088, 2.0061, 2.0027], "Nucs": "14N", "A": [16, 16, 86], "lwpp": 0.3}
@@ -341,9 +341,9 @@ show_spectrum(
 )
 </script>
 
-<script type="text/plain" class="example" id="ex-epr-garlic" data-group="EPR (EPReasy)" data-title="Nitroxide in solution (garlic)">
+<script type="text/plain" class="example" id="ex-epr-garlic" data-group="EPR (EasySpyn)" data-title="Nitroxide in solution (garlic)">
 import numpy as np
-import epreasy as es
+import easyspyn as es
 
 # In solution the anisotropies average out but set the fast-motion line widths
 solution = {"g": [2.0088, 2.0064, 2.0027], "Nucs": "14N", "A": es.unitconvert(np.array([7.59, 5.95, 31.76]) / 10, "mT->MHz"), "lwpp": 0.02}
@@ -363,9 +363,9 @@ show_spectrum(
 )
 </script>
 
-<script type="text/plain" class="example" id="ex-epr-chili" data-group="EPR (EPReasy)" data-title="Slow motion, four correlation times (chili)">
+<script type="text/plain" class="example" id="ex-epr-chili" data-group="EPR (EasySpyn)" data-title="Slow motion, four correlation times (chili)">
 import numpy as np
-import epreasy as es
+import easyspyn as es
 
 # The slow-motion regime: the stochastic Liouville equation in a Wigner basis
 slow = {"g": [2.008, 2.0061, 2.0027], "Nucs": "14N", "A": [16, 16, 86], "lw": 0.1}
@@ -383,9 +383,9 @@ show_spectrum(
 )
 </script>
 
-<script type="text/plain" class="example" id="ex-epr-saffron" data-group="EPR (EPReasy)" data-title="Three-pulse ESEEM (saffron)">
+<script type="text/plain" class="example" id="ex-epr-saffron" data-group="EPR (EasySpyn)" data-title="Three-pulse ESEEM (saffron)">
 import numpy as np
-import epreasy as es
+import easyspyn as es
 
 # A weakly coupled 14N near exact cancellation: hyperfine and quadrupole in MHz
 weak_n14 = {"Nucs": "14N", "A": [-1, -1, 2], "Q": [-1, -1, 2]}
@@ -404,9 +404,9 @@ show_spectrum(np.real(three_pulse.spec), three_pulse.x, invert=False, title="Thr
 show_spectrum(spectrum[f >= 0], f[f >= 0], invert=False, title="Modulation spectrum", xlabel="frequency / MHz", ylabel="|FT|")
 </script>
 
-<script type="text/plain" class="example" id="ex-epr-hyscore" data-group="EPR (EPReasy)" data-title="HYSCORE (saffron)">
+<script type="text/plain" class="example" id="ex-epr-hyscore" data-group="EPR (EasySpyn)" data-title="HYSCORE (saffron)">
 import numpy as np
-import epreasy as es
+import easyspyn as es
 
 weak_n14 = {"Nucs": "14N", "A": [-1, -1, 2], "Q": [-1, -1, 2]}
 
@@ -425,9 +425,9 @@ print(f"double-quantum peak at ({f1[win1][peak[0]]:.2f}, {f2[win2][peak[1]]:.2f}
 show_image(np.minimum(z, top), f2[win2], f1[win1], invert=False, title="HYSCORE of 14N (clipped to the double-quantum peaks)", xlabel="nu2 / MHz", ylabel="nu1 / MHz")
 </script>
 
-<script type="text/plain" class="example" id="ex-epr-mims" data-group="EPR (EPReasy)" data-title="Mims ENDOR (saffron)">
+<script type="text/plain" class="example" id="ex-epr-mims" data-group="EPR (EasySpyn)" data-title="Mims ENDOR (saffron)">
 import numpy as np
-import epreasy as es
+import easyspyn as es
 
 # A weakly coupled proton with a Gaussian ENDOR line width
 proton = {"Nucs": "1H", "A": [1, 1, 5], "lwEndor": 0.1}
@@ -442,9 +442,9 @@ print(f"largest ENDOR intensity at {mims.x[np.argmax(mims.spec)]:.2f} MHz")
 show_spectrum(mims, title="Mims ENDOR of a weakly coupled proton", xlabel="rf / MHz", ylabel="ENDOR intensity")
 </script>
 
-<script type="text/plain" class="example" id="ex-epr-salt" data-group="EPR (EPReasy)" data-title="cw ENDOR with orientation selection (salt)">
+<script type="text/plain" class="example" id="ex-epr-salt" data-group="EPR (EasySpyn)" data-title="cw ENDOR with orientation selection (salt)">
 import numpy as np
-import epreasy as es
+import easyspyn as es
 
 # An axial Cu(II)-like centre with a 14N ligand; HStrain broadens the EPR line
 centre = {"Nucs": "14N", "g": [2.25, 2.25, 2], "A": [44, 49, 54], "Q": [0.84, 0.84, -1.68], "HStrain": [100, 100, 100], "lwEndor": 0.5}
@@ -463,9 +463,9 @@ show_spectrum(
 )
 </script>
 
-<script type="text/plain" class="example" id="ex-epr-curry" data-group="EPR (EPReasy)" data-title="Magnetometry of a dimer (curry)">
+<script type="text/plain" class="example" id="ex-epr-curry" data-group="EPR (EasySpyn)" data-title="Magnetometry of a dimer (curry)">
 import numpy as np
-import epreasy as es
+import easyspyn as es
 
 # Two S = 1/2 coupled by isotropic exchange, ee in MHz
 dimer = {"S": [0.5, 0.5], "g": [2, 2], "ee": 2 * 4 * 30e3}  # antiferromagnetic exchange J = 4 cm^-1 (in MHz)
@@ -479,9 +479,9 @@ print(f"chi T at 300 K: {chi_t[-1]:.3e} m^3 K mol^-1 ({chi_t[-1] / curie[-1]:.0%
 show_spectrum([chi_t, curie], T, invert=False, title="Exchange-coupled dimer: chi T against the Curie law", xlabel="T / K", ylabel="chi T / m^3 K mol^-1", names=["dimer, J = 4 cm^-1", "two free spins"])
 </script>
 
-<script type="text/plain" class="example" id="ex-epr-levels" data-group="EPR (EPReasy)" data-title="Energy levels of a high-spin ion (levels)">
+<script type="text/plain" class="example" id="ex-epr-levels" data-group="EPR (EasySpyn)" data-title="Energy levels of a high-spin ion (levels)">
 import numpy as np
-import epreasy as es
+import easyspyn as es
 
 # S = 5/2 with a rhombic zero-field splitting, D and E in MHz
 manganese = {"S": 2.5, "g": 2.0, "D": [500, 100]}  # S = 5/2 with a rhombic zero-field splitting, no nucleus
@@ -495,9 +495,9 @@ print("zero-field energies (MHz):", energies[0].round(1))
 show_spectrum([energies[:, k] for k in range(energies.shape[1])], fields, invert=False, title="Zeeman diagram of an S = 5/2 ion along z", xlabel="B / mT", ylabel="E / MHz")
 </script>
 
-<script type="text/plain" class="example" id="ex-epr-cu4n" data-group="EPR (EPReasy)" data-title="Cu(II) with four 14N, hybrid method (pepper)">
+<script type="text/plain" class="example" id="ex-epr-cu4n" data-group="EPR (EasySpyn)" data-title="Cu(II) with four 14N, hybrid method (pepper)">
 import numpy as np
-import epreasy as es
+import easyspyn as es
 
 # Copper with four 14N ligands: 648 states
 copper = {"S": 0.5, "g": [2.05, 2.05, 2.2], "Nucs": "63Cu,14N,14N,14N,14N",
@@ -513,9 +513,9 @@ print(f"hybrid and second-order perturbation spectra differ by {np.abs(hybrid.sp
 show_spectrum([hybrid.spec, perturb.spec + 0.2 * hybrid.spec.max()], hybrid.x, invert=False, title="Cu(II) with four 14N at X band", xlabel="B / mT", ylabel="dA/dB", names=["hybrid", "perturb2 (offset)"])
 </script>
 
-<script type="text/plain" class="example" id="ex-epr-esfit" data-group="EPR (EPReasy)" data-title="Fitting a powder spectrum (esfit)">
+<script type="text/plain" class="example" id="ex-epr-esfit" data-group="EPR (EasySpyn)" data-title="Fitting a powder spectrum (esfit)">
 import numpy as np
-import epreasy as es
+import easyspyn as es
 
 # Synthetic data: an axial powder spectrum with noise
 truth = {"g": [2.0, 2.1], "lw": 3}
@@ -869,7 +869,7 @@ function onWorker(event) {
     return;
   }
   if (msg.type === "ready") {
-    versionNote = "Python " + msg.python + " · spynach " + msg.spynach + " · epreasy " + msg.epreasy + " · ctps " + msg.ctps;
+    versionNote = "Python " + msg.python + " · spynach " + msg.spynach + " · easyspyn " + msg.easyspyn + " · ctps " + msg.ctps;
     if (autoRun && !dirty) run();
     else setPhase("ready", versionNote);
     return;

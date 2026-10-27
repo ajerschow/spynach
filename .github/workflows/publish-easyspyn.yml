@@ -1,4 +1,4 @@
-# Publishes EPReasy to PyPI as "easyspyn" with Trusted Publishing (no token): when a GitHub release tagged
+# Publishes EasySpyn to PyPI as "easyspyn" with Trusted Publishing (no token): when a GitHub release tagged
 # easyspyn-vX.Y.Z is published, build the distribution from that commit, test it, and upload it after the
 # reviewer of the "pypi" environment approves. "Run workflow" (workflow_dispatch) builds and tests only.
 #
@@ -36,7 +36,7 @@ jobs:
             exit 1
           fi
       - name: Tests (the parity tests skip without the fixtures)
-        run: python -m pytest -q tests/epreasy tests/unit/test_version.py
+        run: python -m pytest -q tests/easyspyn tests/unit/test_version.py
         env:
           OPENBLAS_NUM_THREADS: "2"
       - name: Build

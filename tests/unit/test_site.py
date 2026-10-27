@@ -22,6 +22,6 @@ def test_source_list_covers_the_three_packages():
     files = build_site.source_files()
     assert "src/spynach/__init__.py" in files
     assert "src/ctps/__init__.py" in files
-    assert "src/epreasy/__init__.py" in files
-    assert "src/epreasy/data/isotopedata.txt" in files
+    assert "src/easyspyn/__init__.py" in files
+    assert "src/easyspyn/data/isotopedata.txt" in files
     assert not any("__pycache__" in f for f in files)

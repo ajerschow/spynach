@@ -1,4 +1,4 @@
-/* Spynach, epreasy and ctps in Pyodide. Every simulation runs in this worker, off the page thread.
+/* Spynach, easyspyn and ctps in Pyodide. Every simulation runs in this worker, off the page thread.
    Pyodide 314 refuses classic workers, so this file is loaded as a module.
    The page must be served over HTTP from the repository root so src/ can be fetched. */
 import { loadPyodide } from "https://cdn.jsdelivr.net/pyodide/v314.0.7/full/pyodide.mjs";
@@ -45,32 +45,32 @@ const SOURCE = [
   "src/ctps/optimize.py",
   "src/ctps/plot.py",
   "src/ctps/simulate.py",
-  "src/epreasy/__init__.py",
-  "src/epreasy/components.py",
-  "src/epreasy/constants.py",
-  "src/epreasy/data/isotopedata.txt",
-  "src/epreasy/endor.py",
-  "src/epreasy/fitting.py",
-  "src/epreasy/garlic.py",
-  "src/epreasy/grids.py",
-  "src/epreasy/hamiltonian.py",
-  "src/epreasy/interp.py",
-  "src/epreasy/kernels.py",
-  "src/epreasy/lineshapes.py",
-  "src/epreasy/magnetometry.py",
-  "src/epreasy/nucdata.py",
-  "src/epreasy/oracle.py",
-  "src/epreasy/pepper.py",
-  "src/epreasy/perturb.py",
-  "src/epreasy/processing.py",
-  "src/epreasy/pulsed.py",
-  "src/epreasy/resfields.py",
-  "src/epreasy/rotations.py",
-  "src/epreasy/slowmotion.py",
-  "src/epreasy/spinops.py",
-  "src/epreasy/spinsystem.py",
-  "src/epreasy/symmetry.py",
-  "src/epreasy/units.py",
+  "src/easyspyn/__init__.py",
+  "src/easyspyn/components.py",
+  "src/easyspyn/constants.py",
+  "src/easyspyn/data/isotopedata.txt",
+  "src/easyspyn/endor.py",
+  "src/easyspyn/fitting.py",
+  "src/easyspyn/garlic.py",
+  "src/easyspyn/grids.py",
+  "src/easyspyn/hamiltonian.py",
+  "src/easyspyn/interp.py",
+  "src/easyspyn/kernels.py",
+  "src/easyspyn/lineshapes.py",
+  "src/easyspyn/magnetometry.py",
+  "src/easyspyn/nucdata.py",
+  "src/easyspyn/oracle.py",
+  "src/easyspyn/pepper.py",
+  "src/easyspyn/perturb.py",
+  "src/easyspyn/processing.py",
+  "src/easyspyn/pulsed.py",
+  "src/easyspyn/resfields.py",
+  "src/easyspyn/rotations.py",
+  "src/easyspyn/slowmotion.py",
+  "src/easyspyn/spinops.py",
+  "src/easyspyn/spinsystem.py",
+  "src/easyspyn/symmetry.py",
+  "src/easyspyn/units.py",
 ];
 
 const RUNNER = `
@@ -80,7 +80,7 @@ import time
 import traceback
 
 import numpy as np
-import epreasy
+import easyspyn
 import spynach
 from js import addSeries, beginImage, beginLine, reportProgress, setImageZ
 from pyodide.http import pyfetch
@@ -114,7 +114,7 @@ def f64(values):
     return np.ascontiguousarray(values, dtype=np.float64)
 
 def _is_spectrum(obj):
-    """An epreasy Spectrum (x, spec, info): a named tuple, so it is tested before lists and tuples."""
+    """An easyspyn Spectrum (x, spec, info): a named tuple, so it is tested before lists and tuples."""
     return hasattr(obj, "spec") and hasattr(obj, "x") and hasattr(obj, "info")
 
 def show_spectrum(y, x=None, *, title="", xlabel="", ylabel="intensity", invert=None, names=None):
@@ -266,9 +266,9 @@ def _with_iterations(fn):
         return fn(*args, **kwargs)
     return wrapped
 
-if not getattr(epreasy.esfit, "_counts_iterations", False):
-    epreasy.esfit = _with_iterations(epreasy.esfit)
-    epreasy.esfit._counts_iterations = True
+if not getattr(easyspyn.esfit, "_counts_iterations", False):
+    easyspyn.esfit = _with_iterations(easyspyn.esfit)
+    easyspyn.esfit._counts_iterations = True
 
 if not getattr(spynach.powder, "_counts_orientations", False):
     spynach.powder = _with_progress(spynach.powder, "powder")
@@ -435,14 +435,14 @@ async function boot() {
   post({ type: "status", text: "Loading the sources…" });
   await mountSources();
   const raw = await pyodide.runPythonAsync(
-    'import sys\nsys.path.insert(0, "/repo/src")\nimport spynach, ctps, epreasy\nspynach.__version__ + "|" + ctps.__version__ + "|" + sys.version.split()[0] + "|" + epreasy.__version__\n',
+    'import sys\nsys.path.insert(0, "/repo/src")\nimport spynach, ctps, easyspyn\nspynach.__version__ + "|" + ctps.__version__ + "|" + sys.version.split()[0] + "|" + easyspyn.__version__\n',
     { dedent: false },
   );
   const text = String(raw);
   if (raw && typeof raw.destroy === "function") raw.destroy();
   const parts = text.split("|");
   booted = true;
-  post({ type: "ready", spynach: parts[0], ctps: parts[1], python: parts[2], epreasy: parts[3] });
+  post({ type: "ready", spynach: parts[0], ctps: parts[1], python: parts[2], easyspyn: parts[3] });
   for (const message of waiting.splice(0)) handle(message);
 }
 

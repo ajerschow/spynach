@@ -1302,7 +1302,7 @@
   }
  },
  "functions": {
-  "epreasy.components.compisoloop": {
+  "easyspyn.components.compisoloop": {
    "files": [
     {
      "file": "compisoloop.m",
@@ -1312,7 +1312,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.endor.anisosubsys": {
+  "easyspyn.endor.anisosubsys": {
    "files": [
     {
      "file": "anisosubsys.m",
@@ -1322,7 +1322,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.endor.endorfrq": {
+  "easyspyn.endor.endorfrq": {
    "files": [
     {
      "file": "endorfrq.m",
@@ -1332,7 +1332,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.endor.endorfrq_perturb": {
+  "easyspyn.endor.endorfrq_perturb": {
    "files": [
     {
      "file": "endorfrq_perturb.m",
@@ -1342,7 +1342,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.endor.orisel": {
+  "easyspyn.endor.orisel": {
    "files": [
     {
      "file": "orisel.m",
@@ -1352,7 +1352,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.endor.salt": {
+  "easyspyn.endor.salt": {
    "files": [
     {
      "file": "salt.m",
@@ -1362,7 +1362,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.fitting._algdefaults": {
+  "easyspyn.fitting._algdefaults": {
    "files": [
     {
      "file": "esfit_algdefaults.m",
@@ -1372,7 +1372,7 @@
    "relation": "derived",
    "note": ""
   },
-  "epreasy.fitting.addnoise": {
+  "easyspyn.fitting.addnoise": {
    "files": [
     {
      "file": "addnoise.m",
@@ -1382,7 +1382,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.fitting.basecorr": {
+  "easyspyn.fitting.basecorr": {
    "files": [
     {
      "file": "basecorr.m",
@@ -1392,7 +1392,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.fitting.deriv": {
+  "easyspyn.fitting.deriv": {
    "files": [
     {
      "file": "deriv.m",
@@ -1402,7 +1402,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.fitting.esfit": {
+  "easyspyn.fitting.esfit": {
    "files": [
     {
      "file": "esfit.m",
@@ -1412,7 +1412,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.fitting.esfit_genetic": {
+  "easyspyn.fitting.esfit_genetic": {
    "files": [
     {
      "file": "esfit_genetic.m",
@@ -1422,7 +1422,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.fitting.esfit_grid": {
+  "easyspyn.fitting.esfit_grid": {
    "files": [
     {
      "file": "esfit_grid.m",
@@ -1432,7 +1432,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.fitting.esfit_levmar": {
+  "easyspyn.fitting.esfit_levmar": {
    "files": [
     {
      "file": "esfit_levmar.m",
@@ -1442,7 +1442,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.fitting.esfit_montecarlo": {
+  "easyspyn.fitting.esfit_montecarlo": {
    "files": [
     {
      "file": "esfit_montecarlo.m",
@@ -1452,7 +1452,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.fitting.esfit_simplex": {
+  "easyspyn.fitting.esfit_simplex": {
    "files": [
     {
      "file": "esfit_simplex.m",
@@ -1462,7 +1462,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.fitting.esfit_swarm": {
+  "easyspyn.fitting.esfit_swarm": {
    "files": [
     {
      "file": "esfit_swarm.m",
@@ -1472,7 +1472,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.fitting.hccm": {
+  "easyspyn.fitting.hccm": {
    "files": [
     {
      "file": "hccm.m",
@@ -1482,7 +1482,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.fitting.jacobianest": {
+  "easyspyn.fitting.jacobianest": {
    "files": [
     {
      "file": "jacobianest.m",
@@ -1492,7 +1492,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.fitting.rescaledata": {
+  "easyspyn.fitting.rescaledata": {
    "files": [
     {
      "file": "rescaledata.m",
@@ -1502,7 +1502,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.garlic.equivcouple": {
+  "easyspyn.garlic.equivcouple": {
    "files": [
     {
      "file": "equivcouple.m",
@@ -1512,7 +1512,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.garlic.fastmotion": {
+  "easyspyn.garlic.fastmotion": {
    "files": [
     {
      "file": "fastmotion.m",
@@ -1522,7 +1522,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.garlic.garlic": {
+  "easyspyn.garlic.garlic": {
    "files": [
     {
      "file": "garlic.m",
@@ -1532,7 +1532,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.grids.gridparam": {
+  "easyspyn.grids.gridparam": {
    "files": [
     {
      "file": "gridparam.m",
@@ -1542,7 +1542,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.grids.sphgrid": {
+  "easyspyn.grids.sphgrid": {
    "files": [
     {
      "file": "sphgrid.m",
@@ -1552,7 +1552,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.hamiltonian.ham": {
+  "easyspyn.hamiltonian.ham": {
    "files": [
     {
      "file": "ham.m",
@@ -1562,7 +1562,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.hamiltonian.ham_ee": {
+  "easyspyn.hamiltonian.ham_ee": {
    "files": [
     {
      "file": "ham_ee.m",
@@ -1572,7 +1572,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.hamiltonian.ham_ez": {
+  "easyspyn.hamiltonian.ham_ez": {
    "files": [
     {
      "file": "ham_ez.m",
@@ -1582,7 +1582,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.hamiltonian.ham_hf": {
+  "easyspyn.hamiltonian.ham_hf": {
    "files": [
     {
      "file": "ham_hf.m",
@@ -1592,7 +1592,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.hamiltonian.ham_nn": {
+  "easyspyn.hamiltonian.ham_nn": {
    "files": [
     {
      "file": "ham_nn.m",
@@ -1602,7 +1602,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.hamiltonian.ham_nq": {
+  "easyspyn.hamiltonian.ham_nq": {
    "files": [
     {
      "file": "ham_nq.m",
@@ -1612,7 +1612,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.hamiltonian.ham_nz": {
+  "easyspyn.hamiltonian.ham_nz": {
    "files": [
     {
      "file": "ham_nz.m",
@@ -1622,7 +1622,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.hamiltonian.ham_zf": {
+  "easyspyn.hamiltonian.ham_zf": {
    "files": [
     {
      "file": "ham_zf.m",
@@ -1632,7 +1632,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.hamiltonian.levels": {
+  "easyspyn.hamiltonian.levels": {
    "files": [
     {
      "file": "levels.m",
@@ -1642,7 +1642,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.interp.esspline1d": {
+  "easyspyn.interp.esspline1d": {
    "files": [
     {
      "file": "esspline1d.m",
@@ -1652,7 +1652,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.interp.esspline2d": {
+  "easyspyn.interp.esspline2d": {
    "files": [
     {
      "file": "esspline2d.m",
@@ -1662,7 +1662,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.interp.esspline_coeffs": {
+  "easyspyn.interp.esspline_coeffs": {
    "files": [
     {
      "file": "esspline1d.m",
@@ -1672,7 +1672,7 @@
    "relation": "derived",
    "note": ""
   },
-  "epreasy.interp.esspline_eval": {
+  "easyspyn.interp.esspline_eval": {
    "files": [
     {
      "file": "esspline1d.m",
@@ -1682,7 +1682,7 @@
    "relation": "derived",
    "note": ""
   },
-  "epreasy.interp.gridinterp": {
+  "easyspyn.interp.gridinterp": {
    "files": [
     {
      "file": "gridinterp.m",
@@ -1692,12 +1692,12 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.interp.rectify": {
+  "easyspyn.interp.rectify": {
    "files": [],
    "relation": "new",
    "note": ""
   },
-  "epreasy.kernels.lisum1i": {
+  "easyspyn.kernels.lisum1i": {
    "files": [
     {
      "file": "lisum1i.c",
@@ -1707,7 +1707,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.kernels.lisum1i_numpy": {
+  "easyspyn.kernels.lisum1i_numpy": {
    "files": [
     {
      "file": "lisum1i.c",
@@ -1717,7 +1717,7 @@
    "relation": "derived",
    "note": ""
   },
-  "epreasy.kernels.projecttriangles": {
+  "easyspyn.kernels.projecttriangles": {
    "files": [
     {
      "file": "projecttriangles.c",
@@ -1727,7 +1727,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.kernels.projecttriangles_numpy": {
+  "easyspyn.kernels.projecttriangles_numpy": {
    "files": [
     {
      "file": "projecttriangles.c",
@@ -1737,7 +1737,7 @@
    "relation": "derived",
    "note": ""
   },
-  "epreasy.kernels.projectzones": {
+  "easyspyn.kernels.projectzones": {
    "files": [
     {
      "file": "projectzones.c",
@@ -1747,7 +1747,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.kernels.projectzones_numpy": {
+  "easyspyn.kernels.projectzones_numpy": {
    "files": [
     {
      "file": "projectzones.c",
@@ -1757,7 +1757,7 @@
    "relation": "derived",
    "note": ""
   },
-  "epreasy.lineshapes.convspec": {
+  "easyspyn.lineshapes.convspec": {
    "files": [
     {
      "file": "convspec.m",
@@ -1767,7 +1767,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.lineshapes.gaussian": {
+  "easyspyn.lineshapes.gaussian": {
    "files": [
     {
      "file": "gaussian.m",
@@ -1777,7 +1777,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.lineshapes.lorentzian": {
+  "easyspyn.lineshapes.lorentzian": {
    "files": [
     {
      "file": "lorentzian.m",
@@ -1787,7 +1787,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.lineshapes.lshape": {
+  "easyspyn.lineshapes.lshape": {
    "files": [
     {
      "file": "lshape.m",
@@ -1797,7 +1797,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.lineshapes.voigtian": {
+  "easyspyn.lineshapes.voigtian": {
    "files": [
     {
      "file": "voigtian.m",
@@ -1807,7 +1807,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.magnetometry.curry": {
+  "easyspyn.magnetometry.curry": {
    "files": [
     {
      "file": "curry.m",
@@ -1817,7 +1817,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.nucdata.isotopes": {
+  "easyspyn.nucdata.isotopes": {
    "files": [
     {
      "file": "isotopes.m",
@@ -1827,7 +1827,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.nucdata.nucabund": {
+  "easyspyn.nucdata.nucabund": {
    "files": [
     {
      "file": "nucabund.m",
@@ -1837,7 +1837,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.nucdata.nucdata": {
+  "easyspyn.nucdata.nucdata": {
    "files": [
     {
      "file": "nucdata.m",
@@ -1847,7 +1847,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.nucdata.nucgval": {
+  "easyspyn.nucdata.nucgval": {
    "files": [
     {
      "file": "nucgval.m",
@@ -1857,7 +1857,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.nucdata.nucqmom": {
+  "easyspyn.nucdata.nucqmom": {
    "files": [
     {
      "file": "nucqmom.m",
@@ -1867,7 +1867,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.nucdata.nucspin": {
+  "easyspyn.nucdata.nucspin": {
    "files": [
     {
      "file": "nucspin.m",
@@ -1877,7 +1877,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.nucdata.nucstring2list": {
+  "easyspyn.nucdata.nucstring2list": {
    "files": [
     {
      "file": "nucstring2list.m",
@@ -1887,7 +1887,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.pepper.pepper": {
+  "easyspyn.pepper.pepper": {
    "files": [
     {
      "file": "pepper.m",
@@ -1897,7 +1897,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.perturb.resfields_perturb": {
+  "easyspyn.perturb.resfields_perturb": {
    "files": [
     {
      "file": "resfields_perturb.m",
@@ -1907,7 +1907,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.perturb.resfields_perturb_oriented": {
+  "easyspyn.perturb.resfields_perturb_oriented": {
    "files": [
     {
      "file": "resfields_perturb.m",
@@ -1917,7 +1917,7 @@
    "relation": "derived",
    "note": ""
   },
-  "epreasy.processing.fieldmod": {
+  "easyspyn.processing.fieldmod": {
    "files": [
     {
      "file": "fieldmod.m",
@@ -1927,7 +1927,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.pulsed._pathwayparser": {
+  "easyspyn.pulsed._pathwayparser": {
    "files": [
     {
      "file": "saffron.m",
@@ -1937,7 +1937,7 @@
    "relation": "derived",
    "note": ""
   },
-  "epreasy.pulsed._sf_evolve": {
+  "easyspyn.pulsed._sf_evolve": {
    "files": [
     {
      "file": "saffron.m",
@@ -1947,7 +1947,7 @@
    "relation": "derived",
    "note": ""
   },
-  "epreasy.pulsed._sf_peaks": {
+  "easyspyn.pulsed._sf_peaks": {
    "files": [
     {
      "file": "sf_peaks.c",
@@ -1957,7 +1957,7 @@
    "relation": "derived",
    "note": ""
   },
-  "epreasy.pulsed.apowin": {
+  "easyspyn.pulsed.apowin": {
    "files": [
     {
      "file": "apowin.m",
@@ -1967,7 +1967,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.pulsed.exponfit": {
+  "easyspyn.pulsed.exponfit": {
    "files": [
     {
      "file": "exponfit.m",
@@ -1977,7 +1977,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.pulsed.fdaxis": {
+  "easyspyn.pulsed.fdaxis": {
    "files": [
     {
      "file": "fdaxis.m",
@@ -1987,7 +1987,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.pulsed.larmorfrq": {
+  "easyspyn.pulsed.larmorfrq": {
    "files": [
     {
      "file": "larmorfrq.m",
@@ -1997,7 +1997,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.pulsed.saffron": {
+  "easyspyn.pulsed.saffron": {
    "files": [
     {
      "file": "saffron.m",
@@ -2007,7 +2007,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.pulsed.sf_pathways": {
+  "easyspyn.pulsed.sf_pathways": {
    "files": [
     {
      "file": "sf_pathways.m",
@@ -2017,7 +2017,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.resfields.adddefaults": {
+  "easyspyn.resfields.adddefaults": {
    "files": [
     {
      "file": "adddefaults.m",
@@ -2027,7 +2027,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.resfields.cubicsolve": {
+  "easyspyn.resfields.cubicsolve": {
    "files": [
     {
      "file": "cubicsolve.c",
@@ -2037,7 +2037,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.resfields.getdstrainops": {
+  "easyspyn.resfields.getdstrainops": {
    "files": [
     {
      "file": "getdstrainops.m",
@@ -2047,7 +2047,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.resfields.gethamdata": {
+  "easyspyn.resfields.gethamdata": {
    "files": [
     {
      "file": "gethamdata.m",
@@ -2057,7 +2057,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.resfields.nucspinrmv": {
+  "easyspyn.resfields.nucspinrmv": {
    "files": [
     {
      "file": "nucspinrmv.m",
@@ -2067,7 +2067,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.resfields.photoselect": {
+  "easyspyn.resfields.photoselect": {
    "files": [
     {
      "file": "photoselect.m",
@@ -2077,7 +2077,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.resfields.resfields": {
+  "easyspyn.resfields.resfields": {
    "files": [
     {
      "file": "resfields.m",
@@ -2087,7 +2087,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.resfields.resfields_eig": {
+  "easyspyn.resfields.resfields_eig": {
    "files": [
     {
      "file": "resfields_eig.m",
@@ -2097,7 +2097,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.resfields.resfields_oriented": {
+  "easyspyn.resfields.resfields_oriented": {
    "files": [
     {
      "file": "resfields.m",
@@ -2107,7 +2107,7 @@
    "relation": "derived",
    "note": ""
   },
-  "epreasy.rotations.ang2vec": {
+  "easyspyn.rotations.ang2vec": {
    "files": [
     {
      "file": "ang2vec.m",
@@ -2117,7 +2117,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.rotations.erot": {
+  "easyspyn.rotations.erot": {
    "files": [
     {
      "file": "erot.m",
@@ -2127,7 +2127,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.rotations.eulang": {
+  "easyspyn.rotations.eulang": {
    "files": [
     {
      "file": "eulang.m",
@@ -2137,7 +2137,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.rotations.letter2vec": {
+  "easyspyn.rotations.letter2vec": {
    "files": [
     {
      "file": "letter2vec.m",
@@ -2147,7 +2147,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.rotations.vec2ang": {
+  "easyspyn.rotations.vec2ang": {
    "files": [
     {
      "file": "vec2ang.m",
@@ -2157,7 +2157,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.slowmotion._conjgrad": {
+  "easyspyn.slowmotion._conjgrad": {
    "files": [
     {
      "file": "chili_conjgrad.m",
@@ -2167,7 +2167,7 @@
    "relation": "derived",
    "note": ""
   },
-  "epreasy.slowmotion._contfracspec": {
+  "easyspyn.slowmotion._contfracspec": {
    "files": [
     {
      "file": "chili_contfracspec.m",
@@ -2177,7 +2177,7 @@
    "relation": "derived",
    "note": ""
   },
-  "epreasy.slowmotion._diffsuperop": {
+  "easyspyn.slowmotion._diffsuperop": {
    "files": [
     {
      "file": "diffsuperop.m",
@@ -2187,7 +2187,7 @@
    "relation": "derived",
    "note": ""
   },
-  "epreasy.slowmotion._eqpopvec": {
+  "easyspyn.slowmotion._eqpopvec": {
    "files": [
     {
      "file": "chili_eqpopvec.m",
@@ -2197,7 +2197,7 @@
    "relation": "derived",
    "note": ""
   },
-  "epreasy.slowmotion._generateoribasis": {
+  "easyspyn.slowmotion._generateoribasis": {
    "files": [
     {
      "file": "generateoribasis.m",
@@ -2207,7 +2207,7 @@
    "relation": "derived",
    "note": ""
   },
-  "epreasy.slowmotion._hil2liouv": {
+  "easyspyn.slowmotion._hil2liouv": {
    "files": [
     {
      "file": "hil2liouv.m",
@@ -2217,7 +2217,7 @@
    "relation": "derived",
    "note": ""
   },
-  "epreasy.slowmotion._istotensor": {
+  "easyspyn.slowmotion._istotensor": {
    "files": [
     {
      "file": "istotensor.m",
@@ -2227,7 +2227,7 @@
    "relation": "derived",
    "note": ""
   },
-  "epreasy.slowmotion._lanczos": {
+  "easyspyn.slowmotion._lanczos": {
    "files": [
     {
      "file": "chili_lanczos.m",
@@ -2237,7 +2237,7 @@
    "relation": "derived",
    "note": ""
   },
-  "epreasy.slowmotion._magint": {
+  "easyspyn.slowmotion._magint": {
    "files": [
     {
      "file": "magint.m",
@@ -2247,7 +2247,7 @@
    "relation": "derived",
    "note": ""
   },
-  "epreasy.slowmotion._pqorder": {
+  "easyspyn.slowmotion._pqorder": {
    "files": [
     {
      "file": "pqorder.m",
@@ -2257,7 +2257,7 @@
    "relation": "derived",
    "note": ""
   },
-  "epreasy.slowmotion._rbos": {
+  "easyspyn.slowmotion._rbos": {
    "files": [
     {
      "file": "rbos.m",
@@ -2267,7 +2267,7 @@
    "relation": "derived",
    "note": ""
   },
-  "epreasy.slowmotion._xlmk": {
+  "easyspyn.slowmotion._xlmk": {
    "files": [
     {
      "file": "chili_xlmk.m",
@@ -2277,7 +2277,7 @@
    "relation": "derived",
    "note": ""
   },
-  "epreasy.slowmotion.chili": {
+  "easyspyn.slowmotion.chili": {
    "files": [
     {
      "file": "chili.m",
@@ -2287,7 +2287,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.slowmotion.tensor_cart2sph": {
+  "easyspyn.slowmotion.tensor_cart2sph": {
    "files": [
     {
      "file": "tensor_cart2sph.m",
@@ -2297,7 +2297,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.slowmotion.tensor_sph2cart": {
+  "easyspyn.slowmotion.tensor_sph2cart": {
    "files": [
     {
      "file": "tensor_sph2cart.m",
@@ -2307,7 +2307,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.slowmotion.wigner3j": {
+  "easyspyn.slowmotion.wigner3j": {
    "files": [
     {
      "file": "wigner3j.m",
@@ -2317,7 +2317,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.slowmotion.wigner6j": {
+  "easyspyn.slowmotion.wigner6j": {
    "files": [
     {
      "file": "wigner6j.m",
@@ -2327,7 +2327,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.slowmotion.wignerd": {
+  "easyspyn.slowmotion.wignerd": {
    "files": [
     {
      "file": "wignerd.m",
@@ -2337,7 +2337,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.spinops.sop": {
+  "easyspyn.spinops.sop": {
    "files": [
     {
      "file": "sop.m",
@@ -2347,7 +2347,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.spinops.stev": {
+  "easyspyn.spinops.stev": {
    "files": [
     {
      "file": "stev.m",
@@ -2357,7 +2357,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.spinsystem.hsdim": {
+  "easyspyn.spinsystem.hsdim": {
    "files": [
     {
      "file": "hsdim.m",
@@ -2367,7 +2367,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.spinsystem.spinvec": {
+  "easyspyn.spinsystem.spinvec": {
    "files": [
     {
      "file": "spinvec.m",
@@ -2377,7 +2377,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.spinsystem.validatespinsys": {
+  "easyspyn.spinsystem.validatespinsys": {
    "files": [
     {
      "file": "validatespinsys.m",
@@ -2387,7 +2387,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.symmetry.hamsymm": {
+  "easyspyn.symmetry.hamsymm": {
    "files": [
     {
      "file": "hamsymm.m",
@@ -2397,7 +2397,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.units.mhz2mt": {
+  "easyspyn.units.mhz2mt": {
    "files": [
     {
      "file": "mhz2mt.m",
@@ -2407,7 +2407,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.units.mt2mhz": {
+  "easyspyn.units.mt2mhz": {
    "files": [
     {
      "file": "mt2mhz.m",
@@ -2417,7 +2417,7 @@
    "relation": "port",
    "note": ""
   },
-  "epreasy.units.unitconvert": {
+  "easyspyn.units.unitconvert": {
    "files": [
     {
      "file": "unitconvert.m",
@@ -2429,17 +2429,17 @@
   }
  },
  "modules": {
-  "epreasy.components": [
+  "easyspyn.components": [
    "compisoloop.m"
   ],
-  "epreasy.endor": [
+  "easyspyn.endor": [
    "anisosubsys.m",
    "endorfrq.m",
    "endorfrq_perturb.m",
    "orisel.m",
    "salt.m"
   ],
-  "epreasy.fitting": [
+  "easyspyn.fitting": [
    "addnoise.m",
    "basecorr.m",
    "deriv.m",
@@ -2455,16 +2455,16 @@
    "jacobianest.m",
    "rescaledata.m"
   ],
-  "epreasy.garlic": [
+  "easyspyn.garlic": [
    "equivcouple.m",
    "fastmotion.m",
    "garlic.m"
   ],
-  "epreasy.grids": [
+  "easyspyn.grids": [
    "gridparam.m",
    "sphgrid.m"
   ],
-  "epreasy.hamiltonian": [
+  "easyspyn.hamiltonian": [
    "ham.m",
    "ham_ee.m",
    "ham_ez.m",
@@ -2475,27 +2475,27 @@
    "ham_zf.m",
    "levels.m"
   ],
-  "epreasy.interp": [
+  "easyspyn.interp": [
    "esspline1d.m",
    "esspline2d.m",
    "gridinterp.m"
   ],
-  "epreasy.kernels": [
+  "easyspyn.kernels": [
    "lisum1i.c",
    "projecttriangles.c",
    "projectzones.c"
   ],
-  "epreasy.lineshapes": [
+  "easyspyn.lineshapes": [
    "convspec.m",
    "gaussian.m",
    "lorentzian.m",
    "lshape.m",
    "voigtian.m"
   ],
-  "epreasy.magnetometry": [
+  "easyspyn.magnetometry": [
    "curry.m"
   ],
-  "epreasy.nucdata": [
+  "easyspyn.nucdata": [
    "isotopes.m",
    "nucabund.m",
    "nucdata.m",
@@ -2504,16 +2504,16 @@
    "nucspin.m",
    "nucstring2list.m"
   ],
-  "epreasy.pepper": [
+  "easyspyn.pepper": [
    "pepper.m"
   ],
-  "epreasy.perturb": [
+  "easyspyn.perturb": [
    "resfields_perturb.m"
   ],
-  "epreasy.processing": [
+  "easyspyn.processing": [
    "fieldmod.m"
   ],
-  "epreasy.pulsed": [
+  "easyspyn.pulsed": [
    "apowin.m",
    "exponfit.m",
    "fdaxis.m",
@@ -2522,7 +2522,7 @@
    "sf_pathways.m",
    "sf_peaks.c"
   ],
-  "epreasy.resfields": [
+  "easyspyn.resfields": [
    "adddefaults.m",
    "cubicsolve.c",
    "getdstrainops.m",
@@ -2532,14 +2532,14 @@
    "resfields.m",
    "resfields_eig.m"
   ],
-  "epreasy.rotations": [
+  "easyspyn.rotations": [
    "ang2vec.m",
    "erot.m",
    "eulang.m",
    "letter2vec.m",
    "vec2ang.m"
   ],
-  "epreasy.slowmotion": [
+  "easyspyn.slowmotion": [
    "chili.m",
    "chili_conjgrad.m",
    "chili_contfracspec.m",
@@ -2559,19 +2559,19 @@
    "wigner6j.m",
    "wignerd.m"
   ],
-  "epreasy.spinops": [
+  "easyspyn.spinops": [
    "sop.m",
    "stev.m"
   ],
-  "epreasy.spinsystem": [
+  "easyspyn.spinsystem": [
    "hsdim.m",
    "spinvec.m",
    "validatespinsys.m"
   ],
-  "epreasy.symmetry": [
+  "easyspyn.symmetry": [
    "hamsymm.m"
   ],
-  "epreasy.units": [
+  "easyspyn.units": [
    "mhz2mt.m",
    "mt2mhz.m",
    "unitconvert.m"

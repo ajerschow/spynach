@@ -1,11 +1,11 @@
-"""Acknowledge the EasySpin contributors behind the functions that EPReasy translates.
+"""Acknowledge the EasySpin contributors behind the functions that EasySpyn translates.
 
 EasySpin's function headers do not list authors (the project's notice is "Copyright (c) 2006-2024 Stefan Stoll and
 other contributors", MIT), apart from code taken from elsewhere, such as ``jacobianest.m`` ("Author: John D'Errico").
-The record of who wrote a file is its Git history, so this tool lists, for each EasySpin file that an EPReasy function
+The record of who wrote a file is its Git history, so this tool lists, for each EasySpin file that an EasySpyn function
 translates, the people who authored commits to that file up to the release tag (by number of commits), plus any
 author named in the source itself. The result goes to ``porting/easyspin_authors.json`` (names only), into the
-docstrings of ``src/epreasy`` and into ``docs/easyspin-credits.md``. Function names are never changed.
+docstrings of ``src/easyspyn`` and into ``docs/easyspin-credits.md``. Function names are never changed.
 
     python porting/tools/gen_easyspin_authors.py --fetch     # refresh the JSON from GitHub (needs the gh CLI)
     python porting/tools/gen_easyspin_authors.py --write     # docstrings and page from the JSON
@@ -30,7 +30,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from credits_common import apply_edits, wrap_block  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
-SRC = ROOT / "src" / "epreasy"
+SRC = ROOT / "src" / "easyspyn"
 JSON_PATH = ROOT / "porting" / "easyspin_authors.json"
 PAGE = ROOT / "docs" / "easyspin-credits.md"
 REPO = "StollLab/EasySpin"
@@ -50,16 +50,16 @@ NOT_PEOPLE = {"GitHub", "github-actions[bot]", "dependabot[bot]"}
 
 # Mappings the function names cannot give: qualified name -> [(EasySpin file name, relation, note)]
 EXTRA = {
-    "epreasy.kernels.lisum1i_numpy": [("lisum1i.c", "derived", "the C kernel, in NumPy")],
-    "epreasy.kernels.projecttriangles_numpy": [("projecttriangles.c", "derived", "the C kernel, in NumPy")],
-    "epreasy.kernels.projectzones_numpy": [("projectzones.c", "derived", "the C kernel, in NumPy")],
-    "epreasy.interp.esspline_coeffs": [("esspline1d.m", "derived", "the coefficient step")],
-    "epreasy.interp.esspline_eval": [("esspline1d.m", "derived", "the evaluation step")],
-    "epreasy.resfields.resfields_oriented": [("resfields.m", "derived", "the per-orientation part")],
-    "epreasy.perturb.resfields_perturb_oriented": [("resfields_perturb.m", "derived", "the per-orientation part")],
-    "epreasy.pulsed._sf_peaks": [("sf_peaks.c", "derived", "the peak-binning kernel, in NumPy")],
-    "epreasy.pulsed._sf_evolve": [("saffron.m", "derived", "the time-domain evolution of the fast engine")],
-    "epreasy.pulsed._pathwayparser": [("saffron.m", "derived", "the pathway parser of the fast engine")],
+    "easyspyn.kernels.lisum1i_numpy": [("lisum1i.c", "derived", "the C kernel, in NumPy")],
+    "easyspyn.kernels.projecttriangles_numpy": [("projecttriangles.c", "derived", "the C kernel, in NumPy")],
+    "easyspyn.kernels.projectzones_numpy": [("projectzones.c", "derived", "the C kernel, in NumPy")],
+    "easyspyn.interp.esspline_coeffs": [("esspline1d.m", "derived", "the coefficient step")],
+    "easyspyn.interp.esspline_eval": [("esspline1d.m", "derived", "the evaluation step")],
+    "easyspyn.resfields.resfields_oriented": [("resfields.m", "derived", "the per-orientation part")],
+    "easyspyn.perturb.resfields_perturb_oriented": [("resfields_perturb.m", "derived", "the per-orientation part")],
+    "easyspyn.pulsed._sf_peaks": [("sf_peaks.c", "derived", "the peak-binning kernel, in NumPy")],
+    "easyspyn.pulsed._sf_evolve": [("saffron.m", "derived", "the time-domain evolution of the fast engine")],
+    "easyspyn.pulsed._pathwayparser": [("saffron.m", "derived", "the pathway parser of the fast engine")],
 }
 EXCLUDE_MODULES = {"__init__", "oracle"}
 SKIP_STEMS = {"main"}
@@ -112,7 +112,7 @@ def source_credits(path: str) -> list[str]:
     ]
 
 
-# ---------------------------------------------------------------------------- what in EPReasy maps to what
+# ---------------------------------------------------------------------------- what in EasySpyn maps to what
 def python_files() -> list[Path]:
     return [p for p in sorted(SRC.glob("*.py")) if p.stem not in EXCLUDE_MODULES]
 
@@ -124,7 +124,7 @@ def scan(index: dict[str, str]) -> tuple[dict[str, dict], dict[str, set[str]]]:
     modules: dict[str, set[str]] = {}
     for py in python_files():
         tree = ast.parse(py.read_text(encoding="utf-8"))
-        mod = f"epreasy.{py.stem}"
+        mod = f"easyspyn.{py.stem}"
         modules[mod] = set()
         for node in tree.body:
             if not isinstance(node, ast.FunctionDef):
@@ -215,7 +215,7 @@ def docstring_targets(data: dict) -> dict[Path, list[tuple[ast.Expr, list[str]]]
     targets: dict[Path, list[tuple[ast.Expr, list[str]]]] = {}
     for py in python_files():
         tree = ast.parse(py.read_text(encoding="utf-8"))
-        mod = f"epreasy.{py.stem}"
+        mod = f"easyspyn.{py.stem}"
         found: list[tuple[ast.Expr, list[str]]] = []
         if mod in data["modules"] and tree.body and isinstance(tree.body[0], ast.Expr):
             found.append((tree.body[0], wrap_block(module_block(data, data["modules"][mod]), 0)))
@@ -239,7 +239,7 @@ def without_docstring(data: dict) -> list[str]:
         tree = ast.parse(py.read_text(encoding="utf-8"))
         for node in tree.body:
             if isinstance(node, ast.FunctionDef):
-                qual = f"epreasy.{py.stem}.{node.name}"
+                qual = f"easyspyn.{py.stem}.{node.name}"
                 if data["functions"].get(qual, {}).get("files") and not ast.get_docstring(node):
                     missing.append(qual)
     return missing
@@ -263,25 +263,25 @@ def render_page(data: dict) -> str:
         "",
         "*Generated by `porting/tools/gen_easyspin_authors.py` from `porting/easyspin_authors.json`; do not edit.*",
         "",
-        f"EPReasy is a translation of [EasySpin](https://easyspin.org) {data['easyspin_version']}, "
+        f"EasySpyn is a translation of [EasySpin](https://easyspin.org) {data['easyspin_version']}, "
         f"{data['notice']}, MIT licence (the notice is in [`LICENSE`](../LICENSE)). EasySpin's function headers do "
         "not list authors, so the record used here is the Git history of each original file at the release tag "
         f"[{data['tag']}]({data['repository']}/tree/{data['tag']}): the people who authored commits to it, in order of "
         "the number of commits, together with any author the source itself names (code taken from elsewhere). The "
         "lists therefore include everyone who changed a file, small edits as well as large ones, and do not say who "
-        "wrote which algorithm. The same lines are in the docstrings (`help(epreasy.pepper)`). Function names are "
+        "wrote which algorithm. The same lines are in the docstrings (`help(easyspyn.pepper)`). Function names are "
         "EasySpin's and are not changed to carry authors.",
         "",
-        "How an EPReasy function relates to its original:",
+        "How an EasySpyn function relates to its original:",
         "",
         "- **port**: a translation of the EasySpin function of that name;",
         "- **derived**: translated from part of an EasySpin file, a private helper, or a different implementation "
         "of what it computes (the compiled kernels are rewritten in NumPy);",
         "- **new**: no EasySpin counterpart.",
         "",
-        "## By EPReasy function",
+        "## By EasySpyn function",
         "",
-        "| EPReasy function | EasySpin source | Relation | EasySpin authors |",
+        "| EasySpyn function | EasySpin source | Relation | EasySpin authors |",
         "|---|---|---|---|",
     ]
     for qual, entry in data["functions"].items():

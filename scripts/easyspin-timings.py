@@ -1,16 +1,16 @@
-"""Times epreasy against EasySpin on representative fixture cases, for the project site.
+"""Times easyspyn against EasySpin on representative fixture cases, for the project site.
 
-    EPREASY_FIXTURES=... python scripts/easyspin-timings.py            # writes comparison/easyspin/timings.json
-    EPREASY_FIXTURES=... python scripts/easyspin-timings.py --list     # the cases and their inputs, no timing
+    EASYSPYN_FIXTURES=... python scripts/easyspin-timings.py            # writes comparison/easyspin/timings.json
+    EASYSPYN_FIXTURES=... python scripts/easyspin-timings.py --list     # the cases and their inputs, no timing
 
 Each case is an EasySpin fixture written by oracle/matlab/easyspin/dumps/esdump_*.m,
 which record the wall clock of the EasySpin call (after a warm-up call; a fit
-is timed once). The epreasy call is rebuilt from the recorded inputs by
-epreasy.oracle.case_call, run once to warm up, then timed as the median of
+is timed once). The easyspyn call is rebuilt from the recorded inputs by
+easyspyn.oracle.case_call, run once to warm up, then timed as the median of
 REPEATS calls with the NumPy kernels, and again with the Numba kernels when
 Numba is installed; the relative difference of the two results is recorded
 with the timings. scripts/build_site.py renders the JSON into easyspin.html.
-Lives in scripts/ because nothing under comparison/ or oracle/ may import epreasy.
+Lives in scripts/ because nothing under comparison/ or oracle/ may import easyspyn.
 """
 
 from __future__ import annotations
@@ -105,7 +105,7 @@ def relative_difference(ours: np.ndarray, reference: np.ndarray) -> float:
 
 
 def time_case(fixture, case_call, kernels, repeats: int, *, with_numba: bool) -> dict:
-    """EasySpin's recorded seconds, epreasy's median seconds with the NumPy kernels (and the Numba kernels when
+    """EasySpin's recorded seconds, easyspyn's median seconds with the NumPy kernels (and the Numba kernels when
     asked), and the relative difference of the two results."""
     run, reference = case_call(fixture)
     kernels.HAVE_NUMBA = False
@@ -118,8 +118,8 @@ def time_case(fixture, case_call, kernels, repeats: int, *, with_numba: bool) ->
         kernels.HAVE_NUMBA = False
     return {
         "easyspin_s": easyspin_seconds(fixture),
-        "epreasy_numpy_s": numpy_s,
-        "epreasy_numba_s": numba_s,
+        "easyspyn_numpy_s": numpy_s,
+        "easyspyn_numba_s": numba_s,
         "rel_err": rel,
     }
 
@@ -130,9 +130,9 @@ def main(argv=None) -> int:
     parser.add_argument("--repeats", type=int, default=REPEATS)
     args = parser.parse_args(argv)
 
-    import epreasy
-    from epreasy import kernels
-    from epreasy.oracle import case_call, find_case, load_fixture
+    import easyspyn
+    from easyspyn import kernels
+    from easyspyn.oracle import case_call, find_case, load_fixture
 
     try:
         import numba
@@ -163,9 +163,9 @@ def main(argv=None) -> int:
         )
         rows.append(row)
         es_s = "not timed" if row["easyspin_s"] is None else f"{row['easyspin_s']:.3f} s"
-        nb_s = "" if row["epreasy_numba_s"] is None else f", numba {row['epreasy_numba_s']:.3f} s"
-        numpy_s = row["epreasy_numpy_s"]
-        print(f"{case:24s} EasySpin {es_s:>10s}  epreasy numpy {numpy_s:.3f} s{nb_s}  rel {row['rel_err']:.1e}")
+        nb_s = "" if row["easyspyn_numba_s"] is None else f", numba {row['easyspyn_numba_s']:.3f} s"
+        numpy_s = row["easyspyn_numpy_s"]
+        print(f"{case:24s} EasySpin {es_s:>10s}  easyspyn numpy {numpy_s:.3f} s{nb_s}  rel {row['rel_err']:.1e}")
 
     import scipy
 
@@ -176,8 +176,8 @@ def main(argv=None) -> int:
             "version": easyspin_meta["easyspin_version"],
             "matlab_version": easyspin_meta["matlab_version"],
         },
-        "epreasy": {
-            "version": epreasy.__version__,
+        "easyspyn": {
+            "version": easyspyn.__version__,
             "python": platform.python_version(),
             "numpy": np.__version__,
             "scipy": scipy.__version__,

@@ -6,8 +6,8 @@ the fast-motion limit)."""
 import numpy as np
 import pytest
 
-import epreasy as es
-from epreasy import slowmotion as sm
+import easyspyn as es
+from easyspyn import slowmotion as sm
 
 NITROXIDE = {"g": [2.008, 2.0061, 2.0027], "Nucs": "14N", "A": [16, 16, 86], "lw": 0.1, "tcorr": 1e-9}
 

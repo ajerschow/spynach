@@ -1,4 +1,4 @@
-% EasySpin reference data for epreasy's esfit (phase 3): fits of analytic
+% EasySpin reference data for easyspyn's esfit (phase 3): fits of analytic
 % models with every deterministic algorithm and target function, with
 % autoscaling and baselines, global fits with weights, the confidence
 % intervals of a noisy exponential, fits of pepper spectra (one and two

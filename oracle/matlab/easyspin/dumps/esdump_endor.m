@@ -1,4 +1,4 @@
-% EasySpin reference data for epreasy's ENDOR and magnetometry functions
+% EasySpin reference data for easyspyn's ENDOR and magnetometry functions
 % (phase 4): endorfrq and endorfrq_perturb on crystal orientations, orisel
 % weights, salt spectra of powders and crystals, and curry moments and
 % susceptibilities. Syntax:
@@ -7,7 +7,7 @@
 %
 % version_dir is <fixtures_root>/<easyspin version>. One directory per case
 % is written below it with data.h5 and meta.json; the inputs of each case
-% are recorded in meta.json, from which tests/epreasy/test_parity_endor.py
+% are recorded in meta.json, from which tests/easyspyn/test_parity_endor.py
 % rebuilds the case. Cases whose directory already exists are skipped.
 
 function esdump_endor(version_dir)

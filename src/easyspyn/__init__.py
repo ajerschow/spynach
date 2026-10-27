@@ -1,7 +1,7 @@
-"""epreasy: EasySpin's EPR simulation functions in Python, beside Spynach.
+"""easyspyn: EasySpin's EPR simulation functions in Python, beside Spynach.
 
 Spin systems are dicts with EasySpin's field names; units are EasySpin's
-(mT, MHz); spin numbers are 1-based as in EasySpin. See ``docs/epreasy.md``
+(mT, MHz); spin numbers are 1-based as in EasySpin. See ``docs/easyspyn.md``
 and ``docs/coming-from-easyspin.md``.
 """
 

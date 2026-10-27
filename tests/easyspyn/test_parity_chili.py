@@ -8,8 +8,8 @@ symbols, Wigner matrices and tensor conversions at 1e-12. EasySpin's right-to-le
 import numpy as np
 import pytest
 
-import epreasy as es
-from epreasy.oracle import assert_matches, fixture_root, load_fixture
+import easyspyn as es
+from easyspyn.oracle import assert_matches, fixture_root, load_fixture
 
 ROOT = fixture_root()
 ALL = (

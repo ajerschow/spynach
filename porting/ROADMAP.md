@@ -220,4 +220,4 @@ GPU backend (`porting/gpu-notes.md`), the JAX layer.
 
 # CTPS: the coherence-pathway module `ctps` is separate from this roadmap; see src/ctps/README.md.
 
-# EPR: the EasySpin port `epreasy` is separate from this roadmap; see src/epreasy/README.md.
+# EPR: the EasySpin port `easyspyn` is separate from this roadmap; see src/easyspyn/README.md.

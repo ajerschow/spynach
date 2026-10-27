@@ -4,7 +4,7 @@ the hybrid method, strains, line shapes, spherical grids and convspec."""
 import numpy as np
 import pytest
 
-import epreasy as es
+import easyspyn as es
 
 NITROXIDE = {"g": [2.0088, 2.0061, 2.0027], "Nucs": "14N", "A": [16, 16, 86]}
 XBAND = {"mwFreq": 9.5, "Range": [330, 350]}

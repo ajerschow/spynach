@@ -88,5 +88,5 @@ def test_examples_are_grouped_and_unique():
     ids = [e[0] for e in ALL]
     assert len(ids) == len(set(ids))
     groups = {e[1] for e in ALL}
-    assert groups == {"NMR (spynach)", "EPR (EPReasy)", "Pathways (ctps)"}
+    assert groups == {"NMR (spynach)", "EPR (EasySpyn)", "Pathways (ctps)"}
     assert sum(e[1].startswith("EPR") for e in ALL) == 11

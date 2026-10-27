@@ -1,4 +1,4 @@
-"""The EasySpin contributors named in the docstrings of epreasy and in docs/easyspin-credits.md agree with
+"""The EasySpin contributors named in the docstrings of easyspyn and in docs/easyspin-credits.md agree with
 porting/easyspin_authors.json, which porting/tools/gen_easyspin_authors.py reads from EasySpin's Git history at the
 release tag; no network is needed here."""
 
@@ -6,7 +6,7 @@ import json
 import sys
 from pathlib import Path
 
-import epreasy as es
+import easyspyn as es
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "porting" / "tools"))
@@ -31,8 +31,8 @@ def test_every_mapped_function_has_recorded_authors():
 def test_known_attributions():
     assert DATA["files"]["pepper.m"]["contributors"][0]["name"] == "Stefan Stoll"
     assert DATA["files"]["jacobianest.m"]["external"] == ["John D'Errico"]
-    assert DATA["functions"]["epreasy.pepper.pepper"]["relation"] == "port"
-    assert DATA["functions"]["epreasy.kernels.lisum1i_numpy"]["relation"] == "derived"
+    assert DATA["functions"]["easyspyn.pepper.pepper"]["relation"] == "port"
+    assert DATA["functions"]["easyspyn.kernels.lisum1i_numpy"]["relation"] == "derived"
     assert DATA["repository"] == "https://github.com/StollLab/EasySpin" and DATA["tag"] == "v6.0.15"
 
 

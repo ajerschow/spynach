@@ -61,7 +61,7 @@ def isotopes() -> dict[str, Isotope]:
     global _TABLE
     if _TABLE is None:
         table: dict[str, Isotope] = {}
-        text = files("epreasy").joinpath("data/isotopedata.txt").read_text(encoding="utf-8")
+        text = files("easyspyn").joinpath("data/isotopedata.txt").read_text(encoding="utf-8")
         for line in text.splitlines():
             line = line.strip()
             if not line or line.startswith("%"):

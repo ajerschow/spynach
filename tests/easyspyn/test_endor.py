@@ -5,7 +5,7 @@ curry against the Curie law, the Brillouin function and its unit conversions."""
 import numpy as np
 import pytest
 
-import epreasy as es
+import easyspyn as es
 
 PROTON = {"Nucs": "1H", "A": 20}
 

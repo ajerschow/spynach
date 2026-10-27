@@ -1,6 +1,6 @@
 """The Python runner embedded in worker.js (the RUNNER string that Pyodide executes around the editor's code)
 runs natively against every playground example with stand-ins for the JavaScript callbacks: the plotting
-helpers accept epreasy spectra and leave EPR axes uninverted, the esfit wrapper reports iterations, the
+helpers accept easyspyn spectra and leave EPR axes uninverted, the esfit wrapper reports iterations, the
 grid prefetch tolerates a missing server, and no example raises. Examples marked data-slow are skipped."""
 
 import ast
@@ -39,7 +39,7 @@ CALLS = Calls()
 
 def install_stubs() -> None:
     """Fake ``js`` and ``pyodide.http`` modules, as the worker provides them, installed once: the runner wraps
-    epreasy.esfit and spynach.powder with hooks that keep referring to the first run's callbacks, as they do in
+    easyspyn.esfit and spynach.powder with hooks that keep referring to the first run's callbacks, as they do in
     Pyodide, where every run shares one global namespace."""
     if "js" in sys.modules:
         return
@@ -106,7 +106,7 @@ def test_runner_plots_leftover_spectrum_and_spectrum_objects(js_stubs, tmp_path)
     _, error = run_example(code, tmp_path)
     assert error == "" and js_stubs.lines[-1]["invert"] is True  # the NMR fallback keeps its convention
     code = (
-        "import epreasy as es\n"
+        "import easyspyn as es\n"
         "spec = es.pepper({'g': 2, 'lw': 1}, {'mwFreq': 9.5, 'Range': [335, 345], 'nPoints': 64})\n"
         "show_spectrum(spec, xlabel='B / mT')"
     )
