@@ -149,7 +149,7 @@ Add-ons originating here, with no Spinach counterpart, each with an example in t
   runs Spynach, `easyspyn` and `ctps` in the browser through Pyodide, with
   nothing installed, and plots spectra, FIDs and 2D contours from an editor
   preloaded with NMR, EPR and pathway examples (contributed by Moritz Zaiss). Its
-  Parameters view (a "Prefer GUI" / "Prefer code" toggle, where an example has one)
+  Parameters view (a "Prefer GUI" / "Prefer code" toggle next to Run)
   shows the main settings as a form with units and descriptions, kept in step with the code.
 - **`easyspyn`**, a separate package (`import easyspyn`, depends on `spynach`,
   never the reverse) that ports [EasySpin](https://easyspin.org) to Python

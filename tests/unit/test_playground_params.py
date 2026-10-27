@@ -109,4 +109,5 @@ def test_example_runs_with_each_parameter_at_the_ends_of_its_range(variant):
         "show_image": recorder.show_image,
     }
     exec(compile(source, f"<{example_id}>", "exec"), ns, ns)
-    assert recorder.calls
+    if example_id != "ex-ctps":  # the pathway example prints a table instead of drawing
+        assert recorder.calls

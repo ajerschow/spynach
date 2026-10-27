@@ -40,7 +40,7 @@ section.pane { padding-block: 0; border-top: 0; }
 }
 .editor { grid-column: 1; grid-row: 1 / -1; }
 .toolbar { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; padding: 0.65rem 0.75rem; border-bottom: 1px solid var(--line); }
-label.field { display: flex; flex-direction: column; gap: 0.15rem; font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); flex: 1; }
+label.field { display: flex; flex-direction: column; gap: 0.15rem; font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); flex: 1 1 100%; }
 select, textarea { background: var(--bg); border: 1px solid var(--line); border-radius: 6px; }
 select { padding: 0.4rem 0.5rem; text-transform: none; letter-spacing: 0; font-size: 0.95rem; color: var(--fg); }
 textarea {
@@ -137,15 +137,15 @@ figure.plot figcaption { font-family: var(--mono); font-size: 0.75rem; color: va
       <label class="field">Example
         <select id="example"></select>
       </label>
-      <button class="btn" id="view-toggle" type="button" hidden>Prefer GUI</button>
       <div class="actions">
+        <button class="btn" id="view-toggle" type="button" hidden>Prefer GUI</button>
         <button class="btn primary" id="run" type="button" disabled>Run</button>
         <button class="btn" id="stop" type="button" disabled>Stop</button>
       </div>
     </div>
     <div id="params" aria-label="Parameters" hidden></div>
     <textarea id="editor" spellcheck="false" wrap="off" aria-label="Python source"></textarea>
-    <p class="hint">Ctrl+Enter runs. <code>show_spectrum</code>, <code>show_fid</code> and <code>show_image</code> draw on the right; an <code>easyspyn</code> spectrum can be passed as is, and EPR axes run left to right. The 12800-orientation powder is the slow one, about a minute; the 1600-point powder, magic-angle spinning and the fit take a few seconds. Grid names such as <code>leb_2ang_rank_17</code> are loaded from <code>src/spynach/grids</code>. A link such as <code>try.html#ex-epr-hyscore</code> opens and runs one example. Where an example offers it, <b>Prefer GUI</b> shows its main settings as a form, with units and a description for each, and <b>Prefer code</b> goes back; an edit in the form rewrites the number in the code, and an edit in the code updates the form. <code>?view=params</code> opens the form; examples that are not converted yet have only the code.</p>
+    <p class="hint">Ctrl+Enter runs. <code>show_spectrum</code>, <code>show_fid</code> and <code>show_image</code> draw on the right; an <code>easyspyn</code> spectrum can be passed as is, and EPR axes run left to right. The 12800-orientation powder is the slow one, about a minute; the 1600-point powder, magic-angle spinning and the fit take a few seconds. Grid names such as <code>leb_2ang_rank_17</code> are loaded from <code>src/spynach/grids</code>. A link such as <code>try.html#ex-epr-hyscore</code> opens and runs one example. <b>Prefer GUI</b> shows the main settings of an example as a form, with units and a description for each, and <b>Prefer code</b> goes back; an edit in the form rewrites the number in the code, and an edit in the code updates the form. <code>?view=params</code> opens the form.</p>
   </section>
   <div id="plots"><p class="empty">The spectrum will land here.</p></div>
   <div id="console" role="log" aria-live="polite"></div>
@@ -157,22 +157,33 @@ import numpy as np
 import spynach
 from spynach.plotting import axis_1d
 
-# Two protons at 14.1 T: chemical shifts in ppm, scalar coupling in Hz
+# --- Spin system: two coupled protons ---
+magnet = 14.1  # GUI: Magnet field | T | Field of the magnet; 14.1 T is a 600 MHz spectrometer | 1..28
+shifts = [1.00, 1.10]  # GUI: Chemical shifts | ppm | Isotropic shifts of the two protons | 0..10
+J = 12.0  # GUI: J coupling | Hz | Scalar coupling between the two protons; the AB pattern collapses as it grows relative to the shift difference | 0..30
+
+# --- Experiment: pulse-acquire ---
+sweep = 200.0  # GUI: Spectral width | Hz | Sweep width, the sampling rate of the FID | 50..1000
+n_points = 1024  # GUI: Points | - | Points of the FID, which sets the resolution | 128..2048
+zerofill = 4096  # GUI: Zero filling | - | Points of the spectrum after zero filling | 1024..8192
+broadening = 6.0  # GUI: Line broadening | - | Strength of the exponential window applied to the FID; larger gives broader lines | 0..30
+
+# Two protons: chemical shifts in ppm, scalar coupling in Hz
 spin_system = spynach.create(
-    {"isotopes": ["1H", "1H"], "magnet": 14.1},
-    {"zeeman": {"scalar": [1.00, 1.10]}, "coupling": {"scalar": [[0, 12.0], [0, 0]]}},
+    {"isotopes": ["1H", "1H"], "magnet": magnet},
+    {"zeeman": {"scalar": shifts}, "coupling": {"scalar": [[0, J], [0, 0]]}},
 )
 
 # Hilbert space, complete basis
 spin_system = spynach.basis(spin_system, {"formalism": "zeeman-hilb", "approximation": "none"})
 
-# Acquisition: offset and sweep in Hz, initial state and detection state
+# Acquisition: the carrier sits at the mean shift (the 1H frequency is 42.577 MHz per tesla)
 pars = {
     "spins": ["1H"],
-    "offset": 630,
-    "sweep": 200,
-    "npoints": 1024,
-    "zerofill": 4096,
+    "offset": np.mean(shifts) * 42.577478 * magnet,
+    "sweep": sweep,
+    "npoints": n_points,
+    "zerofill": zerofill,
     "axis_units": "ppm",
     "rho0": spynach.state(spin_system, "L+", "1H"),
     "coil": spynach.state(spin_system, "L+", "1H"),
@@ -180,14 +191,14 @@ pars = {
 
 # Pulse-acquire in the liquid-state context, apodisation, Fourier transform
 fid = spynach.liquid(spin_system, spynach.acquire, pars, "nmr")
-fid = spynach.apodisation(fid, [("exp", 6)])
+fid = spynach.apodisation(fid, [("exp", broadening)])
 spectrum = np.fft.fftshift(np.fft.fft(fid, pars["zerofill"]))
 axis, xlabel = axis_1d(spin_system, pars)
 peaks = axis[spectrum.real > 0.5 * spectrum.real.max()]
 
 print(f"{spin_system.basis.nstates} Hilbert states")
 print(f"{xlabel}: lines between {peaks.min():.2f} and {peaks.max():.2f}")
-show_spectrum(spectrum, axis, title="Two coupled protons at 14.1 T", xlabel=xlabel)
+show_spectrum(spectrum, axis, title=f"Two coupled protons at {magnet:g} T", xlabel=xlabel)
 show_fid(fid, pars["sweep"], title="Apodised free induction decay")
 </script>
 
@@ -196,9 +207,20 @@ import numpy as np
 import spynach
 from spynach.plotting import axis_1d
 
+# --- Spin system: a 1H-13C pair ---
+magnet = 14.1  # GUI: Magnet field | T | Field of the magnet; 14.1 T is a 600 MHz spectrometer | 1..28
+shifts = [2.00, 30.0]  # GUI: Chemical shifts | ppm | Isotropic shifts of the proton and of the carbon | 0..100
+J_CH = 145.0  # GUI: One-bond coupling | Hz | Scalar coupling between 1H and 13C, which splits the proton line | 0..250
+
+# --- Experiment: 1H observation ---
+angle = 90.0  # GUI: Pulse angle | degrees | Flip angle about y; the signal grows as the sine of the angle | 5..180
+sweep = 500.0  # GUI: Spectral width | Hz | Sweep width of the proton spectrum | 100..2000
+n_points = 1024  # GUI: Points | - | Points of the FID | 128..2048
+decay = 256.0  # GUI: Window decay | points | Time constant of the exponential window, in points; smaller gives broader lines | 32..2048
+
 spin_system = spynach.create(
-    {"isotopes": ["1H", "13C"], "magnet": 14.1},
-    {"zeeman": {"scalar": [2.00, 30.0]}, "coupling": {"scalar": [[0, 145.0], [0, 0]]}},
+    {"isotopes": ["1H", "13C"], "magnet": magnet},
+    {"zeeman": {"scalar": shifts}, "coupling": {"scalar": [[0, J_CH], [0, 0]]}},
 )
 spin_system = spynach.basis(spin_system, {"formalism": "zeeman-hilb", "approximation": "none"})
 
@@ -206,31 +228,32 @@ spin_system = spynach.basis(spin_system, {"formalism": "zeeman-hilb", "approxima
 def pulse_acquire(spin_system, parameters, H, R, K):
     L = H + 1j * R + 1j * K
     Ly = spynach.operator(spin_system, "Ly", parameters["spins"][0])
-    pulse = spynach.propagator(spin_system, Ly, np.pi / 2)
+    pulse = spynach.propagator(spin_system, Ly, np.radians(angle))
     rho = pulse @ parameters["rho0"] @ pulse.conj().T
     return spynach.evolution(
         spin_system, L, rho, 1 / parameters["sweep"], parameters["npoints"] - 1, "observable",
         coil=parameters["coil"],
     )
 
+# The carrier sits at the proton shift (the 1H frequency is 42.577 MHz per tesla)
 pars = {
-    "spins": ["1H"], "offset": 1200, "sweep": 500, "npoints": 1024, "zerofill": 4096,
+    "spins": ["1H"], "offset": shifts[0] * 42.577478 * magnet, "sweep": sweep, "npoints": n_points, "zerofill": 4096,
     "axis_units": "Hz",
     "rho0": spynach.state(spin_system, "Lz", "1H"),
     "coil": spynach.state(spin_system, "L+", "1H"),
 }
 
-# The same spectrum from Lz through a 90° pulse and directly from L+
+# The same spectrum from Lz through the pulse and directly from L+
 fid_pulse = spynach.liquid(spin_system, pulse_acquire, pars, "nmr")
 fid_direct = spynach.liquid(
     spin_system, spynach.acquire, {**pars, "rho0": spynach.state(spin_system, "L+", "1H")}, "nmr",
 )
-window = np.exp(-np.arange(pars["npoints"]) / 256)
+window = np.exp(-np.arange(pars["npoints"]) / decay)
 spectra = [np.fft.fftshift(np.fft.fft(f * window, pars["zerofill"])).real for f in (fid_direct, fid_pulse)]
 axis, xlabel = axis_1d(spin_system, pars)
 
 print(f"peak height ratio {spectra[1].max() / spectra[0].max():.2f}")
-show_spectrum(spectra, axis, title="1H spectrum of a 1H–13C pair", xlabel=xlabel, names=["acquire from L+", "90° pulse from Lz"])
+show_spectrum(spectra, axis, title="1H spectrum of a 1H–13C pair", xlabel=xlabel, names=["acquire from L+", f"{angle:g}° pulse from Lz"])
 </script>
 
 <script type="text/plain" class="example" id="ex-exchange" data-group="NMR (spynach)" data-title="Two-site exchange">
@@ -238,28 +261,39 @@ import numpy as np
 import spynach
 from spynach.plotting import axis_1d
 
-# Two sites 3 ppm apart exchanging at 2000 Hz: near coalescence at 14.1 T
+# --- Spin system: two exchanging sites ---
+magnet = 14.1  # GUI: Magnet field | T | Field of the magnet; 14.1 T is a 600 MHz spectrometer | 1..28
+separation = 3.0  # GUI: Site separation | ppm | Difference of the two chemical shifts | 0.5..10
+rate = 2000.0  # GUI: Exchange rate | Hz | Rate of jumps in each direction; coalescence is near the shift difference in Hz times 0.7 | 10..20000
+
+# --- Experiment: pulse-acquire ---
+sweep = 5000.0  # GUI: Spectral width | Hz | Sweep width, which must cover both sites | 1000..20000
+n_points = 512  # GUI: Points | - | Points of the FID | 128..1024
+zerofill = 1024  # GUI: Zero filling | - | Points of the spectrum after zero filling | 512..4096
+broadening = 6.0  # GUI: Line broadening | - | Strength of the exponential window applied to the FID | 0..30
+
+# Two sites exchanging at the given rate: near coalescence at the default values
 spin_system = spynach.create(
-    {"isotopes": ["1H", "1H"], "magnet": 14.1},
-    {"zeeman": {"scalar": [0.0, 3.0]},
-     "chem": {"parts": [[0], [1]], "rates": [[-2e3, 2e3], [2e3, -2e3]], "concs": [1.0, 1.0]}},
+    {"isotopes": ["1H", "1H"], "magnet": magnet},
+    {"zeeman": {"scalar": [0.0, separation]},
+     "chem": {"parts": [[0], [1]], "rates": [[-rate, rate], [rate, -rate]], "concs": [1.0, 1.0]}},
 )
 
 # Chemical exchange needs Liouville space (spherical tensor basis)
 spin_system = spynach.basis(spin_system, {"formalism": "sphten-liouv", "approximation": "none"})
 pars = {
-    "spins": ["1H"], "offset": 900.0, "sweep": 5000.0, "npoints": 512, "zerofill": 1024,
+    "spins": ["1H"], "offset": separation / 2 * 42.577478 * magnet, "sweep": sweep, "npoints": n_points, "zerofill": zerofill,
     "axis_units": "ppm",
     "rho0": spynach.state(spin_system, "L+", "1H", "chem"),
     "coil": spynach.state(spin_system, "L+", "1H"),
 }
 fid = spynach.liquid(spin_system, spynach.acquire, pars, "nmr")
-fid = fid * np.exp(-6 * np.arange(pars["npoints"]) / pars["npoints"])
+fid = fid * np.exp(-broadening * np.arange(pars["npoints"]) / pars["npoints"])
 spectrum = np.fft.fftshift(np.fft.fft(fid, pars["zerofill"]))
 axis, xlabel = axis_1d(spin_system, pars)
 
 print(f"{spin_system.basis.nstates} Liouville states")
-show_spectrum(spectrum, axis, title="Two-site exchange near coalescence", xlabel=xlabel)
+show_spectrum(spectrum, axis, title="Two-site exchange", xlabel=xlabel)
 </script>
 
 <script type="text/plain" class="example" id="ex-crystal" data-group="NMR (spynach)" data-title="Single-crystal CSA">
@@ -267,24 +301,37 @@ import numpy as np
 import spynach
 from spynach.plotting import axis_1d
 
-# Two protons with anisotropic shielding tensors: eigenvalues in ppm, Euler angles in radians
+# --- Spin system: two protons with anisotropic shielding ---
+magnet = 14.1  # GUI: Magnet field | T | Field of the magnet; 14.1 T is a 600 MHz spectrometer | 1..28
+eigs_a = [-7.0, -7.0, -1.0]  # GUI: Shielding of proton A | ppm | Principal values of the shielding tensor of the first proton | -30..30
+eigs_b = [4.0, 2.0, 9.0]  # GUI: Shielding of proton B | ppm | Principal values of the shielding tensor of the second proton | -30..30
+tilt_b = [0.3, 0.9, 1.2]  # GUI: Tensor B orientation | rad | Euler angles (alpha, beta, gamma) of the second tensor in the molecule frame | 0..6.283
+
+# --- Experiment: one crystal orientation ---
+orientation = [0.3, 0.9, 1.2]  # GUI: Crystal orientation | rad | Euler angles (alpha, beta, gamma) of the crystal in the magnet frame | 0..6.283
+sweep = 15000.0  # GUI: Spectral width | Hz | Sweep width, large enough for the anisotropy | 2000..30000
+n_points = 128  # GUI: Points | - | Points of the FID | 32..256
+zerofill = 512  # GUI: Zero filling | - | Points of the spectrum after zero filling | 256..1024
+broadening = 6.0  # GUI: Line broadening | - | Strength of the exponential window applied to the FID | 0..30
+
+# Eigenvalues in ppm, Euler angles in radians
 spin_system = spynach.create(
-    {"isotopes": ["1H", "1H"], "magnet": 14.1},
-    {"zeeman": {"eigs": [[-7, -7, -1], [4, 2, 9]], "euler": [[0, 0, 0], [0.3, 0.9, 1.2]]}},
+    {"isotopes": ["1H", "1H"], "magnet": magnet},
+    {"zeeman": {"eigs": [eigs_a, eigs_b], "euler": [[0, 0, 0], tilt_b]}},
 )
 spin_system = spynach.basis(
     spin_system, {"formalism": "sphten-liouv", "approximation": "none", "projections": [[1]]},
 )
 pars = {
-    "spins": ["1H"], "offset": 0.0, "sweep": 15000.0, "npoints": 128, "zerofill": 512,
-    "axis_units": "ppm", "orientation": [0.3, 0.9, 1.2],
+    "spins": ["1H"], "offset": 0.0, "sweep": sweep, "npoints": n_points, "zerofill": zerofill,
+    "axis_units": "ppm", "orientation": orientation,
     "rho0": spynach.state(spin_system, "L+", "1H"),
     "coil": spynach.state(spin_system, "L+", "1H"),
 }
 
 # One crystal orientation
 fid = spynach.crystal(spin_system, spynach.acquire, pars, "nmr")
-fid = fid * np.exp(-6 * np.arange(pars["npoints"]) / pars["npoints"])
+fid = fid * np.exp(-broadening * np.arange(pars["npoints"]) / pars["npoints"])
 spectrum = np.fft.fftshift(np.fft.fft(fid, pars["zerofill"]))
 axis, xlabel = axis_1d(spin_system, pars)
 
@@ -297,27 +344,40 @@ import numpy as np
 import spynach
 from spynach.plotting import axis_1d
 
+# --- Spin system: two protons with anisotropic shielding ---
+magnet = 14.1  # GUI: Magnet field | T | Field of the magnet; 14.1 T is a 600 MHz spectrometer | 1..28
+eigs_a = [-7.0, -7.0, -1.0]  # GUI: Shielding of proton A | ppm | Principal values of the shielding tensor of the first proton | -30..30
+eigs_b = [4.0, 2.0, 9.0]  # GUI: Shielding of proton B | ppm | Principal values of the shielding tensor of the second proton | -30..30
+tilt_b = [0.3, 0.9, 1.2]  # GUI: Tensor B orientation | rad | Euler angles (alpha, beta, gamma) of the second tensor in the molecule frame | 0..6.283
+
+# --- Experiment: powder average ---
+grid = "rep_2ang_100pts_sph"  # GUI: Orientation grid | - | Spherical grid shipped with Spynach; more points give a smoother powder pattern and a longer run | rep_2ang_100pts_sph, rep_2ang_200pts_sph, rep_2ang_400pts_sph
+sweep = 15000.0  # GUI: Spectral width | Hz | Sweep width, large enough for the anisotropy | 2000..30000
+n_points = 64  # GUI: Points | - | Points of the FID | 32..256
+zerofill = 512  # GUI: Zero filling | - | Points of the spectrum after zero filling | 256..1024
+broadening = 6.0  # GUI: Line broadening | - | Strength of the exponential window applied to the FID | 0..30
+
 spin_system = spynach.create(
-    {"isotopes": ["1H", "1H"], "magnet": 14.1},
-    {"zeeman": {"eigs": [[-7, -7, -1], [4, 2, 9]], "euler": [[0, 0, 0], [0.3, 0.9, 1.2]]}},
+    {"isotopes": ["1H", "1H"], "magnet": magnet},
+    {"zeeman": {"eigs": [eigs_a, eigs_b], "euler": [[0, 0, 0], tilt_b]}},
 )
 spin_system = spynach.basis(
     spin_system, {"formalism": "sphten-liouv", "approximation": "none", "projections": [[1]]},
 )
 pars = {
-    "spins": ["1H"], "offset": 0.0, "sweep": 15000.0, "npoints": 64, "zerofill": 256,
-    "axis_units": "ppm", "grid": "rep_2ang_100pts_sph",
+    "spins": ["1H"], "offset": 0.0, "sweep": sweep, "npoints": n_points, "zerofill": zerofill,
+    "axis_units": "ppm", "grid": grid,
     "rho0": spynach.state(spin_system, "L+", "1H"),
     "coil": spynach.state(spin_system, "L+", "1H"),
 }
 
-# Powder average over a 100-point spherical grid shipped with Spynach
-print("averaging 100 orientations…")
+# Powder average over a spherical grid shipped with Spynach
+print(f"{spin_system.basis.nstates} Liouville states, averaging over {grid}")
 fid = spynach.powder(spin_system, spynach.acquire, pars, "nmr")
-fid = fid * np.exp(-6 * np.arange(pars["npoints"]) / pars["npoints"])
+fid = fid * np.exp(-broadening * np.arange(pars["npoints"]) / pars["npoints"])
 spectrum = np.fft.fftshift(np.fft.fft(fid, pars["zerofill"]))
 axis, xlabel = axis_1d(spin_system, pars)
-show_spectrum(spectrum, axis, title="CSA powder, rep_2ang_100pts_sph", xlabel=xlabel)
+show_spectrum(spectrum, axis, title=f"CSA powder, {grid}", xlabel=xlabel)
 </script>
 
 <script type="text/plain" class="example" id="ex-cosy" data-group="NMR (spynach)" data-title="COSY-90">
@@ -397,21 +457,34 @@ show_spectrum(
 import numpy as np
 import easyspyn as es
 
+# --- Sample: a nitroxide in solution ---
+g = [2.0088, 2.0064, 2.0027]  # GUI: g values | - | Principal values of the g tensor; in solution they set the isotropic g and the line widths | 1.9..2.2
+A_mT = [0.759, 0.595, 3.176]  # GUI: 14N hyperfine | mT | Principal values of the 14N hyperfine tensor, given in mT | 0.1..10
+lwpp = 0.02  # GUI: Line width | mT | Peak-to-peak width of the derivative lines before the motional broadening | 0.01..0.2
+tcorr_fast = 10.0  # GUI: Fast tumbling | ps | Rotational correlation time of the first spectrum | 1..1000
+tcorr_slow = 1.0  # GUI: Slow tumbling | ns | Rotational correlation time of the second spectrum | 0.01..10
+
+# --- Experiment: continuous-wave EPR ---
+mw_freq = 9.5  # GUI: Microwave frequency | GHz | Spectrometer frequency; X band is about 9.5 | 1..100
+field_center = 338.5  # GUI: Field centre | mT | Centre of the swept magnetic field | 100..1500
+field_width = 5.0  # GUI: Sweep width | mT | Width of the swept field range, which must cover the three lines | 2..10
+n_points = 2048  # GUI: Points | - | Number of field points of the spectrum | 512..4096
+
 # In solution the anisotropies average out but set the fast-motion line widths
-solution = {"g": [2.0088, 2.0064, 2.0027], "Nucs": "14N", "A": es.unitconvert(np.array([7.59, 5.95, 31.76]) / 10, "mT->MHz"), "lwpp": 0.02}
-exp = {"mwFreq": 9.5, "Range": [336, 341], "nPoints": 2048}
+solution = {"g": g, "Nucs": "14N", "A": es.unitconvert(np.array(A_mT), "mT->MHz"), "lwpp": lwpp}
+exp = {"mwFreq": mw_freq, "Range": [field_center - field_width / 2, field_center + field_width / 2], "nPoints": n_points}
 
 # Two rotational correlation times
-rigid = es.garlic({**solution, "tcorr": 1e-11}, exp)
-slow = es.garlic({**solution, "tcorr": 1e-9}, exp)
-widths, mI = es.fastmotion(solution, 340, 1e-9)
+rigid = es.garlic({**solution, "tcorr": tcorr_fast * 1e-12}, exp)
+slow = es.garlic({**solution, "tcorr": tcorr_slow * 1e-9}, exp)
+widths, mI = es.fastmotion(solution, field_center, tcorr_slow * 1e-9)
 
 print("fast-motion widths (mT) for mI =", mI.ravel().tolist(), ":", widths.round(4))
 print("line positions (mT):", np.sort(slow.info["resfields"]).round(3))
 show_spectrum(
     [rigid.spec / np.abs(rigid.spec).max(), slow.spec / np.abs(slow.spec).max()], rigid.x, invert=False,
     title="Nitroxide in solution: fast-motion broadening", xlabel="B / mT", ylabel="normalised dA/dB",
-    names=["tcorr = 10 ps", "tcorr = 1 ns"],
+    names=[f"tcorr = {tcorr_fast:g} ps", f"tcorr = {tcorr_slow:g} ns"],
 )
 </script>
 
@@ -419,19 +492,31 @@ show_spectrum(
 import numpy as np
 import easyspyn as es
 
-# The slow-motion regime: the stochastic Liouville equation in a Wigner basis
-slow = {"g": [2.008, 2.0061, 2.0027], "Nucs": "14N", "A": [16, 16, 86], "lw": 0.1}
-sweep = {"mwFreq": 9.8, "Range": [344, 354], "nPoints": 512}
-spectra = {tc: es.chili({**slow, "tcorr": tc}, sweep) for tc in (1e-10, 1e-9, 1e-8, 1e-7)}
+# --- Sample: a nitroxide ---
+g = [2.008, 2.0061, 2.0027]  # GUI: g values | - | Principal values of the g tensor | 1.9..2.2
+A_n14 = [16.0, 16.0, 86.0]  # GUI: 14N hyperfine | MHz | Principal values of the 14N hyperfine tensor | 1..200
+lw = 0.1  # GUI: Line width | mT | Residual width of the lines, on top of the motional broadening | 0.02..1
+tcorr_ns = [0.1, 1.0, 10.0, 100.0]  # GUI: Correlation times | ns | Rotational correlation times of the four spectra, from fast to slow tumbling | 0.05..300
 
-print("stochastic Liouville equation in", spectra[1e-9].info["nBasis"], "basis functions per spectrum")
+# --- Experiment: continuous-wave EPR ---
+mw_freq = 9.8  # GUI: Microwave frequency | GHz | Spectrometer frequency; X band is about 9.5 | 1..100
+field_center = 349.0  # GUI: Field centre | mT | Centre of the swept magnetic field | 100..1500
+field_width = 10.0  # GUI: Sweep width | mT | Width of the swept field range | 5..50
+n_points = 512  # GUI: Points | - | Number of field points of the spectrum | 128..1024
+
+# The slow-motion regime: the stochastic Liouville equation in a Wigner basis
+slow = {"g": g, "Nucs": "14N", "A": A_n14, "lw": lw}
+sweep = {"mwFreq": mw_freq, "Range": [field_center - field_width / 2, field_center + field_width / 2], "nPoints": n_points}
+spectra = [es.chili({**slow, "tcorr": tc * 1e-9}, sweep) for tc in tcorr_ns]
+
+print("stochastic Liouville equation in", spectra[1].info["nBasis"], "basis functions per spectrum")
 
 # Normalised spectra, offset for display
-offset = [s.spec / np.abs(s.spec).max() - 1.5 * k for k, s in enumerate(spectra.values())]
+offset = [s.spec / np.abs(s.spec).max() - 1.5 * k for k, s in enumerate(spectra)]
 show_spectrum(
-    offset, spectra[1e-9].x, invert=False,
+    offset, spectra[1].x, invert=False,
     title="Nitroxide from fast to slow tumbling", xlabel="B / mT", ylabel="normalised dA/dB (offset)",
-    names=[f"tcorr = {tc * 1e9:g} ns" for tc in spectra],
+    names=[f"tcorr = {tc:g} ns" for tc in tcorr_ns],
 )
 </script>
 
@@ -469,10 +554,20 @@ show_spectrum(spectrum[f >= 0], f[f >= 0], invert=False, title="Modulation spect
 import numpy as np
 import easyspyn as es
 
-weak_n14 = {"Nucs": "14N", "A": [-1, -1, 2], "Q": [-1, -1, 2]}
+# --- Sample: a weakly coupled 14N near exact cancellation ---
+A = [-1.0, -1.0, 2.0]  # GUI: Hyperfine | MHz | Principal values of the 14N hyperfine tensor | -10..10
+Q = [-1.0, -1.0, 2.0]  # GUI: Quadrupole | MHz | Principal values of the 14N nuclear quadrupole tensor | -5..5
 
-# HYSCORE: 128 x 128 points in t1 and t2, spectrum in info
-hyscore = es.saffron(weak_n14, {"Field": 350, "Sequence": "HYSCORE", "dt": 0.02, "nPoints": 128, "tau": 0.1})
+# --- Experiment: HYSCORE ---
+field = 350.0  # GUI: Magnetic field | mT | Static field of the experiment | 100..1500
+tau = 0.1  # GUI: Pulse separation tau | us | Fixed delay between the first and the second pulse | 0.05..0.5
+dt = 0.02  # GUI: Time step | us | Increment of t1 and t2; its inverse is the width of the spectrum | 0.01..0.1
+n_points = 128  # GUI: Points | - | Increments in each of t1 and t2, which sets the frequency resolution and the run time | 32..192
+
+weak_n14 = {"Nucs": "14N", "A": A, "Q": Q}
+
+# HYSCORE: n x n points in t1 and t2, spectrum in info
+hyscore = es.saffron(weak_n14, {"Field": field, "Sequence": "HYSCORE", "dt": dt, "nPoints": n_points, "tau": tau})
 f1, f2 = hyscore.info["f1"], hyscore.info["f2"]
 
 print("time-domain signal", hyscore.spec.shape, "-> spectrum", hyscore.info["fd"].shape, f"on +-{f1[-1]:.1f} MHz")
@@ -490,13 +585,23 @@ show_image(np.minimum(z, top), f2[win2], f1[win1], invert=False, title="HYSCORE 
 import numpy as np
 import easyspyn as es
 
+# --- Sample: a weakly coupled proton ---
+A = [1.0, 1.0, 5.0]  # GUI: Hyperfine | MHz | Principal values of the 1H hyperfine tensor | 0..20
+lw_endor = 0.1  # GUI: ENDOR line width | MHz | Width of the Gaussian ENDOR lines | 0.02..1
+
+# --- Experiment: Mims ENDOR ---
+field = 325.0  # GUI: Magnetic field | mT | Static field of the experiment | 100..1500
+tau = 0.1  # GUI: Pulse separation tau | us | Delay between the first and the second pulse; it sets the blind spots | 0.05..0.5
+rf_halfwidth = 10.0  # GUI: Radiofrequency half range | MHz | The spectrum covers the proton Larmor frequency plus and minus this | 2..20
+n_points = 401  # GUI: Points | - | Number of radiofrequency points | 101..801
+
 # A weakly coupled proton with a Gaussian ENDOR line width
-proton = {"Nucs": "1H", "A": [1, 1, 5], "lwEndor": 0.1}
-nu_h = es.larmorfrq("1H", 325)[0, 0]
-mims = es.saffron(proton, {"Sequence": "MimsENDOR", "Field": 325, "tau": 0.1, "Range": [nu_h - 10, nu_h + 10], "nPoints": 401})
+proton = {"Nucs": "1H", "A": A, "lwEndor": lw_endor}
+nu_h = es.larmorfrq("1H", field)[0, 0]
+mims = es.saffron(proton, {"Sequence": "MimsENDOR", "Field": field, "tau": tau, "Range": [nu_h - rf_halfwidth, nu_h + rf_halfwidth], "nPoints": n_points})
 
 # Mims ENDOR has blind spots at multiples of 1/(2 tau)
-blind = [k / (2 * 0.1) for k in range(1, 6)]
+blind = [k / (2 * tau) for k in range(1, 6)]
 
 print(f"proton Larmor frequency {nu_h:.2f} MHz; Mims blind spots at multiples of 1/(2 tau):", [round(b, 1) for b in blind], "MHz")
 print(f"largest ENDOR intensity at {mims.x[np.argmax(mims.spec)]:.2f} MHz")
@@ -507,20 +612,34 @@ show_spectrum(mims, title="Mims ENDOR of a weakly coupled proton", xlabel="rf / 
 import numpy as np
 import easyspyn as es
 
+# --- Sample: an axial Cu(II)-like centre with a 14N ligand ---
+g = [2.25, 2.25, 2.0]  # GUI: g values | - | Principal values of the g tensor | 1.9..2.4
+A = [44.0, 49.0, 54.0]  # GUI: 14N hyperfine | MHz | Principal values of the 14N hyperfine tensor; the lines sit near half of A, so keep the radiofrequency range around it | 35..100
+h_strain = 100.0  # GUI: EPR line width | MHz | Strain broadening of the EPR line, which decides how many orientations are excited | 10..500
+lw_endor = 0.5  # GUI: ENDOR line width | MHz | Width of the Gaussian ENDOR lines | 0.1..2
+
+# --- Experiment: cw ENDOR at a fixed field ---
+field = 326.5  # GUI: Magnetic field | mT | Static field at which the ENDOR is measured | 300..350
+mw_freq = 9.7  # GUI: Microwave frequency | GHz | Spectrometer frequency | 9..10.5
+rf_start = 16.0  # GUI: Radiofrequency start | MHz | Lower end of the radiofrequency sweep, which must lie below the lines near half of A | 1..16
+rf_width = 49.0  # GUI: Radiofrequency range | MHz | Width of the radiofrequency sweep | 20..100
+excite_width = 50.0  # GUI: Excitation width | MHz | Orientations whose EPR line lies within this width of the microwave frequency are kept | 5..500
+n_points = 1001  # GUI: Points | - | Number of radiofrequency points | 201..2001
+
 # An axial Cu(II)-like centre with a 14N ligand; HStrain broadens the EPR line
-centre = {"Nucs": "14N", "g": [2.25, 2.25, 2], "A": [44, 49, 54], "Q": [0.84, 0.84, -1.68], "HStrain": [100, 100, 100], "lwEndor": 0.5}
-exp = {"Range": [16, 65], "Field": 326.5, "mwFreq": 9.7, "nPoints": 1001}
+centre = {"Nucs": "14N", "g": g, "A": A, "Q": [0.84, 0.84, -1.68], "HStrain": [h_strain] * 3, "lwEndor": lw_endor}
+exp = {"Range": [rf_start, rf_start + rf_width], "Field": field, "mwFreq": mw_freq, "nPoints": n_points}
 full = es.salt(centre, exp)
 
 # ExciteWidth keeps the orientations the microwave frequency excites
-selected = es.salt(centre, {**exp, "ExciteWidth": 50})
+selected = es.salt(centre, {**exp, "ExciteWidth": excite_width})
 
 print("transitions:", full.info["Transitions"].tolist())
 print(f"orientation selection at {exp['Field']} mT keeps {np.abs(selected.spec).sum() / np.abs(full.spec).sum():.0%} of the powder intensity")
 show_spectrum(
     [full.spec / np.abs(full.spec).max(), selected.spec / np.abs(selected.spec).max()], full.x, invert=False,
     title="14N ENDOR of an axial Cu(II)-like centre", xlabel="rf / MHz", ylabel="normalised ENDOR intensity",
-    names=["all orientations", "ExciteWidth = 50 MHz"],
+    names=["all orientations", f"ExciteWidth = {excite_width:g} MHz"],
 )
 </script>
 
@@ -528,42 +647,70 @@ show_spectrum(
 import numpy as np
 import easyspyn as es
 
-# Two S = 1/2 coupled by isotropic exchange, ee in MHz
-dimer = {"S": [0.5, 0.5], "g": [2, 2], "ee": 2 * 4 * 30e3}  # antiferromagnetic exchange J = 4 cm^-1 (in MHz)
-T = np.linspace(1, 300, 300)
-chi_t = np.ravel(es.curry(dimer, {"Temperature": T, "Field": 100}, {"Output": "chimolT"}))
+# --- Sample: two S = 1/2 coupled by isotropic exchange ---
+J = 4.0  # GUI: Exchange coupling | cm^-1 | Antiferromagnetic exchange J between the two spins; the ground state is a singlet | 0..20
+g = 2.0  # GUI: g value | - | Isotropic g value of both spins | 1.8..2.4
+
+# --- Experiment: magnetometry ---
+field = 100.0  # GUI: Magnetic field | mT | Static field of the measurement | 1..1000
+T_max = 300.0  # GUI: Highest temperature | K | The susceptibility is computed from 1 K up to this | 50..500
+
+# Two S = 1/2 coupled by isotropic exchange, ee in MHz (1 cm^-1 is about 29979 MHz)
+dimer = {"S": [0.5, 0.5], "g": [g, g], "ee": 2 * J * 30e3}
+T = np.linspace(1, T_max, 300)
+chi_t = np.ravel(es.curry(dimer, {"Temperature": T, "Field": field}, {"Output": "chimolT"}))
 
 # The Curie law of two free spins for comparison
-curie = 2 * np.ravel(es.curry({"S": 0.5, "g": 2}, {"Temperature": T, "Field": 100}, {"Output": "chimolT"}))
+curie = 2 * np.ravel(es.curry({"S": 0.5, "g": g}, {"Temperature": T, "Field": field}, {"Output": "chimolT"}))
 
-print(f"chi T at 300 K: {chi_t[-1]:.3e} m^3 K mol^-1 ({chi_t[-1] / curie[-1]:.0%} of two free spins); at 1 K: {chi_t[0]:.1e}")
-show_spectrum([chi_t, curie], T, invert=False, title="Exchange-coupled dimer: chi T against the Curie law", xlabel="T / K", ylabel="chi T / m^3 K mol^-1", names=["dimer, J = 4 cm^-1", "two free spins"])
+print(f"chi T at {T_max:g} K: {chi_t[-1]:.3e} m^3 K mol^-1 ({chi_t[-1] / curie[-1]:.0%} of two free spins); at 1 K: {chi_t[0]:.1e}")
+show_spectrum([chi_t, curie], T, invert=False, title="Exchange-coupled dimer: chi T against the Curie law", xlabel="T / K", ylabel="chi T / m^3 K mol^-1", names=[f"dimer, J = {J:g} cm^-1", "two free spins"])
 </script>
 
 <script type="text/plain" class="example" id="ex-epr-levels" data-group="EPR (EasySpyn)" data-title="Energy levels of a high-spin ion (levels)">
 import numpy as np
 import easyspyn as es
 
-# S = 5/2 with a rhombic zero-field splitting, D and E in MHz
-manganese = {"S": 2.5, "g": 2.0, "D": [500, 100]}  # S = 5/2 with a rhombic zero-field splitting, no nucleus
-fields = np.linspace(0, 600, 301)
+# --- Sample: a high-spin ion with zero-field splitting ---
+S = 2.5  # GUI: Electron spin | - | Total spin S of the ion; 2.5 is Mn(II) | 1..4.5..0.5
+g = 2.0  # GUI: g value | - | Isotropic g value | 1.9..2.2
+D = 500.0  # GUI: Axial splitting D | MHz | Axial zero-field splitting parameter | 0..3000
+E = 100.0  # GUI: Rhombic splitting E | MHz | Rhombic zero-field splitting parameter, at most a third of D for a standard frame | 0..1000
+
+# --- Experiment: field sweep ---
+field_max = 600.0  # GUI: Highest field | mT | The levels are computed from zero up to this field | 400..2000
+
+# A high-spin ion with a rhombic zero-field splitting, no nucleus
+manganese = {"S": S, "g": g, "D": [D, E]}
+fields = np.linspace(0, field_max, 301)
 
 # Energies along z over the field sweep
 energies = es.levels(manganese, "z", fields)
 
 print("levels along z:", energies.shape, "-> at 340 mT (GHz):", (energies[np.searchsorted(fields, 340)] / 1e3).round(2))
 print("zero-field energies (MHz):", energies[0].round(1))
-show_spectrum([energies[:, k] for k in range(energies.shape[1])], fields, invert=False, title="Zeeman diagram of an S = 5/2 ion along z", xlabel="B / mT", ylabel="E / MHz")
+show_spectrum([energies[:, k] for k in range(energies.shape[1])], fields, invert=False, title=f"Zeeman diagram of an S = {S:g} ion along z", xlabel="B / mT", ylabel="E / MHz")
 </script>
 
 <script type="text/plain" class="example" id="ex-epr-cu4n" data-group="EPR (EasySpyn)" data-title="Cu(II) with four 14N, hybrid method (pepper)">
 import numpy as np
 import easyspyn as es
 
+# --- Sample: copper with four 14N ligands ---
+g = [2.05, 2.05, 2.2]  # GUI: g values | - | Principal values of the copper g tensor | 1.9..2.4
+A_cu = [50.0, 50.0, 500.0]  # GUI: 63Cu hyperfine | MHz | Principal values of the copper hyperfine tensor | 1..800
+A_n14 = [40.0, 40.0, 40.0]  # GUI: 14N hyperfine | MHz | Hyperfine tensor of each of the four equivalent nitrogens | 1..100
+lwpp = 1.0  # GUI: Line width | mT | Peak-to-peak width of the derivative lines; it must exceed the field step (sweep width / points) | 0.3..5
+
+# --- Experiment: continuous-wave EPR ---
+mw_freq = 9.5  # GUI: Microwave frequency | GHz | Spectrometer frequency; X band is about 9.5 | 1..100
+field_center = 310.0  # GUI: Field centre | mT | Centre of the swept magnetic field | 100..1500
+field_width = 100.0  # GUI: Sweep width | mT | Width of the swept field range | 20..300
+n_points = 1024  # GUI: Points | - | Number of field points of the spectrum | 256..2048
+
 # Copper with four 14N ligands: 648 states
-copper = {"S": 0.5, "g": [2.05, 2.05, 2.2], "Nucs": "63Cu,14N,14N,14N,14N",
-          "A": [[50, 50, 500], [40, 40, 40], [40, 40, 40], [40, 40, 40], [40, 40, 40]], "lwpp": 1}
-exp = {"mwFreq": 9.5, "Range": [260, 360], "nPoints": 1024}
+copper = {"S": 0.5, "g": g, "Nucs": "63Cu,14N,14N,14N,14N", "A": [A_cu, A_n14, A_n14, A_n14, A_n14], "lwpp": lwpp}
+exp = {"mwFreq": mw_freq, "Range": [field_center - field_width / 2, field_center + field_width / 2], "nPoints": n_points}
 
 print("648 states: copper and four nitrogens; full diagonalisation would take a minute, the hybrid method a fraction of a second")
 
@@ -578,16 +725,26 @@ show_spectrum([hybrid.spec, perturb.spec + 0.2 * hybrid.spec.max()], hybrid.x, i
 import numpy as np
 import easyspyn as es
 
+# --- Synthetic data: an axial powder spectrum with noise ---
+g_true = [2.0, 2.1]  # GUI: True g values | - | Parallel and perpendicular g of the simulated "measurement" | 1.9..2.3
+lw_true = 3.0  # GUI: True line width | mT | Width of the simulated lines | 1..10
+snr = 50.0  # GUI: Signal to noise | - | Signal-to-noise ratio of the added Gaussian noise; lower is noisier | 5..500
+n_points = 300  # GUI: Points | - | Field points of the spectrum; the fit simulates this many in every iteration | 100..500
+
+# --- Fit: starting values ---
+g_start = [2.01, 2.08]  # GUI: Starting g values | - | Where the simplex search starts for the two g values | 1.9..2.3
+lw_start = 2.0  # GUI: Starting line width | mT | Where the search starts for the line width; the search may move it by half of this | 1..10
+
 # Synthetic data: an axial powder spectrum with noise
-truth = {"g": [2.0, 2.1], "lw": 3}
-exp = {"mwFreq": 9.5, "Range": [300, 360], "nPoints": 300}
-data = es.addnoise(es.pepper(truth, exp, {"FuzzLevel": 0}).spec, 50, "n")
+truth = {"g": g_true, "lw": lw_true}
+exp = {"mwFreq": 9.5, "Range": [300, 360], "nPoints": n_points}
+data = es.addnoise(es.pepper(truth, exp, {"FuzzLevel": 0}).spec, snr, "n")
 
 # Starting values and how far each parameter may vary
-start = {"g": [2.01, 2.08], "lw": 2}
-vary = {"g": [0.05, 0.05], "lw": 1.5}
+start = {"g": g_start, "lw": lw_start}
+vary = {"g": [0.05, 0.05], "lw": lw_start / 2}
 
-print("Nelder-Mead simplex on three parameters; each iteration simulates a 300-point powder spectrum")
+print(f"Nelder-Mead simplex on three parameters; each iteration simulates a {n_points}-point powder spectrum")
 
 # Nelder-Mead simplex; Verbosity 1 prints the summary
 result = es.esfit(data, es.pepper, [start, exp, {"FuzzLevel": 0}], [vary], {"Method": "simplex", "Verbosity": 1})
@@ -601,6 +758,15 @@ show_spectrum([data, result.fit, result.residuals - 0.6 * np.abs(data).max()], e
 import ctps
 from ctps import AllowedOrders, Nucleus, Period, PhaseCycle, Pulse, Sequence, simulate
 
+# --- Sequence: 90 - 180 - 90 on protons ---
+p_max = 2  # GUI: Highest coherence order | - | Largest order that any period may hold; double quantum needs 2 | 1..3
+final_order = -1  # GUI: Detected order | - | Coherence order in the last period, which the receiver detects | -1..1
+
+# --- Phase cycle: steps of 90 degrees ---
+phases_first = [0, 1, 2, 3]  # GUI: First pulse phases | steps | Phase of the first pulse in each cycle step, in units of 90 degrees | 0..3
+phases_last = [0, 3, 2, 1]  # GUI: Last pulse phases | steps | Phase of the last pulse in each cycle step, in units of 90 degrees | 0..3
+receiver = [0, 2, 0, 2]  # GUI: Receiver phases | steps | Receiver phase in each cycle step, in units of 90 degrees | 0..3
+
 proton = Nucleus("1H")
 
 # Three pulses on protons, with the coherence orders each period may hold
@@ -608,13 +774,13 @@ sequence = Sequence(
     nuclei=(proton,),
     pulses=(Pulse("1H", label="90"), Pulse("1H", label="180"), Pulse("1H", label="90")),
     periods=(Period(), Period(), Period(), Period()),
-    allowed={"1H": AllowedOrders.standard(2, 4, start=[0], end=[-1])},
+    allowed={"1H": AllowedOrders.standard(p_max, 4, start=[0], end=[final_order])},
 )
 
 # A four-step phase cycle of the first and third pulses, with the receiver
 cycle = PhaseCycle.explicit(
-    phases=[[0, 1, 2, 3], [0], [0, 3, 2, 1]],
-    receiver=[0, 2, 0, 2],
+    phases=[phases_first, [0], phases_last],
+    receiver=receiver,
     base=4,
 )
 
@@ -632,27 +798,40 @@ import numpy as np
 import spynach
 from spynach.plotting import axis_1d
 
+# --- Spin system: two protons with anisotropic shielding ---
+magnet = 14.1  # GUI: Magnet field | T | Field of the magnet; 14.1 T is a 600 MHz spectrometer | 1..28
+eigs_a = [-7.0, -7.0, -1.0]  # GUI: Shielding of proton A | ppm | Principal values of the shielding tensor of the first proton | -30..30
+eigs_b = [4.0, 2.0, 9.0]  # GUI: Shielding of proton B | ppm | Principal values of the shielding tensor of the second proton | -30..30
+tilt_b = [0.3, 0.9, 1.2]  # GUI: Tensor B orientation | rad | Euler angles (alpha, beta, gamma) of the second tensor in the molecule frame | 0..6.283
+
+# --- Experiment: powder average ---
+grid = "rep_2ang_1600pts_sph"  # GUI: Orientation grid | - | Spherical grid shipped with Spynach; more points give a smoother powder pattern and a longer run | rep_2ang_800pts_sph, rep_2ang_1600pts_sph, rep_2ang_3200pts_sph
+sweep = 15000.0  # GUI: Spectral width | Hz | Sweep width, large enough for the anisotropy | 2000..30000
+n_points = 128  # GUI: Points | - | Points of the FID | 32..256
+zerofill = 512  # GUI: Zero filling | - | Points of the spectrum after zero filling | 256..1024
+broadening = 6.0  # GUI: Line broadening | - | Strength of the exponential window applied to the FID | 0..30
+
 spin_system = spynach.create(
-    {"isotopes": ["1H", "1H"], "magnet": 14.1},
-    {"zeeman": {"eigs": [[-7, -7, -1], [4, 2, 9]], "euler": [[0, 0, 0], [0.3, 0.9, 1.2]]}},
+    {"isotopes": ["1H", "1H"], "magnet": magnet},
+    {"zeeman": {"eigs": [eigs_a, eigs_b], "euler": [[0, 0, 0], tilt_b]}},
 )
 spin_system = spynach.basis(
     spin_system, {"formalism": "sphten-liouv", "approximation": "none", "projections": [[1]]},
 )
 pars = {
-    "spins": ["1H"], "offset": 0.0, "sweep": 15000.0, "npoints": 128, "zerofill": 512,
-    "axis_units": "ppm", "grid": "rep_2ang_1600pts_sph",
+    "spins": ["1H"], "offset": 0.0, "sweep": sweep, "npoints": n_points, "zerofill": zerofill,
+    "axis_units": "ppm", "grid": grid,
     "rho0": spynach.state(spin_system, "L+", "1H"),
     "coil": spynach.state(spin_system, "L+", "1H"),
 }
 
 # A finer grid: 1600 orientations take a few seconds here
-print(f"{spin_system.basis.nstates} Liouville states, averaging 1600 orientations")
+print(f"{spin_system.basis.nstates} Liouville states, averaging over {grid}")
 fid = spynach.powder(spin_system, spynach.acquire, pars, "nmr")
-fid = fid * np.exp(-6 * np.arange(pars["npoints"]) / pars["npoints"])
+fid = fid * np.exp(-broadening * np.arange(pars["npoints"]) / pars["npoints"])
 spectrum = np.fft.fftshift(np.fft.fft(fid, pars["zerofill"]))
 axis, xlabel = axis_1d(spin_system, pars)
-show_spectrum(spectrum, axis, title="CSA powder, rep_2ang_1600pts_sph", xlabel=xlabel)
+show_spectrum(spectrum, axis, title=f"CSA powder, {grid}", xlabel=xlabel)
 </script>
 
 <script type="text/plain" class="example" id="ex-mas" data-group="NMR (spynach)" data-title="MAS sidebands (110 orientations)">
@@ -660,29 +839,41 @@ import numpy as np
 import spynach
 from spynach.plotting import axis_1d
 
+# --- Spin system: two protons with anisotropic shielding ---
+magnet = 14.1  # GUI: Magnet field | T | Field of the magnet; 14.1 T is a 600 MHz spectrometer | 1..28
+eigs_a = [-7.0, -7.0, -1.0]  # GUI: Shielding of proton A | ppm | Principal values of the shielding tensor of the first proton | -30..30
+eigs_b = [4.0, 2.0, 9.0]  # GUI: Shielding of proton B | ppm | Principal values of the shielding tensor of the second proton | -30..30
+
+# --- Experiment: magic-angle spinning ---
+rate = 500.0  # GUI: Spinning rate | Hz | Rotation frequency of the sample; sidebands appear at multiples of it | 100..5000
+sweep = 20000.0  # GUI: Spectral width | Hz | Sweep width, large enough for the sideband manifold | 5000..40000
+n_points = 256  # GUI: Points | - | Points of the FID | 64..512
+zerofill = 1024  # GUI: Zero filling | - | Points of the spectrum after zero filling | 512..2048
+broadening = 6.0  # GUI: Line broadening | - | Strength of the exponential window applied to the FID | 0..30
+
 spin_system = spynach.create(
-    {"isotopes": ["1H", "1H"], "magnet": 14.1},
-    {"zeeman": {"eigs": [[-7, -7, -1], [4, 2, 9]], "euler": [[0, 0, 0], [0, 0, 0]]}},
+    {"isotopes": ["1H", "1H"], "magnet": magnet},
+    {"zeeman": {"eigs": [eigs_a, eigs_b], "euler": [[0, 0, 0], [0, 0, 0]]}},
 )
 spin_system = spynach.basis(
     spin_system, {"formalism": "sphten-liouv", "approximation": "none", "projections": [[1]]},
 )
 
-# Spinning at 500 Hz about the magic angle: Fokker-Planck rotor grid and a Lebedev orientation grid
+# Spinning about the magic angle: Fokker-Planck rotor grid and a Lebedev orientation grid
 pars = {
-    "spins": ["1H"], "offset": 0.0, "rate": 500.0, "axis": [1, 1, 1], "max_rank": 17,
-    "grid": "leb_2ang_rank_17", "sweep": 2e4, "npoints": 256, "zerofill": 1024,
+    "spins": ["1H"], "offset": 0.0, "rate": rate, "axis": [1, 1, 1], "max_rank": 17,
+    "grid": "leb_2ang_rank_17", "sweep": sweep, "npoints": n_points, "zerofill": zerofill,
     "axis_units": "ppm",
     "rho0": spynach.state(spin_system, "L+", "1H"),
     "coil": spynach.state(spin_system, "L+", "1H"),
 }
 
-print(f"{spin_system.basis.nstates} spin states × 35 rotor phases, 110 orientations at 500 Hz")
+print(f"{spin_system.basis.nstates} spin states × 35 rotor phases, 110 orientations at {rate:g} Hz")
 fid = spynach.singlerot(spin_system, spynach.acquire, pars, "nmr")
-fid = fid * np.exp(-6 * np.arange(pars["npoints"]) / pars["npoints"])
+fid = fid * np.exp(-broadening * np.arange(pars["npoints"]) / pars["npoints"])
 spectrum = np.fft.fftshift(np.fft.fft(fid, pars["zerofill"]))
 axis, xlabel = axis_1d(spin_system, pars)
-show_spectrum(spectrum, axis, title="Magic-angle spinning, 500 Hz", xlabel=xlabel)
+show_spectrum(spectrum, axis, title=f"Magic-angle spinning, {rate:g} Hz", xlabel=xlabel)
 </script>
 
 <script type="text/plain" class="example" id="ex-cosy3" data-group="NMR (spynach)" data-title="COSY-90, three spins">
@@ -690,25 +881,37 @@ import numpy as np
 import spynach
 from spynach.plotting import axis_1d
 
-# Derome's three-spin system: three protons, three couplings
+# --- Spin system: Derome's three-spin system ---
+magnet = 16.1  # GUI: Magnet field | T | Field of the magnet; 16.1 T is a 685 MHz spectrometer | 1..28
+shifts = [3.70, 3.92, 4.50]  # GUI: Chemical shifts | ppm | Isotropic shifts of the three protons | 0..10
+couplings = [10.0, 4.0, 12.0]  # GUI: J couplings | Hz | Scalar couplings J12, J13 and J23 | 0..30
+
+# --- Experiment: COSY ---
+angle = 90.0  # GUI: Second pulse | degrees | Flip angle of the second pulse; 90 gives COSY-90, 45 gives COSY-45 | 10..180
+sweep = 700.0  # GUI: Spectral width | Hz | Sweep width, the same in both dimensions; it must cover the three shifts | 300..2000
+n_points = 64  # GUI: Increments | - | Points per dimension before zero filling, which sets the resolution and the run time | 16..96
+zerofill = 256  # GUI: Zero filling | - | Points per dimension after zero filling; keep it at least the number of increments | 128..512
+
 spin_system = spynach.create(
-    {"isotopes": ["1H", "1H", "1H"], "magnet": 16.1},
-    {"zeeman": {"scalar": [3.70, 3.92, 4.50]},
-     "coupling": {"scalar": [[0, 10, 4], [0, 0, 12], [0, 0, 0]]}},
+    {"isotopes": ["1H", "1H", "1H"], "magnet": magnet},
+    {"zeeman": {"scalar": shifts},
+     "coupling": {"scalar": [[0, couplings[0], couplings[1]], [0, 0, couplings[2]], [0, 0, 0]]}},
 )
 spin_system = spynach.basis(spin_system, {"formalism": "sphten-liouv", "approximation": "none"})
+
+# The carrier sits in the middle of the shifts (the 1H frequency is 42.577 MHz per tesla)
 pars = {
-    "angle": np.pi / 2, "offset": 2800.0, "sweep": 700.0,
-    "npoints": [64, 64], "zerofill": [256, 256], "spins": ["1H"], "axis_units": "ppm",
+    "angle": np.radians(angle), "offset": (min(shifts) + max(shifts)) / 2 * 42.577478 * magnet, "sweep": sweep,
+    "npoints": [n_points, n_points], "zerofill": [zerofill, zerofill], "spins": ["1H"], "axis_units": "ppm",
 }
 
-print(f"{spin_system.basis.nstates} Liouville states, 64 × 64 COSY")
+print(f"{spin_system.basis.nstates} Liouville states, {n_points} × {n_points} COSY")
 fid = spynach.liquid(spin_system, spynach.cosy, pars, "nmr")
 fid = spynach.apodisation(fid, [("sqcos",), ("sqcos",)])
 spectrum = np.fft.fftshift(np.fft.fft2(fid, pars["zerofill"]))
 axis, xlabel = axis_1d(spin_system, {**pars, "zerofill": pars["zerofill"][0]})
 print(f"FID {fid.shape}, spectrum {spectrum.shape}")
-show_image(spectrum.real.T, axis, axis, title="COSY-90, Derome three-spin system", xlabel="F2: " + xlabel, ylabel="F1: " + xlabel)
+show_image(spectrum.real.T, axis, axis, title=f"COSY-{angle:g}, Derome three-spin system", xlabel="F2: " + xlabel, ylabel="F1: " + xlabel)
 </script>
 
 <script type="text/plain" class="example" id="ex-noesy" data-group="NMR (spynach)" data-title="NOESY, Redfield relaxation">
@@ -716,32 +919,45 @@ import numpy as np
 import spynach
 from spynach.plotting import axis_1d
 
-# Two protons 2.5 Å apart with Redfield relaxation at a 2 ns correlation time
+# --- Spin system: two protons with Redfield relaxation ---
+magnet = 14.1  # GUI: Magnet field | T | Field of the magnet; 14.1 T is a 600 MHz spectrometer | 1..28
+shifts = [1.0, 3.0]  # GUI: Chemical shifts | ppm | Isotropic shifts of the two protons | 0..10
+distance = 2.5  # GUI: Distance | Å | Separation of the two protons; the dipolar coupling, and so the cross peak, falls as its sixth power | 1.8..5
+tau_c = 2.0  # GUI: Correlation time | ns | Rotational correlation time of the molecule; the cross peak changes sign near 0.3 ns at 600 MHz | 0.01..100
+temperature = 298.0  # GUI: Temperature | K | Temperature of the equilibrium state | 200..400
+
+# --- Experiment: NOESY ---
+tmix = 0.3  # GUI: Mixing time | s | Delay in which the magnetisation is exchanged by cross relaxation | 0.01..2
+sweep = 2000.0  # GUI: Spectral width | Hz | Sweep width, the same in both dimensions | 500..4000
+n_points = 64  # GUI: Increments | - | Points per dimension before zero filling, which sets the resolution and the run time | 16..96
+zerofill = 256  # GUI: Zero filling | - | Points per dimension after zero filling | 128..512
+
+# Two protons with Redfield relaxation at the given correlation time
 spin_system = spynach.create(
-    {"isotopes": ["1H", "1H"], "magnet": 14.1},
-    {"zeeman": {"scalar": [1.0, 3.0]}, "coordinates": [[0, 0, 0], [0, 0, 2.5]],
+    {"isotopes": ["1H", "1H"], "magnet": magnet},
+    {"zeeman": {"scalar": shifts}, "coordinates": [[0, 0, 0], [0, 0, distance]],
      "relaxation": ["redfield"], "equilibrium": "IME", "rlx_keep": "kite",
-     "temperature": 298, "tau_c": [[2e-9]]},
+     "temperature": temperature, "tau_c": [[tau_c * 1e-9]]},
 )
 spin_system = spynach.basis(spin_system, {"formalism": "sphten-liouv", "approximation": "none"})
 pars = {
-    "tmix": 0.3, "offset": 1200.0, "sweep": [2000.0, 2000.0],
-    "npoints": [64, 64], "spins": ["1H"], "needs": ["rho_eq"], "axis_units": "ppm",
+    "tmix": tmix, "offset": np.mean(shifts) * 42.577478 * magnet, "sweep": [sweep, sweep],
+    "npoints": [n_points, n_points], "spins": ["1H"], "needs": ["rho_eq"], "axis_units": "ppm",
 }
 
-print(f"{spin_system.basis.nstates} Liouville states; building the Redfield superoperator, then a 64 × 64 NOESY")
+print(f"{spin_system.basis.nstates} Liouville states; building the Redfield superoperator, then a {n_points} × {n_points} NOESY")
 fid = spynach.liquid(spin_system, spynach.noesy, pars, "nmr")
 
 # States-type processing of the cosine and sine data sets
 cos = spynach.apodisation(fid["cos"], [("sqcos",), ("sqcos",)])
 sin = spynach.apodisation(fid["sin"], [("sqcos",), ("sqcos",)])
-zf = 256
+zf = zerofill
 f1_cos = np.real(np.fft.fftshift(np.fft.fft(cos, zf, axis=0), axes=0))
 f1_sin = np.real(np.fft.fftshift(np.fft.fft(sin, zf, axis=0), axes=0))
 spectrum = np.fft.fftshift(np.fft.fft(f1_cos - 1j * f1_sin, zf, axis=1), axes=1)
 axis, xlabel = axis_1d(spin_system, {**pars, "sweep": pars["sweep"][0], "zerofill": zf})
 print(f"spectrum {spectrum.shape}")
-show_image(-spectrum.real.T, axis, axis, title="NOESY, 300 ms, Redfield", xlabel="F2: " + xlabel, ylabel="F1: " + xlabel)
+show_image(-spectrum.real.T, axis, axis, title=f"NOESY, {tmix * 1e3:g} ms, Redfield", xlabel="F2: " + xlabel, ylabel="F1: " + xlabel)
 </script>
 
 <script type="text/plain" class="example" id="ex-chain" data-group="NMR (spynach)" data-title="12-proton chain, IK-2">
@@ -749,32 +965,43 @@ import numpy as np
 import spynach
 from spynach.plotting import axis_1d
 
-# A chain of 12 protons with nearest-neighbour couplings; IK-2 keeps only low spin orders
-n = 12
+# --- Spin system: a chain of protons ---
+n = 12  # GUI: Number of protons | - | Length of the chain; the IK-2 basis keeps the cost in check, but the run time still grows with it | 4..12
+J = 8.0  # GUI: Neighbour coupling | Hz | Scalar coupling between neighbouring protons | 0..20
+shift_first = 1.0  # GUI: First shift | ppm | Chemical shift of the first proton; the others are spaced evenly up to the last | 0..10
+shift_last = 4.5  # GUI: Last shift | ppm | Chemical shift of the last proton | 0..10
+
+# --- Experiment: pulse-acquire ---
+sweep = 2800.0  # GUI: Spectral width | Hz | Sweep width, which must cover all shifts | 1000..6000
+n_points = 1024  # GUI: Points | - | Points of the FID | 256..2048
+zerofill = 4096  # GUI: Zero filling | - | Points of the spectrum after zero filling | 1024..8192
+broadening = 4.0  # GUI: Line broadening | - | Strength of the exponential window applied to the FID | 0..30
+
+# A chain of protons with nearest-neighbour couplings; IK-2 keeps only low spin orders
 coupling = np.zeros((n, n))
 for i in range(n - 1):
-    coupling[i, i + 1] = 8.0
+    coupling[i, i + 1] = J
 spin_system = spynach.create(
     {"isotopes": ["1H"] * n, "magnet": 14.1},
-    {"zeeman": {"scalar": np.linspace(1.0, 4.5, n).tolist()}, "coupling": {"scalar": coupling.tolist()}},
+    {"zeeman": {"scalar": np.linspace(shift_first, shift_last, n).tolist()}, "coupling": {"scalar": coupling.tolist()}},
 )
 spin_system = spynach.basis(
     spin_system,
     {"formalism": "sphten-liouv", "approximation": "IK-2", "connectivity": "scalar_couplings", "prox_level": 1},
 )
 pars = {
-    "spins": ["1H"], "offset": 1650.0, "sweep": 2800.0, "npoints": 1024, "zerofill": 4096,
-    "axis_units": "ppm",
+    "spins": ["1H"], "offset": (shift_first + shift_last) / 2 * 42.577478 * 14.1, "sweep": sweep, "npoints": n_points,
+    "zerofill": zerofill, "axis_units": "ppm",
     "rho0": spynach.state(spin_system, "L+", "1H"),
     "coil": spynach.state(spin_system, "L+", "1H"),
 }
 
 print(f"{n} protons, {spin_system.basis.nstates} Liouville states (IK-2)")
 fid = spynach.liquid(spin_system, spynach.acquire, pars, "nmr")
-fid = spynach.apodisation(fid, [("exp", 4)])
+fid = spynach.apodisation(fid, [("exp", broadening)])
 spectrum = np.fft.fftshift(np.fft.fft(fid, pars["zerofill"]))
 axis, xlabel = axis_1d(spin_system, pars)
-show_spectrum(spectrum, axis, title="12-proton chain, nearest-neighbour J, IK-2", xlabel=xlabel)
+show_spectrum(spectrum, axis, title=f"{n}-proton chain, nearest-neighbour J, IK-2", xlabel=xlabel)
 </script>
 
 <script type="text/plain" class="example" id="ex-powder-12k" data-group="NMR (spynach)" data-slow="true" data-title="Powder CSA, 12800 orientations">
@@ -782,27 +1009,40 @@ import numpy as np
 import spynach
 from spynach.plotting import axis_1d
 
+# --- Spin system: two protons with anisotropic shielding ---
+magnet = 14.1  # GUI: Magnet field | T | Field of the magnet; 14.1 T is a 600 MHz spectrometer | 1..28
+eigs_a = [-7.0, -7.0, -1.0]  # GUI: Shielding of proton A | ppm | Principal values of the shielding tensor of the first proton | -30..30
+eigs_b = [4.0, 2.0, 9.0]  # GUI: Shielding of proton B | ppm | Principal values of the shielding tensor of the second proton | -30..30
+tilt_b = [0.3, 0.9, 1.2]  # GUI: Tensor B orientation | rad | Euler angles (alpha, beta, gamma) of the second tensor in the molecule frame | 0..6.283
+
+# --- Experiment: powder average ---
+grid = "rep_2ang_12800pts_sph"  # GUI: Orientation grid | - | Spherical grid shipped with Spynach; more points give a smoother powder pattern and a longer run | rep_2ang_6400pts_sph, rep_2ang_12800pts_sph, rep_2ang_25600pts_sph
+sweep = 15000.0  # GUI: Spectral width | Hz | Sweep width, large enough for the anisotropy | 2000..30000
+n_points = 128  # GUI: Points | - | Points of the FID | 32..256
+zerofill = 512  # GUI: Zero filling | - | Points of the spectrum after zero filling | 256..1024
+broadening = 6.0  # GUI: Line broadening | - | Strength of the exponential window applied to the FID | 0..30
+
 spin_system = spynach.create(
-    {"isotopes": ["1H", "1H"], "magnet": 14.1},
-    {"zeeman": {"eigs": [[-7, -7, -1], [4, 2, 9]], "euler": [[0, 0, 0], [0.3, 0.9, 1.2]]}},
+    {"isotopes": ["1H", "1H"], "magnet": magnet},
+    {"zeeman": {"eigs": [eigs_a, eigs_b], "euler": [[0, 0, 0], tilt_b]}},
 )
 spin_system = spynach.basis(
     spin_system, {"formalism": "sphten-liouv", "approximation": "none", "projections": [[1]]},
 )
 pars = {
-    "spins": ["1H"], "offset": 0.0, "sweep": 15000.0, "npoints": 128, "zerofill": 512,
-    "axis_units": "ppm", "grid": "rep_2ang_12800pts_sph",
+    "spins": ["1H"], "offset": 0.0, "sweep": sweep, "npoints": n_points, "zerofill": zerofill,
+    "axis_units": "ppm", "grid": grid,
     "rho0": spynach.state(spin_system, "L+", "1H"),
     "coil": spynach.state(spin_system, "L+", "1H"),
 }
 
 # The slow one: 12800 orientations, about a minute
-print(f"{spin_system.basis.nstates} Liouville states, averaging 12800 orientations")
+print(f"{spin_system.basis.nstates} Liouville states, averaging over {grid}")
 fid = spynach.powder(spin_system, spynach.acquire, pars, "nmr")
-fid = fid * np.exp(-6 * np.arange(pars["npoints"]) / pars["npoints"])
+fid = fid * np.exp(-broadening * np.arange(pars["npoints"]) / pars["npoints"])
 spectrum = np.fft.fftshift(np.fft.fft(fid, pars["zerofill"]))
 axis, xlabel = axis_1d(spin_system, pars)
-show_spectrum(spectrum, axis, title="CSA powder, rep_2ang_12800pts_sph", xlabel=xlabel)
+show_spectrum(spectrum, axis, title=f"CSA powder, {grid}", xlabel=xlabel)
 </script>
 
 <script type="module">
