@@ -13,6 +13,30 @@ runs Spynach, `easyspyn` and `ctps` in the browser through Pyodide
 ([try.html](https://ajerschow.github.io/spynach/try.html), contributed by Moritz Zaiss). See `HANDOFF.md` for goals and design decisions, and
 `oracle/README.md` for the reference-data ("fixture") harness.
 
+## Quick start
+
+**Nothing to install:** run it in the browser at
+[ajerschow.github.io/spynach/try.html](https://ajerschow.github.io/spynach/try.html)
+(Pyodide; NMR, EPR and pathway examples you can edit), or open a notebook in the cloud:
+[![Open in Colab: EPR](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ajerschow/spynach/blob/main/docs/colab/easyspyn-quick-start.ipynb)
+[![Open in Colab: NMR](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ajerschow/spynach/blob/main/docs/colab/quick-start.ipynb)
+[![Launch Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/ajerschow/spynach/main?urlpath=lab/tree/docs/notebooks/)
+
+**Install (Python 3.11 or newer):**
+
+```
+pip install easyspyn   # EPR: EasySpin's simulators, from PyPI ("easyspyn[fast]" adds Numba)
+pip install "spynach @ git+https://github.com/ajerschow/spynach.git"   # NMR: Spinach's kernel; also installs easyspyn and ctps
+```
+
+```python
+import easyspyn as es
+
+nitroxide = {"g": [2.0088, 2.0061, 2.0027], "Nucs": "14N", "A": [16, 16, 86], "lwpp": 0.3}
+powder = es.pepper(nitroxide, {"mwFreq": 9.5, "Range": [330, 350], "nPoints": 1024})
+print(powder.x.shape, powder.spec.shape)
+```
+
 ## Status
 
 Ported and verified against Spinach 2.13 fixtures (`tests/slice/`): the

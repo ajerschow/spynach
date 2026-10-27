@@ -4,6 +4,7 @@ Releases are tagged `vX.Y.Z` on GitHub; the version is `spynach.__version__`.
 
 ## 0.3.0 - 2026-10-26
 
+- Quick-start instructions are prominent on the landing page and at the top of the README: `pip install easyspyn`, the git install of Spynach, and the options that need no installation (the browser playground, Colab notebooks for EPR and NMR, Binder via `.binder/requirements.txt`).
 - The EasySpin port is called EasySpyn (formerly EPReasy, `epreasy`) everywhere: the import name and the PyPI
   distribution are both `easyspyn`, the source is `src/easyspyn`, the tests `tests/easyspyn`, the guides
   `docs/easyspyn*.md`, and the fixture variable `EASYSPYN_FIXTURES` (the old `EPREASY_FIXTURES` is still read).

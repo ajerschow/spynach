@@ -1,0 +1,3 @@
+# Binder (mybinder.org) installs this repository with the plotting extra for the guide notebooks.
+.[plot]
+matplotlib>=3.8

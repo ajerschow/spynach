@@ -32,13 +32,38 @@
     <div class="actions">
       <a class="btn primary" href="try.html">Try it in the browser</a>
       <a class="btn" href="https://github.com/ajerschow/spynach/blob/main/docs/hilbert-space.md">Start with the first guide</a>
-      <a class="btn" href="#install">Install</a>
+      <a class="btn" href="#quick-start">Install</a>
     </div>
   </div>
   <figure>
     <img src="assets/Spynoza.jpg" width="1397" height="1202" alt="Portrait of Spinoza rendered as a two-dimensional 1H-13C correlation spectrum: coloured cross peaks on a black background with the 1D projections along the top and right edges">
     <figcaption>Any resemblance to living or dead personalities is purely accidental. Fig. credits to Florin Teleanu.</figcaption>
   </figure>
+</div>
+
+<div class="quick" id="quick-start">
+  <div>
+    <span class="eyebrow">Nothing to install</span>
+    <h2>Run it in your browser</h2>
+    <p>The <a href="try.html">playground</a> runs Spynach, easyspyn and ctps in your browser with Pyodide: edit an NMR, EPR or pathway example and plot it. Or open a notebook in the cloud.</p>
+    <div class="actions">
+      <a class="btn primary" href="try.html">Try it in the browser</a>
+      <a class="btn" href="https://colab.research.google.com/github/ajerschow/spynach/blob/main/docs/colab/easyspyn-quick-start.ipynb">Colab: EPR</a>
+      <a class="btn" href="https://colab.research.google.com/github/ajerschow/spynach/blob/main/docs/colab/quick-start.ipynb">Colab: NMR</a>
+      <a class="btn" href="https://mybinder.org/v2/gh/ajerschow/spynach/main?urlpath=lab/tree/docs/notebooks/">Binder</a>
+    </div>
+  </div>
+  <div>
+    <span class="eyebrow">Quick install</span>
+    <h2>Python 3.11 or newer</h2>
+<pre><code># EPR: EasySpin's simulators
+pip install easyspyn
+
+# NMR: Spinach's kernel (and ctps)
+pip install "spynach @ \
+  git+https://github.com/ajerschow/spynach.git"</code></pre>
+    <p>EasySpyn is on PyPI (<code>pip install "easyspyn[fast]"</code> adds Numba); Spynach installs from GitHub and also provides <code>ctps</code>. <a href="#install">More install options</a></p>
+  </div>
 </div>
 
 <div class="cards products">
@@ -72,15 +97,18 @@
 </div>
 
 <section id="install">
-  <header><span class="eyebrow">Install</span><h2>Two packages, one install</h2></header>
+  <header><span class="eyebrow">Install</span><h2>Install</h2></header>
   <div>
-    <p>Python 3.11 or newer. The distribution installs <code>spynach</code>, <code>easyspyn</code> and <code>ctps</code>; the <code>fast</code> extra adds Numba, which threads the sparse kernels of Spynach and compiles EasySpin's, <code>docs</code> and <code>test</code> the notebooks and the test suite.</p>
-<pre><code>pip install "spynach @ git+https://github.com/ajerschow/spynach.git"
+    <p>Python 3.11 or newer. <code>pip install easyspyn</code> installs the EPR package alone from PyPI. The GitHub distribution installs <code>spynach</code>, <code>easyspyn</code> and <code>ctps</code>; the <code>fast</code> extra adds Numba, which threads the sparse kernels of Spynach and compiles EasySpin's, <code>docs</code> and <code>test</code> the notebooks and the test suite.</p>
+<pre><code>pip install easyspyn
+
+# Spynach with easyspyn and ctps, from GitHub
+pip install "spynach @ git+https://github.com/ajerschow/spynach.git"
 
 # or, for the notebooks and tests
 git clone https://github.com/ajerschow/spynach.git
 cd spynach &amp;&amp; pip install -e ".[docs,test,fast]"</code></pre>
-    <p>The first guide of each port starts from an installed package: <a href="https://github.com/ajerschow/spynach/blob/main/docs/hilbert-space.md">Hilbert space</a> for Spinach users, <a href="https://github.com/ajerschow/spynach/blob/main/docs/easyspyn.md">EPR spin systems with easyspyn</a> for EasySpin users. Nothing to install: the <a href="try.html">playground</a> runs both ports in Pyodide, and the <a href="https://colab.research.google.com/github/ajerschow/spynach/blob/main/docs/colab/quick-start.ipynb">Colab notebook</a> installs Spynach and plots a two-spin spectrum. In a container whose CPU quota is below its visible core count, set <code>OPENBLAS_NUM_THREADS</code> to the quota.</p>
+    <p>The first guide of each port starts from an installed package: <a href="https://github.com/ajerschow/spynach/blob/main/docs/hilbert-space.md">Hilbert space</a> for Spinach users, <a href="https://github.com/ajerschow/spynach/blob/main/docs/easyspyn.md">EPR spin systems with easyspyn</a> for EasySpin users. Nothing to install: the <a href="try.html">playground</a> runs both ports in Pyodide, and the Colab notebooks (<a href="https://colab.research.google.com/github/ajerschow/spynach/blob/main/docs/colab/easyspyn-quick-start.ipynb">EPR</a>, <a href="https://colab.research.google.com/github/ajerschow/spynach/blob/main/docs/colab/quick-start.ipynb">NMR</a>) or <a href="https://mybinder.org/v2/gh/ajerschow/spynach/main?urlpath=lab/tree/docs/notebooks/">Binder</a> run the guides' notebooks in the cloud. In a container whose CPU quota is below its visible core count, set <code>OPENBLAS_NUM_THREADS</code> to the quota.</p>
   </div>
 </section>
 

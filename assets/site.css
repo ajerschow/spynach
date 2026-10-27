@@ -55,6 +55,11 @@ nav.top a:not(.brand):hover { color: var(--accent-ink); }
 .actions { display: flex; flex-wrap: wrap; gap: 0.7rem; margin-top: 1.6rem; }
 .btn { display: inline-block; padding: 0.55rem 1rem; border-radius: 6px; text-decoration: none; font-weight: 500; border: 1px solid var(--accent); color: var(--accent-ink); }
 .btn.primary { background: var(--accent); color: var(--bg); }
+.quick { display: grid; grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr)); gap: 1.2rem; margin-block: 0 2rem; padding: 1.2rem; border: 1px solid var(--accent); border-radius: 8px; background: var(--surface); }
+.quick > div { display: grid; gap: 0.6rem; align-content: start; min-width: 0; }
+.quick h2 { font-size: 1.05rem; }
+.quick p { margin: 0; font-size: 0.93rem; }
+.quick .actions { margin-top: 0.2rem; }
 .btn.primary:hover { color: var(--bg); filter: brightness(1.08); }
 figure { margin: 0; min-width: 0; }
 figure svg { width: 100%; height: auto; display: block; }
@@ -110,3 +115,4 @@ td.na { color: var(--muted); }
 table.timing td:first-child { min-width: 17rem; }
 table.timing .note { display: block; margin-top: 0.15rem; }
 .note { font-size: 0.92rem; color: var(--muted); }
+.quick-line { margin: 0.8rem 0 0; font-size: 0.93rem; color: var(--muted); }

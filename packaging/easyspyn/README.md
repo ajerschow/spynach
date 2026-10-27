@@ -7,6 +7,10 @@ names, fields in mT, couplings in MHz, 1-based spin numbers.
     pip install easyspyn
     pip install "easyspyn[fast]"  # adds Numba for the line-summation and projection kernels
 
+Nothing to install? Run EasySpyn in the browser (https://ajerschow.github.io/spynach/try.html), in Colab
+(https://colab.research.google.com/github/ajerschow/spynach/blob/main/docs/colab/easyspyn-quick-start.ipynb) or on Binder
+(https://mybinder.org/v2/gh/ajerschow/spynach/main?urlpath=lab/tree/docs/notebooks/).
+
 ```python
 import easyspyn as es
 
