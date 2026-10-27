@@ -26,6 +26,7 @@ nav.top { padding-block: 0.85rem; }
   min-height: 1.4em; margin: 0 0 0.55rem;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
+[hidden] { display: none !important; }
 section.pane { padding-block: 0; border-top: 0; }
 .app {
   flex: 1; min-height: 0; display: grid;
@@ -76,15 +77,9 @@ figure.plot figcaption { font-family: var(--mono); font-size: 0.75rem; color: va
   background: var(--surface); color: var(--muted); font-size: 0.92rem; max-width: none;
 }
 .head p, .hint { max-width: none; }
-.modes { display: inline-flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
-.modes button { border: 0; border-right: 1px solid var(--line); background: transparent; color: var(--muted); padding: 0.4rem 0.7rem; font-size: 0.85rem; cursor: pointer; }
-.modes button:last-child { border-right: 0; }
-.modes button[aria-checked="true"] { background: var(--accent); color: var(--bg); }
-.modes button:disabled { opacity: 0.45; cursor: default; }
 .btn.stale { box-shadow: 0 0 0 2px var(--accent-ink); }
-#params { overflow: auto; padding: 0.5rem 0.9rem 0.7rem; border-bottom: 1px solid var(--line); display: grid; gap: 0.15rem; align-content: start; }
-#params.only { flex: 1; border-bottom: 0; }
-#params:not(.only) { max-height: 55%; }
+#params { overflow: auto; padding: 0.5rem 0.9rem 0.7rem; display: grid; gap: 0.15rem; align-content: start; }
+#params { flex: 1; border-bottom: 0; }
 #params h3 { overflow-wrap: anywhere; margin: 0.7rem 0 0.1rem; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent-ink); font-weight: 600; }
 #params .bar { display: flex; flex-wrap: wrap; gap: 0.4rem 1rem; align-items: center; font-size: 0.85rem; color: var(--muted); padding-bottom: 0.2rem; }
 #params .bar label { display: inline-flex; gap: 0.35rem; align-items: center; }
@@ -107,7 +102,6 @@ figure.plot figcaption { font-family: var(--mono); font-size: 0.75rem; color: va
   :root:not([data-theme="light"]) .param input.invalid, :root:not([data-theme="light"]) .param .desc.err { color: #f0a8a2; border-color: #f0a8a2; }
 }
 @media (max-width: 860px) {
-  #params:not(.only) { max-height: 22rem; }
   .app { grid-template-columns: 1fr; grid-template-rows: auto auto auto; row-gap: 14px; align-content: start; overflow: auto; }
   .wrap { height: auto; min-height: 100%; }
   textarea { min-height: 16rem; }
@@ -143,11 +137,7 @@ figure.plot figcaption { font-family: var(--mono); font-size: 0.75rem; color: va
       <label class="field">Example
         <select id="example"></select>
       </label>
-      <div class="modes" id="modes" role="radiogroup" aria-label="View">
-        <button type="button" role="radio" data-mode="code" aria-checked="true">Code</button>
-        <button type="button" role="radio" data-mode="params" aria-checked="false">Parameters</button>
-        <button type="button" role="radio" data-mode="both" aria-checked="false">Both</button>
-      </div>
+      <button class="btn" id="view-toggle" type="button" hidden>Prefer GUI</button>
       <div class="actions">
         <button class="btn primary" id="run" type="button" disabled>Run</button>
         <button class="btn" id="stop" type="button" disabled>Stop</button>
@@ -155,7 +145,7 @@ figure.plot figcaption { font-family: var(--mono); font-size: 0.75rem; color: va
     </div>
     <div id="params" aria-label="Parameters" hidden></div>
     <textarea id="editor" spellcheck="false" wrap="off" aria-label="Python source"></textarea>
-    <p class="hint">Ctrl+Enter runs. <code>show_spectrum</code>, <code>show_fid</code> and <code>show_image</code> draw on the right; an <code>easyspyn</code> spectrum can be passed as is, and EPR axes run left to right. The 12800-orientation powder is the slow one, about a minute; the 1600-point powder, magic-angle spinning and the fit take a few seconds. Grid names such as <code>leb_2ang_rank_17</code> are loaded from <code>src/spynach/grids</code>. A link such as <code>try.html#ex-epr-hyscore</code> opens and runs one example. <b>Parameters</b> shows the main settings of an example as a form, with units and a description for each; an edit there rewrites the number in the code, and an edit in the code updates the form. <code>?view=params</code> or <code>?view=both</code> opens that view; examples that are not converted yet have only the code.</p>
+    <p class="hint">Ctrl+Enter runs. <code>show_spectrum</code>, <code>show_fid</code> and <code>show_image</code> draw on the right; an <code>easyspyn</code> spectrum can be passed as is, and EPR axes run left to right. The 12800-orientation powder is the slow one, about a minute; the 1600-point powder, magic-angle spinning and the fit take a few seconds. Grid names such as <code>leb_2ang_rank_17</code> are loaded from <code>src/spynach/grids</code>. A link such as <code>try.html#ex-epr-hyscore</code> opens and runs one example. Where an example offers it, <b>Prefer GUI</b> shows its main settings as a form, with units and a description for each, and <b>Prefer code</b> goes back; an edit in the form rewrites the number in the code, and an edit in the code updates the form. <code>?view=params</code> opens the form; examples that are not converted yet have only the code.</p>
   </section>
   <div id="plots"><p class="empty">The spectrum will land here.</p></div>
   <div id="console" role="log" aria-live="polite"></div>
@@ -870,7 +860,7 @@ function loadExample(id) {
 // The Parameters view: a form generated from the "GUI:" comments of the source (assets/playground-params.js).
 // The source stays the only state: a form edit rewrites one literal in the editor, an edit in the editor
 // regenerates the form.
-const modesEl = document.querySelector("#modes");
+const toggleBtn = document.querySelector("#view-toggle");
 const paramsEl = document.querySelector("#params");
 let defaults = new Map();
 let mode = "code";
@@ -883,12 +873,11 @@ function currentExample() {
   return document.getElementById(exampleSel.dataset.current || exampleSel.value);
 }
 
-// What is shown; examples without parameters always show the code, without forgetting the chosen view
+// The preference is "code" or "params"; an example without parameters always shows its code and has no toggle
 function applyMode(shown) {
-  modesEl.querySelectorAll("button").forEach((b) => b.setAttribute("aria-checked", String(b.dataset.mode === shown)));
   paramsEl.hidden = shown === "code";
-  paramsEl.classList.toggle("only", shown === "params");
   editor.hidden = shown === "params";
+  toggleBtn.textContent = shown === "params" ? "Prefer code" : "Prefer GUI";
 }
 
 function setMode(next) {
@@ -907,11 +896,7 @@ function fieldValue(param, inputs) {
 function renderParams() {
   const params = parseParams(editor.value);
   const none = params.length === 0;
-  modesEl.dataset.empty = String(none);
-  modesEl.querySelectorAll("button:not([data-mode='code'])").forEach((b) => {
-    b.disabled = none;
-    b.title = none ? "This example has no parameters; edit the code" : "";
-  });
+  toggleBtn.hidden = none;
   if (none) {
     paramsEl.replaceChildren();
     applyMode("code");
@@ -1234,10 +1219,7 @@ editor.addEventListener("input", () => {
   clearTimeout(paramTimer);
   paramTimer = setTimeout(renderParams, 250);
 });
-modesEl.addEventListener("click", (event) => {
-  const button = event.target.closest("button[data-mode]");
-  if (button && !button.disabled) setMode(button.dataset.mode);
-});
+toggleBtn.addEventListener("click", () => setMode(mode === "params" ? "code" : "params"));
 editor.addEventListener("keydown", (event) => {
   if (event.key === "Tab") {
     event.preventDefault();
@@ -1698,10 +1680,10 @@ function nearest(map, xVal) {
 const first = exampleFromHash() || examples[0].id;
 exampleSel.value = first;
 exampleSel.dataset.current = first;
-// The view comes from ?view=code|params|both, else from the last choice (links can open the Parameters view)
+// The view comes from ?view=code|params, else from the last choice (links can open the Parameters view)
 try {
   const stored = new URLSearchParams(location.search).get("view") || localStorage.getItem("playground-mode");
-  if (["code", "params", "both"].includes(stored)) mode = stored;
+  if (["code", "params"].includes(stored)) mode = stored;
 } catch (e) { /* not remembered */ }
 loadExample(first);
 bootWorker();

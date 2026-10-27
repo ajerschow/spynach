@@ -5,7 +5,7 @@ Releases are tagged `vX.Y.Z` on GitHub; the version is `spynach.__version__`.
 ## 0.3.1 - 2026-10-27
 
 - The browser playground (`try.html`) has a Parameters view: a form of the main settings of an example, each with its
-  unit and a description, switched with Code | Parameters | Both. The code stays the only state: a form edit rewrites
+  unit and a description, toggled with "Prefer GUI" / "Prefer code" (shown only for examples that have one). The code stays the only state: a form edit rewrites
   one number in the source, an edit in the source updates the form. Parameters are plain assignments with a
   `# GUI: label | unit | description | range` comment, read by `assets/playground-params.js`; the pepper, COSY and
   saffron examples have them so far, and `tests/unit/test_playground_params.py` runs every example at the ends of
