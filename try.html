@@ -76,7 +76,38 @@ figure.plot figcaption { font-family: var(--mono); font-size: 0.75rem; color: va
   background: var(--surface); color: var(--muted); font-size: 0.92rem; max-width: none;
 }
 .head p, .hint { max-width: none; }
+.modes { display: inline-flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.modes button { border: 0; border-right: 1px solid var(--line); background: transparent; color: var(--muted); padding: 0.4rem 0.7rem; font-size: 0.85rem; cursor: pointer; }
+.modes button:last-child { border-right: 0; }
+.modes button[aria-checked="true"] { background: var(--accent); color: var(--bg); }
+.modes button:disabled { opacity: 0.45; cursor: default; }
+.btn.stale { box-shadow: 0 0 0 2px var(--accent-ink); }
+#params { overflow: auto; padding: 0.5rem 0.9rem 0.7rem; border-bottom: 1px solid var(--line); display: grid; gap: 0.15rem; align-content: start; }
+#params.only { flex: 1; border-bottom: 0; }
+#params:not(.only) { max-height: 55%; }
+#params h3 { overflow-wrap: anywhere; margin: 0.7rem 0 0.1rem; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent-ink); font-weight: 600; }
+#params .bar { display: flex; flex-wrap: wrap; gap: 0.4rem 1rem; align-items: center; font-size: 0.85rem; color: var(--muted); padding-bottom: 0.2rem; }
+#params .bar label { display: inline-flex; gap: 0.35rem; align-items: center; }
+#params .bar button { margin-left: auto; }
+.param { display: grid; gap: 0.1rem; padding: 0.35rem 0; border-bottom: 1px dashed var(--line); }
+.param:last-of-type { border-bottom: 0; }
+.param .row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem 0.6rem; }
+.param .names { flex: 1 1 9rem; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 0.45rem; }
+.param .name { font-weight: 600; font-size: 0.92rem; }
+.param .unit { font-family: var(--mono); font-size: 0.78rem; color: var(--accent-ink); }
+.param input[type="number"], .param select, .param .fixed { background: var(--bg); border: 1px solid var(--line); border-radius: 5px; color: var(--fg); padding: 0.25rem 0.4rem; font-family: var(--mono); font-size: 0.85rem; width: 6.5rem; }
+.param input[type="range"] { flex: 1 1 8rem; min-width: 6rem; accent-color: var(--accent); }
+.param input.invalid { border-color: #a33b32; }
+.param .fixed { width: auto; color: var(--muted); }
+.param .desc { margin: 0; font-size: 0.8rem; color: var(--muted); max-width: none; }
+.param .desc.err { color: #a33b32; }
+.param .reset { border: 0; background: transparent; color: var(--accent-ink); cursor: pointer; font-size: 0.85rem; padding: 0 0.2rem; }
+.param .reset[hidden] { display: none; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .param input.invalid, :root:not([data-theme="light"]) .param .desc.err { color: #f0a8a2; border-color: #f0a8a2; }
+}
 @media (max-width: 860px) {
+  #params:not(.only) { max-height: 22rem; }
   .app { grid-template-columns: 1fr; grid-template-rows: auto auto auto; row-gap: 14px; align-content: start; overflow: auto; }
   .wrap { height: auto; min-height: 100%; }
   textarea { min-height: 16rem; }
@@ -111,13 +142,19 @@ figure.plot figcaption { font-family: var(--mono); font-size: 0.75rem; color: va
       <label class="field">Example
         <select id="example"></select>
       </label>
+      <div class="modes" id="modes" role="radiogroup" aria-label="View">
+        <button type="button" role="radio" data-mode="code" aria-checked="true">Code</button>
+        <button type="button" role="radio" data-mode="params" aria-checked="false">Parameters</button>
+        <button type="button" role="radio" data-mode="both" aria-checked="false">Both</button>
+      </div>
       <div class="actions">
         <button class="btn primary" id="run" type="button" disabled>Run</button>
         <button class="btn" id="stop" type="button" disabled>Stop</button>
       </div>
     </div>
-    <textarea id="editor" spellcheck="false" aria-label="Python source"></textarea>
-    <p class="hint">Ctrl+Enter runs. <code>show_spectrum</code>, <code>show_fid</code> and <code>show_image</code> draw on the right; an <code>easyspyn</code> spectrum can be passed as is, and EPR axes run left to right. The 12800-orientation powder is the slow one, about a minute; the 1600-point powder, magic-angle spinning and the fit take a few seconds. Grid names such as <code>leb_2ang_rank_17</code> are loaded from <code>src/spynach/grids</code>. A link such as <code>try.html#ex-epr-hyscore</code> opens and runs one example.</p>
+    <div id="params" aria-label="Parameters" hidden></div>
+    <textarea id="editor" spellcheck="false" wrap="off" aria-label="Python source"></textarea>
+    <p class="hint">Ctrl+Enter runs. <code>show_spectrum</code>, <code>show_fid</code> and <code>show_image</code> draw on the right; an <code>easyspyn</code> spectrum can be passed as is, and EPR axes run left to right. The 12800-orientation powder is the slow one, about a minute; the 1600-point powder, magic-angle spinning and the fit take a few seconds. Grid names such as <code>leb_2ang_rank_17</code> are loaded from <code>src/spynach/grids</code>. A link such as <code>try.html#ex-epr-hyscore</code> opens and runs one example. <b>Parameters</b> shows the main settings of an example as a form, with units and a description for each; an edit there rewrites the number in the code, and an edit in the code updates the form. <code>?view=params</code> or <code>?view=both</code> opens that view; examples that are not converted yet have only the code.</p>
   </section>
   <div id="plots"><p class="empty">The spectrum will land here.</p></div>
   <div id="console" role="log" aria-live="polite"></div>
@@ -297,16 +334,28 @@ import numpy as np
 import spynach
 from spynach.plotting import axis_1d
 
+# --- Spin system: two coupled protons ---
+magnet = 14.1  # GUI: Magnet field | T | Field of the magnet; 14.1 T is a 600 MHz spectrometer | 1..28
+shifts = [1.00, 1.10]  # GUI: Chemical shifts | ppm | Isotropic shifts of the two protons | 0..10
+J = 12.0  # GUI: J coupling | Hz | Scalar coupling between the two protons | 0..30
+
+# --- Experiment: COSY ---
+angle = 90.0  # GUI: Second pulse | degrees | Flip angle of the second pulse; 90 gives COSY-90, 45 gives COSY-45 | 10..180
+sweep = 200.0  # GUI: Spectral width | Hz | Sweep width, the same in both dimensions | 50..1000
+n_points = 64  # GUI: Increments | - | Points per dimension before zero filling, which sets the resolution and the run time | 16..96
+zerofill = 256  # GUI: Zero filling | - | Points per dimension after zero filling; keep it at least the number of increments | 64..512
+
 spin_system = spynach.create(
-    {"isotopes": ["1H", "1H"], "magnet": 14.1},
-    {"zeeman": {"scalar": [1.00, 1.10]}, "coupling": {"scalar": [[0, 12.0], [0, 0]]}},
+    {"isotopes": ["1H", "1H"], "magnet": magnet},
+    {"zeeman": {"scalar": shifts}, "coupling": {"scalar": [[0, J], [0, 0]]}},
 )
 spin_system = spynach.basis(spin_system, {"formalism": "sphten-liouv", "approximation": "none"})
 
-# COSY-90: 64 x 64 increments, zero-filled to 256 x 256
+# The carrier sits at the mean shift; the 1H frequency is 42.577 MHz per tesla
+offset = np.mean(shifts) * 42.577478 * magnet
 pars = {
-    "angle": np.pi / 2, "offset": 630.0, "sweep": 200.0,
-    "npoints": [64, 64], "zerofill": [256, 256], "spins": ["1H"], "axis_units": "ppm",
+    "angle": np.radians(angle), "offset": offset, "sweep": sweep,
+    "npoints": [n_points, n_points], "zerofill": [zerofill, zerofill], "spins": ["1H"], "axis_units": "ppm",
 }
 fid = spynach.liquid(spin_system, spynach.cosy, pars, "nmr")
 fid = spynach.apodisation(fid, [("sqcos",), ("sqcos",)])
@@ -316,28 +365,40 @@ axis, xlabel = axis_1d(spin_system, {**pars, "zerofill": pars["zerofill"][0]})
 print(f"{spin_system.basis.nstates} Liouville states, FID {fid.shape}, spectrum {spectrum.shape}")
 
 # 2D contour plot of the real part, F1 along the rows
-show_image(spectrum.real.T, axis, axis, title="COSY-90", xlabel="F2: " + xlabel, ylabel="F1: " + xlabel)
+show_image(spectrum.real.T, axis, axis, title=f"COSY-{angle:g}", xlabel="F2: " + xlabel, ylabel="F1: " + xlabel)
 </script>
 
 <script type="text/plain" class="example" id="ex-epr-pepper" data-group="EPR (EasySpyn)" data-title="Nitroxide powder spectrum (pepper)">
 import numpy as np
 import easyspyn as es
 
-# A nitroxide: rhombic g, 14N hyperfine in MHz, peak-to-peak line width in mT
-nitroxide = {"g": [2.0088, 2.0061, 2.0027], "Nucs": "14N", "A": [16, 16, 86], "lwpp": 0.3}
-exp = {"mwFreq": 9.5, "Range": [330, 350], "nPoints": 1024}
+# --- Sample: a nitroxide ---
+g = [2.0088, 2.0061, 2.0027]  # GUI: g values | - | Principal values of the g tensor (gx, gy, gz); the free electron has 2.0023 | 1.9..2.2
+A_n14 = [16.0, 16.0, 86.0]  # GUI: 14N hyperfine | MHz | Principal values of the 14N hyperfine tensor; the large one lies along the N-O pi orbital | 1..200
+lwpp = 0.3  # GUI: Line width | mT | Peak-to-peak width of the derivative lines, Gaussian; the broadening needs it to exceed the field step (width / points) | 0.05..3
 
-# The same spectrum by full matrix diagonalisation and by second-order perturbation theory
+# --- Experiment: continuous-wave EPR ---
+mw_freq = 9.5  # GUI: Microwave frequency | GHz | Spectrometer frequency; X band is about 9.5, Q band 34 | 1..100
+field_center = 340.0  # GUI: Field centre | mT | Centre of the swept magnetic field; X band nitroxides sit near 340 | 100..1500
+field_width = 20.0  # GUI: Sweep width | mT | Width of the swept field range | 5..100
+n_points = 1024  # GUI: Points | - | Number of field points of the spectrum | 128..4096
+other_method = "perturb2"  # GUI: Compared with | - | Second method for the resonance fields, plotted against matrix diagonalisation | perturb1, perturb2
+
+# A nitroxide: rhombic g, 14N hyperfine in MHz, peak-to-peak line width in mT
+nitroxide = {"g": g, "Nucs": "14N", "A": A_n14, "lwpp": lwpp}
+exp = {"mwFreq": mw_freq, "Range": [field_center - field_width / 2, field_center + field_width / 2], "nPoints": n_points}
+
+# The same spectrum by full matrix diagonalisation and by perturbation theory
 matrix = es.pepper(nitroxide, exp, {"FuzzLevel": 0})
-perturb = es.pepper(nitroxide, exp, {"FuzzLevel": 0, "Method": "perturb2"})
+perturb = es.pepper(nitroxide, exp, {"FuzzLevel": 0, "Method": other_method})
 
 print("transitions:", matrix.info["Transitions"].tolist(), " orientations:", matrix.info["nOrientations"])
 difference = np.abs(matrix.spec - perturb.spec).max() / np.abs(matrix.spec).max()
-print(f"matrix diagonalisation and second-order perturbation theory differ by {difference:.1%}")
+print(f"matrix diagonalisation and {other_method} differ by {difference:.1%}")
 show_spectrum(
     [matrix.spec, perturb.spec + 0.15 * matrix.spec.max()], matrix.x, invert=False,
-    title="Nitroxide powder spectrum at X band", xlabel="B / mT", ylabel="dA/dB",
-    names=["matrix diagonalisation", "2nd-order perturbation (offset)"],
+    title="Nitroxide powder spectrum", xlabel="B / mT", ylabel="dA/dB",
+    names=["matrix diagonalisation", other_method + " (offset)"],
 )
 </script>
 
@@ -387,12 +448,21 @@ show_spectrum(
 import numpy as np
 import easyspyn as es
 
-# A weakly coupled 14N near exact cancellation: hyperfine and quadrupole in MHz
-weak_n14 = {"Nucs": "14N", "A": [-1, -1, 2], "Q": [-1, -1, 2]}
+# --- Sample: a weakly coupled 14N near exact cancellation ---
+A = [-1.0, -1.0, 2.0]  # GUI: Hyperfine | MHz | Principal values of the 14N hyperfine tensor; near cancellation with the Larmor frequency gives strong modulation | -10..10
+Q = [-1.0, -1.0, 2.0]  # GUI: Quadrupole | MHz | Principal values of the 14N nuclear quadrupole tensor | -5..5
+
+# --- Experiment: three-pulse ESEEM ---
+field = 350.0  # GUI: Magnetic field | mT | Static field of the experiment | 100..1500
+tau = 0.1  # GUI: Pulse separation tau | us | Fixed delay between the first and the second pulse | 0.05..1
+dt = 0.01  # GUI: Time step | us | Increment of T; its inverse is the width of the modulation spectrum | 0.005..0.05
+n_points = 512  # GUI: Points | - | Number of T increments, which sets the frequency resolution | 128..1024
+
+weak_n14 = {"Nucs": "14N", "A": A, "Q": Q}
 
 # Three-pulse ESEEM with ideal pulses: tau fixed, T incremented
-three_pulse = es.saffron(weak_n14, {"Field": 350, "Sequence": "3pESEEM", "dt": 0.01, "nPoints": 512, "tau": 0.1})
-nu_n = es.larmorfrq("14N", 350)[0, 0]
+three_pulse = es.saffron(weak_n14, {"Field": field, "Sequence": "3pESEEM", "dt": dt, "nPoints": n_points, "tau": tau})
+nu_n = es.larmorfrq("14N", field)[0, 0]
 
 print(f"time axis starts at tau + T = {three_pulse.x[0]:g} us; 14N Larmor frequency {nu_n:.3f} MHz")
 
@@ -744,7 +814,9 @@ axis, xlabel = axis_1d(spin_system, pars)
 show_spectrum(spectrum, axis, title="CSA powder, rep_2ang_12800pts_sph", xlabel=xlabel)
 </script>
 
-<script>
+<script type="module">
+import { parseParams, setParam, validate } from "./assets/playground-params.js";
+
 const statusEl = document.querySelector("#status");
 const editor = document.querySelector("#editor");
 const exampleSel = document.querySelector("#example");
@@ -790,6 +862,220 @@ function exampleSource(id) {
 function loadExample(id) {
   editor.value = exampleSource(id);
   dirty = false;
+  defaults = new Map(parseParams(editor.value).map((p) => [p.name, p]));
+  refreshParams();
+}
+
+// The Parameters view: a form generated from the "GUI:" comments of the source (assets/playground-params.js).
+// The source stays the only state: a form edit rewrites one literal in the editor, an edit in the editor
+// regenerates the form.
+const modesEl = document.querySelector("#modes");
+const paramsEl = document.querySelector("#params");
+let defaults = new Map();
+let mode = "code";
+let liveUpdate = false;
+let pendingRun = false;
+let paramTimer = null;
+let liveTimer = null;
+
+function currentExample() {
+  return document.getElementById(exampleSel.dataset.current || exampleSel.value);
+}
+
+// What is shown; examples without parameters always show the code, without forgetting the chosen view
+function applyMode(shown) {
+  modesEl.querySelectorAll("button").forEach((b) => b.setAttribute("aria-checked", String(b.dataset.mode === shown)));
+  paramsEl.hidden = shown === "code";
+  paramsEl.classList.toggle("only", shown === "params");
+  editor.hidden = shown === "params";
+}
+
+function setMode(next) {
+  mode = next;
+  applyMode(mode);
+  try { localStorage.setItem("playground-mode", mode); } catch (e) { /* private window: not remembered */ }
+}
+
+function fieldValue(param, inputs) {
+  if (param.kind === "list") return inputs.map((i) => (i.value === "" ? NaN : Number(i.value)));
+  if (param.kind === "bool") return inputs[0].checked;
+  if (param.kind === "choice") return inputs[0].value;
+  return inputs[0].value === "" ? NaN : Number(inputs[0].value);
+}
+
+function renderParams() {
+  const params = parseParams(editor.value);
+  const none = params.length === 0;
+  modesEl.dataset.empty = String(none);
+  modesEl.querySelectorAll("button:not([data-mode='code'])").forEach((b) => {
+    b.disabled = none;
+    b.title = none ? "This example has no parameters; edit the code" : "";
+  });
+  if (none) {
+    paramsEl.replaceChildren();
+    applyMode("code");
+    return;
+  }
+  applyMode(mode);
+  const bar = document.createElement("div");
+  bar.className = "bar";
+  const live = document.createElement("label");
+  const liveBox = document.createElement("input");
+  liveBox.type = "checkbox";
+  liveBox.checked = liveUpdate && !currentExample().hasAttribute("data-slow");
+  liveBox.disabled = currentExample().hasAttribute("data-slow");
+  liveBox.addEventListener("change", () => { liveUpdate = liveBox.checked; });
+  live.append(liveBox, liveBox.disabled ? "Update on change (too slow here)" : "Update on change");
+  const resetAll = document.createElement("button");
+  resetAll.type = "button";
+  resetAll.className = "btn";
+  resetAll.textContent = "Reset all";
+  resetAll.addEventListener("click", () => {
+    let source = editor.value;
+    for (const p of params) {
+      const d = defaults.get(p.name);
+      if (d && p.editable) source = setParam(source, p.name, d.value, d);
+    }
+    editor.value = source;
+    afterParamEdit();
+  });
+  bar.append(live, resetAll);
+  const nodes = [bar];
+  let section = null;
+  for (const p of params) {
+    if (p.section !== section) {
+      section = p.section;
+      if (section) {
+        const h = document.createElement("h3");
+        h.textContent = section;
+        nodes.push(h);
+      }
+    }
+    nodes.push(paramRow(p));
+  }
+  paramsEl.replaceChildren(...nodes);
+}
+
+function paramRow(p) {
+  const row = document.createElement("div");
+  row.className = "param";
+  const head = document.createElement("div");
+  head.className = "row";
+  const id = "param-" + p.name;
+  const name = document.createElement("label");
+  name.className = "name";
+  name.htmlFor = id;
+  name.textContent = p.label;
+  const names = document.createElement("div");
+  names.className = "names";
+  names.append(name);
+  head.append(names);
+  const desc = document.createElement("p");
+  desc.className = "desc";
+  desc.id = id + "-desc";
+  desc.textContent = p.description + (p.min !== null ? ` (${p.min} to ${p.max})` : "");
+  const inputs = [];
+  if (!p.editable) {
+    const fixed = document.createElement("span");
+    fixed.className = "fixed";
+    fixed.textContent = "edited in the code";
+    head.append(fixed);
+  } else if (p.kind === "bool") {
+    const box = document.createElement("input");
+    box.type = "checkbox";
+    box.id = id;
+    box.checked = p.value;
+    inputs.push(box);
+    head.append(box);
+  } else if (p.kind === "choice") {
+    const select = document.createElement("select");
+    select.id = id;
+    for (const c of p.choices) select.append(new Option(c, c));
+    select.value = p.value;
+    inputs.push(select);
+    head.append(select);
+  } else {
+    const values = p.kind === "list" ? p.value : [p.value];
+    values.forEach((v, i) => {
+      const input = document.createElement("input");
+      input.type = "number";
+      input.id = i === 0 ? id : id + "-" + i;
+      input.value = String(v);
+      input.step = String(p.step);
+      if (p.min !== null) input.min = String(p.min);
+      if (p.max !== null) input.max = String(p.max);
+      input.setAttribute("aria-label", p.kind === "list" ? `${p.label} ${i + 1}` : p.label);
+      inputs.push(input);
+      head.append(input);
+    });
+    if (p.kind === "number" && p.min !== null && p.max !== null) {
+      const slider = document.createElement("input");
+      slider.type = "range";
+      slider.min = String(p.min);
+      slider.max = String(p.max);
+      slider.step = String(p.step);
+      slider.value = String(p.value);
+      slider.setAttribute("aria-label", p.label + " slider");
+      slider.addEventListener("input", () => { inputs[0].value = slider.value; inputs[0].dispatchEvent(new Event("input")); });
+      inputs[0].addEventListener("input", () => { if (inputs[0].value !== "") slider.value = inputs[0].value; });
+      head.append(slider);
+    }
+  }
+  if (p.unit && p.unit !== "-") {
+    const unit = document.createElement("span");
+    unit.className = "unit";
+    unit.textContent = p.unit;
+    names.append(unit);
+  }
+  const reset = document.createElement("button");
+  reset.type = "button";
+  reset.className = "reset";
+  reset.textContent = "reset";
+  reset.setAttribute("aria-label", "Reset " + p.label);
+  const d = defaults.get(p.name);
+  const isDefault = () => !d || JSON.stringify(fieldValue(p, inputs)) === JSON.stringify(d.value);
+  reset.hidden = !p.editable || isDefault();
+  reset.addEventListener("click", () => {
+    editor.value = setParam(editor.value, p.name, d.value, d);
+    afterParamEdit();
+  });
+  head.append(reset);
+  row.append(head, desc);
+  inputs.forEach((input) => {
+    input.setAttribute("aria-describedby", desc.id);
+    const onEdit = () => {
+      const value = fieldValue(p, inputs);
+      const message = validate(p, value);
+      input.classList.toggle("invalid", Boolean(message));
+      desc.classList.toggle("err", Boolean(message));
+      desc.textContent = message ? `${p.label}: ${message}` : p.description + (p.min !== null ? ` (${p.min} to ${p.max})` : "");
+      if (message) return;
+      editor.value = setParam(editor.value, p.name, value, d);
+      reset.hidden = isDefault();
+      afterParamEdit(false);
+    };
+    input.addEventListener("input", onEdit);
+    if (input.type === "checkbox" || input.tagName === "SELECT") input.addEventListener("change", onEdit);
+  });
+  return row;
+}
+
+// The editor changed because of the form: mark the run as out of date and, if asked, run again shortly
+function afterParamEdit(rebuild = true) {
+  dirty = true;
+  autoRun = false;
+  runBtn.classList.add("stale");
+  runBtn.title = "The parameters changed since the last run";
+  if (rebuild) renderParams();
+  if (liveUpdate && !currentExample().hasAttribute("data-slow")) {
+    clearTimeout(liveTimer);
+    liveTimer = setTimeout(() => { if (runBtn.disabled) pendingRun = true; else run(); }, 400);
+  }
+}
+
+function refreshParams() {
+  clearTimeout(paramTimer);
+  paramTimer = setTimeout(renderParams, 0);
 }
 
 let clock = null;
@@ -899,6 +1185,7 @@ function onWorker(event) {
       log("\nFinished in " + seconds + " s.\n");
       setPhase("done", "Finished in " + seconds + " s");
     }
+    if (pendingRun) { pendingRun = false; run(); }
     return;
   }
   if (msg.type === "error" || msg.type === "fatal") {
@@ -913,6 +1200,8 @@ function run() {
   runId += 1;
   startedAt = performance.now();
   progressNote = "";
+  runBtn.classList.remove("stale");
+  runBtn.title = "";
   consoleEl.textContent = "";
   if (versionNote) log(versionNote + "\n");
   plotsEl.replaceChildren();
@@ -938,7 +1227,16 @@ exampleSel.addEventListener("change", () => {
   exampleSel.dataset.current = exampleSel.value;
   loadExample(exampleSel.value);
 });
-editor.addEventListener("input", () => { dirty = true; autoRun = false; });
+editor.addEventListener("input", () => {
+  dirty = true;
+  autoRun = false;
+  clearTimeout(paramTimer);
+  paramTimer = setTimeout(renderParams, 250);
+});
+modesEl.addEventListener("click", (event) => {
+  const button = event.target.closest("button[data-mode]");
+  if (button && !button.disabled) setMode(button.dataset.mode);
+});
 editor.addEventListener("keydown", (event) => {
   if (event.key === "Tab") {
     event.preventDefault();
@@ -1400,6 +1698,11 @@ if (location.protocol === "file:") document.querySelector("#file-warn").hidden =
 const first = exampleFromHash() || examples[0].id;
 exampleSel.value = first;
 exampleSel.dataset.current = first;
+// The view comes from ?view=code|params|both, else from the last choice (links can open the Parameters view)
+try {
+  const stored = new URLSearchParams(location.search).get("view") || localStorage.getItem("playground-mode");
+  if (["code", "params", "both"].includes(stored)) mode = stored;
+} catch (e) { /* not remembered */ }
 loadExample(first);
 bootWorker();
 window.addEventListener("hashchange", () => {

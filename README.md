@@ -148,7 +148,9 @@ Add-ons originating here, with no Spinach counterpart, each with an example in t
 - **Browser-based execution**: [try.html](https://ajerschow.github.io/spynach/try.html)
   runs Spynach, `easyspyn` and `ctps` in the browser through Pyodide, with
   nothing installed, and plots spectra, FIDs and 2D contours from an editor
-  preloaded with NMR, EPR and pathway examples (contributed by Moritz Zaiss).
+  preloaded with NMR, EPR and pathway examples (contributed by Moritz Zaiss). Its
+  Parameters view (Code | Parameters | Both) shows the main settings of an example
+  as a form with units and descriptions, kept in step with the code.
 - **`easyspyn`**, a separate package (`import easyspyn`, depends on `spynach`,
   never the reverse) that ports [EasySpin](https://easyspin.org) to Python
   with EasySpin's interface: the foundation (spin systems, `sop`, `stev`,
@@ -255,7 +257,11 @@ runner by `tests/unit/test_playground_runner.py`; `scripts/pyodide-examples.mjs`
 runs them in Pyodide itself under Node (`npm install pyodide` in a scratch
 directory), which is the only way to catch what differs in 32-bit WebAssembly:
 NumPy's index type is int32 there, so integer arrays used as repeat counts or
-`bincount` indices must be `np.intp`, never `np.int64`. The hero figure is
+`bincount` indices must be `np.intp`, never `np.int64`. The Parameters view
+reads `# GUI: label | unit | description | range` comments on the assignments at
+the top of an example (`assets/playground-params.js`, documented in its header);
+`tests/unit/test_playground_params.py` checks that each parameter is documented
+and that the example runs with it at both ends of its range. The hero figure is
 `assets/Spynoza.jpg`; `assets/liouvillian-strychnine*.png` are sparsity
 patterns of the strychnine NOESY Liouvillian rendered by
 `scripts/landing-figure.py` (needs Pillow and Matplotlib, which the
