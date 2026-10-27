@@ -4,18 +4,20 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "spynach"
-version = "0.3.0"
+version = "0.3.1"
 description = "Python reimplementation of the Spinach spin dynamics kernel"
 license = "MIT"
 license-files = ["LICENSE"]
 authors = [{name = "Alexej Jerschow"}]
 requires-python = ">=3.11"
-dependencies = ["numpy>=1.26", "scipy>=1.11", "h5py>=3.10"]
+# Numba is a default dependency: the sparse kernels (spynach) and the spectrum kernels (easyspyn) are compiled with it;
+# without it (SPYNACH_NUMBA=0, EASYSPYN_NUMBA=0, an interpreter Numba does not support) NumPy and SciPy run instead.
+dependencies = ["numpy>=1.26", "scipy>=1.11", "h5py>=3.10", "numba>=0.60; platform_python_implementation == 'CPython'"]
 
 [project.optional-dependencies]
 test = ["pytest>=8"]
 plot = ["plotly>=6"]
-fast = ["numba>=0.60"]
+fast = []  # kept so that "spynach[fast]" still installs; Numba is a default dependency now
 compare = ["spynach[plot]", "kaleido>=1.0", "matplotlib>=3.8"]
 docs = ["spynach[plot]", "kaleido>=1.0", "matplotlib>=3.8", "jupyterlab>=4", "ipykernel>=6", "nbclient>=0.10", "nbformat>=5.9"]
 dev = ["spynach[test]", "ruff>=0.14"]

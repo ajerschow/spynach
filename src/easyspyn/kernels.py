@@ -1,9 +1,9 @@
 """Spectrum-building kernels: EasySpin's C functions lisum1i, projecttriangles and projectzones.
 
-Each kernel has a pure NumPy version and, when Numba is installed (the
-``fast`` extra), a compiled loop that reproduces the MEX bit for bit at the
-same speed; the NumPy versions are 5-12x slower and serve where Numba is
-unavailable (the browser page). ``lisum1i`` adds line shapes to a spectrum
+Each kernel has a pure NumPy version and, when Numba is installed (a default
+dependency; ``EASYSPYN_NUMBA=0`` switches it off), a compiled loop that
+reproduces the MEX bit for bit at the same speed; the NumPy versions are
+5-12x slower and serve where Numba is unavailable (the browser page). ``lisum1i`` adds line shapes to a spectrum
 by interpolating from an *integrated* template, ``projecttriangles`` and
 ``projectzones`` project the resonance positions of triangles (or
 segments, for axial grids) of an orientation grid onto the field axis.
@@ -17,9 +17,13 @@ EasySpin authors, by original file (contributors to the file up to EasySpin 6.0.
 
 from __future__ import annotations
 
+import os
+
 import numpy as np
 
 try:
+    if os.environ.get("EASYSPYN_NUMBA", "1") == "0":
+        raise ImportError("compiled kernels switched off by EASYSPYN_NUMBA=0")
     from numba import njit
 
     HAVE_NUMBA = True

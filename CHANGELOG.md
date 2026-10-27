@@ -2,9 +2,15 @@
 
 Releases are tagged `vX.Y.Z` on GitHub; the version is `spynach.__version__`.
 
+## 0.3.1 - 2026-10-27
+
+- Numba is installed by default: `pip install easyspyn` (and the git install of `spynach`) bring it, so the compiled
+  kernels of both packages are used without the `fast` extra, which stays as an empty alias. It is skipped on
+  interpreters other than CPython, and `EASYSPYN_NUMBA=0` (new) or `SPYNACH_NUMBA=0` force the NumPy and SciPy code.
+- Quick-start instructions are prominent on the landing page and at the top of the README: `pip install easyspyn`, the git install of Spynach, and the options that need no installation (the browser playground, Colab notebooks for EPR and NMR, Binder via `.binder/requirements.txt`).
+
 ## 0.3.0 - 2026-10-26
 
-- Quick-start instructions are prominent on the landing page and at the top of the README: `pip install easyspyn`, the git install of Spynach, and the options that need no installation (the browser playground, Colab notebooks for EPR and NMR, Binder via `.binder/requirements.txt`).
 - The EasySpin port is called EasySpyn (formerly EPReasy, `epreasy`) everywhere: the import name and the PyPI
   distribution are both `easyspyn`, the source is `src/easyspyn`, the tests `tests/easyspyn`, the guides
   `docs/easyspyn*.md`, and the fixture variable `EASYSPYN_FIXTURES` (the old `EPREASY_FIXTURES` is still read).

@@ -5,7 +5,9 @@ and co-workers (MIT licence), keeping EasySpin's interface: spin systems as dict
 names, fields in mT, couplings in MHz, 1-based spin numbers.
 
     pip install easyspyn
-    pip install "easyspyn[fast]"  # adds Numba for the line-summation and projection kernels
+
+Numba is installed with it and compiles the line-summation and projection kernels; set `EASYSPYN_NUMBA=0` to use the
+(5 to 12 times slower) NumPy versions instead.
 
 Nothing to install? Run EasySpyn in the browser (https://ajerschow.github.io/spynach/try.html), in Colab
 (https://colab.research.google.com/github/ajerschow/spynach/blob/main/docs/colab/easyspyn-quick-start.ipynb) or on Binder

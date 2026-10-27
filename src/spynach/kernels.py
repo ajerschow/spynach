@@ -14,10 +14,10 @@ no intermediate matrix is built:
 - :func:`taylor_term`: one term of the reordered Taylor series of ``step``, fused with the running sum and
   the convergence test.
 
-Numba is optional (the ``fast`` extra). Without it, and for small problems where thread start-up costs more
-than it saves, every function runs the plain NumPy/SciPy code that the kernels reproduce; ``HAVE_NUMBA`` tells
-which is in use, and ``SPYNACH_NUMBA=0`` switches the compiled path off. The rounding is Spinach's (MATLAB's)
-round half away from zero, applied separately to the real and imaginary parts.
+Numba is a default dependency (the ``fast`` extra is kept as an alias). Without it, and for small problems where
+thread start-up costs more than it saves, every function runs the plain NumPy/SciPy code that the kernels reproduce;
+``HAVE_NUMBA`` tells which is in use, and ``SPYNACH_NUMBA=0`` switches the compiled path off. The rounding is
+Spinach's (MATLAB's) round half away from zero, applied separately to the real and imaginary parts.
 
 Each compiled row accumulates its products in the order of SciPy's ``csr_matmat`` (the entries of the row of
 ``A`` in storage order, then the entries of the row of ``B``), so results agree with SciPy to the last bit

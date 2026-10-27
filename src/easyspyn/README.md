@@ -39,8 +39,8 @@ with EasySpin [`docs/coming-from-easyspin.md`](../../docs/coming-from-easyspin.m
   perturbation positions, equivalent nuclei, fast-motion widths, frequency
   sweeps), `fastmotion`, `equivcouple`.
 - `easyspyn.kernels`: `lisum1i`, `projecttriangles`, `projectzones`, the MEX
-  kernels in NumPy with a Numba path (`fast` extra) that is bit-exact with
-  the MEX.
+  kernels in NumPy with a Numba path (installed by default, `EASYSPYN_NUMBA=0` switches
+  it off) that is bit-exact with the MEX.
 - `easyspyn.interp`: `gridinterp`, `esspline1d`, `esspline2d`;
   `easyspyn.symmetry`: `hamsymm`; `easyspyn.processing`: `fieldmod`;
   `easyspyn.components`: the loop over component systems
@@ -135,7 +135,7 @@ them current without network access. The lists show who changed a file, not who 
 ## On PyPI
 
 EasySpyn is published on PyPI as `easyspyn` (`pip install easyspyn`; the import name is the same; the
-distribution needs only NumPy and SciPy, with `easyspyn[fast]` adding Numba). `python scripts/build_easyspyn.py`
+distribution needs NumPy, SciPy and Numba, which `EASYSPYN_NUMBA=0` switches off). `python scripts/build_easyspyn.py`
 builds it into `dist/easyspyn/` from a staged copy of this package and `packaging/easyspyn/`; the version there
 is kept equal to the repository's by `tests/unit/test_version.py`.
 

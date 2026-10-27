@@ -6,14 +6,15 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "easyspyn"
-version = "0.3.0"  # keep equal to easyspyn.__version__ and the repository version (tests/unit/test_version.py)
+version = "0.3.1"  # keep equal to easyspyn.__version__ and the repository version (tests/unit/test_version.py)
 description = "EasySpin's EPR simulators in Python (EasySpyn): cw EPR, ENDOR, slow motion, pulse EPR, fitting"
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
 authors = [{name = "Alexej Jerschow"}]
 requires-python = ">=3.11"
-dependencies = ["numpy>=1.26", "scipy>=1.11"]
+# Numba compiles the spectrum kernels; EASYSPYN_NUMBA=0, or an interpreter Numba does not support, uses NumPy instead
+dependencies = ["numpy>=1.26", "scipy>=1.11", "numba>=0.60; platform_python_implementation == 'CPython'"]
 keywords = ["EPR", "ESR", "EasySpin", "spectral simulation", "ENDOR", "spin dynamics"]
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -24,7 +25,7 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
-fast = ["numba>=0.60"]
+fast = []  # kept so that "easyspyn[fast]" still installs; Numba is a default dependency now
 # the parity helpers (easyspyn.oracle) read EasySpin reference data through spynach
 test = ["pytest>=8", "spynach", "h5py>=3.10"]
 

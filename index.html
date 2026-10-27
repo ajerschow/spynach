@@ -62,7 +62,7 @@ pip install easyspyn
 # NMR: Spinach's kernel (and ctps)
 pip install "spynach @ \
   git+https://github.com/ajerschow/spynach.git"</code></pre>
-    <p>EasySpyn is on PyPI (<code>pip install "easyspyn[fast]"</code> adds Numba); Spynach installs from GitHub and also provides <code>ctps</code>. <a href="#install">More install options</a></p>
+    <p>EasySpyn is on PyPI and installs Numba, which compiles its kernels; Spynach installs from GitHub and also provides <code>ctps</code>. <a href="#install">More install options</a></p>
   </div>
 </div>
 
@@ -99,7 +99,7 @@ pip install "spynach @ \
 <section id="install">
   <header><span class="eyebrow">Install</span><h2>Install</h2></header>
   <div>
-    <p>Python 3.11 or newer. <code>pip install easyspyn</code> installs the EPR package alone from PyPI. The GitHub distribution installs <code>spynach</code>, <code>easyspyn</code> and <code>ctps</code>; the <code>fast</code> extra adds Numba, which threads the sparse kernels of Spynach and compiles EasySpin's, <code>docs</code> and <code>test</code> the notebooks and the test suite.</p>
+    <p>Python 3.11 or newer. <code>pip install easyspyn</code> installs the EPR package alone from PyPI. The GitHub distribution installs <code>spynach</code>, <code>easyspyn</code> and <code>ctps</code>; Numba comes with both, threading the sparse kernels of Spynach and compiling EasySpyn's (<code>SPYNACH_NUMBA=0</code> and <code>EASYSPYN_NUMBA=0</code> switch it off); the <code>docs</code> and <code>test</code> extras add the notebooks and the test suite.</p>
 <pre><code>pip install easyspyn
 
 # Spynach with easyspyn and ctps, from GitHub

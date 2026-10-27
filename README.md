@@ -25,7 +25,7 @@ runs Spynach, `easyspyn` and `ctps` in the browser through Pyodide
 **Install (Python 3.11 or newer):**
 
 ```
-pip install easyspyn   # EPR: EasySpin's simulators, from PyPI ("easyspyn[fast]" adds Numba)
+pip install easyspyn   # EPR: EasySpin's simulators, from PyPI (installs Numba for the fast kernels)
 pip install "spynach @ git+https://github.com/ajerschow/spynach.git"   # NMR: Spinach's kernel; also installs easyspyn and ctps
 ```
 

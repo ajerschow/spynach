@@ -42,8 +42,8 @@ The `docs` extra adds Plotly, JupyterLab, and what is needed to run the
 notebooks; only plots and notebooks need it (`.[plot]` installs Plotly
 alone). Start JupyterLab with `jupyter lab docs/notebooks/`.
 
-Large Liouville-space calculations run faster with Numba: the `fast` extra
-(`python -m pip install -e ".[fast]"`) compiles the sparse products of the
+Large Liouville-space calculations run faster with Numba, which is installed
+with Spynach: it compiles the sparse products of the
 exponential propagator, the Taylor stepping and the rounding to the grid
 (`spynach.kernels`) and runs them on all cores, with the same numbers; without
 it, or for small problems, the plain NumPy and SciPy code runs. Numba's
