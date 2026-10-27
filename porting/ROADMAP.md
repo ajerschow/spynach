@@ -216,7 +216,9 @@ propagator caches.
 
 Symmetry, `doublerot`/`floquet`/`gridfree`, more sequences and shaped
 pulses, the polyadic generator container for imaging-scale problems, the
-GPU backend (`porting/gpu-notes.md`), the JAX layer.
+GPU backend (`porting/gpu-notes.md`), the JAX layer. Pathway-aware state-space
+restriction from phase-cycle selection (exploratory, not scheduled, see
+`porting/pathway-notes.md`).
 
 # CTPS: the coherence-pathway module `ctps` is separate from this roadmap; see src/ctps/README.md.
 
