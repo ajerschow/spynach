@@ -135,7 +135,8 @@ figure.plot figcaption { font-family: var(--mono); font-size: 0.75rem; color: va
   <p>Spynach, EasySpyn and ctps running in Pyodide. Pick an NMR, EPR or pathway example, edit it, run it. Every calculation goes to a web worker, so the page stays responsive.</p>
 </header>
 <div id="status" data-phase="loading">Starting…</div>
-<p class="banner" id="file-warn" hidden>This page needs a web server rooted at the repository, not a file:// address, so the worker can load <code>src/</code>.</p>
+<p class="banner" id="file-warn" hidden>This page needs a web server rooted at the repository, not a file:// address, so the worker and the page scripts can load. Run <code>python3 -m http.server</code> in the repository folder and open <code>http://localhost:8000/try.html</code>.</p>
+<script>if (location.protocol === "file:") document.querySelector("#file-warn").hidden = false;</script>
 <div class="app">
   <section class="pane editor" aria-label="Editor">
     <div class="toolbar">
@@ -1694,7 +1695,6 @@ function nearest(map, xVal) {
   return y[best];
 }
 
-if (location.protocol === "file:") document.querySelector("#file-warn").hidden = false;
 const first = exampleFromHash() || examples[0].id;
 exampleSel.value = first;
 exampleSel.dataset.current = first;
