@@ -30,6 +30,7 @@ ROOT = Path(__file__).resolve().parents[1]
 GITHUB = "https://github.com/ajerschow/spynach"
 NBVIEWER = "https://nbviewer.org/github/ajerschow/spynach/blob/main/docs/notebooks"
 
+SITE = "https://ajerschow.github.io/spynach/"
 PAGES = ("index.html", "spinach.html", "easyspin.html", "extras.html", "docs.html", "try.html")
 NAV = (
     ("spinach.html", "Spinach port"),
@@ -93,6 +94,36 @@ def render_nav(page: str) -> str:
         current = ' aria-current="page"' if href == page else ""
         items.append(f'  <a href="{href}"{current}>{label}</a>')
     return '<nav class="top" aria-label="Site">\n' + "\n".join(items) + "\n</nav>"
+
+
+# ---------------------------------------------------------------- head: icons and link previews
+def render_head(page: str, text: str) -> str:
+    """Icons and the Open Graph / Twitter tags that make a pasted link show a card; title and description come
+    from the page's own <title> and description meta, and the image URLs are absolute, as link crawlers need."""
+    title = re.search(r"<title>(.*?)</title>", text, flags=re.S).group(1)
+    desc = re.search(r'<meta name="description" content="(.*?)">', text, flags=re.S).group(1)
+    image = SITE + "assets/social-card.png"
+    alt = "Spynach: spin dynamics in Python, with a halftone spiral of coloured dots"
+    return "\n".join(
+        [
+            '<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">',
+            '<link rel="icon" href="assets/favicon-32.png" type="image/png" sizes="32x32">',
+            '<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">',
+            '<meta property="og:type" content="website">',
+            '<meta property="og:site_name" content="Spynach">',
+            f'<meta property="og:title" content="{title}">',
+            f'<meta property="og:description" content="{desc}">',
+            f'<meta property="og:url" content="{SITE}{"" if page == "index.html" else page}">',
+            f'<meta property="og:image" content="{image}">',
+            '<meta property="og:image:width" content="1200">',
+            '<meta property="og:image:height" content="630">',
+            f'<meta property="og:image:alt" content="{alt}">',
+            '<meta name="twitter:card" content="summary_large_image">',
+            f'<meta name="twitter:title" content="{title}">',
+            f'<meta name="twitter:description" content="{desc}">',
+            f'<meta name="twitter:image" content="{image}">',
+        ]
+    )
 
 
 # ---------------------------------------------------------------- timing tables
@@ -271,6 +302,7 @@ def rendered_worker(text: str) -> str:
 # ---------------------------------------------------------------- pages
 def rendered_page(page: str, text: str) -> str:
     text = span(text, "nav", render_nav(page), page)
+    text = span(text, "head", render_head(page, text), page)
     if page == "spinach.html":
         text = span(text, "timing-spinach", render_timing_spinach(), page)
     if page == "easyspin.html":
