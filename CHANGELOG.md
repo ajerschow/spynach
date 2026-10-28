@@ -5,7 +5,7 @@ Releases are tagged `vX.Y.Z` on GitHub; the version is `spynach.__version__`.
 ## Unreleased
 
 - Landing page: the hero is a slidable gallery; the first figure is a live animation of interfering spin-phase spirals
-  (`assets/hero-gallery.js`), the second the Spynoza picture. Without WebGL or with reduced motion the picture stays as before.
+  (`assets/hero-gallery.js`), the second the Spynoza picture. Without WebGL or with reduced motion the first slide is a still frame of the animation (`assets/spin-vortex-frame.png`).
 
 ## 0.4.0 - 2026-10-27
 

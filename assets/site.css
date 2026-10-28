@@ -123,6 +123,7 @@ table.timing .note { display: block; margin-top: 0.15rem; }
 .gallery-track::-webkit-scrollbar { display: none; }
 .gallery-slide { flex: 0 0 100%; min-width: 0; scroll-snap-align: start; }
 .gallery-slide canvas { display: block; width: 100%; background: #090a0d; border-radius: 6px; cursor: pointer; }
+.gallery-slide .gallery-still { display: block; width: 100%; height: auto; border-radius: 6px; background: #090a0d; }
 .gallery-caption { font-size: 0.85rem; color: var(--muted); margin-top: 0.5rem; font-family: var(--mono); }
 .gallery-btn { position: absolute; top: 50%; transform: translateY(-50%); width: 2.75rem; height: 2.75rem; border: 0; border-radius: 50%;
   background: rgba(10, 12, 14, 0.55); color: #fff; font-size: 1.6rem; line-height: 1; cursor: pointer; }

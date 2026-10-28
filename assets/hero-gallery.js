@@ -10,11 +10,13 @@
   const figure = document.querySelector('.hero figure');
   const img = figure && figure.querySelector('img');
   const caption = figure && figure.querySelector('figcaption');
-  if (!img || !caption || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (!img || !caption) return;
 
+  // The animation needs WebGL and a visitor who has not asked for reduced motion. Otherwise its slide shows a
+  // still frame of it, assets/spin-vortex-frame.png, so the gallery keeps both figures.
   const canvas = document.createElement('canvas');
-  const gl = canvas.getContext('webgl', { antialias: false });
-  if (!gl) return;
+  const gl = matchMedia('(prefers-reduced-motion: reduce)').matches ? null : canvas.getContext('webgl', { antialias: false });
+  let program = null;
 
   const vs = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
   const fs = `
@@ -81,18 +83,23 @@ void main(){
 
   gl_FragColor = vec4(col, 1.);
 }`;
+  const compile = () => {
   const shader = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return s; };
-  const program = gl.createProgram();
-  gl.attachShader(program, shader(gl.VERTEX_SHADER, vs));
-  gl.attachShader(program, shader(gl.FRAGMENT_SHADER, fs));
-  gl.linkProgram(program);
-  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) return;   // keep the static figure
+  const prog = gl.createProgram();
+  gl.attachShader(prog, shader(gl.VERTEX_SHADER, vs));
+  gl.attachShader(prog, shader(gl.FRAGMENT_SHADER, fs));
+  gl.linkProgram(prog);
+  if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) return false;
+  program = prog;
   gl.useProgram(program);
   gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
   const loc = gl.getAttribLocation(program, 'p');
   gl.enableVertexAttribArray(loc);
   gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+  return true;
+  };
+  const animated = Boolean(gl) && compile();
 
   // ---- the gallery: the animation first, the existing picture second ----
   const el = (tag, cls, attrs = {}) => Object.assign(document.createElement(tag), { className: cls }, attrs);
@@ -102,11 +109,20 @@ void main(){
   track.setAttribute('aria-label', 'Figures: animation and picture');
 
   const animSlide = el('div', 'gallery-slide');
-  canvas.setAttribute('role', 'img');
-  canvas.setAttribute('aria-label', 'Animated interference of rotating spin-phase spirals');
-  canvas.style.aspectRatio = String((img.naturalWidth && img.naturalHeight) ? img.naturalWidth / img.naturalHeight : 1397 / 1202);
-  animSlide.append(canvas, el('div', 'gallery-caption', {
-    textContent: 'Interference of rotating spin-phase spirals. Move the pointer to steer the centre; click to reverse one spiral.',
+  const alt = 'Interference of rotating spin-phase spirals, drawn as coloured dots: dot size is the signal amplitude and colour its phase';
+  let first;
+  if (animated) {
+    canvas.setAttribute('role', 'img');
+    canvas.setAttribute('aria-label', alt);
+    canvas.style.aspectRatio = '1397 / 1202';
+    first = canvas;
+  } else {
+    first = el('img', 'gallery-still', { src: 'assets/spin-vortex-frame.png', alt, width: 960, height: 826 });
+  }
+  animSlide.append(first, el('div', 'gallery-caption', {
+    textContent: animated
+      ? 'Interference of rotating spin-phase spirals. Move the pointer to steer the centre; click to reverse one spiral.'
+      : 'A frame of an animation of interfering spin-phase spirals; it moves in browsers with WebGL.',
   }));
 
   const imgSlide = el('div', 'gallery-slide');
@@ -160,6 +176,7 @@ void main(){
   mark();
 
   // ---- the animation ----
+  if (!animated) return;
   const U = n => gl.getUniformLocation(program, n);
   const uRes = U('res'), uT = U('t'), uDpr = U('dpr'), uCtr = U('ctr'), uHand = U('hand');
   const dpr = Math.min(devicePixelRatio || 1, 2);
