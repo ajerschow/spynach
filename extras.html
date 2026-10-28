@@ -46,7 +46,7 @@
 <div class="lede-page">
   <span class="eyebrow">Extras</span>
   <h1>Beyond the ports</h1>
-  <p class="lede">Most of the repository is a port, checked stage by stage against the original. These are the parts that originated here: a module for coherence transfer pathway selection, the tooling that verifies both ports, and the ways the code reaches you without an installation.</p>
+  <p class="lede">Most of the repository is a port, checked stage by stage against the original. These are the parts that originated here: a module for coherence transfer pathway selection, relaxation resolved by mechanism, the tooling that verifies both ports, and the ways the code reaches you without an installation.</p>
   <div class="actions">
     <a class="btn primary" href="https://github.com/ajerschow/spynach/blob/main/docs/ctps.md">The ctps guide</a>
     <a class="btn" href="https://github.com/ajerschow/spynach/blob/main/docs/beyond-the-port.md">Beyond the port, with examples</a>
@@ -69,6 +69,14 @@
   </div>
 </section>
 
+<section id="relaxation">
+  <header><span class="eyebrow">Relaxation</span><h2>Relaxation pathways by mechanism</h2></header>
+  <div>
+    <p><code>spynach.relaxation_pathways</code> builds the Bloch-Redfield-Wangsness relaxation matrix of a spin system between collective product operators and splits every element into the dipolar, shielding-anisotropy, quadrupolar and anisotropic-J mechanisms and each cross-correlation between two of them, such as DD/CSA or CSA/Q. Each contribution comes as a rate and as an exact SymPy expression in the interaction strengths and the spectral density <i>J</i>(<i>&omega;</i>); <code>plot_pathways</code> draws the result as a chord diagram whose ribbon width is the rate and whose colour shows the mechanisms. SymPy is an optional dependency (<code>pip install "spynach[symbolic]"</code>), and importing <code>spynach</code> does not load it.</p>
+    <p>The <a href="https://github.com/ajerschow/spynach/blob/main/docs/relaxation-pathways.md">guide</a> works through 11BF4- with every mechanism, the zero-quantum space of the spin-3/2 boron, the secular forms, and a symmetry result: the boron quadrupole and shielding anisotropy do not cross-correlate with the fluorine mechanisms, because the second-rank terms cancel over the bonds of a tetrahedron. Checked against <code>spynach.relaxation</code> and against textbook rates. Contributed by Florin Teleanu; <a href="try.html#ex-pathways">try it in the browser</a>.</p>
+  </div>
+</section>
+
 <section id="verification">
   <header><span class="eyebrow">Verification</span><h2>Tooling behind both ports</h2></header>
   <div>
@@ -84,7 +92,7 @@
 <section id="docs">
   <header><span class="eyebrow">Documentation</span><h2>Executable guides, Colab, contributed notebooks</h2></header>
   <div>
-    <p>Each guide is a Markdown document whose code blocks run in the test suite, and a notebook generated from it with its outputs and interactive figures; the <a href="https://colab.research.google.com/github/ajerschow/spynach/blob/main/docs/colab/quick-start.ipynb">Colab quick start</a> installs Spynach in the browser and runs the two-spin example. Contributed notebooks, such as the triple-quantum build-up of a 23Na spin under quadrupolar relaxation, live in <code>user_py/</code> beside the contributed Spinach scripts in <code>user_ml/</code> and their translations. All guides are on the <a href="docs.html">documentation page</a>.</p>
+    <p>Each guide is a Markdown document whose code blocks run in the test suite, and a notebook generated from it with its outputs and interactive figures; the <a href="https://colab.research.google.com/github/ajerschow/spynach/blob/main/docs/colab/quick-start.ipynb">Colab quick start</a> installs Spynach in the browser and runs the two-spin example. Contributed notebooks, such as the triple-quantum build-up of a 23Na spin under quadrupolar relaxation, live in <code>user_py/</code> beside the contributed Spinach scripts in <code>user_ml/</code> and their translations. Another contributed notebook, by Florin Teleanu, is the <a href="https://nbviewer.org/github/ajerschow/spynach/blob/main/docs/notebooks/relaxation-pathways.ipynb">relaxation pathways</a> guide: the relaxation matrix of 11BF4- split by mechanism (dipolar, CSA, quadrupolar, anisotropic J) and their cross-correlations, with exact rate expressions and chord diagrams; <a href="try.html#ex-pathways">try it in the browser</a>. All guides are on the <a href="docs.html">documentation page</a>.</p>
   </div>
 </section>
 

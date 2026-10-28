@@ -290,7 +290,8 @@ container.
 - Florin Teleanu: Spinach scripts in `user_ml/`
   (two-site 7Li exchange at equilibrium, zero- to ultralow-field PF6⁻
   spectrum), translated in `examples/user_ml/` and used as comparison cases,
-  and the project page's hero figure (`assets/Spynoza.jpg`).
+  and the project page's hero figure (`assets/Spynoza.jpg`); and the relaxation pathways module
+  (`spynach.relaxation_pathways`, `docs/relaxation-pathways.md`, the `try.html#ex-pathways` example; pull request #2).
 - [Moritz Zaiss](https://github.com/mzaiss) (MRsources): the in-browser playground
   (`try.html`, `worker.js`, Spynach in Pyodide) and the orientation
   `progress` callback of `powder` and `singlerot` (pull request #1).
