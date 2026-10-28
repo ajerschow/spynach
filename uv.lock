@@ -671,7 +671,7 @@ wheels = [
 
 [[package]]
 name = "easyspyn"
-version = "0.4.0"
+version = "0.5.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "numba", marker = "platform_python_implementation == 'CPython'" },
@@ -680,9 +680,9 @@ dependencies = [
     { name = "scipy", version = "1.17.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
     { name = "scipy", version = "1.18.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/87/03/178db70f223e82ba76241a21751a5356452b400230e900bcbf06505dc86e/easyspyn-0.4.0.tar.gz", hash = "sha256:e55fceefca7d56ffe509a7475bbeb35da400164b47aeeaaad840d2b19b08e952", size = 151619, upload-time = "2026-10-27T19:34:42.571Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/40/11/fc4a9d367a37d290292c3836397c4a17db4c1b6fa4ce452c1d95960008be/easyspyn-0.5.0.tar.gz", hash = "sha256:cd0c0c6816c413d28fdd2a8355c08388ccffec3f4730d163fcfb25581d8a28dd", size = 151608, upload-time = "2026-10-28T23:18:16.432Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/58/ee/e3d4f503d30bccccb50053a3339065ff48cf74178928768206eb0a3aae19/easyspyn-0.4.0-py3-none-any.whl", hash = "sha256:9b9bc7d4ebb742b31cb6967d7d47c4e169fffd7b7f2d9592d7cb5eb43da6a86c", size = 161885, upload-time = "2026-10-27T19:34:41.029Z" },
+    { url = "https://files.pythonhosted.org/packages/43/fe/f904adf6b7d89c9b53431c1a10b0bfb12020c22c482fc1b3e382a5565d0c/easyspyn-0.5.0-py3-none-any.whl", hash = "sha256:5cb45d96edeb1fa472a754d228838cf2f0985f237bb71104d918e19cf5c9a470", size = 161884, upload-time = "2026-10-28T23:18:14.808Z" },
 ]
 
 [[package]]
@@ -2857,7 +2857,7 @@ wheels = [
 
 [[package]]
 name = "spynach"
-version = "0.4.0"
+version = "0.5.0"
 source = { editable = "." }
 dependencies = [
     { name = "h5py" },
@@ -2905,7 +2905,7 @@ test = [
 
 [package.metadata]
 requires-dist = [
-    { name = "easyspyn", marker = "extra == 'epr'", specifier = "==0.4.0" },
+    { name = "easyspyn", marker = "extra == 'epr'", specifier = "==0.5.0" },
     { name = "h5py", specifier = ">=3.10" },
     { name = "ipykernel", marker = "extra == 'docs'", specifier = ">=6" },
     { name = "jupyterlab", marker = "extra == 'docs'", specifier = ">=4" },
