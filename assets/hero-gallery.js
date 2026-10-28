@@ -412,8 +412,8 @@ void main(){
     return slide;
   };
 
-  const slides = [animSlide, ...extra.map(([, slide]) => slide), chordSlide(), imgSlide];
-  const names = ['Animation', ...extra.map(([name]) => name), 'Relaxation', 'Picture'];
+  const slides = [animSlide, chordSlide(), ...extra.map(([, slide]) => slide), imgSlide];
+  const names = ['Animation', 'Relaxation', ...extra.map(([name]) => name), 'Picture'];
   track.append(...slides);
 
   const prev = el('button', 'gallery-btn prev', { type: 'button', textContent: '‹' });
