@@ -15,12 +15,13 @@ requires-python = ">=3.11"
 dependencies = ["numpy>=1.26", "scipy>=1.11", "h5py>=3.10", "numba>=0.60; platform_python_implementation == 'CPython'"]
 
 [project.optional-dependencies]
-test = ["pytest>=8"]
+test = ["pytest>=8", "sympy>=1.12"]  # sympy: the relaxation pathway tests and guide
 plot = ["plotly>=6"]
+symbolic = ["sympy>=1.12"]  # relaxation pathways (spynach.pathways)
 fast = []  # kept so that "spynach[fast]" still installs; Numba is a default dependency now
 compare = ["spynach[plot]", "kaleido>=1.0", "matplotlib>=3.8"]
-docs = ["spynach[plot]", "kaleido>=1.0", "matplotlib>=3.8", "jupyterlab>=4", "ipykernel>=6", "nbclient>=0.10", "nbformat>=5.9"]
-dev = ["spynach[test]", "ruff>=0.14"]
+docs = ["spynach[plot]", "spynach[symbolic]", "kaleido>=1.0", "matplotlib>=3.8", "jupyterlab>=4", "ipykernel>=6", "nbclient>=0.10", "nbformat>=5.9"]
+dev = ["spynach[test]", "spynach[symbolic]", "ruff>=0.14"]
 
 [tool.setuptools.packages.find]
 where = ["src"]

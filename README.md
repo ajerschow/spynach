@@ -133,6 +133,11 @@ Add-ons originating here, with no Spinach counterpart, each with an example in t
   J. Chem. Phys. 113, 979 (2000), and a **cogwheel cycle search** by exact
   integer arithmetic (`find_cycle`, `coverage`, `hcl_cycle`) plus the DOTCOPS
   crusher objective (`crusher_scheme`), in `ctps`.
+- **Relaxation pathways by mechanism** (`spynach.relaxation_pathways`): the Redfield relaxation matrix between
+  product operators split into dipolar, CSA, quadrupolar and anisotropic-J contributions and all their
+  cross-correlations, each with an exact expression in the coupling strengths and spectral densities, drawn as a
+  chord diagram by `plot_pathways` ([docs/relaxation-pathways.md](docs/relaxation-pathways.md)), also in the
+  browser playground ([try.html#ex-pathways](https://ajerschow.github.io/spynach/try.html#ex-pathways)).
 - **Interactive Plotly figures** from `spynach.plotting`, `plot_fid`,
   `plot_time_series` and `plot_trajan` with no Spinach equivalent, and
   `figure_png` for static copies.

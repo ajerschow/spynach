@@ -80,6 +80,13 @@ textarea {
 figure.plot { margin: 0; }
 figure.plot canvas { width: 100%; height: auto; display: block; }
 figure.plot figcaption { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); min-height: 1.1em; margin-top: 0.2rem; }
+figure.plot svg.chord { width: 100%; max-width: 36rem; height: auto; display: block; margin: 0 auto; }
+figure.plot svg.chord path.ribbon { transition: fill-opacity 0.12s; }
+figure.plot .chord-head { display: flex; flex-wrap: wrap; gap: 0.2rem 1rem; align-items: baseline; margin: 0 0 0.35rem; }
+figure.plot .chord-title { font-weight: 600; font-size: 0.95rem; }
+figure.plot .chord-legend { display: flex; flex-wrap: wrap; gap: 0.15rem 0.85rem; font-size: 0.8rem; color: var(--muted); }
+figure.plot .chord-legend i { display: inline-block; width: 0.95rem; height: 0.55rem; border-radius: 2px; margin-right: 0.3rem; vertical-align: middle; }
+figure.plot figcaption.chord-info { min-height: 4.2em; line-height: 1.45; overflow-wrap: anywhere; }
 #console {
   grid-column: 2; grid-row: 2;
   height: 9.5rem; margin: 0; overflow: auto; padding: 0.6rem 0.75rem;
@@ -813,6 +820,65 @@ print(f"ctps {ctps.__version__}: {result.n_enumerated} pathways enumerated, {len
 for row in result.table()[:8]:
     path = " ".join(f"{p:+d}" for p in row["pathway"])
     print(f"{row['rank']:2d}  {path}   total {row['total']:.4f}  pc {row['pc']:.3f}")
+</script>
+
+<script type="text/plain" class="example" id="ex-pathways" data-group="Relaxation (spynach)" data-title="Cross-relaxation pathways of 11BF4-">
+import numpy as np
+import spynach
+from spynach.conventions import eeqq2nqi
+
+# --- Spin system: 11BF4-, boron at the centre of a tetrahedron of four fluorines ---
+magnet = 9.4  # GUI: Magnet field | T | Field of the magnet; 9.4 T is a 400 MHz spectrometer | 1..28
+r_bf = 1.40  # GUI: B–F distance | Å | Bond length, which sets the dipolar couplings b_BF and b_FF | 1.2..2.0
+dsigma_f = 100.0  # GUI: 19F shielding anisotropy | ppm | σ∥ − σ⊥ of each fluorine, axial along its B–F bond | 0..300
+dsigma_b = 2.0  # GUI: 11B shielding anisotropy | ppm | σ∥ − σ⊥ of the boron along the first B–F bond; zero in a perfect tetrahedron | 0..50
+cq_b = 100.0  # GUI: 11B quadrupolar coupling | kHz | e²qQ/h of the boron along the first B–F bond; zero in a perfect tetrahedron | 0..2000
+tau_c = 10.0  # GUI: Correlation time | ps | Isotropic rotational correlation time of the anion | 1..1000
+
+# --- Pathways: which operators, which secular approximation ---
+coherence = "all"  # GUI: Coherence order | - | The basis operators shown: all, or one total coherence order (0 is the zero-quantum space) | all, 0, 1, 2
+boron_ranks = "1"  # GUI: 11B operator ranks | - | 1 gives Bz, B+, B-; 1-3 adds the rank-2 and rank-3 orders of the spin-3/2 boron, which the quadrupole couples to Bz | 1, 1-3
+secular = "isotope"  # GUI: Secular approximation | - | isotope: the high-field approximation; total: also keep terms between equal total coherence orders; none: the lab frame | isotope, total, none
+split = False  # GUI: One ribbon per mechanism | - | Draw the contribution of each mechanism as its own ribbon instead of one ribbon per pathway
+
+# Unit vectors from the boron to the four fluorines, the first along z
+corners = np.array([[1, 1, 1], [1, -1, -1], [-1, 1, -1], [-1, -1, 1]]) / np.sqrt(3)
+z = corners[0]
+x = np.cross(z, [0, 0, 1.0])
+x /= np.linalg.norm(x)
+bonds = corners @ np.array([x, np.cross(z, x), z]).T
+
+
+def axial(n, anisotropy):
+    """Shielding tensor (ppm) with sigma_par - sigma_perp = anisotropy along the unit vector n."""
+    return (anisotropy * (np.outer(n, n) - np.eye(3) / 3)).tolist()
+
+
+quadrupole = eeqq2nqi(cq_b * 1e3, 0.0, 1.5, [0, 0, 0]).tolist()
+bf4 = spynach.create(
+    {"isotopes": ["11B", "19F", "19F", "19F", "19F"], "magnet": magnet},
+    {"zeeman": {"matrix": [axial([0, 0, 1], dsigma_b)] + [axial(n, dsigma_f) for n in bonds]},
+     "coupling": {"matrix": [[quadrupole] + [None] * 4] + [[None] * 5 for _ in range(4)]},
+     "coordinates": [[0, 0, 0]] + (r_bf * bonds).tolist()},
+)
+
+# The Redfield relaxation matrix between the collective product operators (Fz is the sum over the four
+# fluorines), split by mechanism and cross-correlation, each element with its analytical expression
+pathways = spynach.relaxation_pathways(
+    bf4,
+    tau_c=tau_c * 1e-12,
+    secular=secular,
+    ranks={"B": (1, 2, 3) if boron_ranks == "1-3" else (1,)},
+    coherence=None if coherence == "all" else int(coherence),
+)
+
+print(f"{len(pathways.operators)} operators; mechanism classes: {', '.join(pathways.classes)}")
+print("J(w) = tau_c / (1 + w^2 tau_c^2); rates in s^-1, strongest pathways first:")
+for link in pathways.links()[:10]:
+    a, b = pathways.labels[link.source], pathways.labels[link.target]
+    for cls in link.signature:
+        print(f"  {a} <-> {b}  {cls}: {link.rates[cls]:.4g} = {link.expressions[cls]}")
+show_pathways(pathways, split=split, title=f"11BF4- at {magnet:g} T, tau_c = {tau_c:g} ps")
 </script>
 
 <script type="text/plain" class="example" id="ex-powder-fine" data-group="NMR (spynach)" data-title="Powder CSA, 1600 orientations">
@@ -1911,6 +1977,106 @@ function drawImage(canvas, plot) {
   return { left, right, top, bottom, xLo, xHi, yLo, yHi, invert: plot.invert, image: true, z, nx, ny };
 }
 
+// Chord diagram of show_pathways: arcs and ribbons from spynach.plotting.chord_layout (unit circle, y up),
+// drawn as SVG; hovering over a ribbon or an arc writes its rates and expressions under the figure.
+function chordPalette() {
+  const dark = matchMedia("(prefers-color-scheme: dark)").matches;
+  return palette().concat(dark ? ["#9085e9", "#4cbf4c", "#e66767"] : ["#4a3aa7", "#008300", "#e34948"]);
+}
+
+function svgLabel(text, html) {
+  // The operator labels carry <sub> parts (B<sub>z</sub>F<sub>+</sub>): tspans shifted below the line
+  const ns = "http://www.w3.org/2000/svg";
+  let lowered = false;
+  for (const part of html.split(/(<sub>.*?<\/sub>)/)) {
+    if (!part) continue;
+    const sub = part.startsWith("<sub>");
+    const span = document.createElementNS(ns, "tspan");
+    span.textContent = sub ? part.slice(5, -6) : part;
+    if (sub !== lowered) span.setAttribute("dy", sub ? "0.3em" : "-0.3em");
+    if (sub) span.setAttribute("font-size", "75%");
+    lowered = sub;
+    text.appendChild(span);
+  }
+}
+
+function drawChord(figure, plot) {
+  const ns = "http://www.w3.org/2000/svg";
+  const colors = chordPalette();
+  const fg = css("--fg", "#1c2024");
+  const bg = css("--surface", "#fff");
+  const head = document.createElement("div");
+  head.className = "chord-head";
+  if (plot.title) {
+    const title = document.createElement("div");
+    title.className = "chord-title";
+    title.textContent = plot.title;
+    head.appendChild(title);
+  }
+  const legend = document.createElement("div");
+  legend.className = "chord-legend";
+  plot.names.forEach((name, k) => {
+    const item = document.createElement("span");
+    const swatch = document.createElement("i");
+    swatch.style.background = colors[k % colors.length];
+    item.append(swatch, document.createTextNode(name));
+    legend.appendChild(item);
+  });
+  head.appendChild(legend);
+  const svg = document.createElementNS(ns, "svg");
+  svg.setAttribute("viewBox", "-1.3 -1.3 2.6 2.6");
+  svg.setAttribute("class", "chord");
+  svg.setAttribute("role", "img");
+  svg.setAttribute("aria-label", (plot.title || "Relaxation pathways") + ": chord diagram");
+  const caption = document.createElement("figcaption");
+  caption.className = "chord-info";
+  const idle = "Ribbon width ∝ |Γ|, widest " + fmt(plot.widest) + " s⁻¹ · secular: " + plot.secular +
+    ". Hover over a ribbon or an operator for its rates and expressions.";
+  caption.textContent = idle;
+  const outline = (points) => "M" + points.map(([x, y]) => x + "," + (-y)).join("L") + "Z";
+  const ribbons = [];
+  for (const ribbon of plot.ribbons) {
+    const path = document.createElementNS(ns, "path");
+    path.setAttribute("d", outline(ribbon.outline));
+    path.setAttribute("class", "ribbon");
+    path.setAttribute("fill", colors[ribbon.colour % colors.length]);
+    path.setAttribute("fill-opacity", "0.75");
+    path.dataset.hover = ribbon.hover;
+    svg.appendChild(path);
+    ribbons.push(path);
+  }
+  const size = Math.max(0.035, Math.min(0.075, (plot.span * 1.07) / 5.5));
+  for (const arc of plot.arcs) {
+    const path = document.createElementNS(ns, "path");
+    path.setAttribute("d", outline(arc.outline));
+    path.setAttribute("fill", fg);
+    path.dataset.hover = arc.hover;
+    svg.appendChild(path);
+    const text = document.createElementNS(ns, "text");
+    const [x, y, angle] = arc.text;
+    text.setAttribute("transform", "translate(" + x + " " + (-y) + ") rotate(" + angle + ")");
+    text.setAttribute("text-anchor", "middle");
+    text.setAttribute("dominant-baseline", "central");
+    text.setAttribute("font-size", String(size));
+    text.setAttribute("fill", bg);
+    text.setAttribute("pointer-events", "none");
+    text.style.fontFamily = cssFont();
+    svgLabel(text, arc.html);
+    svg.appendChild(text);
+  }
+  svg.addEventListener("mouseover", (event) => {
+    const target = event.target;
+    if (!target.dataset || !target.dataset.hover) return;
+    caption.innerHTML = target.dataset.hover;
+    for (const path of ribbons) path.setAttribute("fill-opacity", path === target ? "0.95" : "0.3");
+  });
+  svg.addEventListener("mouseleave", () => {
+    caption.textContent = idle;
+    for (const path of ribbons) path.setAttribute("fill-opacity", "0.75");
+  });
+  figure.append(head, svg, caption);
+}
+
 function cssFont() {
   return getComputedStyle(document.body).fontFamily || "sans-serif";
 }
@@ -1921,13 +2087,18 @@ function render(plots) {
   if (!plots.length) {
     const empty = document.createElement("p");
     empty.className = "empty";
-    empty.textContent = "No plot. Call show_spectrum, show_fid or show_image, or leave a spectrum variable.";
+    empty.textContent = "No plot. Call show_spectrum, show_fid, show_image or show_pathways, or leave a spectrum variable.";
     plotsEl.appendChild(empty);
     return;
   }
   for (const plot of plots) {
     const figure = document.createElement("figure");
     figure.className = "plot";
+    if (plot.kind === "chord") {
+      plotsEl.appendChild(figure);
+      drawChord(figure, plot);
+      continue;
+    }
     const canvas = document.createElement("canvas");
     const caption = document.createElement("figcaption");
     figure.append(canvas, caption);
