@@ -1,6 +1,7 @@
 """Every example of the browser playground (try.html) runs natively, with stand-ins for the page's plotting
-helpers that record what they were given: each example draws something (the pathway example prints instead),
-and the EPR examples never leave the NMR convention of an inverted axis in place. Examples marked data-slow
+helpers that record what they were given: each example draws something (the ctps pathway example prints
+instead, the relaxation pathway example draws a chord diagram), and the EPR examples never leave the NMR
+convention of an inverted axis in place. Examples marked data-slow
 (the 12800-orientation powder) are skipped."""
 
 import re
@@ -61,6 +62,14 @@ class Recorder:
             assert np.asarray(y).size == z.shape[0]
         self.calls.append({"kind": "image", "invert": True if invert is None else bool(invert), "title": title})
 
+    def show_pathways(self, pathways, *, title="", classes=None, merge=None, split=False, min_rate=0.0):
+        from spynach.plotting import chord_layout
+
+        layout = chord_layout(pathways, classes=classes, merge=merge, split=split, min_rate=min_rate)
+        assert len(layout["arcs"]) == len(pathways.operators)
+        assert all(0 <= ribbon["colour"] < len(layout["names"]) for ribbon in layout["ribbons"])
+        self.calls.append({"kind": "chord", "invert": False, "title": title, "ribbons": len(layout["ribbons"])})
+
 
 @pytest.mark.parametrize("example", [e for e in ALL if not e[2]], ids=lambda e: e[0])
 def test_example_runs_and_draws(example, capsys):
@@ -71,6 +80,7 @@ def test_example_runs_and_draws(example, capsys):
         "show_spectrum": recorder.show_spectrum,
         "show_fid": recorder.show_fid,
         "show_image": recorder.show_image,
+        "show_pathways": recorder.show_pathways,
     }
     exec(compile(code, f"<{example_id}>", "exec"), ns, ns)
     printed = capsys.readouterr().out
@@ -78,6 +88,10 @@ def test_example_runs_and_draws(example, capsys):
         assert not recorder.calls and "pathways enumerated" in printed
         return
     assert recorder.calls, f"{example_id} drew nothing"
+    if example_id == "ex-pathways":
+        assert [call["kind"] for call in recorder.calls] == ["chord"] and recorder.calls[0]["ribbons"] > 0
+        assert "DD/CSA" in printed
+        return
     if group.startswith("EPR"):
         assert all(not call["invert"] for call in recorder.calls), f"{example_id} left an EPR axis inverted"
     else:
@@ -88,5 +102,5 @@ def test_examples_are_grouped_and_unique():
     ids = [e[0] for e in ALL]
     assert len(ids) == len(set(ids))
     groups = {e[1] for e in ALL}
-    assert groups == {"NMR (spynach)", "EPR (EasySpyn)", "Pathways (ctps)"}
+    assert groups == {"NMR (spynach)", "EPR (EasySpyn)", "Pathways (ctps)", "Relaxation (spynach)"}
     assert sum(e[1].startswith("EPR") for e in ALL) == 11

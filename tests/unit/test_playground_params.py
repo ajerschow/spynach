@@ -141,6 +141,7 @@ def test_example_runs_with_each_parameter_at_the_ends_of_its_range(variant):
         "show_spectrum": recorder.show_spectrum,
         "show_fid": recorder.show_fid,
         "show_image": recorder.show_image,
+        "show_pathways": recorder.show_pathways,
     }
     exec(compile(source, f"<{example_id}>", "exec"), ns, ns)
     if example_id != "ex-ctps":  # the pathway example prints a table instead of drawing

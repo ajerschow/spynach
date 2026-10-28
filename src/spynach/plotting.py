@@ -6,12 +6,14 @@ and ``kernel/utilities/axis_1d.m``. ``plot_1d`` follows Spinach's
 interactive Plotly figure and returns it instead of drawing into the current
 MATLAB axes. ``plot_2d`` follows ``plot_2d.m`` (same
 parameters, contour spacing by ``contspacing.m``, and axis conventions) as
-an interactive contour figure. ``plot_fid`` has no Spinach counterpart.
-``figure_png`` renders any of the figures to PNG bytes (Kaleido, or a
-Matplotlib redraw when Kaleido cannot run).
+an interactive contour figure. ``plot_fid`` has no Spinach counterpart, nor
+has ``plot_pathways``, the chord diagram of :func:`spynach.relaxation_pathways`,
+whose geometry ``chord_layout`` returns as plain lists (the browser playground
+draws it from those). ``figure_png`` renders any of the figures to PNG bytes
+(Kaleido, or a Matplotlib redraw when Kaleido cannot run).
 
 The plotting functions need Plotly (``pip install -e ".[plot]"``); the axis
-functions need only NumPy.
+functions and ``chord_layout`` need only NumPy.
 
 Spinach authors, by original file (headers of Spinach 2.13; see docs/spinach-credits.md):
   axis_1d.m: Ilya Kuprov
@@ -723,6 +725,329 @@ def plot_trajan(
     return fig
 
 
+def chord_layout(
+    pathways,
+    *,
+    classes: Sequence[str] | None = None,
+    merge: dict[str, str] | None = None,
+    split: bool = False,
+    min_rate: float = 0.0,
+) -> dict[str, Any]:
+    """Geometry of the chord diagram of :func:`plot_pathways`, as plain lists (JSON-ready), with no Plotly.
+
+    Returns ``{"arcs", "ribbons", "names", "widest", "span", "secular"}``: one arc per basis operator
+    (``label``, ``html``, ``order``, ``auto`` rate, ``outline`` polygon, ``text`` position and angle in
+    degrees clockwise, ``hover``), one ribbon per drawn pathway or class (``source``, ``target``, ``name``,
+    ``colour`` index into ``names``, ``rate``, ``outline``, ``hover``), the ribbon names heaviest first, the
+    largest drawn rate and the angular span of an arc. The circle has unit radius, ``y`` points up.
+    :func:`plot_pathways` draws it with Plotly, and the browser playground (``try.html``) as SVG.
+    """
+    merge = merge or {}
+    ops = pathways.operators
+    n = len(ops)
+    gamma = pathways.rate_matrix()
+
+    # Ribbons (source, target, name, rate, hover text), and the colour of each name
+    ribbons = []
+    for link in pathways.links():
+        present = [cls for cls in link.signature if classes is None or cls in classes]
+        if not present:
+            continue
+        names: dict[str, list[str]] = {}
+        for cls in present:
+            names.setdefault(merge.get(cls, cls), []).append(cls)
+        hover = _pathway_hover(pathways, link, present)
+        parts = (
+            [(name, sum(link.rates[cls] for cls in members)) for name, members in names.items()]
+            if split
+            else [(" + ".join(names), sum(link.rates[cls] for cls in present))]
+        )
+        for name, rate in parts:
+            if abs(rate) > min_rate and rate != 0:
+                ribbons.append((link.source, link.target, name, rate, hover))
+    weight: dict[str, float] = {}
+    for _, _, name, rate, _ in ribbons:
+        weight[name] = weight.get(name, 0.0) + abs(rate)
+    order = sorted(weight, key=lambda m: -weight[m])
+
+    # Arcs: equal spans, clockwise, the first block of total coherence order (or of the coherence of
+    # every isotope, when all operators share one total order) centred on the left
+    gap = min(0.05, 0.6 / n)
+    span = (2 * np.pi - n * gap) / n
+    same = (lambda op: op.order == ops[0].order) if len({op.order for op in ops}) > 1 else None
+    same = same or (lambda op: op.coherence == ops[0].coherence)
+    first_block = next((k for k, op in enumerate(ops) if not same(op)), n)
+    begin = np.pi + first_block * (span + gap) / 2 - gap / 2 - np.arange(n) * (span + gap)
+    centre = begin - span / 2
+
+    # Ribbon ends: as wide as the rate, packed in the middle of each arc, ordered so that ribbons do not cross
+    load = np.zeros(n)
+    for i, j, _, rate, _ in ribbons:
+        load[i] += abs(rate)
+        load[j] += abs(rate)
+    scale = 0.9 * span / load.max() if ribbons else 0.0
+    width = [min(max(abs(rate) * scale, 0.004), span) for _, _, _, rate, _ in ribbons]
+    ends: dict[int, list[tuple[int, int, int]]] = {k: [] for k in range(n)}
+    for r, (i, j, _, _, _) in enumerate(ribbons):
+        ends[i].append((r, j, 1))
+        ends[j].append((r, i, -1))
+    slots: dict[tuple[int, int], tuple[float, float]] = {}
+    for k, items in ends.items():
+        items.sort(key=lambda item: ((item[1] - k) % n, item[2] * item[0]), reverse=True)
+        a = centre[k] + min(sum(width[r] for r, _, _ in items), span) / 2
+        for r, _, _ in items:
+            slots[(r, k)] = (a, a - width[r])
+            a -= width[r]
+
+    rim = 1.0
+
+    def arc(a0: float, a1: float, radius: float) -> np.ndarray:
+        t = np.linspace(a0, a1, max(int(abs(a1 - a0) / 0.02), 2))
+        return radius * np.stack([np.cos(t), np.sin(t)], axis=1)
+
+    def point(angle: float) -> np.ndarray:
+        return rim * np.array([np.cos(angle), np.sin(angle)])
+
+    def curve(p0: np.ndarray, p1: np.ndarray, control: np.ndarray) -> np.ndarray:
+        t = np.linspace(0, 1, 48)[:, None]
+        return (1 - t) ** 2 * p0 + 2 * (1 - t) * t * control + t**2 * p1
+
+    def points(outline: np.ndarray) -> list[list[float]]:
+        return np.round(outline, 4).tolist()
+
+    drawn = []
+    for r, (i, j, name, rate, hover) in enumerate(ribbons):
+        (a0, a1), (b0, b1) = slots[(r, i)], slots[(r, j)]
+        separation = abs(np.angle(np.exp(1j * (centre[i] - centre[j]))))
+        bisector = np.angle(np.exp(1j * centre[i]) + np.exp(1j * centre[j]))
+        control = 0.85 * rim * (1 - separation / np.pi) * np.array([np.cos(bisector), np.sin(bisector)])
+        outline = np.concatenate(
+            [
+                arc(a0, a1, rim),
+                curve(point(a1), point(b0), control),
+                arc(b0, b1, rim),
+                curve(point(b1), point(a0), control),
+            ]
+        )
+        drawn.append(
+            {
+                "source": int(i),
+                "target": int(j),
+                "name": name,
+                "colour": order.index(name),
+                "rate": float(rate),
+                "outline": points(outline),
+                "hover": hover,
+            }
+        )
+    arcs = []
+    for k, op in enumerate(ops):
+        outline = np.concatenate(
+            [arc(begin[k], begin[k] - span, rim + 0.015), arc(begin[k] - span, begin[k], rim + 0.13)]
+        )
+        tangent = (np.degrees(centre[k]) - 90 + 90) % 180 - 90  # along the arc, kept upright
+        arcs.append(
+            {
+                "label": op.label,
+                "html": op.html,
+                "order": op.order,
+                "auto": float(gamma[k, k]),
+                "outline": points(outline),
+                "text": [
+                    round(float((rim + 0.072) * np.cos(centre[k])), 4),
+                    round(float((rim + 0.072) * np.sin(centre[k])), 4),
+                    round(float(-tangent), 2),
+                ],
+                "hover": f"<b>{op.html}</b><br>coherence order {op.order:+d}<br>auto-relaxation {gamma[k, k]:.4g} s⁻¹",
+            }
+        )
+    widest = max((abs(rate) for _, _, _, rate, _ in ribbons), default=0.0)
+    return {
+        "arcs": arcs,
+        "ribbons": drawn,
+        "names": order,
+        "widest": float(widest),
+        "span": float(span),
+        "secular": pathways.secular,
+    }
+
+
+def plot_pathways(
+    pathways,
+    *,
+    classes: Sequence[str] | None = None,
+    merge: dict[str, str] | None = None,
+    split: bool = False,
+    min_rate: float = 0.0,
+    title: str | None = None,
+    theme: str = "light",
+    height: int = 720,
+):
+    """Chord diagram of cross-relaxation pathways (:func:`spynach.pathways.relaxation_pathways`).
+
+    Every basis operator is an arc on the circle, in blocks of total
+    coherence order (0 on the left, then +1, +2, ... clockwise, -1 at the
+    bottom); every nonzero off-diagonal element ``Gamma[i, j]`` is a ribbon
+    between two arcs, as wide as ``|Gamma[i, j]|``. The colour names the
+    mechanisms: with ``split=False`` there is one ribbon per pathway,
+    coloured by the combination of mechanism classes that contribute to it
+    (``DD + DD/CSA``, say) and as wide as the total rate; with ``split=True``
+    one ribbon per class, side by side, each as wide as that class's rate.
+    ``classes`` keeps only the classes listed, ``merge`` renames classes
+    before they are combined (``{"DD/DD": "DD"}`` counts the dipolar
+    cross-correlations as dipolar), and ``min_rate`` (s^-1) hides the weaker
+    pathways. Hovering over a ribbon shows each class's rate and expression,
+    hovering over an arc the operator's auto-relaxation rate. The geometry
+    comes from :func:`chord_layout`.
+    """
+    try:
+        import plotly.graph_objects as go
+    except ImportError as error:
+        raise ImportError('plotting needs Plotly: pip install -e ".[plot]"') from error
+    if theme not in CHROME:
+        raise ValueError(f"theme must be 'light' or 'dark', not {theme!r}.")
+    c = CHROME[theme]
+    layout = chord_layout(pathways, classes=classes, merge=merge, split=split, min_rate=min_rate)
+    palette = SERIES[theme]
+
+    fig = go.Figure()
+    shown: set[str] = set()
+    for ribbon in layout["ribbons"]:
+        name, outline = ribbon["name"], np.asarray(ribbon["outline"])
+        colour = palette[ribbon["colour"] % len(palette)]
+        fig.add_scatter(
+            x=outline[:, 0],
+            y=outline[:, 1],
+            mode="lines",
+            fill="toself",
+            fillcolor=colour,
+            opacity=0.75,
+            line={"color": colour, "width": 0.5},
+            name=name,
+            legendgroup=name,
+            showlegend=name not in shown,
+            hoveron="fills",
+            hoverinfo="text",
+            text=ribbon["hover"],
+        )
+        shown.add(name)
+
+    # The operator arcs, with their labels written along them
+    size = float(np.clip(layout["span"] * 1.07 * height / 2.7 / 5, 7, 14))
+    annotations = []
+    for arc in layout["arcs"]:
+        outline = np.asarray(arc["outline"])
+        fig.add_scatter(
+            x=outline[:, 0],
+            y=outline[:, 1],
+            mode="lines",
+            fill="toself",
+            fillcolor=c["ink"],
+            line={"color": c["ink"], "width": 0.5},
+            showlegend=False,
+            hoveron="fills",
+            hoverinfo="text",
+            text=arc["hover"],
+        )
+        x, y, angle = arc["text"]
+        annotations.append(
+            {
+                "x": x,
+                "y": y,
+                "xref": "x",
+                "yref": "y",
+                "text": arc["html"],
+                "showarrow": False,
+                "textangle": angle,
+                "font": {"color": c["surface"], "size": size, "family": FONT},
+            }
+        )
+    annotations.append(
+        {
+            "x": 0,
+            "y": 0,
+            "xref": "paper",
+            "yref": "paper",
+            "xanchor": "left",
+            "yanchor": "bottom",
+            "text": f"ribbon width ∝ |Γ|, widest {layout['widest']:.3g} s⁻¹ · secular: {layout['secular']}",
+            "showarrow": False,
+            "font": {"color": c["muted"], "size": 11},
+        }
+    )
+    hidden = {"visible": False, "range": [-1.3, 1.3], "fixedrange": False}
+    fig.update_layout(
+        height=height,
+        width=height,
+        font={"family": FONT, "color": c["ink"], "size": 13},
+        paper_bgcolor=c["surface"],
+        plot_bgcolor=c["surface"],
+        margin={"l": 16, "r": 16, "t": 56 if title else 40, "b": 24},
+        title={"text": title, "x": 0, "xanchor": "left", "xref": "paper", "font": {"size": 15, "color": c["ink"]}}
+        if title
+        else None,
+        xaxis=hidden,
+        yaxis={**hidden, "scaleanchor": "x", "scaleratio": 1},
+        legend={
+            "orientation": "h",
+            "x": 0,
+            "xanchor": "left",
+            "y": 1.0,
+            "yanchor": "bottom",
+            "bgcolor": "rgba(0,0,0,0)",
+            "font": {"color": c["ink2"]},
+        },
+        hoverlabel={"bgcolor": c["surface"], "bordercolor": c["border"], "font": {"color": c["ink"], "family": FONT}},
+        modebar={"bgcolor": "rgba(0,0,0,0)", "color": c["muted"], "activecolor": c["ink2"]},
+        hovermode="closest",
+        showlegend=bool(layout["ribbons"]),
+        annotations=annotations,
+    )
+    return fig
+
+
+def _pathway_hover(pathways, link, present: Sequence[str]) -> str:
+    """Hover text of a pathway: total rate, then every class's rate and expression."""
+    a, b = pathways.operators[link.source], pathways.operators[link.target]
+    total = sum(link.rates[cls] for cls in present)
+    lines = [f"<b>{a.html} ↔ {b.html}</b>", f"Γ = {total:.4g} s⁻¹"]
+    for cls in present:
+        lines.append(f"<b>{cls}</b> {link.rates[cls]:.4g} s⁻¹:")
+        lines += _wrap(_html_expression(str(link.expressions[cls])), 110)
+    return "<br>".join(lines)
+
+
+# SymPy's text form of the pathway expressions, made readable in a hover box
+_EXPRESSION_HTML = (
+    (re.compile(r"sqrt\((\d+)\)"), r"√\1"),
+    (re.compile(r"\*\*(\d+)"), r"<sup>\1</sup>"),
+    (re.compile(r"\bomega_(\w+?)\b"), r"ω<sub>\1</sub>"),
+    (re.compile(r"\bdsigma_(\w+?)\b"), r"Δσ<sub>\1</sub>"),
+    (re.compile(r"\bCQ_(\w+?)\b"), r"C<sub>Q</sub><sup>\1</sup>"),
+    (re.compile(r"\bdJ_(\w+?)\b"), r"ΔJ<sub>\1</sub>"),
+    (re.compile(r"\bb_(\w+?)\b"), r"b<sub>\1</sub>"),
+    (re.compile(r"\bpi\b"), "π"),
+    (re.compile(r"\*"), "·"),
+)
+
+
+def _html_expression(text: str) -> str:
+    for pattern, replacement in _EXPRESSION_HTML:
+        text = pattern.sub(replacement, text)
+    return text
+
+
+def _wrap(text: str, width: int) -> list[str]:
+    lines, line = [], ""
+    for word in text.split(" "):
+        if line and len(line) + len(word) + 1 > width:
+            lines.append(line)
+            line = "    " + word
+        else:
+            line = f"{line} {word}" if line else word
+    return [*lines, line]
+
+
 def figure_png(fig, *, scale: float = 2) -> bytes:
     """PNG bytes of a Plotly figure, for GitHub, reports and papers (MATLAB's ``print -dpng``).
 
@@ -832,7 +1157,9 @@ def _png_with_matplotlib(fig, scale: float) -> bytes:
         elif trace.type in ("scatter", "scattergl"):
             x, y = values(trace.x).astype(float), values(trace.y).astype(float)
             mode = trace.mode or "lines"
-            if "lines" in mode:
+            if trace.fill == "toself":  # filled outlines: the ribbons and arcs of plot_pathways
+                ax.fill(x, y, color=trace.fillcolor or trace.line.color, alpha=alpha, lw=0, label=label)
+            elif "lines" in mode:
                 ax.plot(
                     x,
                     y,
@@ -894,7 +1221,17 @@ def _png_with_matplotlib(fig, scale: float) -> bytes:
         else:
             ax = ref_axes(note.xref or "x", note.yref or "y")
             if ax is not None:
-                ax.text(note.x, note.y, plain(note.text), fontsize=size, color=colour, ha="center", va="center")
+                ax.text(
+                    note.x,
+                    note.y,
+                    plain(note.text),
+                    fontsize=size,
+                    color=colour,
+                    ha="center",
+                    va="center",
+                    rotation=-(note.textangle or 0),
+                    rotation_mode="anchor",
+                )
 
     for (x_name, y_name), ax in axes.items():
         for axis, mpl_axis, setter in (
@@ -926,6 +1263,8 @@ def _png_with_matplotlib(fig, scale: float) -> bytes:
                 (ax.set_xticks if mpl_axis is ax.xaxis else ax.set_yticks)(ticks)
             if axis.title and axis.title.text:
                 (ax.set_xlabel if mpl_axis is ax.xaxis else ax.set_ylabel)(plain(axis.title.text), fontsize=10)
+        if axis_object(y_name).scaleanchor == x_name:
+            ax.set_aspect("equal", adjustable="datalim")
         for spine in ax.spines.values():
             spine.set_color(axis_object(x_name).linecolor or "#c3c2b7")
         if labelled.get(ax, 0) > 1 and layout.showlegend is not False:

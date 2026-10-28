@@ -5,6 +5,7 @@ grid prefetch tolerates a missing server, and no example raises. Examples marked
 
 import ast
 import asyncio
+import json
 import re
 import sys
 import types
@@ -28,10 +29,11 @@ class Calls:
     def __init__(self) -> None:
         self.lines: list[dict] = []
         self.images: list[dict] = []
+        self.chords: list[dict] = []
         self.progress: list[tuple] = []
 
     def clear(self) -> None:
-        self.lines, self.images, self.progress = [], [], []
+        self.lines, self.images, self.chords, self.progress = [], [], [], []
 
 
 CALLS = Calls()
@@ -52,6 +54,7 @@ def install_stubs() -> None:
         {"title": title, "invert": invert, "rows": rows, "cols": cols, "nx": len(x), "ny": len(y)}
     )
     js.setImageZ = lambda z: CALLS.images[-1].update(nz=np.asarray(z).size)
+    js.beginChord = lambda text: CALLS.chords.append(json.loads(text))
     js.reportProgress = lambda run_id, kind, done, total: CALLS.progress.append((kind, done, total))
     pyodide = types.ModuleType("pyodide")
     http = types.ModuleType("pyodide.http")
@@ -89,6 +92,11 @@ def test_runner_executes_example(example, js_stubs, tmp_path):
     assert error == "", error
     if example_id == "ex-ctps":
         assert not js_stubs.lines and not js_stubs.images
+        return
+    if example_id == "ex-pathways":
+        (chord,) = js_stubs.chords
+        assert chord["ribbons"] and chord["arcs"] and chord["title"].startswith("11BF4-")
+        assert {"outline", "hover", "colour"} <= set(chord["ribbons"][0])
         return
     assert js_stubs.lines or js_stubs.images, f"{example_id} drew nothing"
     for line in js_stubs.lines:

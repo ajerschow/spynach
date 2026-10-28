@@ -23,6 +23,7 @@ const SOURCE = [
   "src/spynach/oracle/__init__.py",
   "src/spynach/oracle/compare.py",
   "src/spynach/oracle/fixture.py",
+  "src/spynach/pathways.py",
   "src/spynach/plotting.py",
   "src/spynach/processing.py",
   "src/spynach/propagation.py",
@@ -74,6 +75,7 @@ const SOURCE = [
 ];
 
 const RUNNER = `
+import json
 import os
 import re
 import time
@@ -82,7 +84,7 @@ import traceback
 import numpy as np
 import easyspyn
 import spynach
-from js import addSeries, beginImage, beginLine, reportProgress, setImageZ
+from js import addSeries, beginChord, beginImage, beginLine, reportProgress, setImageZ
 from pyodide.http import pyfetch
 
 state = {"called": False}
@@ -109,6 +111,18 @@ async def prefetch(code):
         with open(dest, "wb") as handle:
             handle.write(data)
         print(f"loaded grid {name} ({len(data)} bytes)")
+
+async def load_packages(code):
+    """SymPy, which the relaxation pathways need, from Pyodide's distribution the first time a run uses it."""
+    if "relaxation_pathways" not in code and "sympy" not in code:
+        return
+    try:
+        import sympy  # noqa: F401
+    except ImportError:
+        import pyodide_js
+
+        print("loading SymPy (once per session)")
+        await pyodide_js.loadPackage("sympy")
 
 def f64(values):
     return np.ascontiguousarray(values, dtype=np.float64)
@@ -223,6 +237,15 @@ def show_image(z, x=None, y=None, *, title="", xlabel="", ylabel="", invert=True
     beginImage(str(title), str(xlabel), str(ylabel), bool(invert), f64(x_arr[:nx]), f64(y_arr[:ny]), int(ny), int(nx))
     setImageZ(f64(np.ascontiguousarray(z)))
 
+def show_pathways(pathways, *, title="", classes=None, merge=None, split=False, min_rate=0.0):
+    """Chord diagram of spynach.relaxation_pathways, from spynach.plotting.chord_layout (the plot_pathways geometry)."""
+    from spynach.plotting import chord_layout
+
+    state["called"] = True
+    layout = chord_layout(pathways, classes=classes, merge=merge, split=split, min_rate=min_rate)
+    layout["title"] = str(title)
+    beginChord(json.dumps(layout))
+
 def _orientation_hook(kind):
     last = [0.0]
     def report(done, total):
@@ -278,11 +301,13 @@ if not getattr(spynach.powder, "_counts_orientations", False):
 
 try:
     await prefetch(USER_CODE)
+    await load_packages(USER_CODE)
     ns = {
         "__name__": "__main__",
         "show_spectrum": show_spectrum,
         "show_fid": show_fid,
         "show_image": show_image,
+        "show_pathways": show_pathways,
     }
     exec(compile(USER_CODE, "<editor>", "exec"), ns, ns)
     if not state["called"]:
@@ -382,6 +407,14 @@ self.beginImage = (title, xlabel, ylabel, invert, x, y, rows, cols) => {
 self.setImageZ = (z) => {
   const plot = bucket[bucket.length - 1];
   if (plot && plot.kind === "image") plot.z = asF64(z);
+};
+
+self.beginChord = (json) => {
+  try {
+    bucket.push({ kind: "chord", ...JSON.parse(String(json)) });
+  } catch (err) {
+    post({ type: "stderr", text: "Could not read the chord diagram: " + err + "\n" });
+  }
 };
 
 function mkdirp(dir) {

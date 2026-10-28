@@ -9,6 +9,7 @@ from spynach.filters import coherence, correlation, decouple, homospoil
 from spynach.hamiltonian import frqoffset, hamiltonian, orientation
 from spynach.kinetics import equilibrate, kinetics
 from spynach.operators import operator
+from spynach.pathways import relaxation_pathways
 from spynach.processing import apodisation
 from spynach.propagation import evolution, krylov, propagator, step
 from spynach.reduction import path_trace, reduce, zte
@@ -53,6 +54,7 @@ __all__ = [
     "propagator",
     "reduce",
     "relaxation",
+    "relaxation_pathways",
     "singlerot",
     "state",
     "stateinfo",

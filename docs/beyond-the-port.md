@@ -16,6 +16,7 @@ notebook is [`notebooks/beyond-the-port.ipynb`](notebooks/beyond-the-port.ipynb)
 5. [Executable documentation, Colab, contributed notebooks](#executable-documentation-colab-contributed-notebooks)
 6. [Spynach in the browser](#spynach-in-the-browser)
 7. [EPR with EasySpyn](#epr-with-easyspyn)
+8. [Relaxation pathways by mechanism](#relaxation-pathways-by-mechanism)
 
 ## Coherence transfer pathway selection: `ctps`
 
@@ -151,10 +152,12 @@ runs Spynach, `easyspyn` and `ctps` with nothing installed. The page loads
 [Pyodide](https://pyodide.org/) (Python compiled to WebAssembly) with NumPy,
 SciPy and h5py in a web worker, fetches the sources from the repository, and
 runs the code in its editor; the first load takes a few seconds. The examples
-are grouped by package, NMR, EPR and pathways, and a link such as
+are grouped by package, NMR, EPR, pathways and relaxation, and a link such as
 `try.html#ex-epr-hyscore` opens and runs one of them. Results are drawn with
-`show_spectrum(y, x)`, `show_fid(fid, sweep)` and `show_image(z, x, y)` (2D
-contours, high ppm at the left and bottom as in `plot_2d`); an `easyspyn`
+`show_spectrum(y, x)`, `show_fid(fid, sweep)`, `show_image(z, x, y)` (2D
+contours, high ppm at the left and bottom as in `plot_2d`) and
+`show_pathways(pathways)` (the chord diagram of `relaxation_pathways`, see
+below; SymPy is loaded the first time it is needed); an `easyspyn`
 `Spectrum` can be passed as it is, and its field, frequency or time axis then
 runs left to right (`invert=False` does the same for plain arrays). Without
 these calls, a variable named `spectrum` (with `axis`) or `fid` with `sweep`
@@ -201,3 +204,39 @@ print("levels at 340 mT along z (MHz):", es.levels(nitroxide, "z", 340).round(1)
 powder = es.pepper({**nitroxide, "lwpp": 0.3}, {"mwFreq": 9.5, "Range": [330, 350]}, {"FuzzLevel": 0})
 print("powder spectrum:", powder.spec.shape, "points, extrema at", powder.x[[powder.spec.argmax(), powder.spec.argmin()]].round(2), "mT")
 ```
+
+## Relaxation pathways by mechanism
+
+`spynach.relaxation` returns the Redfield superoperator as numbers;
+`spynach.relaxation_pathways` says where each number comes from. It builds
+the same relaxation matrix between product operators, split into the
+dipolar, shielding anisotropy, quadrupolar and anisotropic-J mechanisms and
+every cross-correlation between two of them, each as a rate and as an exact
+expression in the interaction strengths and `J(w) = tau_c / (1 + w^2
+tau_c^2)`. `plot_pathways` draws it as a chord diagram. For a ¹³C–¹H pair
+with the ¹³C shielding tensor along the bond, the transverse ¹³C
+coherence and the antiphase coherence are connected by the cross-correlation
+of the two mechanisms:
+
+```python
+import spynach
+
+ch = spynach.create(
+    {"isotopes": ["13C", "1H"], "magnet": 14.1},
+    {"zeeman": {"eigs": [[-40, -40, 80], [0, 0, 0]], "euler": [[0, 0, 0], [0, 0, 0]]},
+     "coordinates": [[0, 0, 0], [0, 0, 1.09]]},
+)
+ch_pathways = spynach.relaxation_pathways(ch, tau_c=1e-9)
+print(ch_pathways.expression("C+", "C+Hz", "DD/CSA"))
+print(f"{ch_pathways.rate_matrix('DD/CSA')[ch_pathways.index('C+'), ch_pathways.index('C+Hz')]:.3f} s^-1")
+```
+
+The guide [Relaxation pathways](relaxation-pathways.md) works through
+¹¹BF₄⁻ with every mechanism, the zero-quantum space of the spin-3/2
+boron, the secular approximations, a cross-correlation that cancels by
+tetrahedral symmetry, and the check against `spynach.relaxation`. The same
+¹¹BF₄⁻ analysis runs in the browser playground
+([`try.html#ex-pathways`](https://ajerschow.github.io/spynach/try.html#ex-pathways)),
+with the field, the geometry, the anisotropies, the quadrupolar coupling,
+the correlation time, the coherence order, the boron ranks and the secular
+approximation in its parameter form.
