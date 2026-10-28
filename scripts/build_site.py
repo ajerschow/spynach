@@ -52,7 +52,7 @@ GROUPS = {
         "coming-from-spinach",
     ],
     "easyspin": ["easyspyn", "easyspyn-simulators", "coming-from-easyspin"],
-    "extras": ["ctps", "ctps-examples", "relaxation-pathways", "beyond-the-port"],
+    "extras": ["ctps", "ctps-examples", "relaxation-pathways", "cf3-trosy", "zulf-pathways", "beyond-the-port"],
 }
 # One line per Spinach comparison case, the only prose in the timing table.
 SPINACH_CASES = {

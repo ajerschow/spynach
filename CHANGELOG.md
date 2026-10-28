@@ -4,6 +4,31 @@ Releases are tagged `vX.Y.Z` on GitHub; the version is `spynach.__version__`.
 
 ## Unreleased
 
+- Relaxation pathways under axially symmetric rotational diffusion (`tau_c = (tau_par, tau_perp)`, or two
+  correlation times in `inter["tau_c"]`), the model of internal rotation about one axis: the spectral densities
+  split into `J_0`, `J_1`, `J_2` of the tensor components about the axis, in the rates and in the expressions
+  (`Pathways.correlation_times`, `spectral_density(frequency, m)`). `coherence` also takes a dictionary of the
+  coherence order per isotope (`{"13C": 1, "19F": 0}`), and `resolve="interaction"` names the classes by the
+  elements as well (`DD(CF)/CSA(C)`, `DD(CF)/DD(CF')`). Guide `docs/cf3-trosy.md`: the 13C single-quantum block of
+  the rotating CF3 group of trifluoromethionine, its chord diagram, the TROSY quartet from six operators, and the
+  linewidths against the rotation time. Playground example `try.html#ex-cf3-trosy` with the chord diagram, the
+  19F-coupled and -decoupled 13C spectrum from the exact relaxation modes of Spynach's Liouvillian, and a rotation
+  scan; the parameter-form test now also runs every choice of a list and every checkbox flipped.
+- Relaxation at zero and ultralow field: `spynach.pathways.energy_levels` gives the eigenstates of the isotropic
+  lab-frame Hamiltonian as levels `|K, F, M>`, sorted into blocks of conserved total projection and total spin of
+  each group of equivalent spins. `Levels.adiabatic(from_field)` gives their populations after an adiabatic
+  transfer from thermal equilibrium (energy order kept within each block). For PF6- this reproduces, to 0.4%, the
+  state that came with `user_ml/ZULF_PF6_1D.m`. `Levels.lines(detection)` gives the lines of the
+  gamma-weighted magnetisation. `relaxation_pathways(spin_system, basis=levels)` builds the relaxation matrix
+  between the level populations, and `basis=lines` the width `R2` of every line. Both are by mechanism, with
+  expressions in `J(0)`, in the extreme-narrowing limit, and checked against `spynach.relaxation`
+  (`tests/unit/test_levels.py`). Guide `docs/zulf-pathways.md`; playground examples `try.html#ex-ulf-pf6` and
+  `#ex-ulf-bf4`: chord diagram of the level populations, R2 of each line, and the transferred populations relaxing,
+  with the fields, couplings, distances, quadrupolar coupling and correlation time in the form.
+- Exact coefficients of the pathway expressions need a numerator of at most 10^4: a large float otherwise matched
+  some fraction of large numerator by chance. Pathway operators carry an `info` text, shown on hover in the chord
+  diagram. In the playground's line plots, a pixel column of many samples now ends at its last sample, which keeps
+  steep features (stems, steps) in place.
 - Fixed: `inter["rlx_keep"] = "secular"` compared the Zeeman frequencies of basis states for exact floating-point
   equality, as Spinach 2.13 does, and dropped secular elements of `R` whose two frequencies differ only by rounding
   (sums such as `w_C + w_F - w_F` against `w_C`). Frequencies are now grouped to within 1e-9 of the largest base

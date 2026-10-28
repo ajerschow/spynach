@@ -138,7 +138,13 @@ Add-ons originating here, with no Spinach counterpart, each with an example in t
   product operators split into dipolar, CSA, quadrupolar and anisotropic-J contributions and all their
   cross-correlations, each with an exact expression in the coupling strengths and spectral densities, drawn as a
   chord diagram by `plot_pathways` ([docs/relaxation-pathways.md](docs/relaxation-pathways.md)), also in the
-  browser playground ([try.html#ex-pathways](https://ajerschow.github.io/spynach/try.html#ex-pathways)).
+  browser playground ([try.html#ex-pathways](https://ajerschow.github.io/spynach/try.html#ex-pathways)). Axially
+  symmetric diffusion models internal rotation: the TROSY quartet of a rotating 13CF3 group, with its 13C spectrum
+  and linewidths against the rotation time ([docs/cf3-trosy.md](docs/cf3-trosy.md),
+  [try.html#ex-cf3-trosy](https://ajerschow.github.io/spynach/try.html#ex-cf3-trosy)). At zero and ultralow
+  field: relaxation between the populations of the J-coupled levels after an adiabatic transfer, and the width of
+  every line, for PF6- and 11BF4- ([docs/zulf-pathways.md](docs/zulf-pathways.md),
+  [try.html#ex-ulf-pf6](https://ajerschow.github.io/spynach/try.html#ex-ulf-pf6)).
 - **Interactive Plotly figures** from `spynach.plotting`, `plot_fid`,
   `plot_time_series` and `plot_trajan` with no Spinach equivalent, and
   `figure_png` for static copies.

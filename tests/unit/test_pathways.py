@@ -1,5 +1,6 @@
 """Relaxation pathways (spynach.pathways): rates against Spynach's Redfield superoperator and Solomon
-theory, exact expressions, the symmetry of a tetrahedral AX4 system, and the chord diagram."""
+theory, exact expressions, the symmetry of a tetrahedral AX4 system, axial diffusion (a rotating 13CF3 group),
+and the chord diagram."""
 
 import importlib.util
 
@@ -15,8 +16,10 @@ J = sympy.Function("J")
 LIOUV = {"formalism": "sphten-liouv", "approximation": "none"}
 
 
-def spin_pair(keep="labframe", tau_c=20e-12):
-    """11B-19F with every mechanism, at general orientations: CSA on both spins, the 11B quadrupole, DD."""
+def spin_pair(keep="labframe", tau_c=20e-12, axial=False):
+    """11B-19F with every mechanism, at general orientations: CSA on both spins, the 11B quadrupole, DD.
+
+    ``axial`` makes the rotational diffusion axially symmetric about z (``tau_par = tau_c / 4``)."""
     rng = np.random.default_rng(7)
     euler = [list(rng.uniform(0, np.pi, 3)) for _ in range(3)]
     bond = np.array([0.3, -0.5, 0.81])
@@ -27,7 +30,7 @@ def spin_pair(keep="labframe", tau_c=20e-12):
         "relaxation": ["redfield"],
         "equilibrium": "zero",
         "rlx_keep": keep,
-        "tau_c": [[tau_c]],
+        "tau_c": [[tau_c / 4, tau_c]] if axial else [[tau_c]],
     }
     return spynach.create({"isotopes": ["11B", "19F"], "magnet": 9.4}, inter)
 
@@ -56,6 +59,29 @@ def tetrahedral_ax4(keep="labframe"):
     return spynach.create({"isotopes": ["11B"] + ["19F"] * 4, "magnet": 9.4}, inter)
 
 
+def rotz(angle):
+    c, s = np.cos(angle), np.sin(angle)
+    return np.array([[c, -s, 0], [s, c, 0], [0, 0, 1.0]])
+
+
+def rotating_cf3(tau_int=50e-12, tau_c=50e-9, magnet=18.8):
+    """13CF3 in its C3 frame, rotating about C3 on top of the tumbling: the C3-symmetrised tensors (ppm) and
+    geometry of trifluoromethionine used in docs/cf3-trosy.md"""
+    turns = [rotz(2 * np.pi * k / 3) for k in range(3)]
+    fluorine = np.array([[-35.66, -0.92, -72.86], [-0.92, 17.48, 1.63], [-72.86, 1.63, 18.18]])
+    bond = 1.335 * np.array([np.sin(np.radians(68.54)), 0, np.cos(np.radians(68.54))])
+    inter = {
+        "zeeman": {"matrix": [np.diag([9.81, 9.81, -19.62]).tolist()] + [(R @ fluorine @ R.T).tolist() for R in turns]},
+        "coordinates": [[0, 0, 0]] + [(R @ bond).tolist() for R in turns],
+        "coupling": {"scalar": [[0, -255.7, -255.7, -255.7], [0] * 4, [0] * 4, [0] * 4]},
+        "relaxation": ["redfield"],
+        "rlx_keep": "secular",
+        "equilibrium": "zero",
+        "tau_c": [[1 / (1 / tau_c + 6 / tau_int), tau_c]],
+    }
+    return spynach.create({"isotopes": ["13C", "19F", "19F", "19F"], "magnet": magnet}, inter)
+
+
 def spynach_gamma(spin_system, pathways):
     """-R of spynach.relaxation between the pathway operators, through Pathways.states."""
     spin_system = spynach.basis(spin_system, LIOUV)
@@ -72,11 +98,12 @@ def same_coherence(pathways, per_isotope=True):
     return (coherence[:, None, :] == coherence[None, :, :]).all(axis=2)
 
 
+@pytest.mark.parametrize("axial", [False, True], ids=["isotropic", "axial"])
 @pytest.mark.parametrize("secular", ["none", "isotope", "total"])
-def test_rates_match_spynach_redfield_with_every_mechanism(secular):
-    pathways = relaxation_pathways(spin_pair(), secular=secular, ranks={"B": (1, 2, 3)})
+def test_rates_match_spynach_redfield_with_every_mechanism(secular, axial):
+    pathways = relaxation_pathways(spin_pair(axial=axial), secular=secular, ranks={"B": (1, 2, 3)})
     assert pathways.classes == ["DD", "CSA", "Q", "DD/CSA", "DD/Q", "CSA/CSA", "CSA/Q"]
-    reference = spynach_gamma(spin_pair(), pathways)
+    reference = spynach_gamma(spin_pair(axial=axial), pathways)
     if secular != "none":  # the secular forms are masks of the lab-frame superoperator
         reference = np.where(same_coherence(pathways, per_isotope=secular == "isotope"), reference, 0)
     gamma = pathways.rate_matrix()
@@ -140,6 +167,87 @@ def test_negative_magnetogyric_ratio_swaps_zero_and_double_quantum_frequencies()
     assert sympy.expand(pathways.expression("H1z", "Nz", "DD") - expected) == 0
 
 
+def test_axial_diffusion_gives_woessners_spectral_densities():
+    # A C-H bond perpendicular to the diffusion axis: the rigid pair's J(w) becomes J_0(w)/4 + 3 J_2(w)/4
+    # (the weights (3 cos^2 theta - 1)^2 / 4, 3 sin^2 theta cos^2 theta, 3 sin^4 theta / 4 at theta = 90 deg)
+    spin_system = spynach.create(
+        {"isotopes": ["1H", "13C"], "magnet": 14.1},
+        {
+            "coordinates": [[0, 0, 0], [1.09, 0, 0]],
+            "relaxation": ["redfield"],
+            "rlx_keep": "secular",
+            "equilibrium": "zero",
+            "tau_c": [[20e-12, 5e-9]],
+        },
+    )
+    pathways = relaxation_pathways(spin_system)
+    J0, J2 = sympy.Function("J_0"), sympy.Function("J_2")
+    b = sympy.Symbol("b_HC", real=True)
+    wH, wC = sympy.symbols("omega_H omega_C", positive=True)
+
+    def J(w):
+        return J0(w) / 4 + 3 * J2(w) / 4
+
+    expected = b**2 / 10 * (J(wH - wC) + 3 * J(wH) + 6 * J(wH + wC))
+    assert sympy.expand(pathways.expression("Hz", "Hz") - expected) == 0
+    parallel, perpendicular = 1 / (6 * 20e-12), 1 / (6 * 5e-9)
+    expected_taus = [1 / (6 * perpendicular + m * m * (parallel - perpendicular)) for m in range(3)]
+    assert pathways.correlation_times == pytest.approx(expected_taus)
+    gamma = pathways.rate_matrix()
+    assert np.abs(gamma - spynach_gamma(spin_system, pathways)).max() < 1e-5 * np.abs(gamma).max()
+    with pytest.raises(ValueError, match="m = 0, 1 or 2"):
+        pathways.spectral_density(next(iter(pathways.frequencies)))
+    assert relaxation_pathways(spin_pair(), tau_c=(1e-11, 1e-11)).tau_c == 1e-11  # an equal pair is isotropic
+
+
+def test_rotating_cf3_block_is_closed_and_carries_the_13c_quartet():
+    cf3 = rotating_cf3()
+    observed = {"coherence": {"13C": 1, "19F": 0}, "max_per_group": 3, "max_order": 4, "resolve": "interaction"}
+    pathways = relaxation_pathways(cf3, **observed)
+    assert pathways.labels == ["C+", "C+Fz", "C+FzFz", "C+F+F-", "C+FzFzFz", "C+FzF+F-"]
+    assert {"DD(CF)/CSA(C)", "DD(CF)/DD(CF')", "CSA(F)/CSA(F')"} <= set(pathways.classes)
+    # the 13C tensor is axial about C3: its cross-correlation with the C-F dipoles has m = 0 terms only
+    assert {m for _, m, _ in pathways.terms["DD(CF)/CSA(C)"]} == {0}
+    # the six operators are a closed block of L = H + iR, so H - i Gamma in them has the modes of the lines
+    spin_system = spynach.basis(cf3, LIOUV)
+    H = spynach.hamiltonian(spynach.assume(spin_system, "nmr"))
+    L = (H + 1j * spynach.relaxation(spin_system)).toarray()
+    V = pathways.states(spin_system)
+    assert np.linalg.norm(L @ V.T - V.T @ (V.conj() @ L @ V.T)) < 1e-4 * np.linalg.norm(L @ V.T)
+    six = np.linalg.eigvals(V.conj() @ H @ V.T - 1j * pathways.rate_matrix())
+    exact = np.linalg.eigvals(V.conj() @ L @ V.T)
+    assert max(np.abs(exact - mode).min() for mode in six) < 1e-5 * np.abs(exact).max()
+    frequencies, rates = -six.real / (2 * np.pi), -six.imag
+    np.testing.assert_allclose(sorted(set(np.round(frequencies, 2))), [-383.55, -127.85, 127.85, 383.55])
+    assert rates.min() < pathways.rate_matrix()[0, 0] / 5  # the TROSY line, against the decoupled line
+
+
+def test_coherence_of_each_isotope():
+    by_name = relaxation_pathways(tetrahedral_ax4(), coherence={"11B": 0, "19F": 1})
+    by_label = relaxation_pathways(tetrahedral_ax4(), coherence={"B": 0, "F": 1})
+    assert by_name.labels == by_label.labels == ["F+", "BzF+"]
+    with pytest.raises(ValueError, match="no isotope"):
+        relaxation_pathways(tetrahedral_ax4(), coherence={"1H": 0})
+
+
+def test_classes_resolved_by_interaction():
+    pathways = relaxation_pathways(tetrahedral_ax4(), resolve="interaction")
+    assert pathways.classes == [
+        "DD(BF)",
+        "DD(FF)",
+        "CSA(B)",
+        "CSA(F)",
+        "Q(B)",
+        "DD(BF)/DD(BF')",
+        "DD(BF)/DD(FF)",
+        "DD(BF)/CSA(F)",
+    ]
+    np.testing.assert_allclose(pathways.rate_matrix(), relaxation_pathways(tetrahedral_ax4()).rate_matrix(), atol=1e-12)
+    assert [m.interaction for m in pathways.mechanisms][:3] == ["CSA(B)", "Q(B)", "CSA(F)"]
+    with pytest.raises(ValueError, match="resolve"):
+        relaxation_pathways(tetrahedral_ax4(), resolve="spin")
+
+
 def test_tetrahedral_symmetry_cancels_the_boron_cross_correlations():
     # For any axis n, sum_k P2(n . r_k) = 0 over the four bonds of a tetrahedron, so in the collective basis
     # the 11B quadrupole and shielding do not cross-correlate with the fluorine mechanisms
@@ -170,6 +278,8 @@ def test_exact_numbers():
     assert _exact(-0.3) == sympy.Rational(-3, 10)
     assert _exact(0.0) == 0
     assert isinstance(_exact(np.pi), sympy.Float)
+    # a large float lies close to some fraction of large numerator by chance: it stays a float
+    assert isinstance(_exact(np.sqrt(155301243) / 1563), sympy.Float)
 
 
 def test_table_and_links():
@@ -209,3 +319,6 @@ def test_chord_diagram():
     split = plot_pathways(pathways, split=True, merge={"DD/DD": "DD"})
     assert {trace.name for trace in split.data if trace.showlegend is not False} == {"DD", "DD/CSA"}
     assert len(plot_pathways(pathways, min_rate=0.15).data) < len(fig.data)
+    from spynach.plotting import _html_expression
+
+    assert _html_expression("J_1(omega_C)") == "J<sub>1</sub>(ω<sub>C</sub>)"
