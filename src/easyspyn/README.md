@@ -144,7 +144,8 @@ Releases go out from GitHub through PyPI's Trusted Publishing, with no token: pu
 `.github/workflows/publish-easyspyn.yml`, which tests and builds that commit and, once the reviewer of the `pypi`
 environment approves, uploads it. One-time setup: a pending publisher on PyPI (project `easyspyn`, owner
 `ajerschow`, repository `spynach`, workflow `publish-easyspyn.yml`, environment `pypi`) and an environment named
-`pypi` in the repository settings. Spynach's own `vX.Y.Z` releases do not start it. A version can be uploaded only
+`pypi` in the repository settings. Spynach's own `vX.Y.Z` releases do not start it (they run `publish-spynach.yml`, and `pip install "spynach[epr]"`
+pulls this distribution at the same version, so publish the EasySpyn release first). A version can be uploaded only
 once: bump it in `packaging/easyspyn/pyproject.toml`, `src/easyspyn/__init__.py`, `pyproject.toml`,
 `CITATION.cff` and the CHANGELOG (the version test lists what disagrees) before the next release.
 

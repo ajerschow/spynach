@@ -4,6 +4,12 @@ Releases are tagged `vX.Y.Z` on GitHub; the version is `spynach.__version__`.
 
 ## Unreleased
 
+- Spynach has a PyPI distribution, `spynach` (`pip install spynach`; Python 3.11 or newer, Numba included). It holds
+  `spynach` and `ctps`; `easyspyn` stays its own distribution, which `pip install "spynach[epr]"` adds (the extra pins
+  the matching version, `tests/unit/test_version.py`). Before, the GitHub distribution bundled all three. A GitHub
+  Actions workflow (`.github/workflows/publish-spynach.yml`) publishes it through Trusted Publishing when a release
+  tagged `vX.Y.Z` is published, after the reviewer of the `pypi` environment approves; EasySpyn's releases
+  (`easyspyn-vX.Y.Z`) do not start it. The project file gained the readme, classifiers and URLs shown on the PyPI page.
 - Relaxation pathways (`spynach.relaxation_pathways`, new module `spynach.pathways`): the Bloch-Redfield-Wangsness
   relaxation matrix of a spin system between (collective) product operators, split by mechanism (DD, CSA, Q, JA) and
   by every cross-correlation between two mechanisms, with each element as a rate and as an exact SymPy expression in

@@ -670,6 +670,22 @@ wheels = [
 ]
 
 [[package]]
+name = "easyspyn"
+version = "0.4.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "numba", marker = "platform_python_implementation == 'CPython'" },
+    { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
+    { name = "numpy", version = "2.5.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
+    { name = "scipy", version = "1.17.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
+    { name = "scipy", version = "1.18.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/87/03/178db70f223e82ba76241a21751a5356452b400230e900bcbf06505dc86e/easyspyn-0.4.0.tar.gz", hash = "sha256:e55fceefca7d56ffe509a7475bbeb35da400164b47aeeaaad840d2b19b08e952", size = 151619, upload-time = "2026-10-27T19:34:42.571Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/58/ee/e3d4f503d30bccccb50053a3339065ff48cf74178928768206eb0a3aae19/easyspyn-0.4.0-py3-none-any.whl", hash = "sha256:9b9bc7d4ebb742b31cb6967d7d47c4e169fffd7b7f2d9592d7cb5eb43da6a86c", size = 161885, upload-time = "2026-10-27T19:34:41.029Z" },
+]
+
+[[package]]
 name = "executing"
 version = "2.3.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1609,6 +1625,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/7b/92/328a294a6de83bacb95bed01f04e0eaff4e3616ee359fc821a5dfc539b02/mistune-3.3.4.tar.gz", hash = "sha256:58b5c96d6fcb61190dfe5fae498d2b2065f99cf61e9649418fd54cf1ada86dfe", size = 121426, upload-time = "2026-07-22T05:22:30.89Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/77/e4/288365afae98953bc01de09f686f40d8ee84578135aa7767d5d4e60b5278/mistune-3.3.4-py3-none-any.whl", hash = "sha256:ee015381e955e370962968befe1d729ab60fafb6a715ac6751763fbce38c8d4a", size = 66862, upload-time = "2026-07-22T05:22:29.419Z" },
+]
+
+[[package]]
+name = "mpmath"
+version = "1.3.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/e0/47/dd32fa426cc72114383ac549964eecb20ecfd886d1e5ccf5340b55b02f57/mpmath-1.3.0.tar.gz", hash = "sha256:7a28eb2a9774d00c7bc92411c19a89209d5da7c4c9a9e227be8330a23a25b91f", size = 508106, upload-time = "2023-03-07T16:47:11.061Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/43/e3/7d92a15f894aa0c9c4b49b8ee9ac9850d6e63b03c9c32c0367a13ae62209/mpmath-1.3.0-py3-none-any.whl", hash = "sha256:a0b2b9fe80bbcd81a6647ff13108738cfb482d481d826cc0e02f5b35e5c88d2c", size = 536198, upload-time = "2023-03-07T16:47:09.197Z" },
 ]
 
 [[package]]
@@ -2852,6 +2877,7 @@ compare = [
 dev = [
     { name = "pytest" },
     { name = "ruff" },
+    { name = "sympy" },
 ]
 docs = [
     { name = "ipykernel" },
@@ -2861,16 +2887,25 @@ docs = [
     { name = "nbclient" },
     { name = "nbformat" },
     { name = "plotly" },
+    { name = "sympy" },
+]
+epr = [
+    { name = "easyspyn" },
 ]
 plot = [
     { name = "plotly" },
 ]
+symbolic = [
+    { name = "sympy" },
+]
 test = [
     { name = "pytest" },
+    { name = "sympy" },
 ]
 
 [package.metadata]
 requires-dist = [
+    { name = "easyspyn", marker = "extra == 'epr'", specifier = "==0.4.0" },
     { name = "h5py", specifier = ">=3.10" },
     { name = "ipykernel", marker = "extra == 'docs'", specifier = ">=6" },
     { name = "jupyterlab", marker = "extra == 'docs'", specifier = ">=4" },
@@ -2888,9 +2923,13 @@ requires-dist = [
     { name = "scipy", specifier = ">=1.11" },
     { name = "spynach", extras = ["plot"], marker = "extra == 'compare'" },
     { name = "spynach", extras = ["plot"], marker = "extra == 'docs'" },
+    { name = "spynach", extras = ["symbolic"], marker = "extra == 'dev'" },
+    { name = "spynach", extras = ["symbolic"], marker = "extra == 'docs'" },
     { name = "spynach", extras = ["test"], marker = "extra == 'dev'" },
+    { name = "sympy", marker = "extra == 'symbolic'", specifier = ">=1.12" },
+    { name = "sympy", marker = "extra == 'test'", specifier = ">=1.12" },
 ]
-provides-extras = ["test", "plot", "fast", "compare", "docs", "dev"]
+provides-extras = ["epr", "test", "plot", "symbolic", "fast", "compare", "docs", "dev"]
 
 [[package]]
 name = "stack-data"
@@ -2904,6 +2943,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/28/e3/55dcc2cfbc3ca9c29519eb6884dd1415ecb53b0e934862d3559ddcb7e20b/stack_data-0.6.3.tar.gz", hash = "sha256:836a778de4fec4dcd1dcd89ed8abff8a221f58308462e1c4aa2a3cf30148f0b9", size = 44707, upload-time = "2023-09-30T13:58:05.479Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/f1/7b/ce1eafaf1a76852e2ec9b22edecf1daa58175c090266e9f6c64afcd81d91/stack_data-0.6.3-py3-none-any.whl", hash = "sha256:d5558e0c25a4cb0853cddad3d77da9891a08cb85dd9f9f91b9f8cd66e511e695", size = 24521, upload-time = "2023-09-30T13:58:03.53Z" },
+]
+
+[[package]]
+name = "sympy"
+version = "1.14.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "mpmath" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/83/d3/803453b36afefb7c2bb238361cd4ae6125a569b4db67cd9e79846ba2d68c/sympy-1.14.0.tar.gz", hash = "sha256:d3d3fe8df1e5a0b42f0e7bdf50541697dbe7d23746e894990c030e2b05e72517", size = 7793921, upload-time = "2025-04-27T18:05:01.611Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a2/09/77d55d46fd61b4a135c444fc97158ef34a095e5681d0a6c10b75bf356191/sympy-1.14.0-py3-none-any.whl", hash = "sha256:e091cc3e99d2141a0ba2847328f5479b05d94a6635cb96148ccb3f34671bd8f5", size = 6299353, upload-time = "2025-04-27T18:04:59.103Z" },
 ]
 
 [[package]]

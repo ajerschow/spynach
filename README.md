@@ -25,8 +25,9 @@ runs Spynach, `easyspyn` and `ctps` in the browser through Pyodide
 **Install (Python 3.11 or newer):**
 
 ```
-pip install easyspyn   # EPR: EasySpin's simulators, from PyPI (installs Numba for the fast kernels)
-pip install "spynach @ git+https://github.com/ajerschow/spynach.git"   # NMR: Spinach's kernel; also installs easyspyn and ctps
+pip install spynach    # NMR: Spinach's kernel, from PyPI (installs Numba; also provides ctps)
+pip install easyspyn   # EPR: EasySpin's simulators, from PyPI (its own distribution, installs Numba)
+pip install "spynach[epr]"   # both
 ```
 
 ```python
@@ -213,14 +214,20 @@ report are timed on the same machine.
 
 Releases are tagged `vX.Y.Z` and listed in [`CHANGELOG.md`](CHANGELOG.md);
 `spynach.__version__` gives the installed version, and
-`pip install "spynach @ git+https://github.com/ajerschow/spynach.git@v0.3.0"`
-installs a tagged one. To release: set the version in `pyproject.toml`,
+`pip install spynach==0.4.0` installs a tagged one from PyPI (before 0.4.0:
+`pip install "spynach @ git+https://github.com/ajerschow/spynach.git@v0.3.0"`). To release: set the version in `pyproject.toml`,
 `src/spynach/__init__.py` and `CITATION.cff` (a test keeps them equal), add
 the `CHANGELOG.md` entry, refresh `uv.lock`, run the checks above plus
 `python docs/build_notebooks.py --check` and
 `python oracle/parity_summary.py --check`, commit, tag with
 `git tag -a vX.Y.Z -m "Spynach X.Y.Z"`, push with `--follow-tags`, and draft
 the GitHub release from the tag with the changelog entry as its notes.
+Publishing that release runs `.github/workflows/publish-spynach.yml`, which tests and builds
+the commit and, once the reviewer of the `pypi` environment approves, uploads it to PyPI as
+`spynach` (Trusted Publishing, no token; the tag must equal the version in `pyproject.toml`).
+The distribution holds `spynach` and `ctps`; the `epr` extra pins the matching `easyspyn`, so
+release that first (`easyspyn-vX.Y.Z`, see `src/easyspyn/README.md`). A version can be
+uploaded only once.
 
 Code style is enforced by [ruff](https://docs.astral.sh/ruff/) (`pip install
 -e ".[dev]"`), configured in `pyproject.toml`: 120-character lines, import

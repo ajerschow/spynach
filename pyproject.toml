@@ -12,9 +12,25 @@ authors = [{name = "Alexej Jerschow"}]
 requires-python = ">=3.11"
 # Numba is a default dependency: the sparse kernels (spynach) and the spectrum kernels (easyspyn) are compiled with it;
 # without it (SPYNACH_NUMBA=0, EASYSPYN_NUMBA=0, an interpreter Numba does not support) NumPy and SciPy run instead.
+readme = "README.md"
+keywords = ["NMR", "spin dynamics", "Spinach", "Liouville space", "density matrix", "simulation"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Chemistry",
+    "Topic :: Scientific/Engineering :: Physics",
+]
 dependencies = ["numpy>=1.26", "scipy>=1.11", "h5py>=3.10", "numba>=0.60; platform_python_implementation == 'CPython'"]
 
+[project.urls]
+Homepage = "https://ajerschow.github.io/spynach/"
+Documentation = "https://github.com/ajerschow/spynach/blob/main/docs/hilbert-space.md"
+Source = "https://github.com/ajerschow/spynach"
+Changelog = "https://github.com/ajerschow/spynach/blob/main/CHANGELOG.md"
+
 [project.optional-dependencies]
+epr = ["easyspyn==0.4.0"]  # EasySpin's simulators; its own PyPI distribution, not bundled (keep equal to the version)
 test = ["pytest>=8", "sympy>=1.12"]  # sympy: the relaxation pathway tests and guide
 plot = ["plotly>=6"]
 symbolic = ["sympy>=1.12"]  # relaxation pathways (spynach.pathways)
@@ -25,6 +41,8 @@ dev = ["spynach[test]", "spynach[symbolic]", "ruff>=0.14"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
+# easyspyn is its own PyPI distribution (packaging/easyspyn); spynach does not import it
+include = ["spynach*", "ctps*"]
 
 [tool.setuptools.package-data]
 spynach = ["grids/*.npz"]

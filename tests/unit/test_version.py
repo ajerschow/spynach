@@ -30,3 +30,9 @@ def test_easyspyn_distribution_carries_the_distribution_version():
     pyproject = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))["project"]["version"]
     easyspyn = tomllib.loads((ROOT / "packaging" / "easyspyn" / "pyproject.toml").read_text(encoding="utf-8"))
     assert easyspyn["project"]["name"] == "easyspyn" and easyspyn["project"]["version"] == pyproject
+
+
+def test_epr_extra_pins_the_easyspyn_distribution():
+    """pip install "spynach[epr]" must fetch the easyspyn release that belongs to this version."""
+    project = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))["project"]
+    assert project["optional-dependencies"]["epr"] == [f"easyspyn=={project['version']}"]

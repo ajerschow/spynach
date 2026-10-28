@@ -78,9 +78,8 @@
 pip install easyspyn
 
 # NMR: Spinach's kernel (and ctps)
-pip install "spynach @ \
-  git+https://github.com/ajerschow/spynach.git"</code></pre>
-    <p>EasySpyn is on PyPI and installs Numba, which compiles its kernels; Spynach installs from GitHub and also provides <code>ctps</code>. <a href="#install">More install options</a></p>
+pip install spynach</code></pre>
+    <p>Both are on PyPI and install Numba, which speeds up their kernels; <code>pip install "spynach[epr]"</code> installs the two together, and Spynach also provides <code>ctps</code>. <a href="#install">More install options</a></p>
   </div>
 </div>
 
@@ -117,10 +116,16 @@ pip install "spynach @ \
 <section id="install">
   <header><span class="eyebrow">Install</span><h2>Install</h2></header>
   <div>
-    <p>Python 3.11 or newer. <code>pip install easyspyn</code> installs the EPR package alone from PyPI. The GitHub distribution installs <code>spynach</code>, <code>easyspyn</code> and <code>ctps</code>; Numba comes with both, threading the sparse kernels of Spynach and compiling EasySpyn's (<code>SPYNACH_NUMBA=0</code> and <code>EASYSPYN_NUMBA=0</code> switch it off); the <code>docs</code> and <code>test</code> extras add the notebooks and the test suite.</p>
+    <p>Python 3.11 or newer. <code>pip install easyspyn</code> installs the EPR package alone and <code>pip install spynach</code> the NMR package with <code>ctps</code>, both from PyPI as separate distributions (<code>spynach[epr]</code> adds easyspyn); Numba comes with both, threading the sparse kernels of Spynach and compiling EasySpyn's (<code>SPYNACH_NUMBA=0</code> and <code>EASYSPYN_NUMBA=0</code> switch it off); the <code>docs</code> and <code>test</code> extras add the notebooks and the test suite.</p>
 <pre><code>pip install easyspyn
 
-# Spynach with easyspyn and ctps, from GitHub
+# Spynach with ctps
+pip install spynach
+
+# Spynach and easyspyn together
+pip install "spynach[epr]"
+
+# the development version, from GitHub
 pip install "spynach @ git+https://github.com/ajerschow/spynach.git"
 
 # or, for the notebooks and tests
