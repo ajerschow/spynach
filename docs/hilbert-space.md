@@ -30,17 +30,13 @@ in one namespace, so the examples stay correct as the code changes.
 
 ## Setup
 
-Spynach needs Python 3.11 or later with NumPy, SciPy, and h5py. From the
-repository root:
-
-```
-python -m pip install -e ".[test,docs]"
-python -m pytest -q
-```
-
-The `docs` extra adds Plotly, JupyterLab, and what is needed to run the
-notebooks; only plots and notebooks need it (`.[plot]` installs Plotly
-alone). Start JupyterLab with `jupyter lab docs/notebooks/`.
+Spynach needs Python 3.11 or later; NumPy, SciPy, h5py and Numba come with
+it. Install it as described in the [install section of the project page](https://ajerschow.github.io/spynach/#install)
+(`pip install spynach`). Plots need Plotly (the `plot` extra) and the
+relaxation pathways need SymPy (the `symbolic` extra). To run the notebooks
+of these guides, install the `docs` extra from a clone of the repository
+(see "Development" in the [README](../README.md)) and start JupyterLab with
+`jupyter lab docs/notebooks/`.
 
 Large Liouville-space calculations run faster with Numba, which is installed
 with Spynach: it compiles the sparse products of the

@@ -21,7 +21,8 @@ The notebooks are saved with their outputs, plots included. On GitHub the
 guides show each figure as a static image from `docs/figures/` and the
 notebooks show the static copy saved with every figure; the nbviewer links
 show the interactive figures. Open the notebooks
-with `jupyter lab docs/notebooks/` after `pip install -e ".[docs]"`, or in
+with `jupyter lab docs/notebooks/` after installing the `docs` extra from a clone (see "Development" in the
+[README](../README.md)), or in
 VS Code with the Python and Jupyter extensions; the plots are interactive
 in both. (In a container whose CPU quota is below its visible core count,
 set `OPENBLAS_NUM_THREADS` to the quota first; see the setup section of the

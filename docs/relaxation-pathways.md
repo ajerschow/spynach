@@ -18,7 +18,7 @@ companion notebook is
 ([interactive figures on nbviewer](https://nbviewer.org/github/ajerschow/spynach/blob/main/docs/notebooks/relaxation-pathways.ipynb)).
 
 Every Python block is executed by `tests/docs/`, in order and in one
-namespace. The expressions need SymPy (`pip install -e ".[symbolic]"`).
+namespace. The expressions need SymPy (the `symbolic` extra of the [install](https://ajerschow.github.io/spynach/#install)).
 
 ## Contents
 

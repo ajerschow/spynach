@@ -190,9 +190,15 @@ a Spinach run, see the section
 
 ## Development
 
+From a clone of the repository, an editable install with the test and notebook tools runs the
+test suite and the guides' notebooks (`jupyter lab docs/notebooks/`):
+
 ```
-PYTHONPATH=src python -m pytest -q
+python -m pip install -e ".[test,docs]"
+python -m pytest -q
 ```
+
+Without the install, `PYTHONPATH=src python -m pytest -q` runs the tests from the source tree.
 
 Parity tests skip when fixtures are absent (`$SPYNACH_FIXTURES`, default
 `/fixtures`). A caveat for containers: when the CPU quota is below the
