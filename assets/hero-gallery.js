@@ -121,7 +121,7 @@ void main(){
   }
   animSlide.append(first, el('div', 'gallery-caption', {
     textContent: animated
-      ? 'Interference of rotating spin-phase spirals. Move the pointer to steer the centre; click to reverse one spiral.'
+      ? 'Click for π pulse'
       : 'A frame of an animation of interfering spin-phase spirals; it moves in browsers with WebGL.',
   }));
 
