@@ -312,8 +312,108 @@ void main(){
     ['COSY', shaderSlide(COSY, ['OES_standard_derivatives'], 'A drifting COSY-like spectrum. Move the pointer; click for an RF pulse')],
   ].filter(([, slide]) => slide) : [];
 
-  const slides = [animSlide, ...extra.map(([, slide]) => slide), imgSlide];
-  const names = ['Animation', ...extra.map(([name]) => name), 'Picture'];
+  // ---- the relaxation chord diagram: a static SVG (scripts/make_hero_chord.py), inlined so that a click can send a
+  // pulse through it. Without the inlining (the fetch fails) the image stays and is a correct static figure. ----
+  const chordSlide = () => {
+    const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const alt = 'Chord diagram of the cross-relaxation pathways in the zero-quantum space of 11BF4-: 13 operators on a circle, ribbons as wide as the rates';
+    const slide = el('div', 'gallery-slide');
+    const stage = el('div', 'chord-stage');
+    const still = el('img', 'chord', { src: 'assets/relaxation-chord.svg', alt, width: 900, height: 900 });
+    stage.append(still);
+    const note = el('div', 'gallery-caption');
+    const hint = el('span', '', { textContent: 'Ribbon width is the rate.' });
+    const link = el('a', '', { href: 'try.html#ex-pathways', textContent: 'Try it in the browser' });
+    note.append('Cross-relaxation pathways of 11BF4-, contributed by Florin Teleanu. ', hint, ' ', link, '.');
+    slide.append(stage, note);
+
+    const wire = svg => {
+      const ribbons = [...svg.querySelectorAll('.ribbon')].map(path => ({
+        path, a: +path.dataset.source, b: +path.dataset.target, rate: Math.abs(+path.dataset.rate),
+      }));
+      const arcs = [...svg.querySelectorAll('.arc')];
+      const widest = Math.max(...ribbons.map(r => r.rate));
+      const HOP = calm ? 0 : 420, REST = calm ? 900 : 1900;
+      let running = [], sweeps = null;
+      const stop = () => { running.forEach(a => a.cancel()); running = []; if (sweeps) sweeps.remove(); sweeps = null; };
+      const run = (node, keyframes, options) => running.push(node.animate(keyframes, { fill: 'both', ...options }));
+
+      // The pulse spreads from the operator `start` over the ribbons, one hop after the other, fainter with every hop
+      // and as bright as the rate; then everything relaxes back to rest.
+      const pulse = start => {
+        stop();
+        const dist = new Map([[start, 0]]);
+        for (let queue = [start]; queue.length;) {
+          const u = queue.shift();
+          for (const r of ribbons) {
+            const v = r.a === u ? r.b : r.b === u ? r.a : -1;
+            if (v >= 0 && !dist.has(v)) { dist.set(v, dist.get(u) + 1); queue.push(v); }
+          }
+        }
+        const hops = Math.max(...dist.values());
+        const total = hops * HOP + REST;
+        sweeps = document.createElementNS(svg.namespaceURI, 'g');
+        svg.insertBefore(sweeps, svg.querySelector('.arcs'));
+        for (const r of ribbons) {
+          const near = Math.min(dist.has(r.a) ? dist.get(r.a) : Infinity, dist.has(r.b) ? dist.get(r.b) : Infinity);
+          if (near === Infinity) { run(r.path, [{ fillOpacity: .8 }, { fillOpacity: .1 }], { duration: 200 }); continue; }
+          const t0 = near * HOP / total, level = Math.min(.95, (.3 + .65 * Math.sqrt(r.rate / widest)) * Math.pow(.86, near));
+          run(r.path, [
+            { fillOpacity: .8, offset: 0 }, { fillOpacity: .08, offset: Math.min(.06, t0) },
+            { fillOpacity: .08, offset: t0 }, { fillOpacity: level, offset: t0 + .04 },
+            { fillOpacity: level, offset: Math.min(.7, t0 + .3) }, { fillOpacity: .8, offset: 1 },
+          ], { duration: total });
+          if (!calm) {
+            const trace = r.path.cloneNode(false);
+            trace.removeAttribute('data-source'); trace.removeAttribute('data-target');
+            Object.assign(trace.style, { fill: 'none', stroke: '#fff', strokeWidth: '0.014', pointerEvents: 'none' });
+            trace.setAttribute('pathLength', '1');
+            trace.setAttribute('stroke-dasharray', '.16 .84');
+            sweeps.append(trace);
+            run(trace, [{ strokeDashoffset: .16, opacity: .95 }, { strokeDashoffset: -.84, opacity: .2 }],
+              { duration: 1.5 * HOP + 300, delay: near * HOP, easing: 'ease-out' });
+          }
+        }
+        arcs.forEach((arc, k) => {
+          const shape = arc.querySelector('path'), base = shape.getAttribute('fill');
+          const d = dist.get(k);
+          if (d === undefined) { run(shape, [{ fillOpacity: 1 }, { fillOpacity: .35 }, { fillOpacity: 1 }], { duration: total }); return; }
+          run(shape, [{ fill: base }, { fill: '#fff', offset: .08 }, { fill: base }],
+            { duration: REST * (d ? .6 : 1), delay: d * HOP, easing: 'ease-out' });
+        });
+        Promise.all(running.map(a => a.finished)).then(stop, () => {});
+      };
+
+      const name = arc => arc.querySelector('text').textContent;
+      const home = arcs.findIndex(arc => name(arc) === 'Bz');
+      svg.addEventListener('click', event => {
+        const arc = event.target.closest('.arc');
+        const ribbon = ribbons.find(r => r.path === event.target.closest('.ribbon'));
+        pulse(arc ? arcs.indexOf(arc) : ribbon ? ribbon.a : Math.max(0, home));
+      });
+      arcs.forEach(arc => {
+        arc.setAttribute('tabindex', '0');
+        arc.setAttribute('role', 'button');
+        arc.setAttribute('aria-label', 'Send a pulse from ' + name(arc));
+        arc.addEventListener('keydown', e => {
+          if (e.key === 'Enter' || e.key === ' ') { pulse(arcs.indexOf(arc)); e.preventDefault(); }
+        });
+      });
+      hint.textContent = 'Ribbon width is the rate; click an operator to follow the transfer.';
+    };
+
+    fetch(still.src).then(r => (r.ok ? r.text() : Promise.reject(r.status))).then(text => {
+      const svg = document.importNode(new DOMParser().parseFromString(text, 'image/svg+xml').documentElement, true);
+      svg.classList.add('chord');
+      svg.setAttribute('width', '900'); svg.setAttribute('height', '900');
+      stage.replaceChildren(svg);
+      wire(svg);
+    }).catch(() => {});
+    return slide;
+  };
+
+  const slides = [animSlide, ...extra.map(([, slide]) => slide), chordSlide(), imgSlide];
+  const names = ['Animation', ...extra.map(([name]) => name), 'Relaxation', 'Picture'];
   track.append(...slides);
 
   const prev = el('button', 'gallery-btn prev', { type: 'button', textContent: '‹' });
