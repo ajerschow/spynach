@@ -129,9 +129,192 @@ void main(){
   caption.className = 'gallery-caption';
   imgSlide.append(img, caption);
 
-  track.append(animSlide, imgSlide);
-  const slides = [animSlide, imgSlide];
-  const names = ['Animation', 'Picture'];
+  // ---- two more animations, each confined to its own slide on the same dark background ----
+  const BG = 'vec3 bg = vec3(.035, .04, .05);';
+  const KSPACE = `
+precision highp float;
+uniform vec2 res; uniform float t; uniform float dpr;
+uniform vec2 mouse; uniform float mAmp;
+uniform vec3 clk[4];  // click x, y (0..1) and age in s; age < 0 = unused
+void main(){
+  float cell = 10. * dpr;
+  vec2 fc = gl_FragCoord.xy;
+  vec2 id = floor(fc / cell);
+  vec2 cp = (id + .5) * cell;            // sample at the dot centre
+  vec2 lp = fc - cp;
+  float asp = res.x / res.y;
+  vec2 r = cp / res.y;                   // position in units of the height
+
+  // sum of plane waves: k-vectors on slowly rotating spokes
+  vec2 z = vec2(0.);
+  for (int k = 0; k < 4; k++) {
+    float fk = float(k);
+    float dir = mod(fk, 2.) < .5 ? 1. : -1.;
+    float th = dir * t * .045 + fk * 1.9;
+    float km = 13. + 5. * fk;
+    float ph = km * dot(r, vec2(cos(th), sin(th))) - t * (.5 + .15 * fk);
+    z += .5 * vec2(cos(ph), sin(ph));
+  }
+  // pointer: an extra plane wave, k from the centre to the pointer
+  vec2 kv = (mouse - .5) * vec2(asp, 1.) * 70.;
+  float phm = dot(kv, r) - t * 1.2;
+  z += mAmp * .8 * vec2(cos(phm), sin(phm));
+  // clicks: outgoing circular waves with a soft front, decaying
+  for (int k = 0; k < 4; k++) {
+    vec3 ck = clk[k];
+    float age = ck.z;
+    if (age < 0. || age > 8.) continue;
+    float d = length(r - ck.xy * vec2(asp, 1.));
+    float front = 1. - smoothstep(age * .32 - .04, age * .32, d);
+    float env = exp(-age / 2.) * front / (1. + 6. * d);
+    float ph = 45. * d - 9. * age;
+    z += 2.2 * env * vec2(cos(ph), sin(ph));
+  }
+  float I = clamp(dot(z, z) / 4., 0., 1.);
+  float rad = cell * .46 * sqrt(I);
+  float dotA = 1. - smoothstep(rad - 1. * dpr, rad + .2 * dpr, length(lp));
+  vec3 col = z.x > 0. ? vec3(130., 230., 205.) / 255. : vec3(255., 150., 120.) / 255.;
+  ${BG}
+  gl_FragColor = vec4(mix(bg, col, dotA * .95), 1.);
+}`;
+  const COSY = `
+#extension GL_OES_standard_derivatives : enable
+precision highp float;
+uniform vec2 res; uniform float t; uniform float dpr;
+uniform vec2 mouse; uniform float mAmp;
+uniform vec3 clk[4];  // click x, y (0..1) and age in s; age < 0 = unused
+float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+// 2D Lorentzian (the product form gives the familiar star-shaped contours)
+float lor(vec2 q, vec2 c, float w, float asp){
+  vec2 d = (q - c) * vec2(asp, 1.) / w;
+  return 1. / ((1. + d.x*d.x) * (1. + d.y*d.y));
+}
+float shift(float i){ return .12 + .19*i + .025*sin(t*.11*(i + 1.) + 1.7*i); }
+void main(){
+  vec2 q = gl_FragCoord.xy / res;
+  float asp = res.x / res.y;
+  float w = .018;
+  float F = 0.;
+  for (int ii = 0; ii < 5; ii++) {
+    float i = float(ii);
+    float di = shift(i);
+    F += lor(q, vec2(di), w, asp);                          // diagonal peak
+    for (int jj = 0; jj < 5; jj++) {
+      float j = float(jj);
+      if (jj <= ii) continue;
+      float h = hash(vec2(i, j));
+      if (h < .45) continue;                                // only some spins are coupled
+      float dj = shift(j);
+      float a = .8 * sin(t*(.15 + .2*h) + 6.28*h);          // amplitude and sign oscillate
+      F += a * (lor(q, vec2(di, dj), w, asp) + lor(q, vec2(dj, di), w, asp));
+    }
+  }
+  F += mAmp * (lor(q, mouse, w, asp) + lor(q, mouse.yx, w, asp));
+  // clicks: pulse, excitation, coherence transfer, relaxation
+  for (int k = 0; k < 4; k++) {
+    vec3 ck = clk[k];
+    float age = ck.z;
+    if (age < 0. || age > 9.) continue;
+    float env = exp(-age / 2.2);                            // T2 decay
+    float osc = cos(age * 3.);                              // evolution: sign flips
+    F += 1.2 * env * (lor(q, ck.xy, w, asp) + lor(q, ck.yx, w, asp));
+    for (int ii = 0; ii < 5; ii++) {
+      float i = float(ii);
+      float di = shift(i);
+      float on = smoothstep(.18*i, .18*i + .35, age);       // transfers arrive in turn
+      F += .9 * env * osc * on * (lor(q, vec2(ck.x, di), w, asp) + lor(q, vec2(di, ck.x), w, asp));
+    }
+    vec2 dd = (q - ck.xy) * vec2(asp, 1.);
+    float rr = (length(dd) - age * .38) / .012;             // expanding RF ripple
+    F += .5 * exp(-age * 1.1) * exp(-rr * rr);
+  }
+  // logarithmic contour levels, drawn with screen-space width
+  float thr = .04;
+  float A = abs(F);
+  float v = log2(max(A, 1e-6) / thr) * 1.6;
+  float g = abs(fract(v - .5) - .5) / max(fwidth(v), 1e-4);
+  float line = (1. - min(g, 1.)) * step(thr, A);
+  vec3 col = F > 0. ? vec3(130., 230., 205.) / 255. : vec3(255., 150., 120.) / 255.;
+  ${BG}
+  gl_FragColor = vec4(mix(bg, col, line * .85), 1.);
+}`;
+
+  // A slide with its own WebGL canvas, or null if this browser cannot run the shader. The pointer steers a
+  // plane wave or a cross peak, a click starts a wave or an RF pulse; it draws only while visible.
+  const shaderSlide = (source, extensions, text) => {
+    const cv = el('canvas', '');
+    const g = cv.getContext('webgl', { antialias: false });
+    if (!g || !extensions.every(x => g.getExtension(x))) return null;
+    const sh = (type, src) => { const s = g.createShader(type); g.shaderSource(s, src); g.compileShader(s); return s; };
+    const pr = g.createProgram();
+    g.attachShader(pr, sh(g.VERTEX_SHADER, vs));
+    g.attachShader(pr, sh(g.FRAGMENT_SHADER, source));
+    g.linkProgram(pr);
+    if (!g.getProgramParameter(pr, g.LINK_STATUS)) return null;
+    g.useProgram(pr);
+    g.bindBuffer(g.ARRAY_BUFFER, g.createBuffer());
+    g.bufferData(g.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), g.STATIC_DRAW);
+    const at = g.getAttribLocation(pr, 'p');
+    g.enableVertexAttribArray(at);
+    g.vertexAttribPointer(at, 2, g.FLOAT, false, 0, 0);
+    const u = n => g.getUniformLocation(pr, n);
+    const [uRes, uT, uDpr, uMouse, uAmp, uClk] = ['res', 't', 'dpr', 'mouse', 'mAmp', 'clk'].map(u);
+    cv.setAttribute('role', 'img');
+    cv.setAttribute('aria-label', text);
+    cv.style.aspectRatio = '1397 / 1202';
+    const ratio = Math.min(devicePixelRatio || 1, 2);
+    const fit = () => { cv.width = cv.clientWidth * ratio; cv.height = cv.clientHeight * ratio; g.viewport(0, 0, cv.width, cv.height); };
+    new ResizeObserver(fit).observe(cv);
+    fit();
+
+    const clicks = [];
+    let mouse = [.5, .5], aim = [.5, .5], amp = 0, ampAim = 0;
+    const local = e => { const r = cv.getBoundingClientRect(); return [(e.clientX - r.left) / r.width, (r.bottom - e.clientY) / r.height]; };
+    cv.addEventListener('pointermove', e => { aim = local(e); if (ampAim === 0) mouse = aim.slice(); ampAim = .9; });
+    cv.addEventListener('pointerleave', () => { ampAim = 0; });
+    cv.addEventListener('click', e => {
+      const [x, y] = local(e);
+      clicks.push({ x, y, t: performance.now() });
+      if (clicks.length > 4) clicks.shift();
+    });
+
+    let shown = true, loop = 0;
+    const begin = performance.now();
+    const ck = new Float32Array(12);
+    const paint = now => {
+      loop = 0;
+      if (!shown || document.hidden) return;
+      mouse = mouse.map((m, i) => m + (aim[i] - m) * .05);
+      amp += (ampAim - amp) * .03;
+      g.uniform2f(uRes, cv.width, cv.height);
+      g.uniform1f(uT, (now - begin) / 1000);
+      g.uniform1f(uDpr, ratio);
+      g.uniform2f(uMouse, mouse[0], mouse[1]);
+      g.uniform1f(uAmp, amp);
+      for (let k = 0; k < 4; k++) ck.set(clicks[k] ? [clicks[k].x, clicks[k].y, (now - clicks[k].t) / 1000] : [0, 0, -1], 3 * k);
+      g.uniform3fv(uClk, ck);
+      g.drawArrays(g.TRIANGLES, 0, 3);
+      loop = requestAnimationFrame(paint);
+    };
+    new IntersectionObserver(([entry]) => {
+      shown = entry.isIntersecting;
+      if (shown && !loop) loop = requestAnimationFrame(paint);
+    }, { threshold: 0.1 }).observe(cv);
+    document.addEventListener('visibilitychange', () => { if (!document.hidden && !loop) loop = requestAnimationFrame(paint); });
+    loop = requestAnimationFrame(paint);
+
+    const slide = el('div', 'gallery-slide');
+    slide.append(cv, el('div', 'gallery-caption', { textContent: text }));
+    return slide;
+  };
+  const extra = animated ? [
+    ['k-space', shaderSlide(KSPACE, [], 'Plane waves in k-space. Move the pointer; click for a wave')],
+    ['COSY', shaderSlide(COSY, ['OES_standard_derivatives'], 'A drifting COSY-like spectrum. Move the pointer; click for an RF pulse')],
+  ].filter(([, slide]) => slide) : [];
+
+  const slides = [animSlide, ...extra.map(([, slide]) => slide), imgSlide];
+  const names = ['Animation', ...extra.map(([name]) => name), 'Picture'];
+  track.append(...slides);
 
   const prev = el('button', 'gallery-btn prev', { type: 'button', textContent: '‹' });
   const next = el('button', 'gallery-btn next', { type: 'button', textContent: '›' });
