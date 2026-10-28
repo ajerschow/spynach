@@ -116,3 +116,23 @@ table.timing td:first-child { min-width: 17rem; }
 table.timing .note { display: block; margin-top: 0.15rem; }
 .note { font-size: 0.92rem; color: var(--muted); }
 .quick-line { margin: 0.8rem 0 0; font-size: 0.93rem; color: var(--muted); }
+
+/* Hero gallery (assets/hero-gallery.js): the animation and the picture, slidable */
+.gallery-frame { position: relative; }
+.gallery-track { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; border-radius: 6px; }
+.gallery-track::-webkit-scrollbar { display: none; }
+.gallery-slide { flex: 0 0 100%; min-width: 0; scroll-snap-align: start; }
+.gallery-slide canvas { display: block; width: 100%; background: #090a0d; border-radius: 6px; cursor: pointer; }
+.gallery-caption { font-size: 0.85rem; color: var(--muted); margin-top: 0.5rem; font-family: var(--mono); }
+.gallery-btn { position: absolute; top: 50%; transform: translateY(-50%); width: 2.75rem; height: 2.75rem; border: 0; border-radius: 50%;
+  background: rgba(10, 12, 14, 0.55); color: #fff; font-size: 1.6rem; line-height: 1; cursor: pointer; }
+.gallery-btn.prev { left: 0.5rem; }
+.gallery-btn.next { right: 0.5rem; }
+.gallery-btn:hover:not(:disabled) { background: rgba(10, 12, 14, 0.8); }
+.gallery-btn:disabled { opacity: 0.25; cursor: default; }
+.gallery-dots { display: flex; justify-content: center; gap: 0.2rem; margin-top: 0.3rem; }
+.gallery-dot { width: 2rem; height: 1.6rem; border: 0; background: none; cursor: pointer; position: relative; }
+.gallery-dot::after { content: ""; position: absolute; left: 50%; top: 50%; width: 0.55rem; height: 0.55rem; margin: -0.275rem 0 0 -0.275rem;
+  border-radius: 50%; background: var(--line); }
+.gallery-dot[aria-current="true"]::after { background: var(--accent); }
+.gallery-track:focus-visible, .gallery-btn:focus-visible, .gallery-dot:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
