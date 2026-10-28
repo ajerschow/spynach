@@ -484,11 +484,28 @@ def _keep(spin_system: SpinSystem, R: Matrix) -> Matrix:
         longitudinal = np.flatnonzero(np.abs(projs).sum(axis=1) == 0)
         mask = (np.isin(rows, longitudinal) & np.isin(cols, longitudinal)) | (rows == cols)
     elif keep == "secular":
-        frequencies = projs @ spin_system.basefrqs
-        mask = frequencies[rows] == frequencies[cols]
+        group = _frequency_groups(projs @ spin_system.basefrqs, spin_system.basefrqs)
+        mask = group[rows] == group[cols]
     else:
         raise ValueError("invalid value of the inter.rlx_keep parameter.")
     return sps.csr_array((vals[mask], (rows[mask], cols[mask])), shape=(dim, dim))
+
+
+def _frequency_groups(frequencies: np.ndarray, basefrqs: np.ndarray) -> np.ndarray:
+    """Index of the Zeeman frequency of every state, frequencies equal to within rounding sharing one.
+
+    The frequency of a state is a sum of base frequencies, and two sums with the same value can differ
+    in the last bits (``w_C + w_F - w_F`` and ``w_C``), so exact equality, as in Spinach, would split a
+    group and drop secular elements. Distinct Zeeman frequencies differ by a sizeable fraction of a
+    base frequency, far above the ``1e-9`` relative tolerance.
+    """
+    if frequencies.size == 0:
+        return np.zeros(0, dtype=np.int64)
+    tolerance = 1e-9 * max(float(np.abs(basefrqs).max(initial=0.0)), 1.0)
+    order = np.argsort(frequencies, kind="stable")
+    group = np.empty(frequencies.size, dtype=np.int64)
+    group[order] = np.cumsum(np.concatenate([[0], np.diff(frequencies[order]) > tolerance]))
+    return group
 
 
 def _lab_frame_left(spin_system: SpinSystem, euler_angles: Sequence[float] | None) -> Matrix:

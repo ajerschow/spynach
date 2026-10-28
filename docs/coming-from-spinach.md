@@ -234,6 +234,16 @@ for J in (140.0, 145.0, 150.0):
   `inter.coordinates` (Angstrom) gives the same point dipolar couplings
   as `dipolar.m`, half the tensor in both `[n][k]` and `[k][n]`, and the
   same proximity matrix. See the [solid-state guide](solid-state.md).
+- **Secular relaxation:** `inter.rlx_keep = 'secular'` keeps the elements of
+  `R` between states of the same Zeeman frequency, as in Spinach, but
+  compares the frequencies to within rounding (1e-9 of the largest base
+  frequency). Spinach 2.13 tests them for exact equality. The frequency of a
+  state is a sum of base frequencies, and two sums of the same value, such
+  as `w_C + w_F - w_F` and `w_C`, can differ in the last bit. Spinach then
+  drops secular elements of `R`: for ¹³CF₃ at most fields, a few hundred of
+  them, which shifts the narrow line of the ¹³C quartet by several percent.
+  At fields where the rounding happens to agree, the two programs give the
+  same `R`.
 - **Molecule files:** Spinach's `etc/molecules/strychnine.m` is
   `spynach.molecules.strychnine(["1H"])`, returning `(sys, inter)` with the
   same shifts, couplings and coordinates (0-based spin numbers in the

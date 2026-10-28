@@ -2,6 +2,13 @@
 
 Releases are tagged `vX.Y.Z` on GitHub; the version is `spynach.__version__`.
 
+## Unreleased
+
+- Fixed: `inter["rlx_keep"] = "secular"` compared the Zeeman frequencies of basis states for exact floating-point
+  equality, as Spinach 2.13 does, and dropped secular elements of `R` whose two frequencies differ only by rounding
+  (sums such as `w_C + w_F - w_F` against `w_C`). Frequencies are now grouped to within 1e-9 of the largest base
+  frequency. For 13CF3 this changed `R` at most fields and the narrow line of the 13C quartet by up to 6%.
+
 ## 0.5.0 - 2026-10-28
 
 - Spynach has a PyPI distribution, `spynach` (`pip install spynach`; Python 3.11 or newer, Numba included). It holds

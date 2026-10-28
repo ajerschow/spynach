@@ -93,6 +93,33 @@ def test_retention_policies_and_dfs():
     np.testing.assert_allclose(np.diag(R_diag), np.diag(R_lab.real), atol=1e-9)
 
 
+def test_secular_policy_groups_frequencies_equal_to_within_rounding():
+    # 13CF3 at a field where the frequency of a state such as C+F1+F2- (w_C + w_F - w_F) differs from
+    # that of C+ in the last bits: exact equality, as in Spinach 2.13, drops secular elements
+    def cf3(keep):
+        corners = np.array([[1, 1, 1], [1, -1, -1], [-1, 1, -1]]) * 0.77
+        inter = {
+            "zeeman": {"matrix": [(np.diag([-10.0, -10, 20]) * k).tolist() for k in (1, 2, 3, 4)]},
+            "coordinates": [[0, 0, 0], *corners.tolist()],
+            "relaxation": ["redfield"],
+            "rlx_keep": keep,
+            "equilibrium": "zero",
+            "tau_c": [[1e-9]],
+        }
+        spin_system = spynach.create({"isotopes": ["13C", "19F", "19F", "19F"], "magnet": 5 + 7 * 23.2 / 12}, inter)
+        return spynach.basis(spin_system, LIOUV)
+
+    spin_system = cf3("labframe")
+    R_lab = dense(spynach.relaxation(spin_system))
+    R_sec = dense(spynach.relaxation(cf3("secular")))
+    _, projs = spynach.operators.lin2lm(spin_system.basis.basis)
+    coherence = np.stack([projs[:, 0], projs[:, 1:].sum(axis=1)], axis=1)
+    same = (coherence[:, None, :] == coherence[None, :, :]).all(axis=2)
+    frequencies = projs @ spin_system.basefrqs
+    assert ((frequencies[:, None] != frequencies[None, :]) & same & (R_lab != 0)).any()  # rounding splits groups
+    np.testing.assert_array_equal(R_sec, np.where(same, R_lab, 0))
+
+
 def test_t1_t2_model_and_damping():
     spin_system = spynach.create(
         {"isotopes": ["1H", "13C"], "magnet": 14.1},
