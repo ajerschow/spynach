@@ -17,6 +17,10 @@ Releases are tagged `vX.Y.Z` on GitHub; the version is `spynach.__version__`.
   browser playground. The playground has a relaxation example (`try.html#ex-pathways`, 11BF4- with its parameters in
   the form) and a `show_pathways(pathways)` helper that draws the diagram as SVG with the rates and expressions on
   hover; the worker loads SymPy from Pyodide's distribution the first time a run needs it.
+- Fixed: `inter["rlx_keep"] = "secular"` compared the Zeeman frequencies of basis states for exact floating-point
+  equality, as Spinach 2.13 does, and dropped secular elements of `R` whose two frequencies differ only by rounding
+  (sums such as `w_C + w_F - w_F` against `w_C`). Frequencies are now grouped to within 1e-9 of the largest base
+  frequency. For 13CF3 this changed `R` at most fields and the narrow line of the 13C quartet by up to 6%.
 - Landing page: the hero is a slidable gallery; the first figure is a live animation of interfering spin-phase spirals
   (`assets/hero-gallery.js`), followed by a k-space halftone and a COSY-contour animation and the Spynoza picture. Without WebGL or with reduced motion the first slide is a still frame of the animation (`assets/spin-vortex-frame.png`).
 - Link previews and icons: every page of the site carries Open Graph and Twitter card tags with a 1200 x 630 card

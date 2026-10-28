@@ -121,7 +121,8 @@ diffusion (rank 2 only).
 
 The full superoperator (`rlx_keep = "labframe"`) is only correct for lab
 frame simulations. In the rotating frame, `"secular"` keeps the elements
-between states of the same Zeeman frequency, `"kite"` keeps the
+between states of the same Zeeman frequency (compared to within rounding,
+unlike Spinach, see [Coming from Spinach](coming-from-spinach.md#spin-system-sys-and-inter)), `"kite"` keeps the
 longitudinal block and the diagonal (what a NOESY needs), and
 `"diagonal"` keeps only the self-relaxation rates. `rlx_dfs = "ignore"`
 (the default) discards the imaginary part of `R`, the dynamic frequency
