@@ -13,6 +13,12 @@ exact expression in the interaction strengths and the spectral density.
 one colour per mechanism and ribbons as wide as the rates. The feature has
 no Spinach counterpart; its rates are checked against
 `spynach.relaxation`. Read the [relaxation guide](relaxation.md) first. The
+guide [TROSY of a rotating ¹³CF₃ group](cf3-trosy.md) applies it to internal
+rotation (axially symmetric diffusion) and to the ¹³C single-quantum block of
+a ¹³CF₃ group, classes resolved by interaction, and
+[Relaxation at zero and ultralow field](zulf-pathways.md) to the populations
+of the J-coupled energy levels after an adiabatic transfer, and to the widths
+of the lines. The
 companion notebook is
 [`notebooks/relaxation-pathways.ipynb`](notebooks/relaxation-pathways.ipynb)
 ([interactive figures on nbviewer](https://nbviewer.org/github/ajerschow/spynach/blob/main/docs/notebooks/relaxation-pathways.ipynb)).
@@ -348,19 +354,23 @@ zero- and double-quantum) symbolically.
 
 | argument | meaning |
 |---|---|
-| `tau_c` | isotropic rotational correlation time (s); by default the single one of `inter["tau_c"]` |
+| `tau_c` | isotropic rotational correlation time (s), or the pair `(tau_par, tau_perp)` of axially symmetric diffusion about z (the spectral densities are then `J_0`, `J_1`, `J_2`, see [the ¹³CF₃ guide](cf3-trosy.md)); by default the one entry of `inter["tau_c"]` |
 | `groups` | lists of spin indices treated collectively; by default spins of one isotope and isotropic shift |
 | `ranks` | single-spin ranks per group letter or isotope, for example `{"B": (1, 2, 3)}`; default rank 1 |
 | `max_order` | most active spins in a product operator (default 2) |
 | `max_per_group` | most active spins of one group in a product, which then holds the symmetrised sum (`FzFz` is `sum_{k<l} F_kz F_lz`); default 1 |
-| `coherence` | total coherence order(s) to keep, for example `0` for the zero-quantum space |
+| `coherence` | total coherence order(s) to keep, for example `0` for the zero-quantum space; or a dictionary of the coherence order of some isotopes, by name or element, for example `{"13C": 1, "19F": 0}` |
 | `secular` | `"isotope"`, `"total"` or `"none"`, see above |
 | `mechanisms` | the kinds to include, a subset of `("DD", "CSA", "Q", "JA")` |
+| `resolve` | `"kind"` names the classes by kind (`DD/CSA`); `"interaction"` also by the elements (`DD(BF)/CSA(F)`, and `DD(BF)/DD(BF')` for two different B–F dipoles) |
+| `basis` | instead of product operators, the populations of the energy levels of `energy_levels` or the lines of `Levels.lines`, at zero and ultralow field (every spectral density `J(0)`); see [the ZULF guide](zulf-pathways.md) |
 
 Limits:
 
-- one isotropic rotational correlation time; no internal motion, no axial
-  or rhombic diffusion (`spynach.relaxation` has those, numerically);
+- isotropic or axially symmetric rotational diffusion, the latter also a
+  model of internal rotation about one axis; no rhombic diffusion and no
+  other internal motion (`spynach.relaxation` has rhombic diffusion,
+  numerically);
 - rank-2 mechanisms only: the antisymmetric (rank-1) parts of shielding and
   coupling tensors are ignored, and scalar relaxation and spin-rotation are
   not included;

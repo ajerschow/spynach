@@ -1,7 +1,8 @@
 """The Parameters view of the browser playground: assets/playground-params.js reads the "GUI:" comments of an
 example, and writes a changed value back into its source. The module is plain JavaScript, so the tests run it
 under Node (skipped without it): every parameter is documented, the default value writes back unchanged, values
-outside the range are refused, and every example still runs with each parameter at the ends of its range."""
+outside the range are refused, and every example still runs with each parameter at the ends of its range, with
+every other choice of a list, and with every checkbox flipped."""
 
 import json
 import shutil
@@ -37,6 +38,10 @@ for (const { id, source } of examples) {
         if (validate(p, value)) throw new Error(`${id} ${p.name}: ${edge} is not valid`);
         entry.variants.push({ name: p.name, edge, source: setParam(source, p.name, value) });
       }
+    }
+    const others = p.kind === "choice" ? p.choices.filter((c) => c !== p.value) : p.kind === "bool" ? [!p.value] : [];
+    for (const value of others) {
+      entry.variants.push({ name: p.name, edge: value, source: setParam(source, p.name, value) });
     }
   }
   out[id] = entry;

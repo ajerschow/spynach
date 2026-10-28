@@ -858,7 +858,8 @@ def chord_layout(
                     round(float((rim + 0.072) * np.sin(centre[k])), 4),
                     round(float(-tangent), 2),
                 ],
-                "hover": f"<b>{op.html}</b><br>coherence order {op.order:+d}<br>auto-relaxation {gamma[k, k]:.4g} s⁻¹",
+                "hover": f"<b>{op.html}</b><br>{op.info or f'coherence order {op.order:+d}'}"
+                f"<br>auto-relaxation {gamma[k, k]:.4g} s⁻¹",
             }
         )
     widest = max((abs(rate) for _, _, _, rate, _ in ribbons), default=0.0)
@@ -1026,6 +1027,7 @@ _EXPRESSION_HTML = (
     (re.compile(r"\bCQ_(\w+?)\b"), r"C<sub>Q</sub><sup>\1</sup>"),
     (re.compile(r"\bdJ_(\w+?)\b"), r"ΔJ<sub>\1</sub>"),
     (re.compile(r"\bb_(\w+?)\b"), r"b<sub>\1</sub>"),
+    (re.compile(r"\bJ_(\d)\("), r"J<sub>\1</sub>("),
     (re.compile(r"\bpi\b"), "π"),
     (re.compile(r"\*"), "·"),
 )

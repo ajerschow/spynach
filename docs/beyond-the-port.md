@@ -239,4 +239,19 @@ tetrahedral symmetry, and the check against `spynach.relaxation`. The same
 ([`try.html#ex-pathways`](https://ajerschow.github.io/spynach/try.html#ex-pathways)),
 with the field, the geometry, the anisotropies, the quadrupolar coupling,
 the correlation time, the coherence order, the boron ranks and the secular
-approximation in its parameter form.
+approximation in its parameter form. Two correlation times (axially
+symmetric diffusion) model internal rotation, with the spectral densities
+`J_0`, `J_1` and `J_2`. The guide
+[TROSY of a rotating ¹³CF₃ group](cf3-trosy.md) applies this to the ¹³C
+quartet of the CF₃ group of trifluoromethionine, and the playground runs
+it as well
+([`try.html#ex-cf3-trosy`](https://ajerschow.github.io/spynach/try.html#ex-cf3-trosy)):
+the chord diagram of the ¹³C single-quantum block, the ¹³C spectrum with and
+without ¹⁹F decoupling, and the linewidths against the rotation time. At zero
+and ultralow field the same analysis runs between the populations of the
+J-coupled energy levels `|K, F, M>`, after an adiabatic transfer from a
+polarising field, and gives the width of every line:
+[Relaxation at zero and ultralow field](zulf-pathways.md), with PF₆⁻ and
+¹¹BF₄⁻ in the playground
+([`#ex-ulf-pf6`](https://ajerschow.github.io/spynach/try.html#ex-ulf-pf6),
+[`#ex-ulf-bf4`](https://ajerschow.github.io/spynach/try.html#ex-ulf-bf4)).

@@ -92,7 +92,11 @@ def test_example_runs_and_draws(example, capsys):
         assert [call["kind"] for call in recorder.calls] == ["chord"] and recorder.calls[0]["ribbons"] > 0
         assert "DD/CSA" in printed
         return
-    if group.startswith("EPR"):
+    if example_id.startswith("ex-ulf-"):
+        # zero and ultralow field: the population chord diagram, then line frequencies and times left to right
+        assert recorder.calls[0]["kind"] == "chord" and recorder.calls[0]["ribbons"] > 0
+        assert all(not call["invert"] for call in recorder.calls[1:]) and "levels |K, F, M>" in printed
+    elif group.startswith("EPR"):
         assert all(not call["invert"] for call in recorder.calls), f"{example_id} left an EPR axis inverted"
     else:
         assert any(call["invert"] or call["kind"] == "fid" for call in recorder.calls)

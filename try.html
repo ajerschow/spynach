@@ -881,6 +881,424 @@ for link in pathways.links()[:10]:
 show_pathways(pathways, split=split, title=f"11BF4- at {magnet:g} T, tau_c = {tau_c:g} ps")
 </script>
 
+<script type="text/plain" class="example" id="ex-cf3-trosy" data-group="Relaxation (spynach)" data-title="13CF3 TROSY with CF3 rotation, and its 13C spectrum">
+import dataclasses
+import logging
+
+import numpy as np
+import spynach
+from scipy.optimize import brentq
+
+# --- 13CF3 group of trifluoromethionine, with the rotation of the CF3 group about its C3 axis ---
+magnet = 18.8  # GUI: Magnet field | T | Field of the magnet; 18.8 T is an 800 MHz spectrometer | 1..28
+tau_c = 50.0  # GUI: Tumbling time | ns | Isotropic rotational correlation time of the protein | 1..300
+rotation = "50"  # GUI: CF3 rotation time | ps | Correlation time of the rotation of the CF3 group about its C3 axis, on top of the tumbling; rigid switches the rotation off | 1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, rigid
+parameter_set = "methionine"  # GUI: Parameter set | - | methionine: Ac-L-trifluoromethionine-NH2 (M06/cc-pVDZ, GIAO, SMD water) with its DFT J matrix; cf3ch3: ORCA CF3-CH3 model, 1J(CF) = -280 Hz | methionine, cf3ch3
+symmetrise = True  # GUI: C3-symmetrise | - | Make the group exactly C3-symmetric (mean geometry, C3 images of the averaged 19F tensor); off uses each fluorine's own DFT tensor
+
+# --- What to show ---
+switch_off = "nothing"  # GUI: Switch off | - | Remove cross-correlations from the relaxation matrix of the six operators, to see what narrows the TROSY line (third trace). DD(CF)/DD(CF') cannot go alone: three C-F dipoles uncorrelated with each other cannot all correlate with one 13C CSA | nothing, DD(CF)/CSA(C), all cross-correlations
+min_rate = 0.5  # GUI: Hide pathways below | s⁻¹ | Chord diagram: pathways with a smaller rate are not drawn | 0..5
+
+# DFT geometry (Angstrom), absolute shielding tensors (ppm) and J couplings (Hz), spin order 13C, 19F, 19F, 19F
+SETS = {
+    "methionine": {
+        "xyz": [[3.838905, 1.223729, -1.548960], [4.869241, 0.989273, -0.731281],
+                [3.705455, 0.134089, -2.311492], [4.167605, 2.239385, -2.345536]],
+        "shielding": [[[66.98750, 1.82505, -10.66980], [1.82505, 37.12490, 8.00080], [-10.66980, 8.00080, 55.39780]],
+                      [[301.22010, -10.27180, 60.99020], [-10.27180, 223.81440, 9.72655], [60.99020, 9.72655, 192.60830]],
+                      [[198.65500, -23.66390, 18.89510], [-23.66390, 258.57760, 68.99430], [18.89510, 68.99430, 270.59840]],
+                      [[224.17350, 55.62785, -18.72120], [55.62785, 244.20260, -46.13885], [-18.72120, -46.13885, 278.11020]]],
+        "J_CF": [-265.112, -263.167, -238.771], "J_FF": [46.825, 74.669, 72.138],
+    },
+    "cf3ch3": {
+        "xyz": [[-3.36081140, -0.16562400, -0.38806991], [-3.63893407, 0.33115799, 0.83160365],
+                [-2.78190802, 0.83694385, -1.07465430], [-4.52055774, -0.45679680, -0.98671728]],
+        "shielding": [[[29.111, -18.781, -6.710], [-14.130, 30.020, -7.130], [-5.480, -9.218, 28.069]],
+                      [[176.067, 3.096, -93.670], [6.109, 210.556, 43.031], [-63.311, 56.747, 264.722]],
+                      [[131.428, 36.479, -12.172], [41.178, 266.458, -45.414], [-40.430, -62.639, 253.450]],
+                      [[303.627, 11.869, 44.387], [9.119, 140.737, -14.782], [43.673, -13.556, 227.950]]],
+        "J_CF": [-280.0] * 3, "J_FF": [0.0] * 3,
+    },
+}
+data = SETS[parameter_set]
+
+# The C3 frame: z from the carbon to the centroid of the fluorines, x along the first C-F bond. Rotational
+# diffusion about z is Spinach's axial diffusion, so every tensor and coordinate is given in this frame. The
+# shift anisotropy tensors are delta = -sigma, symmetrised and traceless (every spin on resonance).
+xyz = np.array(data["xyz"])
+z = xyz[1:].mean(axis=0) - xyz[0]
+z /= np.linalg.norm(z)
+x = xyz[1] - xyz[0] - (xyz[1] - xyz[0]) @ z * z
+x /= np.linalg.norm(x)
+frame = np.array([x, np.cross(z, x), z])
+coords = (xyz - xyz[0]) @ frame.T
+shifts = []
+for sigma in np.array(data["shielding"]):
+    delta = frame @ (-(sigma + sigma.T) / 2) @ frame.T
+    shifts.append(delta - np.trace(delta) / 3 * np.eye(3))
+
+
+def rotz(angle):
+    c, s = np.cos(angle), np.sin(angle)
+    return np.array([[c, -s, 0], [s, c, 0], [0, 0, 1.0]])
+
+
+if symmetrise:  # sites in order of azimuth; site j carries the C3 image of the averaged fluorine tensor
+    azimuth = np.arctan2(coords[1:, 1], coords[1:, 0])
+    sites = 1 + np.argsort(np.mod(azimuth - azimuth[0], 2 * np.pi))
+    turns = 2 * np.pi * np.arange(3) / 3
+    radius = np.linalg.norm(coords[1:], axis=1).mean()
+    theta = np.arccos(coords[1:, 2] / np.linalg.norm(coords[1:], axis=1)).mean()
+    fluorine = sum(rotz(-a) @ shifts[s] @ rotz(a) for s, a in zip(sites, turns)) / 3
+    shifts[0] = sum(rotz(a) @ shifts[0] @ rotz(-a) for a in turns) / 3
+    for s, a in zip(sites, turns):
+        shifts[s] = rotz(a) @ fluorine @ rotz(-a)
+        coords[s] = radius * np.array([np.sin(theta) * np.cos(azimuth[0] + a), np.sin(theta) * np.sin(azimuth[0] + a), np.cos(theta)])
+
+# CF3 rotation as diffusion about C3 on top of the tumbling (Woessner): D_par = D_perp + 1/tau_int, so the
+# m = +-1 components in the C3 frame decay at 1/tau_int faster than the tumbling (cf3_liouvillian.m)
+tau_int = np.inf if rotation == "rigid" else float(rotation) * 1e-12
+
+
+def tumbling(t_int):
+    return [tau_c * 1e-9] if t_int == np.inf else [1 / (1 / (tau_c * 1e-9) + 6 / t_int), tau_c * 1e-9]
+
+
+# Rotamer-averaged couplings: the fluorines are magnetically equivalent
+J_CF, J_FF = np.mean(data["J_CF"]), np.mean(data["J_FF"])
+
+
+def group(t_int):
+    """The 13CF3 spin system with Redfield relaxation, rotating with the correlation time t_int (s)"""
+    return spynach.create(
+        {"isotopes": ["13C", "19F", "19F", "19F"], "magnet": magnet},
+        {"zeeman": {"matrix": [s.tolist() for s in shifts]}, "coordinates": coords.tolist(),
+         "coupling": {"scalar": [[0, J_CF, J_CF, J_CF], [0, 0, J_FF, J_FF], [0, 0, 0, J_FF], [0, 0, 0, 0]]},
+         "relaxation": ["redfield"], "rlx_keep": "secular", "equilibrium": "zero", "tau_c": [tumbling(t_int)]},
+    )
+
+
+# --- Chord diagram: the 13C single-quantum block that 13C detection observes. F operators are symmetrised
+# sums over the three fluorines (C+FzFz is C+ times the sum of FkzFlz over pairs); for a C3-symmetric group
+# these six operators are a closed block, which carries the whole 13C spectrum
+observed = {"coherence": {"13C": 1, "19F": 0}, "max_per_group": 3, "max_order": 4, "resolve": "interaction"}
+cf3 = group(tau_int)
+pathways = spynach.relaxation_pathways(cf3, **observed)
+taus = ", ".join(f"{t * 1e12:.4g} ps" for t in pathways.correlation_times)
+print(f"{parameter_set}{' (C3-symmetrised)' if symmetrise else ''} at {magnet:g} T: correlation times {taus}"
+      + (" of the components m = 0, 1, 2 about C3" if np.isfinite(tau_int) else ""))
+print(f"J(CF) = {J_CF:.1f} Hz; classes: {', '.join(pathways.classes)}")
+print("Strongest cross-relaxation pathways (s⁻¹):")
+for link in pathways.links()[:6]:
+    for cls in link.signature:
+        if abs(link.rates[cls]) >= max(min_rate, 1e-3):
+            print(f"  {pathways.labels[link.source]} <-> {pathways.labels[link.target]}  {cls}: "
+                  f"{link.rates[cls]:.4g} = {link.expressions[cls]}")
+show_pathways(pathways, split=True, min_rate=min_rate,
+              title=f"13CF3, 13C single-quantum block: {magnet:g} T, tau_c = {tau_c:g} ns, tau_int = {rotation}" + (" ps" if np.isfinite(tau_int) else ""))
+
+# --- 13C direct detection: the spin-space Liouvillian L = H + iR of Spynach (Redfield, axial diffusion), as in
+# cf3_liouvillian.m, then the exact relaxation modes of the signal C+ -> C+ (no FFT, no fitting, as in
+# run01_spectra_1D.m): mode k is a Lorentzian at f_k with rate R2_k and complex amplitude a_k
+cf3 = spynach.basis(cf3, {"formalism": "sphten-liouv", "approximation": "none"})
+H = spynach.hamiltonian(spynach.assume(cf3, "nmr"))
+logging.getLogger("spynach").setLevel(logging.ERROR)  # the Redfield integrals take long steps, as they should
+L = H + 1j * spynach.relaxation(cf3)
+rho = spynach.state(cf3, "L+", "13C")
+label = sum(spynach.state(cf3, ["L+", "Lz"], [0, k]) for k in (1, 2, 3))  # C+ times the total Fz
+coils = np.stack([rho, label], axis=1)
+
+
+def modes(L, rho, coils):
+    """f_k (Hz), R2_k (1/s) and amplitudes a_k (one row per coil) of coils' exp(-iLt) rho = sum a_k exp(2i pi f_k t - R2_k t)"""
+    lam, V = np.linalg.eig(np.asarray(L.todense() if hasattr(L, "todense") else L))
+    return -lam.real / (2 * np.pi), -lam.imag, (coils.conj().T @ V) * np.linalg.solve(V, rho)
+
+
+def block(L, rho, coils):
+    """The modes in the subspace that rho reaches (Spynach's zero-track elimination and path tracing)"""
+    P = np.hstack([p.toarray() for p in spynach.reduce(cf3, L, rho)])
+    return modes(P.conj().T @ L @ P, P.conj().T @ rho, P.conj().T @ coils)
+
+
+def lines(f, r2, amps):
+    """Modes grouped into lines (closer than 2 Hz): label sum(a_label) / sum(a), which is M_F, position, FWHH, height"""
+    order = np.argsort(f)
+    cluster = np.empty(len(f), dtype=int)
+    cluster[order] = np.cumsum(np.concatenate([[0], np.diff(f[order]) > 2.0]))
+    out = []
+    for c in range(cluster.max() + 1):
+        near = cluster == c
+        a, w, r = amps[0, near], f[near], r2[near]
+        phase = np.exp(-1j * np.angle(a.sum()))
+
+        def shape(v):
+            return np.real(phase * np.sum(a / (r + 2j * np.pi * (v - w))))
+
+        top = w[np.argmax(np.abs(a) / r)]
+        span = 20 * r.max() / (2 * np.pi)
+        half = shape(top) / 2
+        width = brentq(lambda v: shape(v) - half, top, top + span) - brentq(lambda v: shape(v) - half, top - span, top)
+        label = np.real(amps[-1, near].sum() / a.sum())
+        out.append({"M": label, "f": top, "fwhh": width, "height": shape(top), "weight": np.abs(a).sum()})
+    return out
+
+
+def quartet(found):
+    """Lines M_F = +3/2, +1/2, -1/2, -3/2: of the lines with intensity, the one with the nearest label (cf3_lines.m)"""
+    strong = [line for line in found if line["weight"] > 1e-3 * max(other["weight"] for other in found)]
+    return [min(strong, key=lambda line: abs(line["M"] - m)) for m in (1.5, 0.5, -0.5, -1.5)]
+
+
+def spectrum(f, r2, amps, axis):
+    return np.real(np.sum(amps[0][:, None] / (r2[:, None] + 2j * np.pi * (axis[None, :] - f[:, None])), axis=0))
+
+
+coupled = block(L, rho, coils)
+L_dec, rho_dec = spynach.decouple(cf3, L, rho, ["19F"])
+decoupled = block(L_dec, rho_dec, rho_dec[:, None])
+full, single = quartet(lines(*coupled)), max(lines(*decoupled), key=lambda line: line["weight"])
+
+# The six operators of the diagram, with the J coupling of H and the relaxation matrix Gamma of the
+# diagram (L6 = H6 - i Gamma), give the same lines; without cross-correlation classes they show their effect
+V = pathways.states(cf3)
+H6, rho6, coils6 = V.conj() @ H @ V.T, V.conj() @ rho, V.conj() @ coils
+off = {"nothing": [], "DD(CF)/CSA(C)": ["DD(CF)/CSA(C)"]}.get(switch_off, [c for c in pathways.classes if "/" in c])
+kept = [cls for cls in pathways.classes if cls not in off]
+model = modes(H6 - 1j * pathways.rate_matrix(kept), rho6, coils6)
+six = quartet(lines(*model))
+
+print(f"\n13C lines: FWHH (Hz) and height relative to the 19F-decoupled line ({single['fwhh']:.3g} Hz)")
+model_name = f"six operators without {switch_off}" if off else "six operators"
+for line, other in zip(full, six):
+    print(f"  M_F = {line['M']:+.1f} at {line['f']:+7.1f} Hz: {line['fwhh']:7.3g} Hz, height {line['height'] / single['height']:5.2f}"
+          f";  {model_name}: {other['fwhh']:.3g} Hz, {other['height'] / single['height']:.2f}")
+narrow = min(full, key=lambda line: line["fwhh"])
+print(f"Narrowest line M_F = {narrow['M']:+.1f}: {single['fwhh'] / narrow['fwhh']:.3g} times narrower and "
+      f"{narrow['height'] / single['height']:.3g} times as high as the 19F-decoupled line")
+
+span = 1.5 * abs(J_CF) + 200
+axis = np.linspace(-span, span, 4001)
+fine = [w + r / (2 * np.pi) * np.linspace(-10, 10, 201) for w, r in zip(*coupled[:2]) if abs(w) < span]
+axis = np.unique(np.concatenate([axis, *fine]))
+traces = [spectrum(*coupled, axis), spectrum(*decoupled, axis)]
+names = ["19F-coupled: the TROSY quartet", "19F-decoupled"]
+if off:
+    traces.append(spectrum(*model, axis))
+    names.append(f"19F-coupled without {switch_off}")
+top = traces[1].max()
+show_spectrum([t / top for t in traces], axis, names=names, xlabel="13C offset (Hz)", ylabel="intensity (decoupled line = 1)",
+              title=f"13C spectrum at {magnet:g} T: exact line shapes from the relaxation modes")
+
+# --- Linewidths against the CF3 rotation time, from the six operators: only the correlation times change
+scan = pathways if np.isfinite(tau_int) else spynach.relaxation_pathways(group(50e-12), **observed)
+grid = np.logspace(-12, -8, 41)
+widths = []
+for t_int in grid:
+    rates = dataclasses.replace(scan, tau_c=tuple(tumbling(t_int))).rate_matrix(kept)
+    widths.append([line["fwhh"] for line in quartet(lines(*modes(H6 - 1j * rates, rho6, coils6)))] + [rates[0, 0] / np.pi])
+show_spectrum(list(np.array(widths).T), np.log10(grid / 1e-12), invert=False, xlabel="log10(tau_int / ps)", ylabel="FWHH (Hz)",
+              names=[f"M_F = {m:+.1f}" for m in (1.5, 0.5, -0.5, -1.5)] + ["19F-decoupled"],
+              title="13C linewidths against the CF3 rotation time" + (f", without {switch_off}" if off else ""))
+</script>
+
+<script type="text/plain" class="example" id="ex-ulf-bf4" data-group="Relaxation (spynach)" data-title="11BF4- at ultralow field: level populations after an adiabatic transfer">
+import numpy as np
+import spynach
+from scipy.linalg import expm
+from spynach.conventions import eeqq2nqi
+from spynach.pathways import energy_levels
+
+# --- 11BF4- polarised at a high field, then carried adiabatically to an ultralow field ---
+polarising_field = 1.0  # GUI: Polarising field | T | Field of the thermal polarisation before the adiabatic transfer | 0.1..3
+ulf_field = 10.0  # GUI: Ultralow field | nT | Field after the transfer, where the populations relax and the lines are recorded; with J(BF) near 1 Hz the coupling dominates below about 40 nT | 0..1000
+J_bf = 1.1  # GUI: 1J(11B,19F) | Hz | Boron-fluorine scalar coupling: about 1.1 Hz in dilute solution, up to 4.8 Hz in saturated solution and depending on the cation; its sign is not established and decides which levels the transfer fills | -5..5
+r_bf = 1.40  # GUI: B–F distance | Å | Bond length, which sets the dipolar couplings b_BF and b_FF | 1.2..2.0
+cq_b = 100.0  # GUI: 11B quadrupolar coupling | kHz | e²qQ/h of the boron along the first B–F bond; zero in a perfect tetrahedron | 0..2000
+tau_c = 10.0  # GUI: Correlation time | ps | Isotropic rotational correlation time of the anion | 1..1000
+
+# --- What to show ---
+detection = "z"  # GUI: Detection | - | The lines of the magnetisation along the field (z), which a ZULF magnetometer records, or across it (x) | z, x
+resolve = "interaction"  # GUI: Mechanism classes | - | interaction: by the spins involved, DD(BF), DD(FF), DD(BF)/DD(BF') ...; kind: DD, Q, DD/DD ... | interaction, kind
+weakest = 30.0  # GUI: Hide weaker pathways | % | Chord diagram: population pathways below this share of the strongest are not drawn | 0..50
+split = True  # GUI: One ribbon per class | - | Draw each mechanism class of a pathway as its own ribbon; off: one ribbon per pathway, coloured by the combination of classes
+
+# Unit vectors from the boron to the four fluorines, the first along z
+corners = np.array([[1, 1, 1], [1, -1, -1], [-1, 1, -1], [-1, -1, 1]]) / np.sqrt(3)
+z = corners[0]
+x = np.cross(z, [0, 0, 1.0])
+x /= np.linalg.norm(x)
+bonds = corners @ np.array([x, np.cross(z, x), z]).T
+
+# The anion at the ultralow field. The shielding anisotropies are left out: they relax as the square of the
+# field and vanish here. (Equivalent 19F couple to each other too, but between equivalent spins that changes nothing.)
+quadrupole = eeqq2nqi(cq_b * 1e3, 0.0, 1.5, [0, 0, 0]).tolist()
+bf4 = spynach.create(
+    {"isotopes": ["11B", "19F", "19F", "19F", "19F"], "magnet": ulf_field * 1e-9},
+    {"coupling": {"scalar": [[0] + [J_bf] * 4] + [[0] * 5 for _ in range(4)],
+                  "matrix": [[quadrupole] + [None] * 4] + [[None] * 5 for _ in range(4)]},
+     "coordinates": [[0, 0, 0]] + (r_bf * bonds).tolist()},
+)
+mechanisms = ("DD", "Q")
+
+# Energy levels |K, F, M> of the J-coupled anion (K: total spin of the four fluorines, F: total angular momentum,
+# exact at zero field), and their populations after the transfer: within a block of conserved M and K the
+# levels do not cross, so they keep their order in energy from the polarising field down
+levels = energy_levels(bf4)
+populations = levels.adiabatic(polarising_field)
+scale = np.abs(populations).max()
+manifolds = {}  # (K, F) -> level numbers
+for k, level in enumerate(levels):
+    manifolds.setdefault(level.label.rsplit(",", 1)[0], []).append(k)
+print(f"{len(levels)} levels |K, F, M> at {ulf_field:g} nT. Population per state after the transfer from "
+      f"{polarising_field:g} T, relative to the largest ({scale:.3g}), by M:")
+for name, ks in manifolds.items():
+    print(f"  K,F = {name:5s} " + "  ".join(f"{levels[k].label.rsplit(',', 1)[1]}: {populations[k] / scale:+.2f}" for k in ks))
+
+# Relaxation pathways among the level populations. Every transition frequency is far below 1/tau_c, so every
+# spectral density is J(0) = tau_c, and the rates come with their expressions in the coupling strengths
+pathways = spynach.relaxation_pathways(bf4, basis=levels, tau_c=tau_c * 1e-12, mechanisms=mechanisms, resolve=resolve)
+print(f"\nmechanism classes: {', '.join(pathways.classes)}; strongest population pathways (s⁻¹):")
+for link in pathways.links()[:6]:
+    for cls in link.signature:
+        print(f"  {pathways.labels[link.source]} <-> {pathways.labels[link.target]}  {cls}: "
+              f"{link.rates[cls]:.4g} = {link.expressions[cls]}")
+offdiagonal = np.abs(pathways.rate_matrix() - np.diag(np.diag(pathways.rate_matrix())))
+show_pathways(pathways, split=split, min_rate=weakest / 100 * offdiagonal.max(),
+              title=f"11BF4- at {ulf_field:g} nT: relaxation between level populations |K, F, M>")
+
+# R2 of every line of the spectrum: the diagonal rates of the detected coherences between levels
+lines = levels.lines(detection, min_weight=0.01)
+widths = spynach.relaxation_pathways(bf4, basis=lines, tau_c=tau_c * 1e-12, mechanisms=mechanisms, resolve=resolve)
+R2 = np.diag(widths.rate_matrix())
+by_class = {cls: np.diag(widths.rate_matrix(cls)) for cls in widths.classes}
+print(f"\n{len(lines)} lines along {detection}: frequency (Hz), weight, R2 (s⁻¹) and its classes")
+for k, line in enumerate(lines):
+    parts = ", ".join(f"{cls} {values[k]:.3g}" for cls, values in by_class.items())
+    print(f"  {line.frequency:9.4f}  {line.weight:5.3f}  {R2[k]:8.4g}   {line.label}: {parts}")
+
+
+def comb(values):
+    """A stem at each line frequency, joined along zero, so that one series draws them all"""
+    x = np.repeat(lines.frequencies, 3)
+    y = np.zeros_like(x)
+    y[1::3] = values
+    return x, y
+
+
+axis, total = comb(R2)
+show_spectrum([total] + [comb(values)[1] for values in by_class.values()], axis, invert=False,
+              names=["R2, all"] + list(by_class), xlabel="line frequency (Hz)", ylabel="R2 (s⁻¹)",
+              title=f"R2 of each line at {ulf_field:g} nT, detected along {detection}")
+
+# The populations after the transfer, relaxing at the ultralow field: d<P>/dt = -Gamma <P> for the normalised
+# level projectors, <P> = population per state times sqrt(degeneracy); summed over each (K, F) manifold
+d = np.array([level.degeneracy for level in levels])
+start = populations * np.sqrt(d)
+gamma = pathways.rate_matrix()
+rates = np.sort(np.abs(np.linalg.eigvals(gamma)))
+slowest = rates[rates > 1e-9 * rates.max()][0]
+times = np.linspace(0, 3 / slowest, 300)
+evolution = np.array([expm(-gamma * t) @ start for t in times]) * np.sqrt(d)
+show_spectrum([evolution[:, ks].sum(axis=1) / scale for ks in manifolds.values()], times, invert=False,
+              names=[f"K,F = {name}" for name in manifolds], xlabel="time after the transfer (s)",
+              ylabel="population (relative)", title="Populations of each (K, F) manifold after the transfer")
+</script>
+
+<script type="text/plain" class="example" id="ex-ulf-pf6" data-group="Relaxation (spynach)" data-title="PF6- at ultralow field: level populations after an adiabatic transfer">
+import numpy as np
+import spynach
+from scipy.linalg import expm
+from spynach.pathways import energy_levels
+
+# --- PF6- polarised at a high field, then carried adiabatically to an ultralow field ---
+polarising_field = 1.0  # GUI: Polarising field | T | Field of the thermal polarisation before the adiabatic transfer | 0.1..3
+ulf_field = 2.7  # GUI: Ultralow field | µT | Field after the transfer, where the populations relax and the lines are recorded; 2.7 µT is the solenoid field of the ZULF_PF6_1D script; J dominates up to some 30 µT | 0..50
+J_pf = 710.0  # GUI: 1J(31P,19F) | Hz | Phosphorus-fluorine scalar coupling | 600..800
+r_pf = 1.6  # GUI: P–F distance | Å | Bond length of the octahedron, which sets the dipolar couplings b_PF and b_FF (cis and trans) | 1.5..1.7
+tau_c = 65.0  # GUI: Correlation time | ps | Isotropic rotational correlation time of the anion; 65 ps for 2 M LiPF6 in EC/DMC | 1..1000
+
+# --- What to show ---
+detection = "z"  # GUI: Detection | - | The lines of the magnetisation along the field (z), which a ZULF magnetometer records, or across it (x) | z, x
+resolve = "interaction"  # GUI: Mechanism classes | - | interaction: by the spins involved, DD(PF), DD(FF), DD(FF)/DD(PF) ...; kind: DD, DD/DD | interaction, kind
+weakest = 30.0  # GUI: Hide weaker pathways | % | Chord diagram: population pathways below this share of the strongest are not drawn | 0..50
+split = True  # GUI: One ribbon per class | - | Draw each mechanism class of a pathway as its own ribbon; off: one ribbon per pathway, coloured by the combination of classes
+
+# The anion at the ultralow field: phosphorus at the centre of an octahedron of fluorines. The 19F shielding
+# anisotropy is left out: it relaxes as the square of the field and vanishes here, and the 31P has none.
+bonds = [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1]]
+pf6 = spynach.create(
+    {"isotopes": ["31P"] + ["19F"] * 6, "magnet": ulf_field * 1e-6},
+    {"coupling": {"scalar": [[0] + [J_pf] * 6] + [[0] * 7 for _ in range(6)]},
+     "coordinates": [[0, 0, 0]] + (r_pf * np.array(bonds, dtype=float)).tolist()},
+)
+mechanisms = ("DD",)
+
+# Energy levels |K, F, M> of the J-coupled anion (K: total spin of the six fluorines, F: total angular momentum,
+# exact at zero field), and their populations after the transfer: within a block of conserved M and K the
+# levels do not cross, so they keep their order in energy from the polarising field down
+levels = energy_levels(pf6)
+populations = levels.adiabatic(polarising_field)
+scale = np.abs(populations).max()
+manifolds = {}  # (K, F) -> level numbers
+for k, level in enumerate(levels):
+    manifolds.setdefault(level.label.rsplit(",", 1)[0], []).append(k)
+print(f"{len(levels)} levels |K, F, M> at {ulf_field:g} µT. Population per state after the transfer from "
+      f"{polarising_field:g} T, relative to the largest ({scale:.3g}), by M:")
+for name, ks in manifolds.items():
+    print(f"  K,F = {name:5s} " + "  ".join(f"{levels[k].label.rsplit(',', 1)[1]}: {populations[k] / scale:+.2f}" for k in ks))
+
+# Relaxation pathways among the level populations. Every transition frequency is far below 1/tau_c, so every
+# spectral density is J(0) = tau_c, and the rates come with their expressions in the coupling strengths
+pathways = spynach.relaxation_pathways(pf6, basis=levels, tau_c=tau_c * 1e-12, mechanisms=mechanisms, resolve=resolve)
+print(f"\nmechanism classes: {', '.join(pathways.classes)}; strongest population pathways (s⁻¹):")
+for link in pathways.links()[:6]:
+    for cls in link.signature:
+        print(f"  {pathways.labels[link.source]} <-> {pathways.labels[link.target]}  {cls}: "
+              f"{link.rates[cls]:.4g} = {link.expressions[cls]}")
+offdiagonal = np.abs(pathways.rate_matrix() - np.diag(np.diag(pathways.rate_matrix())))
+show_pathways(pathways, split=split, min_rate=weakest / 100 * offdiagonal.max(),
+              title=f"PF6- at {ulf_field:g} µT: relaxation between level populations |K, F, M>")
+
+# R2 of every line of the spectrum: the diagonal rates of the detected coherences between levels
+lines = levels.lines(detection, min_weight=0.01)
+widths = spynach.relaxation_pathways(pf6, basis=lines, tau_c=tau_c * 1e-12, mechanisms=mechanisms, resolve=resolve)
+R2 = np.diag(widths.rate_matrix())
+by_class = {cls: np.diag(widths.rate_matrix(cls)) for cls in widths.classes}
+print(f"\n{len(lines)} lines along {detection}: frequency (Hz), weight, R2 (s⁻¹) and its classes")
+for k, line in enumerate(lines):
+    parts = ", ".join(f"{cls} {values[k]:.3g}" for cls, values in by_class.items())
+    print(f"  {line.frequency:9.4f}  {line.weight:5.3f}  {R2[k]:8.4g}   {line.label}: {parts}")
+
+
+def comb(values):
+    """A stem at each line frequency, joined along zero, so that one series draws them all"""
+    x = np.repeat(lines.frequencies, 3)
+    y = np.zeros_like(x)
+    y[1::3] = values
+    return x, y
+
+
+axis, total = comb(R2)
+show_spectrum([total] + [comb(values)[1] for values in by_class.values()], axis, invert=False,
+              names=["R2, all"] + list(by_class), xlabel="line frequency (Hz)", ylabel="R2 (s⁻¹)",
+              title=f"R2 of each line at {ulf_field:g} µT, detected along {detection}")
+
+# The populations after the transfer, relaxing at the ultralow field: d<P>/dt = -Gamma <P> for the normalised
+# level projectors, <P> = population per state times sqrt(degeneracy); summed over each (K, F) manifold
+d = np.array([level.degeneracy for level in levels])
+start = populations * np.sqrt(d)
+gamma = pathways.rate_matrix()
+rates = np.sort(np.abs(np.linalg.eigvals(gamma)))
+slowest = rates[rates > 1e-9 * rates.max()][0]
+times = np.linspace(0, 3 / slowest, 300)
+evolution = np.array([expm(-gamma * t) @ start for t in times]) * np.sqrt(d)
+show_spectrum([evolution[:, ks].sum(axis=1) / scale for ks in manifolds.values()], times, invert=False,
+              names=[f"K,F = {name}" for name in manifolds], xlabel="time after the transfer (s)",
+              ylabel="population (relative)", title="Populations of each (K, F) manifold after the transfer")
+</script>
+
 <script type="text/plain" class="example" id="ex-powder-fine" data-group="NMR (spynach)" data-title="Powder CSA, 1600 orientations">
 import numpy as np
 import spynach
@@ -1717,21 +2135,25 @@ function drawLine(canvas, plot) {
     ctx.strokeStyle = colors[index % colors.length];
     ctx.lineWidth = 1.5;
     ctx.setLineDash(item.name === "imag" ? [4, 3] : []);
+    // Samples that fall in one pixel column are drawn as the vertical span they cover, entered at the
+    // first sample and left at the last, so that the line goes on from where the data does
     let moved = false;
     let column = null;
+    let firstY = 0;
+    let lastY = 0;
     let minY = 0;
     let maxY = 0;
     const flush = () => {
       if (column == null) return;
-      if (!moved) { ctx.moveTo(column, minY); moved = true; }
-      else ctx.lineTo(column, minY);
-      if (maxY !== minY) ctx.lineTo(column, maxY);
+      if (!moved) { ctx.moveTo(column, firstY); moved = true; }
+      else ctx.lineTo(column, firstY);
+      if (maxY !== minY) { ctx.lineTo(column, minY); ctx.lineTo(column, maxY); ctx.lineTo(column, lastY); }
     };
     for (let i = 0; i < n; i++) {
       const px = Math.round(xPix(x[i]));
       const py = yPix(item.y[i]);
-      if (column !== px) { flush(); column = px; minY = maxY = py; }
-      else { if (py < minY) minY = py; if (py > maxY) maxY = py; }
+      if (column !== px) { flush(); column = px; firstY = lastY = minY = maxY = py; }
+      else { lastY = py; if (py < minY) minY = py; if (py > maxY) maxY = py; }
     }
     flush();
     ctx.stroke();
