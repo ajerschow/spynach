@@ -6,8 +6,8 @@ authors:
   - family-names: Jerschow
     given-names: Alexej
     affiliation: New York University
-version: 0.4.0
-date-released: 2026-10-26
+version: 0.5.0
+date-released: 2026-10-28
 license: MIT
 repository-code: https://github.com/ajerschow/spynach
 url: https://ajerschow.github.io/spynach/

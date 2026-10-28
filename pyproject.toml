@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "spynach"
-version = "0.4.0"
+version = "0.5.0"
 description = "Python reimplementation of the Spinach spin dynamics kernel"
 license = "MIT"
 license-files = ["LICENSE"]
@@ -30,7 +30,7 @@ Source = "https://github.com/ajerschow/spynach"
 Changelog = "https://github.com/ajerschow/spynach/blob/main/CHANGELOG.md"
 
 [project.optional-dependencies]
-epr = ["easyspyn==0.4.0"]  # EasySpin's simulators; its own PyPI distribution, not bundled (keep equal to the version)
+epr = ["easyspyn==0.5.0"]  # EasySpin's simulators; its own PyPI distribution, not bundled (keep equal to the version)
 test = ["pytest>=8", "sympy>=1.12"]  # sympy: the relaxation pathway tests and guide
 plot = ["plotly>=6"]
 symbolic = ["sympy>=1.12"]  # relaxation pathways (spynach.pathways)

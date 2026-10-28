@@ -2,7 +2,7 @@
 
 Releases are tagged `vX.Y.Z` on GitHub; the version is `spynach.__version__`.
 
-## Unreleased
+## 0.5.0 - 2026-10-28
 
 - Spynach has a PyPI distribution, `spynach` (`pip install spynach`; Python 3.11 or newer, Numba included). It holds
   `spynach` and `ctps`; `easyspyn` stays its own distribution, which `pip install "spynach[epr]"` adds (the extra pins
