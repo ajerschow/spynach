@@ -70,6 +70,14 @@ textarea {
 .btn.primary { background: var(--accent); color: var(--bg); }
 .btn:disabled { opacity: 0.45; cursor: default; }
 .hint { margin: 0; padding: 0.45rem 0.8rem 0.6rem; color: var(--muted); font-size: 0.82rem; }
+.btn.info { width: 2rem; height: 2rem; padding: 0; border-radius: 50%; font-family: var(--mono); font-style: italic; font-weight: 600; line-height: 1; cursor: pointer; }
+dialog#help-dialog { background: var(--surface); color: var(--fg); border: 1px solid var(--line); border-radius: 8px;
+  width: min(38rem, calc(100vw - 32px)); max-height: 85vh; overflow: auto; padding: 1rem 1.2rem 1.1rem; }
+dialog#help-dialog::backdrop { background: rgba(10, 12, 14, 0.55); }
+dialog#help-dialog h2 { font-size: 1.15rem; margin: 0 0 0.6rem; }
+dialog#help-dialog ul { margin: 0 0 1rem; padding-left: 1.1rem; display: grid; gap: 0.55rem; font-size: 0.92rem; line-height: 1.5; }
+dialog#help-dialog code { font-family: var(--mono); font-size: 0.85em; background: var(--code-bg); padding: 0.05em 0.3em; border-radius: 3px; }
+dialog#help-dialog form { margin: 0; text-align: right; }
 .hint code { font-family: var(--mono); font-size: 0.85em; background: var(--code-bg); padding: 0.05em 0.3em; border-radius: 3px; }
 #plots {
   grid-column: 2; grid-row: 1; min-height: 8rem; overflow: auto;
@@ -167,6 +175,7 @@ figure.plot figcaption.chord-info { min-height: 4.2em; line-height: 1.45; overfl
         <select id="example"></select>
       </label>
       <div class="actions">
+        <button class="btn info" id="help" type="button" aria-label="Help" title="Help" aria-haspopup="dialog">i</button>
         <button class="btn" id="view-toggle" type="button" hidden>Prefer GUI</button>
         <button class="btn primary" id="run" type="button" disabled>Run</button>
         <button class="btn" id="stop" type="button" disabled>Stop</button>
@@ -174,12 +183,23 @@ figure.plot figcaption.chord-info { min-height: 4.2em; line-height: 1.45; overfl
     </div>
     <div id="params" aria-label="Parameters" hidden></div>
     <textarea id="editor" spellcheck="false" wrap="off" aria-label="Python source"></textarea>
-    <p class="hint">Ctrl+Enter runs. <code>show_spectrum</code>, <code>show_fid</code> and <code>show_image</code> draw on the right; an <code>easyspyn</code> spectrum can be passed as is, and EPR axes run left to right. The 12800-orientation powder is the slow one, about a minute; the 1600-point powder, magic-angle spinning and the fit take a few seconds. Grid names such as <code>leb_2ang_rank_17</code> are loaded from <code>src/spynach/grids</code>. A link such as <code>try.html#ex-epr-hyscore</code> opens and runs one example. <b>Prefer GUI</b> shows the main settings of an example as a form, with units and a description for each, and <b>Prefer code</b> goes back; an edit in the form rewrites the number in the code, and an edit in the code updates the form, and a parameter the code no longer uses is greyed out. If you rewrite the code until no parameter lines are left, <b>Restore example</b> brings the original and its form back, as does reloading the page. <code>?view=params</code> opens the form.</p>
+    <p class="hint">Ctrl+Enter runs. Press <b>i</b> for help.</p>
   </section>
   <div id="plots"><p class="empty">The spectrum will land here.</p></div>
   <div id="console" role="log" aria-live="polite"></div>
 </div>
 </div>
+<dialog id="help-dialog" aria-labelledby="help-title">
+  <h2 id="help-title">Using the playground</h2>
+  <ul>
+    <li><b>Running.</b> Ctrl+Enter runs the example in the editor. <code>show_spectrum</code>, <code>show_fid</code> and <code>show_image</code> draw on the right; an <code>easyspyn</code> spectrum can be passed as is, and EPR axes run left to right.</li>
+    <li><b>Run times.</b> The 12800-orientation powder is the slow one, about a minute; the 1600-point powder, magic-angle spinning and the fit take a few seconds. Grid names such as <code>leb_2ang_rank_17</code> are loaded from <code>src/spynach/grids</code>.</li>
+    <li><b>Links.</b> A link such as <code>try.html#ex-epr-hyscore</code> opens and runs one example. <code>?view=params</code> opens the parameter form.</li>
+    <li><b>Prefer GUI.</b> It shows the main settings of an example as a form, with units and a description for each, and <b>Prefer code</b> goes back; an edit in the form rewrites the number in the code, and an edit in the code updates the form, and a parameter the code no longer uses is greyed out.</li>
+    <li><b>Restore example.</b> If you rewrite the code until no parameter lines are left, <b>Restore example</b> brings the original and its form back, as does reloading the page.</li>
+  </ul>
+  <form method="dialog"><button class="btn primary" id="help-close">Close</button></form>
+</dialog>
 
 <script type="text/plain" class="example" id="ex-ab" data-group="NMR (spynach)" data-title="Two coupled protons">
 import numpy as np
@@ -1144,6 +1164,10 @@ const stopBtn = document.querySelector("#stop");
 const plotsEl = document.querySelector("#plots");
 const consoleEl = document.querySelector("#console");
 const examples = [...document.querySelectorAll("script.example")];
+const helpDialog = document.querySelector("#help-dialog");
+document.querySelector("#help").addEventListener("click", () => helpDialog.showModal());
+helpDialog.addEventListener("click", (event) => { if (event.target === helpDialog) helpDialog.close(); });
+if (new URLSearchParams(location.search).has("help")) helpDialog.showModal();
 
 let worker = null;
 let runId = 0;

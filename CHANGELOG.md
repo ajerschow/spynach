@@ -2,6 +2,11 @@
 
 Releases are tagged `vX.Y.Z` on GitHub; the version is `spynach.__version__`.
 
+## Unreleased
+
+- The playground's help text is a popup behind an info button (`i`, next to Run and Stop; `try.html?help` opens it),
+  and the line under the editor is down to "Ctrl+Enter runs. Press i for help."
+
 ## 0.5.0 - 2026-10-28
 
 - Spynach has a PyPI distribution, `spynach` (`pip install spynach`; Python 3.11 or newer, Numba included). It holds
