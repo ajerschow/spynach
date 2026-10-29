@@ -93,6 +93,9 @@ with an HTML report, use the protocol in
 
 ## Conventions for contributors
 
+What to contribute first (examples on the existing kernel, parity with Spinach or EasySpin, browser examples
+with a notebook) is in [`CONTRIBUTING.md`](../CONTRIBUTING.md). The documentation rules:
+
 **Every user-facing change ships with user documentation in the same
 commit.** A newly ported function, formalism, context, pulse sequence,
 option, or behaviour change is not done until the guides describe it.

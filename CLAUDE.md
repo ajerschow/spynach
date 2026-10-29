@@ -12,6 +12,12 @@ runnable here for checks, HTML report).
 Spinach keeps that attribution, and contributed scripts in `user_ml/` keep
 their author's name.
 
+## Contributions
+
+When applying or reviewing a contribution, follow `CONTRIBUTING.md`: examples that run on the existing kernel
+come first (parity with Spinach or EasySpin, then browser examples with a notebook), Spinach and EasySpin names
+are kept, and a kernel change is its own pull request with a regression test.
+
 ## User documentation is part of every change
 
 - Every user-facing change (new port, option, behaviour change) includes
