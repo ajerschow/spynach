@@ -4,6 +4,8 @@ Releases are tagged `vX.Y.Z` on GitHub; the version is `spynach.__version__`.
 
 ## Unreleased
 
+- The playground opens an example in its Parameters view (the form) when it has one; "Prefer code" switches to the
+  source and is remembered, and `try.html?view=code` opens the source. (`?view=params` still works.)
 - The playground's help text is a popup behind an info button (`i`, next to Run and Stop; `try.html?help` opens it),
   and the line under the editor is down to "Ctrl+Enter runs. Press i for help."
 

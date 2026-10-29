@@ -194,8 +194,8 @@ figure.plot figcaption.chord-info { min-height: 4.2em; line-height: 1.45; overfl
   <ul>
     <li><b>Running.</b> Ctrl+Enter runs the example in the editor. <code>show_spectrum</code>, <code>show_fid</code> and <code>show_image</code> draw on the right; an <code>easyspyn</code> spectrum can be passed as is, and EPR axes run left to right.</li>
     <li><b>Run times.</b> The 12800-orientation powder is the slow one, about a minute; the 1600-point powder, magic-angle spinning and the fit take a few seconds. Grid names such as <code>leb_2ang_rank_17</code> are loaded from <code>src/spynach/grids</code>.</li>
-    <li><b>Links.</b> A link such as <code>try.html#ex-epr-hyscore</code> opens and runs one example. <code>?view=params</code> opens the parameter form.</li>
-    <li><b>Prefer GUI.</b> It shows the main settings of an example as a form, with units and a description for each, and <b>Prefer code</b> goes back; an edit in the form rewrites the number in the code, and an edit in the code updates the form, and a parameter the code no longer uses is greyed out.</li>
+    <li><b>Links.</b> A link such as <code>try.html#ex-epr-hyscore</code> opens and runs one example. <code>?view=code</code> opens the code instead of the form.</li>
+    <li><b>Prefer GUI.</b> The playground opens with the main settings of an example as a form, with units and a description for each, and <b>Prefer code</b> goes back; an edit in the form rewrites the number in the code, and an edit in the code updates the form, and a parameter the code no longer uses is greyed out.</li>
     <li><b>Restore example.</b> If you rewrite the code until no parameter lines are left, <b>Restore example</b> brings the original and its form back, as does reloading the page.</li>
   </ul>
   <form method="dialog"><button class="btn primary" id="help-close">Close</button></form>
@@ -1215,7 +1215,7 @@ function loadExample(id) {
 const toggleBtn = document.querySelector("#view-toggle");
 const paramsEl = document.querySelector("#params");
 let defaults = new Map();
-let mode = "code";
+let mode = "params";
 let liveUpdate = false;
 let pendingRun = false;
 let paramTimer = null;
@@ -1225,7 +1225,7 @@ function currentExample() {
   return document.getElementById(exampleSel.dataset.current || exampleSel.value);
 }
 
-// The preference is "code" or "params"; an example without parameters always shows its code and has no toggle
+// The preference is "params" (the default) or "code"; an example without parameters always shows its code and has no toggle
 function applyMode(shown) {
   paramsEl.hidden = shown === "code";
   editor.hidden = shown === "params";
@@ -2164,7 +2164,7 @@ function nearest(map, xVal) {
 const first = exampleFromHash() || examples[0].id;
 exampleSel.value = first;
 exampleSel.dataset.current = first;
-// The view comes from ?view=code|params, else from the last choice (links can open the Parameters view)
+// The view comes from ?view=code|params, else from the last choice, else the Parameters view
 try {
   const stored = new URLSearchParams(location.search).get("view") || localStorage.getItem("playground-mode");
   if (["code", "params"].includes(stored)) mode = stored;
