@@ -174,7 +174,7 @@ figure.plot figcaption.chord-info { min-height: 4.2em; line-height: 1.45; overfl
     </div>
     <div id="params" aria-label="Parameters" hidden></div>
     <textarea id="editor" spellcheck="false" wrap="off" aria-label="Python source"></textarea>
-    <p class="hint">Ctrl+Enter runs. <code>show_spectrum</code>, <code>show_fid</code> and <code>show_image</code> draw on the right; an <code>easyspyn</code> spectrum can be passed as is, and EPR axes run left to right. The 12800-orientation powder is the slow one, about a minute; the 1600-point powder, magic-angle spinning and the fit take a few seconds. Grid names such as <code>leb_2ang_rank_17</code> are loaded from <code>src/spynach/grids</code>. A link such as <code>try.html#ex-epr-hyscore</code> opens and runs one example. <b>Prefer GUI</b> shows the main settings of an example as a form, with units and a description for each, and <b>Prefer code</b> goes back; an edit in the form rewrites the number in the code, and an edit in the code updates the form, and a parameter the code no longer uses is greyed out. If you rewrite the code until no parameter lines are left, <b>Restore example</b> brings the original and its form back, as does reloading the page. <code>?view=params</code> opens the form.</p>
+    <p class="hint">Ctrl+Enter runs. <code>show_spectrum</code>, <code>show_fid</code> and <code>show_image</code> draw on the right; an <code>easyspyn</code> spectrum can be passed as is, and EPR axes run left to right. Drag across a line plot to zoom in on that range, and double-click it to zoom back out. The 12800-orientation powder is the slow one, about a minute; the 1600-point powder, magic-angle spinning and the fit take a few seconds. Grid names such as <code>leb_2ang_rank_17</code> are loaded from <code>src/spynach/grids</code>. A link such as <code>try.html#ex-epr-hyscore</code> opens and runs one example. <b>Prefer GUI</b> shows the main settings of an example as a form, with units and a description for each, and <b>Prefer code</b> goes back; an edit in the form rewrites the number in the code, and an edit in the code updates the form, and a parameter the code no longer uses is greyed out. If you rewrite the code until no parameter lines are left, <b>Restore example</b> brings the original and its form back, as does reloading the page. <code>?view=params</code> opens the form.</p>
   </section>
   <div id="plots"><p class="empty">The spectrum will land here.</p></div>
   <div id="console" role="log" aria-live="polite"></div>
@@ -1118,8 +1118,13 @@ r_bf = 1.40  # GUI: B–F distance | Å | Bond length, which sets the dipolar co
 cq_b = 100.0  # GUI: 11B quadrupolar coupling | kHz | e²qQ/h of the boron along the first B–F bond; zero in a perfect tetrahedron | 0..2000
 tau_c = 10.0  # GUI: Correlation time | ps | Isotropic rotational correlation time of the anion | 1..1000
 
+# --- The 1D spectrum: a DC pulse after the transfer, then the magnetisation along the detection axis ---
+pulse_field = 30.0  # GUI: Pulse field | µT | DC field along y that turns the transferred populations into coherences; the ZULF_PF6_1D script pulses 30 µT for 150 µs | 1..200
+pulse_length = 150.0  # GUI: Pulse length | µs | Duration of the DC pulse | 1..1000
+detection = "z"  # GUI: Detection | - | The magnetisation along the field (z), which a ZULF magnetometer records, or across it (x) | z, x
+line_shape = "absorption"  # GUI: Line shape | - | absorption: the phased spectrum, each line a Lorentzian of full width R2/π at half height; magnitude: its modulus, as the ZULF_PF6_1D script plots it | absorption, magnitude
+
 # --- What to show ---
-detection = "z"  # GUI: Detection | - | The lines of the magnetisation along the field (z), which a ZULF magnetometer records, or across it (x) | z, x
 resolve = "interaction"  # GUI: Mechanism classes | - | interaction: by the spins involved, DD(BF), DD(FF), DD(BF)/DD(BF') ...; kind: DD, Q, DD/DD ... | interaction, kind
 weakest = 30.0  # GUI: Hide weaker pathways | % | Chord diagram: population pathways below this share of the strongest are not drawn | 0..50
 split = True  # GUI: One ribbon per class | - | Draw each mechanism class of a pathway as its own ribbon; off: one ribbon per pathway, coloured by the combination of classes
@@ -1168,33 +1173,63 @@ offdiagonal = np.abs(pathways.rate_matrix() - np.diag(np.diag(pathways.rate_matr
 show_pathways(pathways, split=split, min_rate=weakest / 100 * offdiagonal.max(),
               title=f"11BF4- at {ulf_field:g} nT: relaxation between level populations |K, F, M>")
 
-# R2 of every line of the spectrum: the diagonal rates of the detected coherences between levels
-lines = levels.lines(detection, min_weight=0.01)
+# The lines of the magnetisation along the detection axis, and the width R2 of each: the diagonal rate of its
+# detected coherences between levels
+lines = levels.lines(detection, min_weight=1e-3)
+if not len(lines):
+    raise ValueError(f"no line along {detection}: without the coupling the levels give none")
 widths = spynach.relaxation_pathways(bf4, basis=lines, tau_c=tau_c * 1e-12, mechanisms=mechanisms, resolve=resolve)
 R2 = np.diag(widths.rate_matrix())
 by_class = {cls: np.diag(widths.rate_matrix(cls)) for cls in widths.classes}
-print(f"\n{len(lines)} lines along {detection}: frequency (Hz), weight, R2 (s⁻¹) and its classes")
-for k, line in enumerate(lines):
-    parts = ", ".join(f"{cls} {values[k]:.3g}" for cls, values in by_class.items())
-    print(f"  {line.frequency:9.4f}  {line.weight:5.3f}  {R2[k]:8.4g}   {line.label}: {parts}")
+
+# The spectrum. After the transfer the spins hold level populations only. The DC pulse along y, applied with their
+# own Hamiltonian, turns them into coherences, and each line then precesses at its frequency and decays at its R2.
+# All in the eigenbasis of the levels: the columns of levels.vectors, in the Zeeman basis of zeeman-hilb
+hilbert = spynach.basis(bf4, {"formalism": "zeeman-hilb", "approximation": "none"})
+d = np.array([level.degeneracy for level in levels])
 
 
-def comb(values):
-    """A stem at each line frequency, joined along zero, so that one series draws them all"""
-    x = np.repeat(lines.frequencies, 3)
-    y = np.zeros_like(x)
-    y[1::3] = values
-    return x, y
+def magnetisation(axis):
+    """sum_k gamma_k I_k along an axis, between the eigenstates"""
+    M = sum(g * spynach.operator(hilbert, f"L{axis}", n).toarray() for n, g in enumerate(levels.gammas))
+    return levels.vectors.conj().T @ M @ levels.vectors
 
 
-axis, total = comb(R2)
-show_spectrum([total] + [comb(values)[1] for values in by_class.values()], axis, invert=False,
-              names=["R2, all"] + list(by_class), xlabel="line frequency (Hz)", ylabel="R2 (s⁻¹)",
-              title=f"R2 of each line at {ulf_field:g} nT, detected along {detection}")
+U = expm(-1j * (np.diag(np.repeat(levels.energies, d)) - pulse_field * 1e-6 * magnetisation("y")) * pulse_length * 1e-6)
+rho = U @ np.diag(np.repeat(populations, d)) @ U.conj().T
+D = magnetisation(detection)
+flips = np.degrees(np.abs(levels.gammas[:2]) * pulse_field * pulse_length * 1e-12)
+print(f"\nDC pulse of {pulse_field:g} µT along y for {pulse_length:g} µs: it would turn a free 11B by {flips[0]:.0f}° "
+      f"and a free 19F by {flips[1]:.0f}°")
+
+# The signal of a line is 2 Re[c exp(-i w t)] exp(-R2 t), with c the sum of D_ba rho_ab over its coherences
+# (a upper, b lower). Phased as a spectroscopist would: time zero at the middle of the pulse (first order), the
+# strongest line in absorption (zero order)
+w = 2 * np.pi * lines.frequencies
+c = np.array([sum(np.sum(D[np.ix_(levels[b].states, levels[a].states)].T * rho[np.ix_(levels[a].states, levels[b].states)])
+                  for a, b in line.transitions) for line in lines])
+amplitudes = np.conj(c * np.exp(0.5j * w * pulse_length * 1e-6))
+phase0 = np.exp(-1j * np.angle(amplitudes[np.argmax(np.abs(amplitudes))]))
+
+# The spectrum on a grid that is fine around every line, so that each keeps its shape when zoomed in; the second
+# term of each line is its mirror at negative frequency, which the real signal also holds
+fwhh = R2 / np.pi
+reach = 4 * fwhh.max() + 0.02 * np.ptp(lines.frequencies)
+lo, hi = max(0.0, lines.frequencies.min() - reach), lines.frequencies.max() + reach
+nu = np.concatenate([np.linspace(lo, hi, 4000)] + [f + h * np.sinh(np.linspace(-3.2, 3.2, 241)) for f, h in zip(lines.frequencies, fwhh)])
+nu = np.unique(nu[(nu >= lo) & (nu <= hi)])
+spectrum = phase0 * sum(a / (r + 1j * (2 * np.pi * nu - wk)) + np.conj(a) / (r + 1j * (2 * np.pi * nu + wk))
+                        for a, r, wk in zip(amplitudes, R2, w))
+shown = spectrum.real if line_shape == "absorption" else np.abs(spectrum)
+show_spectrum(shown / np.abs(shown).max(), nu, invert=False, xlabel="frequency (Hz)", ylabel="intensity",
+              title=f"Spectrum along {detection} at {ulf_field:g} nT, each line R2/π wide (drag across to zoom in)")
+close = sum(abs(w[i] - w[j]) < R2[i] + R2[j] for i in range(len(w)) for j in range(i))
+if close:
+    print(f"{close} pairs of lines lie closer than their widths. Relaxation also exchanges their coherences, which "
+          "this sum of independent lines leaves out (see the limits in the guide).")
 
 # The populations after the transfer, relaxing at the ultralow field: d<P>/dt = -Gamma <P> for the normalised
 # level projectors, <P> = population per state times sqrt(degeneracy); summed over each (K, F) manifold
-d = np.array([level.degeneracy for level in levels])
 start = populations * np.sqrt(d)
 gamma = pathways.rate_matrix()
 rates = np.sort(np.abs(np.linalg.eigvals(gamma)))
@@ -1204,6 +1239,15 @@ evolution = np.array([expm(-gamma * t) @ start for t in times]) * np.sqrt(d)
 show_spectrum([evolution[:, ks].sum(axis=1) / scale for ks in manifolds.values()], times, invert=False,
               names=[f"K,F = {name}" for name in manifolds], xlabel="time after the transfer (s)",
               ylabel="population (relative)", title="Populations of each (K, F) manifold after the transfer")
+
+# The lifetime of every line, with what each mechanism class adds to its R2 (adding 0.0 turns -0.00 into 0.00)
+amplitude = np.round((phase0 * amplitudes).real / np.abs(amplitudes).max(), 2) + 0.0
+print(f"\nLifetimes of all {len(lines)} lines along {detection} (T2 = 1/R2, FWHH = R2/π; amplitude: area in the spectrum, "
+      "strongest line = 1):")
+print("  frequency (Hz)   T2 (ms)  R2 (s⁻¹)  FWHH (Hz)  amplitude  transition |K,F,M> – |K,F,M>: R2 by class (s⁻¹)")
+for k, line in enumerate(lines):
+    parts = ", ".join(f"{cls} {values[k]:.2g}" for cls, values in by_class.items() if abs(values[k]) > 1e-6 * R2[k])
+    print(f"  {line.frequency:14.5f}  {1e3 / R2[k]:8.4g}  {R2[k]:8.4g}  {fwhh[k]:9.4g}  {amplitude[k]:+9.2f}  {line.label}: {parts}")
 </script>
 
 <script type="text/plain" class="example" id="ex-ulf-pf6" data-group="Relaxation (spynach)" data-title="PF6- at ultralow field: level populations after an adiabatic transfer">
@@ -1219,8 +1263,13 @@ J_pf = 710.0  # GUI: 1J(31P,19F) | Hz | Phosphorus-fluorine scalar coupling | 60
 r_pf = 1.6  # GUI: P–F distance | Å | Bond length of the octahedron, which sets the dipolar couplings b_PF and b_FF (cis and trans) | 1.5..1.7
 tau_c = 65.0  # GUI: Correlation time | ps | Isotropic rotational correlation time of the anion; 65 ps for 2 M LiPF6 in EC/DMC | 1..1000
 
+# --- The 1D spectrum: a DC pulse after the transfer, then the magnetisation along the detection axis ---
+pulse_field = 30.0  # GUI: Pulse field | µT | DC field along y that turns the transferred populations into coherences; the ZULF_PF6_1D script pulses 30 µT for 150 µs | 1..200
+pulse_length = 150.0  # GUI: Pulse length | µs | Duration of the DC pulse | 1..1000
+detection = "z"  # GUI: Detection | - | The magnetisation along the field (z), which a ZULF magnetometer records, or across it (x) | z, x
+line_shape = "absorption"  # GUI: Line shape | - | absorption: the phased spectrum, each line a Lorentzian of full width R2/π at half height; magnitude: its modulus, as the ZULF_PF6_1D script plots it | absorption, magnitude
+
 # --- What to show ---
-detection = "z"  # GUI: Detection | - | The lines of the magnetisation along the field (z), which a ZULF magnetometer records, or across it (x) | z, x
 resolve = "interaction"  # GUI: Mechanism classes | - | interaction: by the spins involved, DD(PF), DD(FF), DD(FF)/DD(PF) ...; kind: DD, DD/DD | interaction, kind
 weakest = 30.0  # GUI: Hide weaker pathways | % | Chord diagram: population pathways below this share of the strongest are not drawn | 0..50
 split = True  # GUI: One ribbon per class | - | Draw each mechanism class of a pathway as its own ribbon; off: one ribbon per pathway, coloured by the combination of classes
@@ -1261,33 +1310,61 @@ offdiagonal = np.abs(pathways.rate_matrix() - np.diag(np.diag(pathways.rate_matr
 show_pathways(pathways, split=split, min_rate=weakest / 100 * offdiagonal.max(),
               title=f"PF6- at {ulf_field:g} µT: relaxation between level populations |K, F, M>")
 
-# R2 of every line of the spectrum: the diagonal rates of the detected coherences between levels
-lines = levels.lines(detection, min_weight=0.01)
+# The lines of the magnetisation along the detection axis, and the width R2 of each: the diagonal rate of its
+# detected coherences between levels
+lines = levels.lines(detection, min_weight=1e-3)
 widths = spynach.relaxation_pathways(pf6, basis=lines, tau_c=tau_c * 1e-12, mechanisms=mechanisms, resolve=resolve)
 R2 = np.diag(widths.rate_matrix())
 by_class = {cls: np.diag(widths.rate_matrix(cls)) for cls in widths.classes}
-print(f"\n{len(lines)} lines along {detection}: frequency (Hz), weight, R2 (s⁻¹) and its classes")
-for k, line in enumerate(lines):
-    parts = ", ".join(f"{cls} {values[k]:.3g}" for cls, values in by_class.items())
-    print(f"  {line.frequency:9.4f}  {line.weight:5.3f}  {R2[k]:8.4g}   {line.label}: {parts}")
+
+# The spectrum. After the transfer the spins hold level populations only. The DC pulse along y, applied with their
+# own Hamiltonian, turns them into coherences, and each line then precesses at its frequency and decays at its R2.
+# All in the eigenbasis of the levels: the columns of levels.vectors, in the Zeeman basis of zeeman-hilb
+hilbert = spynach.basis(pf6, {"formalism": "zeeman-hilb", "approximation": "none"})
+d = np.array([level.degeneracy for level in levels])
 
 
-def comb(values):
-    """A stem at each line frequency, joined along zero, so that one series draws them all"""
-    x = np.repeat(lines.frequencies, 3)
-    y = np.zeros_like(x)
-    y[1::3] = values
-    return x, y
+def magnetisation(axis):
+    """sum_k gamma_k I_k along an axis, between the eigenstates"""
+    M = sum(g * spynach.operator(hilbert, f"L{axis}", n).toarray() for n, g in enumerate(levels.gammas))
+    return levels.vectors.conj().T @ M @ levels.vectors
 
 
-axis, total = comb(R2)
-show_spectrum([total] + [comb(values)[1] for values in by_class.values()], axis, invert=False,
-              names=["R2, all"] + list(by_class), xlabel="line frequency (Hz)", ylabel="R2 (s⁻¹)",
-              title=f"R2 of each line at {ulf_field:g} µT, detected along {detection}")
+U = expm(-1j * (np.diag(np.repeat(levels.energies, d)) - pulse_field * 1e-6 * magnetisation("y")) * pulse_length * 1e-6)
+rho = U @ np.diag(np.repeat(populations, d)) @ U.conj().T
+D = magnetisation(detection)
+flips = np.degrees(np.abs(levels.gammas[:2]) * pulse_field * pulse_length * 1e-12)
+print(f"\nDC pulse of {pulse_field:g} µT along y for {pulse_length:g} µs: it would turn a free 31P by {flips[0]:.0f}° "
+      f"and a free 19F by {flips[1]:.0f}°")
+
+# The signal of a line is 2 Re[c exp(-i w t)] exp(-R2 t), with c the sum of D_ba rho_ab over its coherences
+# (a upper, b lower). Phased as a spectroscopist would: time zero at the middle of the pulse (first order), the
+# strongest line in absorption (zero order)
+w = 2 * np.pi * lines.frequencies
+c = np.array([sum(np.sum(D[np.ix_(levels[b].states, levels[a].states)].T * rho[np.ix_(levels[a].states, levels[b].states)])
+                  for a, b in line.transitions) for line in lines])
+amplitudes = np.conj(c * np.exp(0.5j * w * pulse_length * 1e-6))
+phase0 = np.exp(-1j * np.angle(amplitudes[np.argmax(np.abs(amplitudes))]))
+
+# The spectrum on a grid that is fine around every line, so that each keeps its shape when zoomed in; the second
+# term of each line is its mirror at negative frequency, which the real signal also holds
+fwhh = R2 / np.pi
+reach = 4 * fwhh.max() + 0.02 * np.ptp(lines.frequencies)
+lo, hi = max(0.0, lines.frequencies.min() - reach), lines.frequencies.max() + reach
+nu = np.concatenate([np.linspace(lo, hi, 4000)] + [f + h * np.sinh(np.linspace(-3.2, 3.2, 241)) for f, h in zip(lines.frequencies, fwhh)])
+nu = np.unique(nu[(nu >= lo) & (nu <= hi)])
+spectrum = phase0 * sum(a / (r + 1j * (2 * np.pi * nu - wk)) + np.conj(a) / (r + 1j * (2 * np.pi * nu + wk))
+                        for a, r, wk in zip(amplitudes, R2, w))
+shown = spectrum.real if line_shape == "absorption" else np.abs(spectrum)
+show_spectrum(shown / np.abs(shown).max(), nu, invert=False, xlabel="frequency (Hz)", ylabel="intensity",
+              title=f"Spectrum along {detection} at {ulf_field:g} µT, each line R2/π wide (drag across to zoom in)")
+close = sum(abs(w[i] - w[j]) < R2[i] + R2[j] for i in range(len(w)) for j in range(i))
+if close:
+    print(f"{close} pairs of lines lie closer than their widths. Relaxation also exchanges their coherences, which "
+          "this sum of independent lines leaves out (see the limits in the guide).")
 
 # The populations after the transfer, relaxing at the ultralow field: d<P>/dt = -Gamma <P> for the normalised
 # level projectors, <P> = population per state times sqrt(degeneracy); summed over each (K, F) manifold
-d = np.array([level.degeneracy for level in levels])
 start = populations * np.sqrt(d)
 gamma = pathways.rate_matrix()
 rates = np.sort(np.abs(np.linalg.eigvals(gamma)))
@@ -1297,6 +1374,15 @@ evolution = np.array([expm(-gamma * t) @ start for t in times]) * np.sqrt(d)
 show_spectrum([evolution[:, ks].sum(axis=1) / scale for ks in manifolds.values()], times, invert=False,
               names=[f"K,F = {name}" for name in manifolds], xlabel="time after the transfer (s)",
               ylabel="population (relative)", title="Populations of each (K, F) manifold after the transfer")
+
+# The lifetime of every line, with what each mechanism class adds to its R2 (adding 0.0 turns -0.00 into 0.00)
+amplitude = np.round((phase0 * amplitudes).real / np.abs(amplitudes).max(), 2) + 0.0
+print(f"\nLifetimes of all {len(lines)} lines along {detection} (T2 = 1/R2, FWHH = R2/π; amplitude: area in the spectrum, "
+      "strongest line = 1):")
+print("  frequency (Hz)   T2 (ms)  R2 (s⁻¹)  FWHH (Hz)  amplitude  transition |K,F,M> – |K,F,M>: R2 by class (s⁻¹)")
+for k, line in enumerate(lines):
+    parts = ", ".join(f"{cls} {values[k]:.2g}" for cls, values in by_class.items() if abs(values[k]) > 1e-6 * R2[k])
+    print(f"  {line.frequency:14.4f}  {1e3 / R2[k]:8.4g}  {R2[k]:8.4g}  {fwhh[k]:9.4g}  {amplitude[k]:+9.2f}  {line.label}: {parts}")
 </script>
 
 <script type="text/plain" class="example" id="ex-powder-fine" data-group="NMR (spynach)" data-title="Powder CSA, 1600 orientations">
@@ -2050,8 +2136,41 @@ function fmt(v) {
   const rounded = Math.round(v * 1000) / 1000;
   return String(rounded);
 }
+function tickLabels(values) {
+  // fmt, or as many decimals as the tick step needs where fmt would print two ticks alike (a zoomed axis)
+  const labels = values.map(fmt);
+  if (values.length < 2 || new Set(labels).size === labels.length) return labels;
+  const decimals = Math.min(12, Math.max(0, Math.ceil(-Math.log10(values[1] - values[0]) - 1e-9)));
+  return values.map((v) => v.toFixed(decimals));
+}
+function fmtIn(v, span) {
+  // fmt, or enough decimals to tell apart points of a zoomed axis that spans less than 10
+  if (!(span > 0) || span >= 10) return fmt(v);
+  return v.toFixed(Math.min(12, Math.max(3, Math.ceil(3 - Math.log10(span)))));
+}
+function extentIn(x, y, n, xLo, xHi) {
+  // The extent of the samples of y whose x lies in [xLo, xHi]; [Infinity, -Infinity] when none does
+  let lo = Infinity;
+  let hi = -Infinity;
+  for (let i = 0; i < n; i++) {
+    if (!(x[i] >= xLo && x[i] <= xHi)) continue;
+    if (y[i] < lo) lo = y[i];
+    if (y[i] > hi) hi = y[i];
+  }
+  return [lo, hi];
+}
+function shade(canvas, map, from, to) {
+  // The band of a drag to zoom, over the plot just drawn
+  const ctx = canvas.getContext("2d");
+  ctx.save();
+  ctx.globalAlpha = 0.28;
+  ctx.fillStyle = css("--accent", "#2f6f4f");
+  ctx.fillRect(Math.min(from, to), map.top, Math.abs(to - from), map.bottom - map.top);
+  ctx.restore();
+}
 
-function drawLine(canvas, plot) {
+function drawLine(canvas, plot, view = null) {
+  // view: the range of x to show, [lo, hi], when zoomed in; the y range then follows the samples inside it
   const colors = palette();
   const fg = css("--fg", "#1c2024");
   const muted = css("--muted", "#5c6670");
@@ -2081,14 +2200,16 @@ function drawLine(canvas, plot) {
     return null;
   }
   const n = Math.min(x.length, ...series.map((item) => item.y.length));
-  let [xLo, xHi] = extent(x.subarray(0, n));
+  let [xLo, xHi] = view || extent(x.subarray(0, n));
   let yLo = Infinity;
   let yHi = -Infinity;
   for (const item of series) {
-    const [lo, hi] = extent(item.y.subarray(0, n));
+    const [lo, hi] = view ? extentIn(x, item.y, n, xLo, xHi) : extent(item.y.subarray(0, n));
     if (lo < yLo) yLo = lo;
     if (hi > yHi) yHi = hi;
   }
+  if (!Number.isFinite(yLo) || !Number.isFinite(yHi)) [yLo, yHi] = [0, 1];
+  else if (yLo === yHi) [yLo, yHi] = [yLo - 1, yHi + 1];
   const pad = (yHi - yLo) * 0.08 || 1;
   yLo -= pad;
   yHi += pad;
@@ -2103,24 +2224,28 @@ function drawLine(canvas, plot) {
   ctx.fillStyle = muted;
   ctx.textAlign = "center";
   ctx.textBaseline = "top";
-  for (const tick of ticks(xLo, xHi, 5)) {
+  const xTicks = ticks(xLo, xHi, 5);
+  const xLabels = tickLabels(xTicks);
+  xTicks.forEach((tick, i) => {
     const px = xPix(tick);
     ctx.beginPath();
     ctx.moveTo(px, top);
     ctx.lineTo(px, bottom);
     ctx.stroke();
-    ctx.fillText(fmt(tick), px, bottom + 6);
-  }
+    ctx.fillText(xLabels[i], px, bottom + 6);
+  });
   ctx.textAlign = "right";
   ctx.textBaseline = "middle";
-  for (const tick of ticks(yLo, yHi, 4)) {
+  const yTicks = ticks(yLo, yHi, 4);
+  const yLabels = tickLabels(yTicks);
+  yTicks.forEach((tick, i) => {
     const py = yPix(tick);
     ctx.beginPath();
     ctx.moveTo(left, py);
     ctx.lineTo(right, py);
     ctx.stroke();
-    ctx.fillText(fmt(tick), left - 6, py);
-  }
+    ctx.fillText(yLabels[i], left - 6, py);
+  });
   if (yLo < 0 && yHi > 0) {
     ctx.strokeStyle = muted;
     ctx.beginPath();
@@ -2130,6 +2255,14 @@ function drawLine(canvas, plot) {
   }
   ctx.strokeStyle = fg;
   ctx.strokeRect(left, top, w, h);
+  if (view) {
+    // Zoomed in: the samples outside the range are drawn too, so that the line enters and leaves the box
+    // where it should, and clipped
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(left, top, w, h);
+    ctx.clip();
+  }
   series.forEach((item, index) => {
     ctx.beginPath();
     ctx.strokeStyle = colors[index % colors.length];
@@ -2159,6 +2292,7 @@ function drawLine(canvas, plot) {
     ctx.stroke();
   });
   ctx.setLineDash([]);
+  if (view) ctx.restore();
   if (plot.title) {
     ctx.fillStyle = fg;
     ctx.textAlign = "left";
@@ -2525,24 +2659,67 @@ function render(plots) {
     const caption = document.createElement("figcaption");
     figure.append(canvas, caption);
     plotsEl.appendChild(figure);
-    const map = plot.kind === "image" ? drawImage(canvas, plot) : drawLine(canvas, plot);
+    let map = plot.kind === "image" ? drawImage(canvas, plot) : drawLine(canvas, plot);
+    // Line plots zoom in on a range of x dragged across, and back out on a double click
+    let view = null;
+    let drag = null;
+    const pointer = (event) => {
+      const rect = canvas.getBoundingClientRect();
+      return [event.clientX - rect.left, event.clientY - rect.top];
+    };
+    const xAt = (px) => {
+      const tx = (px - map.left) / (map.right - map.left);
+      return map.invert ? map.xHi - tx * (map.xHi - map.xLo) : map.xLo + tx * (map.xHi - map.xLo);
+    };
+    const inside = (px) => Math.min(map.right, Math.max(map.left, px));
+    const redraw = () => { map = drawLine(canvas, plot, view); };
+    if (map && plot.kind !== "image") {
+      canvas.title = "Drag across a range to zoom in, double-click to zoom out";
+      canvas.style.cursor = "crosshair";
+      canvas.addEventListener("mousedown", (event) => {
+        const [px, py] = pointer(event);
+        if (event.button !== 0 || px < map.left || px > map.right || py < map.top || py > map.bottom) return;
+        drag = px;
+        event.preventDefault();
+      });
+      canvas.addEventListener("mouseup", (event) => {
+        if (drag == null) return;
+        const px = inside(pointer(event)[0]);
+        if (Math.abs(px - drag) > 3) view = [xAt(drag), xAt(px)].sort((a, b) => a - b);
+        drag = null;
+        redraw();
+      });
+      canvas.addEventListener("dblclick", () => {
+        if (!view) return;
+        view = null;
+        redraw();
+        caption.textContent = "";
+      });
+    }
     canvas.addEventListener("mousemove", (event) => {
       if (!map) return;
-      const rect = canvas.getBoundingClientRect();
-      const px = event.clientX - rect.left;
-      const py = event.clientY - rect.top;
+      const [px, py] = pointer(event);
+      if (drag != null) {
+        redraw();
+        shade(canvas, map, drag, inside(px));
+      }
       if (px < map.left || px > map.right || py < map.top || py > map.bottom) { caption.textContent = ""; return; }
-      const tx = (px - map.left) / (map.right - map.left);
-      const xVal = map.invert ? map.xHi - tx * (map.xHi - map.xLo) : map.xLo + tx * (map.xHi - map.xLo);
+      const xVal = xAt(px);
       const ty = (py - map.top) / (map.bottom - map.top);
       const yVal = map.image && map.invert
         ? map.yLo + ty * (map.yHi - map.yLo)
         : map.yHi - ty * (map.yHi - map.yLo);
       caption.textContent = map.image
         ? fmt(xVal) + ", " + fmt(yVal)
-        : fmt(xVal) + "   " + fmt(nearest(map, xVal));
+        : (view ? fmtIn(xVal, map.xHi - map.xLo) : fmt(xVal)) + "   " + fmt(nearest(map, xVal));
     });
-    canvas.addEventListener("mouseleave", () => { caption.textContent = ""; });
+    canvas.addEventListener("mouseleave", () => {
+      if (drag != null) {
+        drag = null;
+        redraw();
+      }
+      caption.textContent = view ? "Zoomed in: double-click to zoom out." : "";
+    });
   }
 }
 

@@ -23,8 +23,13 @@ Releases are tagged `vX.Y.Z` on GitHub; the version is `spynach.__version__`.
   between the level populations, and `basis=lines` the width `R2` of every line. Both are by mechanism, with
   expressions in `J(0)`, in the extreme-narrowing limit, and checked against `spynach.relaxation`
   (`tests/unit/test_levels.py`). Guide `docs/zulf-pathways.md`; playground examples `try.html#ex-ulf-pf6` and
-  `#ex-ulf-bf4`: chord diagram of the level populations, R2 of each line, and the transferred populations relaxing,
-  with the fields, couplings, distances, quadrupolar coupling and correlation time in the form.
+  `#ex-ulf-bf4`: chord diagram of the level populations; the 1D spectrum after the transfer and a DC pulse (30 uT
+  for 150 us by default, as in `ZULF_PF6_1D.m`), phased, with each line a Lorentzian of its own width `R2/pi`; the
+  transferred populations relaxing; and, printed last, the lifetime `T2 = 1/R2` of every line with its share by
+  mechanism class. The fields, couplings, distances, quadrupolar coupling, correlation time, pulse and line shape
+  are in the form.
+- The playground's line plots zoom: drag across a range to zoom in, double-click to zoom back out. The y axis
+  follows the samples in range, and tick labels take the decimals that a narrow range needs.
 - Exact coefficients of the pathway expressions need a numerator of at most 10^4: a large float otherwise matched
   some fraction of large numerator by chance. Pathway operators carry an `info` text, shown on hover in the chord
   diagram. In the playground's line plots, a pixel column of many samples now ends at its last sample, which keeps
