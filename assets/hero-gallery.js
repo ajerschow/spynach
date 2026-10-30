@@ -127,7 +127,108 @@ void main(){
 
   const imgSlide = el('div', 'gallery-slide');
   caption.className = 'gallery-caption';
-  imgSlide.append(img, caption);
+  const stage = el('div', 'ripple-stage');
+  stage.append(img);
+  imgSlide.append(stage, caption);
+
+  // ---- the picture: a click is an RF pulse. The excitation spreads over the picture and every point then rings down
+  // like a free induction decay, a cosine under an exponential envelope, which refracts the image with a little
+  // colour fringing; from the click point the receiver trace is drawn out to the right as it is recorded. Up to four
+  // clicks at once. The WebGL canvas is built at the first click and sits over the image only while an FID is alive;
+  // it is skipped for reduced motion, without WebGL, or when the image cannot be read as a texture. ----
+  const RIPPLE = `
+precision highp float;
+uniform sampler2D tex; uniform vec2 res;
+uniform vec3 clk[4];  // click x, y (0..1, y up) and age in s; age < 0 = unused
+void main(){
+  vec2 uv = gl_FragCoord.xy / res;
+  float asp = res.x / res.y;
+  vec2 shift = vec2(0.); float glint = 0.; float trace = 0.;
+  for (int k = 0; k < 4; k++) {
+    vec3 c = clk[k];
+    if (c.z < 0.) continue;
+    vec2 dv = (uv - c.xy) * vec2(asp, 1.);
+    float d = length(dv) + 1e-4;
+    float tau = c.z - d / .55;                              // time since the excitation reached this point
+    if (tau > 0.) {
+      float fid = cos(tau * 24.) * exp(-tau / .8) * smoothstep(0., .1, tau) * exp(-c.z / 3.);   // T2 decay
+      shift += normalize(dv) / vec2(asp, 1.) * fid * .010;
+      glint += fid * .08;
+    }
+    float u = dv.x / .55;                                   // the recorded trace, one time unit per width of .55
+    if (dv.x > 0. && u < c.z) {
+      float y = c.y + .07 * cos(u * 24.) * exp(-u / .8) * exp(-c.z / 3.) * min(1., c.z * 4.);
+      trace = max(trace, (1. - smoothstep(.002, .006, abs(uv.y - y))) * exp(-c.z / 2.5));
+    }
+  }
+  vec3 col;
+  col.r = texture2D(tex, uv + shift * 1.35).r;
+  col.g = texture2D(tex, uv + shift).g;
+  col.b = texture2D(tex, uv + shift * .65).b;
+  col += glint;
+  col = mix(col, vec3(.55, .95, .85), clamp(trace, 0., 1.) * .9);
+  gl_FragColor = vec4(col, 1.);
+}`;
+  const ripples = () => {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    img.style.cursor = 'pointer';
+    const clicks = [];
+    let cv = null, g = null, uRes, uClk, loop = 0, dead = false;
+    const build = () => {
+      cv = el('canvas', 'ripple-canvas');
+      cv.setAttribute('aria-hidden', 'true');
+      g = cv.getContext('webgl', { antialias: false });
+      if (!g) return false;
+      const sh = (type, src) => { const x = g.createShader(type); g.shaderSource(x, src); g.compileShader(x); return x; };
+      const pr = g.createProgram();
+      g.attachShader(pr, sh(g.VERTEX_SHADER, vs));
+      g.attachShader(pr, sh(g.FRAGMENT_SHADER, RIPPLE));
+      g.linkProgram(pr);
+      if (!g.getProgramParameter(pr, g.LINK_STATUS)) return false;
+      g.useProgram(pr);
+      g.bindBuffer(g.ARRAY_BUFFER, g.createBuffer());
+      g.bufferData(g.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), g.STATIC_DRAW);
+      const at = g.getAttribLocation(pr, 'p');
+      g.enableVertexAttribArray(at);
+      g.vertexAttribPointer(at, 2, g.FLOAT, false, 0, 0);
+      g.bindTexture(g.TEXTURE_2D, g.createTexture());
+      g.pixelStorei(g.UNPACK_FLIP_Y_WEBGL, true);
+      for (const [k, v] of [[g.TEXTURE_MIN_FILTER, g.LINEAR], [g.TEXTURE_MAG_FILTER, g.LINEAR],
+        [g.TEXTURE_WRAP_S, g.CLAMP_TO_EDGE], [g.TEXTURE_WRAP_T, g.CLAMP_TO_EDGE]]) g.texParameteri(g.TEXTURE_2D, k, v);
+      g.texImage2D(g.TEXTURE_2D, 0, g.RGB, g.RGB, g.UNSIGNED_BYTE, img);   // throws if the image is cross-origin
+      uRes = g.getUniformLocation(pr, 'res');
+      uClk = g.getUniformLocation(pr, 'clk');
+      stage.append(cv);
+      return true;
+    };
+    const ck = new Float32Array(12);
+    const paint = now => {
+      loop = 0;
+      while (clicks.length && now - clicks[0].t > 5500) clicks.shift();
+      if (!clicks.length) { cv.style.visibility = 'hidden'; return; }
+      const ratio = Math.min(devicePixelRatio || 1, 2);
+      const w = Math.round(cv.clientWidth * ratio), h = Math.round(cv.clientHeight * ratio);
+      if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; g.viewport(0, 0, w, h); }
+      g.uniform2f(uRes, cv.width, cv.height);
+      for (let k = 0; k < 4; k++) ck.set(clicks[k] ? [clicks[k].x, clicks[k].y, (now - clicks[k].t) / 1000] : [0, 0, -1], 3 * k);
+      g.uniform3fv(uClk, ck);
+      g.drawArrays(g.TRIANGLES, 0, 3);
+      loop = requestAnimationFrame(paint);
+    };
+    stage.addEventListener('click', e => {      // click, not pointerdown: a swipe must not start a ripple
+      if (dead || !img.complete || !img.naturalWidth) return;
+      if (!cv) {
+        try { dead = !build(); } catch (err) { dead = true; }
+        if (dead) { img.style.cursor = ''; return; }
+      }
+      const r = img.getBoundingClientRect();
+      clicks.push({ x: (e.clientX - r.left) / r.width, y: (r.bottom - e.clientY) / r.height, t: performance.now() });
+      if (clicks.length > 4) clicks.shift();
+      cv.style.visibility = 'visible';
+      if (!loop) loop = requestAnimationFrame(paint);
+    });
+  };
+  ripples();
 
   // ---- two more animations, each confined to its own slide on the same dark background ----
   const BG = 'vec3 bg = vec3(.035, .04, .05);';

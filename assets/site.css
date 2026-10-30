@@ -130,6 +130,8 @@ svg.chord { cursor: pointer; overflow: visible; }
 svg.chord .arc { outline: none; }
 svg.chord .arc:hover path { fill: #fff; }
 svg.chord .arc:focus-visible path { stroke: #fff; stroke-width: 0.016; }
+.ripple-stage { position: relative; }
+.ripple-canvas { position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 6px; pointer-events: none; visibility: hidden; }
 .gallery-caption { font-size: 0.85rem; color: var(--muted); margin-top: 0.5rem; font-family: var(--mono); }
 .gallery-btn { position: absolute; top: 50%; transform: translateY(-50%); width: 2.75rem; height: 2.75rem; border: 0; border-radius: 50%;
   background: rgba(10, 12, 14, 0.55); color: #fff; font-size: 1.6rem; line-height: 1; cursor: pointer; }

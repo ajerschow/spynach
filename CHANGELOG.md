@@ -4,6 +4,7 @@ Releases are tagged `vX.Y.Z` on GitHub; the version is `spynach.__version__`.
 
 ## Unreleased
 
+- Landing page: a click on the Spynoza picture is an RF pulse: the picture rings down like a free induction decay (a damped cosine refracting the image, with slight colour fringing) while the receiver trace is drawn from the click point (WebGL, up to four at once; skipped with reduced motion or without WebGL).
 - The playground opens an example in its Parameters view (the form) when it has one; "Prefer code" switches to the
   source and is remembered, and `try.html?view=code` opens the source. (`?view=params` still works.)
 - The playground's help text is a popup behind an info button (`i`, next to Run and Stop; `try.html?help` opens it),
