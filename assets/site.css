@@ -145,3 +145,8 @@ svg.chord .arc:focus-visible path { stroke: #fff; stroke-width: 0.016; }
   border-radius: 50%; background: var(--line); }
 .gallery-dot[aria-current="true"]::after { background: var(--accent); }
 .gallery-track:focus-visible, .gallery-btn:focus-visible, .gallery-dot:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Light/dark link at the bottom of the page (assets/theme.js) */
+.theme-toggle { font: inherit; color: var(--accent-ink); background: none; border: 0; padding: 0; cursor: pointer;
+  text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 2px; margin-left: auto; }
+.theme-toggle:hover { color: var(--accent); }

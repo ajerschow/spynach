@@ -27,6 +27,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="assets/site.css">
+<script src="assets/theme.js"></script>
 <style>
 /* The playground's own rules; the tokens, type and navigation come from assets/site.css. */
 html, body { height: 100%; }
@@ -105,6 +106,7 @@ figure.plot figcaption.chord-info { min-height: 4.2em; line-height: 1.45; overfl
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) #console .err { color: #f0a8a2; }
 }
+:root[data-theme="dark"] #console .err { color: #f0a8a2; }
 .banner {
   margin: 0.7rem 0 0; padding: 0.6rem 0.75rem; border: 1px solid var(--line); border-radius: 6px;
   background: var(--surface); color: var(--muted); font-size: 0.92rem; max-width: none;
@@ -138,6 +140,7 @@ figure.plot figcaption.chord-info { min-height: 4.2em; line-height: 1.45; overfl
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) .param input.invalid, :root:not([data-theme="light"]) .param .desc.err { color: #f0a8a2; border-color: #f0a8a2; }
 }
+:root[data-theme="dark"] .param input.invalid, :root[data-theme="dark"] .param .desc.err { color: #f0a8a2; border-color: #f0a8a2; }
 @media (max-width: 860px) {
   .app { grid-template-columns: 1fr; grid-template-rows: auto auto auto; row-gap: 14px; align-content: start; overflow: auto; }
   .wrap { height: auto; min-height: 100%; }
@@ -188,6 +191,10 @@ figure.plot figcaption.chord-info { min-height: 4.2em; line-height: 1.45; overfl
   <div id="plots"><p class="empty">The spectrum will land here.</p></div>
   <div id="console" role="log" aria-live="polite"></div>
 </div>
+<footer>
+  <span>MIT licence, with the Spinach and EasySpin notices.</span>
+  <a href="https://github.com/ajerschow/spynach">Source</a>
+</footer>
 </div>
 <dialog id="help-dialog" aria-labelledby="help-title">
   <h2 id="help-title">Using the playground</h2>
@@ -1614,14 +1621,14 @@ editor.addEventListener("keydown", (event) => {
 runBtn.addEventListener("click", () => { autoRun = false; run(); });
 stopBtn.addEventListener("click", stop);
 window.addEventListener("resize", () => { if (lastPlots) render(lastPlots); });
-matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { if (lastPlots) render(lastPlots); });
+document.addEventListener("themechange", () => { if (lastPlots) render(lastPlots); });   // assets/theme.js
 
 function css(name, fallback) {
   const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
   return value || fallback;
 }
 function palette() {
-  const dark = matchMedia("(prefers-color-scheme: dark)").matches;
+  const dark = getComputedStyle(document.documentElement).colorScheme === "dark";
   return dark
     ? ["#5fc4b4", "#e0a06a", "#8eb7ea", "#e0c36a", "#d58bc4"]
     : ["#0f6e63", "#c45c26", "#2a78d6", "#8a6a00", "#8d3d7b"];
@@ -2004,7 +2011,7 @@ function drawImage(canvas, plot) {
 // Chord diagram of show_pathways: arcs and ribbons from spynach.plotting.chord_layout (unit circle, y up),
 // drawn as SVG; hovering over a ribbon or an arc writes its rates and expressions under the figure.
 function chordPalette() {
-  const dark = matchMedia("(prefers-color-scheme: dark)").matches;
+  const dark = getComputedStyle(document.documentElement).colorScheme === "dark";
   return palette().concat(dark ? ["#9085e9", "#4cbf4c", "#e66767"] : ["#4a3aa7", "#008300", "#e34948"]);
 }
 

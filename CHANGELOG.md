@@ -4,6 +4,7 @@ Releases are tagged `vX.Y.Z` on GitHub; the version is `spynach.__version__`.
 
 ## Unreleased
 
+- Site: a link at the bottom of the landing, Spinach, EasySpin, Extras, Documentation and playground pages switches between the light and dark layout (`assets/theme.js`); the layout is dark by default, and the choice of light is remembered in the browser (without JavaScript the pages follow the system setting). The playground redraws its plots in the chosen layout.
 - Landing page: a click on the Spynoza picture is an RF pulse: the picture rings down like a free induction decay (a damped cosine refracting the image, with slight colour fringing) while the receiver trace is drawn from the click point (WebGL, up to four at once; skipped with reduced motion or without WebGL).
 - The playground opens an example in its Parameters view (the form) when it has one; "Prefer code" switches to the
   source and is remembered, and `try.html?view=code` opens the source. (`?view=params` still works.)
