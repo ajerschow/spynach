@@ -1,5 +1,8 @@
 """Relaxation pathways (spynach.pathways): rates against Spynach's Redfield superoperator and Solomon
-theory, exact expressions, the symmetry of a tetrahedral AX4 system, and the chord diagram."""
+theory, exact expressions, the symmetry of a tetrahedral AX4 system, and the chord diagram.
+
+Contributed by Florin Teleanu (pull request #2).
+"""
 
 import importlib.util
 

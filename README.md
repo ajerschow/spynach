@@ -308,6 +308,10 @@ container.
 - [Moritz Zaiss](https://github.com/mzaiss) (MRsources): the in-browser playground
   (`try.html`, `worker.js`, Spynach in Pyodide) and the orientation
   `progress` callback of `powder` and `singlerot` (pull request #1).
+- The port was a collaboration between Claude (Anthropic) and
+  [Alexej Jerschow](https://wp.nyu.edu/jerschow/), who also contributed
+  several new scripts and functions (for example the port of the
+  coherence pathway calculations, `ctps`).
 
 New contributors are added here and in the "With thanks" section of
 `index.html` when their first contribution is merged; the CHANGELOG names
@@ -323,7 +327,8 @@ permission notice is reproduced in `LICENSE`. Keep that notice with any
 copy or substantial portion of this software.
 
 The translation from MATLAB to Python was carried out largely by an AI
-coding agent (Claude, Anthropic) under the direction of Alexej Jerschow,
+coding agent (Claude, Anthropic) under the direction of
+[Alexej Jerschow](https://wp.nyu.edu/jerschow/),
 who reviewed the results; commits made by the agent are marked as such in
 the git history. Correctness rests on the test suite's comparison with
 Spinach reference data, not on the method of authorship (see `LICENSE`).
@@ -334,6 +339,24 @@ software library for simulation of spin dynamics in large spin systems*,
 J. Magn. Reson. 208, 179 (2011), together with the method papers that the
 Spinach documentation lists for the features used (restricted state
 spaces, relaxation theories, Fokker-Planck contexts).
+
+Results obtained with EasySpyn should credit the EasySpin development
+effort: cite the papers on the
+[EasySpin publication list](https://easyspin.org/easyspin/documentation/references.html),
+at least S. Stoll, A. Schweiger, *EasySpin, a comprehensive software
+package for spectral simulation and analysis in EPR*, J. Magn. Reson. 178,
+42 (2006), and for pulse EPR S. Stoll, R. D. Britt, Phys. Chem. Chem.
+Phys. 11, 6614 (2009).
+
+The Spynach and EasySpyn ports should be attributed to this repository,
+<https://github.com/ajerschow/spynach> (`CITATION.cff` gives the citation).
+
+The `ctps` package is a Python port of earlier MATLAB (CCCP.m) and C++
+(CCCP++) implementations of coherence pathway selection and is included in
+the `spynach` distribution. Results obtained with it should cite
+A. Jerschow, N. Müller, J. Magn. Reson. 134, 17 (1998); A. Jerschow,
+R. Kumar, J. Magn. Reson. 160, 59 (2003); for non-ideal pulses
+A. Jerschow, J. Chem. Phys. 113, 979 (2000); and this repository.
 
 Scripts contributed by users in `user_ml/` (Spinach) and `user_py/`
 (Python notebooks and scripts) remain the copyright of their authors

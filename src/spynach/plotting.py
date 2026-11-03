@@ -741,6 +741,8 @@ def chord_layout(
     ``colour`` index into ``names``, ``rate``, ``outline``, ``hover``), the ribbon names heaviest first, the
     largest drawn rate and the angular span of an arc. The circle has unit radius, ``y`` points up.
     :func:`plot_pathways` draws it with Plotly, and the browser playground (``try.html``) as SVG.
+
+    Contributed by Florin Teleanu (pull request #2).
     """
     merge = merge or {}
     ops = pathways.operators
@@ -899,6 +901,8 @@ def plot_pathways(
     pathways. Hovering over a ribbon shows each class's rate and expression,
     hovering over an arc the operator's auto-relaxation rate. The geometry
     comes from :func:`chord_layout`.
+
+    Contributed by Florin Teleanu (pull request #2).
     """
     try:
         import plotly.graph_objects as go

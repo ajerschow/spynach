@@ -33,6 +33,8 @@ into an exact expression. The same Gamma is what :func:`spynach.relaxation`
 returns (as ``-R``) for ``inter['relaxation'] = ['redfield']`` with one
 isotropic correlation time; ``tests/unit/test_pathways.py`` checks the two
 against each other.
+
+Contributed by Florin Teleanu (pull request #2).
 """
 
 from __future__ import annotations
@@ -317,6 +319,8 @@ def relaxation_pathways(
     Spins of one isotope are taken as degenerate in the spectral density
     arguments (chemical shift differences are neglected next to Larmor
     frequencies).
+
+    Contributed by Florin Teleanu (pull request #2).
     """
     sympy = _sympy()
     if secular not in SECULAR:

@@ -3,8 +3,12 @@ MIT License
 Copyright (c) 2026 Alexej Jerschow
 
 Spynach is a Python reimplementation of the Spinach spin dynamics kernel
-(https://spindynamics.org). This licence derives from the Spinach MIT
-licence of Ilya Kuprov (see below).
+(https://spindynamics.org); its `easyspyn` package is a reimplementation of
+EasySpin (https://easyspin.org); its `ctps` package is a port of the
+author's earlier MATLAB (CCCP.m) and C++ (CCCP++) programs for coherence
+pathway selection. This licence derives from the MIT licences of Spinach
+(Ilya Kuprov) and EasySpin (Stefan Stoll and other contributors); both
+notices are reproduced below.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
