@@ -1,7 +1,7 @@
 """Every example of the browser playground (try.html) runs natively, with stand-ins for the page's plotting
 helpers that record what they were given: each example draws something (the ctps pathway example prints
-instead, the relaxation pathway example draws a chord diagram), and the EPR examples never leave the NMR
-convention of an inverted axis in place. Examples marked data-slow
+instead, the relaxation pathway example draws a chord diagram), NMR spectra keep the inverted axis, and time
+axes and EPR axes run left to right. Examples marked data-slow
 (the 12800-orientation powder) are skipped."""
 
 import re
@@ -95,7 +95,7 @@ def test_example_runs_and_draws(example, capsys):
     if group.startswith("EPR"):
         assert all(not call["invert"] for call in recorder.calls), f"{example_id} left an EPR axis inverted"
     else:
-        assert any(call["invert"] or call["kind"] == "fid" for call in recorder.calls)
+        assert any(call["invert"] or call["kind"] == "fid" or "time" in call["xlabel"] for call in recorder.calls)
 
 
 def test_examples_are_grouped_and_unique():

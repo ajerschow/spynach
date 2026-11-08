@@ -8,7 +8,7 @@ provides a MATLAB equivalent. They are not run by the test suite.
 
 | file | author | what it calculates | inputs |
 |---|---|---|---|
-| [`na23_tqf_buildup.ipynb`](na23_tqf_buildup.ipynb) ([nbviewer](https://nbviewer.org/github/ajerschow/spynach/blob/main/user_py/na23_tqf_buildup.ipynb)) | Alexej Jerschow, 2026 | triple-quantum build-up of a single 23Na spin under quadrupolar Redfield relaxation towards thermal equilibrium (C_q = 200 kHz, tau_c = 1 ns, 14.1 T, 298 K): from the thermal state turned transverse by a 90-degree pulse, the rank-3 single-quantum tensor, the triple-quantum coherence after a second pulse and the longitudinal recovery, 0 to 10 ms in 200 steps, against the biexponential form of Jaccard, Wimperis and Bodenhausen; tensor states by their `Tl,m` labels | none |
+| [`na23_tqf_buildup.ipynb`](na23_tqf_buildup.ipynb) ([nbviewer](https://nbviewer.org/github/ajerschow/spynach/blob/main/user_py/na23_tqf_buildup.ipynb), [browser](https://ajerschow.github.io/spynach/try.html#ex-na23-tqf)) | Alexej Jerschow, 2026 | triple-quantum build-up of a single 23Na spin under quadrupolar Redfield relaxation towards thermal equilibrium (C_q = 200 kHz, tau_c = 1 ns, 14.1 T, 298 K): from the thermal state turned transverse by a 90-degree pulse, the rank-3 single-quantum tensor, the triple-quantum coherence after a second pulse and the longitudinal recovery, 0 to 10 ms in 200 steps, against the biexponential form of Jaccard, Wimperis and Bodenhausen; tensor states by their `Tl,m` labels | none |
 
 To run a notebook, install the `docs` extra (`pip install -e ".[docs]"`)
 and open it with `jupyter lab user_py/`; the notebooks are saved with

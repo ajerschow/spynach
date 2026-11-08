@@ -2,6 +2,10 @@
 
 Releases are tagged `vX.Y.Z` on GitHub; the version is `spynach.__version__`.
 
+## Unreleased
+
+- Playground: the 23Na triple-quantum build-up of the contributed notebook `user_py/na23_tqf_buildup.ipynb` as the example `try.html#ex-na23-tqf` (group "Relaxation (spynach)": quadrupolar coupling, asymmetry, correlation time, field, temperature and preparation time in the form; the rank-3 tensor, the triple-quantum coherence after the second pulse and the Lz recovery, with the biexponential check printed).
+
 ## 0.6.0 - 2026-11-08
 
 - Playground: the radiation damping example has a line-broadening parameter (exponential window on both FIDs) and a shift-difference range up to 1 kHz; the pulse example's window is the same "Line broadening" control as the other 1-D examples (it was a decay time in points).

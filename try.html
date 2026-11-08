@@ -956,6 +956,66 @@ for link in pathways.links()[:10]:
 show_pathways(pathways, split=split, title=f"11BF4- at {magnet:g} T, tau_c = {tau_c:g} ps")
 </script>
 
+<script type="text/plain" class="example" id="ex-na23-tqf" data-group="Relaxation (spynach)" data-title="23Na triple-quantum build-up">
+import numpy as np
+import spynach
+from spynach.conventions import eeqq2nqi
+
+# --- Spin system: one 23Na (spin 3/2) relaxed by its fluctuating quadrupolar coupling ---
+cq = 200.0  # GUI: Quadrupolar coupling | kHz | e²qQ/h of the 23Na; the relaxation rates scale with its square | 20..1000
+eta = 0.0  # GUI: Asymmetry | - | Asymmetry parameter of the quadrupolar tensor | 0..1
+tau_c = 1.0  # GUI: Correlation time | ns | Rotational correlation time; ω₀τ_c near 1 or above makes the relaxation biexponential, much below 1 (extreme narrowing) the build-up vanishes | 0.05..20
+magnet = 14.1  # GUI: Magnet field | T | Field of the magnet; 14.1 T is a 600 MHz spectrometer | 1..28
+temperature = 298.0  # GUI: Temperature | K | Temperature of the thermal state the relaxation drives towards | 200..400
+
+# --- Experiment: triple-quantum-filtered build-up ---
+t_max = 10.0  # GUI: Preparation time | ms | Longest preparation time of the build-up curve | 1..100
+nsteps = 200
+
+# Redfield relaxation with secular retention, thermalised so that the state at `temperature` is stationary
+nqi = eeqq2nqi(cq * 1e3, eta, 1.5, [0, 0, 0])
+spin_system = spynach.create(
+    {"isotopes": ["23Na"], "magnet": magnet},
+    {"coupling": {"matrix": [[nqi.tolist()]]}, "relaxation": ["redfield"], "rlx_keep": "secular",
+     "equilibrium": "dibari", "temperature": temperature, "tau_c": [[tau_c * 1e-9]]},
+)
+spin_system = spynach.assume(spynach.basis(spin_system, {"formalism": "sphten-liouv", "approximation": "none"}), "nmr")
+omega_0 = abs(spin_system.basefrqs[0])
+H = spynach.hamiltonian(spin_system)
+R = spynach.relaxation(spin_system)
+R_dense = np.asarray(R.toarray()) if hasattr(R, "toarray") else np.asarray(R)
+
+# Spherical tensor states by their Spinach labels; T(1,1) and T(3,1) are coupled by the quadrupolar relaxation
+tensor = lambda label: spynach.state(spin_system, [label], [0], "cheap")
+T11, T31, T33 = tensor("T1,1"), tensor("T3,1"), tensor("T3,3")
+block = np.array([[(Tk @ R_dense @ Tj).real for Tj in (T11, T31)] for Tk in (T11, T31)])
+r_fast, r_slow = -np.linalg.eigvalsh(block).min(), -np.linalg.eigvalsh(block).max()
+
+# A 90-degree pulse turns the thermal state transverse; the trajectory under H + iR is projected on the tensors
+rho_eq = spynach.equilibrium(spin_system)
+Lx = spynach.operator(spin_system, "Lx", "23Na")
+rho0 = spynach.step(spin_system, Lx, rho_eq, np.pi / 2)
+dt = t_max * 1e-3 / nsteps
+traj = spynach.evolution(spin_system, H + 1j * R, rho0, dt, nsteps, "trajectory")
+t = np.arange(nsteps + 1) * dt
+m0 = abs(T11 @ rho0)                                            # transverse magnetisation after the pulse
+a11 = np.abs(T11 @ traj) / m0                                   # single-quantum decay
+a31 = np.abs(T31 @ traj) / m0                                   # rank-3 build-up
+Lz = spynach.state(spin_system, "Lz", "23Na")
+mz = (Lz @ traj).real / (Lz @ rho_eq).real                      # longitudinal recovery
+
+# A second 90-degree pulse converts T(3,1) into the triple-quantum coherence the filter selects
+a33 = np.abs(T33 @ spynach.step(spin_system, Lx, traj, np.pi / 2)) / m0
+
+# Restricted to T(1,1) and T(3,1) the build-up is the difference of two exponentials (Jaccard, Wimperis, Bodenhausen 1986)
+analytic = abs(block[0, 1]) * (np.exp(-r_slow * t) - np.exp(-r_fast * t)) / (r_fast - r_slow)
+print(f"omega_0 tau_c = {omega_0 * tau_c * 1e-9:.2f}; transverse rates {r_fast:.1f} and {r_slow:.1f} Hz")
+print(f"T(3,1) reaches {a31.max():.3f} at {t[a31.argmax()] * 1e3:.2f} ms, T(3,3) after the pulse {a33.max():.3f}; "
+      f"Lz at {mz[-1]:.3f} of equilibrium after {t_max:g} ms")
+print(f"largest difference from the biexponential build-up: {np.abs(a31 - analytic).max():.1e}")
+show_spectrum([a11, a31, a33, mz], t * 1e3, invert=False, names=["T(1,1): single-quantum decay", "T(3,1): rank-3 build-up", "T(3,3) after a 90° pulse", "Lz / Lz(equilibrium)"], title=f"23Na, C_q = {cq:g} kHz, tau_c = {tau_c:g} ns, {magnet:g} T, {temperature:g} K", xlabel="preparation time / ms", ylabel="amplitude / magnetisation after the pulse")
+</script>
+
 <script type="text/plain" class="example" id="ex-powder-fine" data-group="NMR (spynach)" data-title="Powder CSA, 1600 orientations">
 import numpy as np
 import spynach
