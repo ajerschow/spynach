@@ -253,8 +253,10 @@ Water at 14.1 T in a probe with Q = 200 and a filling factor of 0.5:
 ```python
 water = spynach.create({"isotopes": ["1H"], "magnet": 14.1}, {})
 rate = spynach.rd_rate(water, "1H", eta=0.5, Q=200, concentration=110.0)
-print(f"1/T_rd = {rate:.0f} s^-1, T_rd = {1e3 / rate:.2f} ms;",
-      f"phase at 100 kHz detuning: {spynach.rd_phase(water, '1H', Q=200, detuning=1e5):.3f} rad")
+print(
+    f"1/T_rd = {rate:.0f} s^-1, T_rd = {1e3 / rate:.2f} ms;",
+    f"phase at 100 kHz detuning: {spynach.rd_phase(water, '1H', Q=200, detuning=1e5):.3f} rad",
+)
 ```
 
 The model takes the probe to respond at once: its ring-down time
@@ -301,15 +303,24 @@ m, _ = evolve(spin_system, rd, tilted(theta0), dt, nsteps)
 t = np.arange(1, nsteps + 1) * dt
 t0 = -np.arctanh(np.cos(theta0)) / rate
 m_z, m_perp = np.tanh(rate * (t - t0)), 1 / np.cosh(rate * (t - t0))
-print(f"largest deviation from the closed form: m_z {np.abs(m[:, 2] - m_z).max():.1e}, "
-      f"m_perp {np.abs(np.hypot(m[:, 0], m[:, 1]) - m_perp).max():.1e}")
+print(
+    f"largest deviation from the closed form: m_z {np.abs(m[:, 2] - m_z).max():.1e}, "
+    f"m_perp {np.abs(np.hypot(m[:, 0], m[:, 1]) - m_perp).max():.1e}"
+)
 ```
 
 ```python
 plot_time_series(
-    t, [m[:, 2], np.hypot(m[:, 0], m[:, 1]), m_z, m_perp],
-    names=["m_z (simulation)", "m_perp (simulation)", "tanh (closed form, on top of it)", "sech (closed form, on top of it)"],
-    xlabel="time, seconds", ylabel="magnetisation / equilibrium",
+    t,
+    [m[:, 2], np.hypot(m[:, 0], m[:, 1]), m_z, m_perp],
+    names=[
+        "m_z (simulation)",
+        "m_perp (simulation)",
+        "tanh (closed form, on top of it)",
+        "sech (closed form, on top of it)",
+    ],
+    xlabel="time, seconds",
+    ylabel="magnetisation / equilibrium",
     title=f"Radiation damping from 170°, 1/T_rd = {rate:g} s⁻¹",
 )
 ```
@@ -345,14 +356,21 @@ rate, dt, nsteps = 40.0, 5e-4, 1000
 fids, fitted = {}, {}
 for phase in (0.0, 0.6, 1.0):
     rd = spynach.radiation_damping(relaxing, L0, "1H", rate, phase=phase)
-    m, _ = evolve(relaxing, rd, spynach.step(relaxing, spynach.operator(relaxing, "Ly", "1H"),
-                                             spynach.state(relaxing, "Lz", "1H"), 0.05), dt, nsteps)
+    m, _ = evolve(
+        relaxing,
+        rd,
+        spynach.step(relaxing, spynach.operator(relaxing, "Ly", "1H"), spynach.state(relaxing, "Lz", "1H"), 0.05),
+        dt,
+        nsteps,
+    )
     fids[phase] = m[:, 0] + 1j * m[:, 1]
     t = np.arange(1, nsteps + 1) * dt
     decay = -np.polyfit(t, np.log(np.abs(fids[phase])), 1)[0]
     shift = np.polyfit(t, np.unwrap(np.angle(fids[phase])), 1)[0] / (2 * np.pi)
-    print(f"phase {phase:.1f}: decay {decay:6.2f} s^-1 (T2 + rate cos^2 = {3 + rate * np.cos(phase) ** 2:6.2f}),"
-          f" line at {shift:6.2f} Hz (40 - rate cos sin / 2pi = {40 - rate * np.cos(phase) * np.sin(phase) / (2 * np.pi):6.2f})")
+    print(
+        f"phase {phase:.1f}: decay {decay:6.2f} s^-1 (T2 + rate cos^2 = {3 + rate * np.cos(phase) ** 2:6.2f}),"
+        f" line at {shift:6.2f} Hz (40 - rate cos sin / 2pi = {40 - rate * np.cos(phase) * np.sin(phase) / (2 * np.pi):6.2f})"
+    )
 ```
 
 ```python
@@ -400,8 +418,9 @@ for fwhm in (None, 20.0, 80.0):
         rd = spynach.radiation_damping(spin_system, nothing, "1H", rate)
         rho = tilted(theta0)
     else:
-        rd = spynach.radiation_damping(spin_system, nothing, "1H", rate, offsets=offsets,
-                                       weights=spynach.line_weights(offsets, fwhm))
+        rd = spynach.radiation_damping(
+            spin_system, nothing, "1H", rate, offsets=offsets, weights=spynach.line_weights(offsets, fwhm)
+        )
         rho = rd.stack(tilted(theta0))
     m, _ = evolve(spin_system, rd, rho, dt, nsteps)
     recovery[fwhm] = m[:, 2]
@@ -411,9 +430,11 @@ for fwhm in (None, 20.0, 80.0):
 ```python
 t = np.arange(1, nsteps + 1) * dt
 plot_time_series(
-    t, [recovery[None], recovery[20.0], recovery[80.0]],
+    t,
+    [recovery[None], recovery[20.0], recovery[80.0]],
     names=["homogeneous", "20 Hz line", "80 Hz line"],
-    xlabel="time, seconds", ylabel="m_z / equilibrium",
+    xlabel="time, seconds",
+    ylabel="m_z / equilibrium",
     title="Return of an inverted magnetisation: the line width slows radiation damping",
 )
 ```
@@ -461,9 +482,11 @@ print(f"AB system and line-by-line model differ by up to {np.abs(m_ab[:, 2] - m_
 ```python
 t = np.arange(1, nsteps + 1) * dt
 plot_time_series(
-    t, [m_ab[:, 2], m_lines[:, 2], np.hypot(m_ab[:, 0], m_ab[:, 1]), np.hypot(m_lines[:, 0], m_lines[:, 1])],
+    t,
+    [m_ab[:, 2], m_lines[:, 2], np.hypot(m_ab[:, 0], m_ab[:, 1]), np.hypot(m_lines[:, 0], m_lines[:, 1])],
     names=["m_z (AB)", "m_z (four lines)", "m_perp (AB)", "m_perp (four lines)"],
-    xlabel="time, seconds", ylabel="magnetisation / equilibrium",
+    xlabel="time, seconds",
+    ylabel="magnetisation / equilibrium",
     title="An AB pair under radiation damping: spin system against independent lines",
 )
 ```

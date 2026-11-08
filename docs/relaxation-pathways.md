@@ -237,7 +237,9 @@ print(zq.table(latex=False))
 ```
 
 ```python
-plot_pathways(zq, split=True, title="<sup>11</sup>BF<sub>4</sub><sup>−</sup>: zero-quantum space, ranks 1 to 3 of <sup>11</sup>B")
+plot_pathways(
+    zq, split=True, title="<sup>11</sup>BF<sub>4</sub><sup>−</sup>: zero-quantum space, ranks 1 to 3 of <sup>11</sup>B"
+)
 ```
 
 ![The zero-quantum space of 11BF4- with the 11B quadrupolar orders](figures/relaxation-pathways-zq.png)

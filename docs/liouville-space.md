@@ -68,8 +68,8 @@ lexicographically with the all-zero unit state first:
 
 ```python
 spin_system_ab = spynach.basis(make_spin_system(["1H", "1H"]), {"formalism": "sphten-liouv", "approximation": "none"})
-print(spin_system_ab.basis.nstates)      # (2*2)^2: the complete Liouville space
-print(spin_system_ab.basis.basis.T)      # column 6 is T(1,+1) on spin 0 times T(1,0) on spin 1
+print(spin_system_ab.basis.nstates)  # (2*2)^2: the complete Liouville space
+print(spin_system_ab.basis.basis.T)  # column 6 is T(1,+1) on spin 0 times T(1,0) on spin 1
 ```
 
 Two labels are derived from the descriptor and used by the filters below:
@@ -81,7 +81,7 @@ non-unit tensor):
 print(spin_system_ab.basis.tot_proj)
 print(spin_system_ab.basis.tot_cord)
 spin_system_hd = spynach.basis(make_spin_system(["1H", "2H"]), {"formalism": "sphten-liouv", "approximation": "none"})
-print(spin_system_hd.basis.nstates)      # 4 * 9: spin-1 has nine tensors, ranks 0 to 2
+print(spin_system_hd.basis.nstates)  # 4 * 9: spin-1 has nine tensors, ranks 0 to 2
 ```
 
 ## State-space restriction
@@ -121,15 +121,27 @@ for level in (1, 2, 3, 5):
 
 J = np.zeros((8, 8))
 for n in range(7):
-    J[n, n + 1] = 10.0                       # nearest-neighbour couplings only
+    J[n, n + 1] = 10.0  # nearest-neighbour couplings only
 spin_system_chain = make_spin_system(["1H"] * 8, coupling={"scalar": J.tolist()})
-spin_system_ik2 = spynach.basis(spin_system_chain, {"formalism": "sphten-liouv", "approximation": "IK-2",
-                           "connectivity": "scalar_couplings", "prox_level": 1})
-spin_system_ik1 = spynach.basis(spin_system_chain, {"formalism": "sphten-liouv", "approximation": "IK-1",
-                           "connectivity": "scalar_couplings", "inter_level": 4, "prox_level": 1})
+spin_system_ik2 = spynach.basis(
+    spin_system_chain,
+    {"formalism": "sphten-liouv", "approximation": "IK-2", "connectivity": "scalar_couplings", "prox_level": 1},
+)
+spin_system_ik1 = spynach.basis(
+    spin_system_chain,
+    {
+        "formalism": "sphten-liouv",
+        "approximation": "IK-1",
+        "connectivity": "scalar_couplings",
+        "inter_level": 4,
+        "prox_level": 1,
+    },
+)
 print(f"8-spin chain: complete {4**8}, IK-2 {spin_system_ik2.basis.nstates}, IK-1(4) {spin_system_ik1.basis.nstates}")
-print(f"highest correlation order: IK-2 {spin_system_ik2.basis.tot_cord.max()}, "
-      f"IK-1(4) {spin_system_ik1.basis.tot_cord.max()}")   # a chain spin has at most two neighbours
+print(
+    f"highest correlation order: IK-2 {spin_system_ik2.basis.tot_cord.max()}, "
+    f"IK-1(4) {spin_system_ik1.basis.tot_cord.max()}"
+)  # a chain spin has at most two neighbours
 ```
 
 The states kept by `IK-2` on the chain are products on up to three
@@ -141,8 +153,13 @@ import plotly.graph_objects as go
 
 orders, counts = np.unique(spin_system_ik2.basis.tot_cord, return_counts=True)
 fig = go.Figure(go.Bar(x=orders, y=counts))
-fig.update_layout(title="IK-2 basis of an 8-spin chain", xaxis_title="spin correlation order",
-                  yaxis_title="number of states", width=500, height=350)
+fig.update_layout(
+    title="IK-2 basis of an 8-spin chain",
+    xaxis_title="spin correlation order",
+    yaxis_title="number of states",
+    width=500,
+    height=350,
+)
 fig
 ```
 
@@ -176,8 +193,12 @@ spin_system_carbon_z = spynach.basis(
 spin_system_carbon_zq = spynach.basis(
     spin_system_hc, {"formalism": "sphten-liouv", "approximation": "none", "zero_quantum": [[1]]}
 )
-for name, s in [("complete", spin_system_full), ("projections +1", spin_system_plus_one),
-                ("longitudinal 13C", spin_system_carbon_z), ("zero-quantum 13C", spin_system_carbon_zq)]:
+for name, s in [
+    ("complete", spin_system_full),
+    ("projections +1", spin_system_plus_one),
+    ("longitudinal 13C", spin_system_carbon_z),
+    ("zero-quantum 13C", spin_system_carbon_zq),
+]:
     print(f"{name}: {s.basis.nstates} states, coherence orders {sorted(set(s.basis.tot_proj.tolist()))}")
 ```
 
@@ -195,7 +216,7 @@ spin_system_manual = spynach.basis(
         "manual": [[True, False, False, False, False, False, False, True]],
     },
 )
-print(spin_system_manual.basis.nstates)      # 1 + 8 * 3 + 9: singles, plus the two-spin states on spins 0 and 7
+print(spin_system_manual.basis.nstates)  # 1 + 8 * 3 + 9: singles, plus the two-spin states on spins 0 and 7
 ```
 
 ## Chemical subsystems
@@ -210,10 +231,13 @@ sub-bases are identical blocks and exchange maps each state of one onto
 the same state of the other.
 
 ```python
-spin_system_exchange = make_spin_system(["1H", "1H"], zeeman={"scalar": [0.0, 3.0]},
-                         chem={"parts": [[0], [1]], "rates": [[-2e3, 2e3], [2e3, -2e3]], "concs": [1.0, 1.0]})
+spin_system_exchange = make_spin_system(
+    ["1H", "1H"],
+    zeeman={"scalar": [0.0, 3.0]},
+    chem={"parts": [[0], [1]], "rates": [[-2e3, 2e3], [2e3, -2e3]], "concs": [1.0, 1.0]},
+)
 spin_system_two_sites = spynach.basis(spin_system_exchange, {"formalism": "sphten-liouv", "approximation": "none"})
-print(spin_system_two_sites.basis.basis.T)      # 7 states, 1 + 3 + 3, not 16
+print(spin_system_two_sites.basis.basis.T)  # 7 states, 1 + 3 + 3, not 16
 ```
 
 Filters are specified per molecule: `projections=[[1], [1]]` keeps the
@@ -233,7 +257,7 @@ descriptions are the same as in Hilbert space:
 spin_system_ab_hilb = spynach.basis(
     make_spin_system(["1H", "1H"]), {"formalism": "zeeman-hilb", "approximation": "none"}
 )
-Lz_comm = spynach.operator(spin_system_ab, "Lz", "1H")                   # [Lz, .] on both protons
+Lz_comm = spynach.operator(spin_system_ab, "Lz", "1H")  # [Lz, .] on both protons
 Lz_left = spynach.operator(spin_system_ab, "Lz", "1H", "left")
 Lz_right = spynach.operator(spin_system_ab, "Lz", "1H", "right")
 ```
@@ -252,12 +276,14 @@ basis operators `B_k`:
 ```python
 from spynach.operators import irr_sph_ten, lin2lm
 
+
 def basis_operator(spin_system, row):
     t = np.array([[1.0 + 0j]])
     for mult, index in zip(spin_system.mults, row):
         rank, proj = lin2lm(int(index))
         t = np.kron(t, irr_sph_ten(int(mult), rank)[rank - proj].toarray())
     return t / np.sqrt(np.vdot(t, t).real)
+
 
 B = [basis_operator(spin_system_ab, row) for row in spin_system_ab.basis.basis]
 Q = spynach.operator(spin_system_ab_hilb, "Lz", "1H").toarray()
@@ -287,7 +313,7 @@ print(np.flatnonzero(rho_exact), rho_exact[rho_exact != 0])
 print(np.flatnonzero(rho_cheap), rho_cheap[rho_cheap != 0])
 coil = spynach.state(spin_system_ab, "L+", "1H")
 weighted = spynach.state(spin_system_two_sites, "L+", "1H", "chem")
-print(np.flatnonzero(weighted), weighted[weighted != 0])     # one T(1,+1) state per site
+print(np.flatnonzero(weighted), weighted[weighted != 0])  # one T(1,+1) state per site
 ```
 
 Expectation values are Frobenius products, `spynach.hdot(coil, rho)`, so
@@ -366,9 +392,9 @@ space on the last axis, so they work on stacks of state vectors too.
 ```python
 rho = spynach.state(spin_system_hc_nmr, "L+", "all") + spynach.state(spin_system_hc_nmr, ["Lz", "L+"], [0, 1])
 single = spynach.correlation(spin_system_hc_nmr, rho, [1])
-print(np.flatnonzero(single))                     # L+ on 1H and on 13C
+print(np.flatnonzero(single))  # L+ on 1H and on 13C
 proton = spynach.coherence(spin_system_hc_nmr, rho, [("1H", [1]), ("13C", [0])])
-print(np.flatnonzero(proton))                     # only L+ on the proton
+print(np.flatnonzero(proton))  # only L+ on the proton
 stack = np.stack([rho, 2 * rho])
 print(spynach.correlation(spin_system_hc_nmr, stack, [2]).shape)
 ```
@@ -421,15 +447,17 @@ none of them changes the answer:
 ```python
 coil = spynach.state(spin_system_hc_nmr, "L+", "1H")
 fid = spynach.evolution(spin_system_hc_nmr, L, rho, 1 / 500, 63, "observable", coil=coil)
-spin_system_hc_plain = spynach.create({"isotopes": ["1H", "13C"], "magnet": 14.1, "disable": ["trajlevel"]},
-                         {"zeeman": {"scalar": [2.0, 30.0]}, "coupling": {"scalar": [[0, 145.0], [0, 0]]}})
+spin_system_hc_plain = spynach.create(
+    {"isotopes": ["1H", "13C"], "magnet": 14.1, "disable": ["trajlevel"]},
+    {"zeeman": {"scalar": [2.0, 30.0]}, "coupling": {"scalar": [[0, 145.0], [0, 0]]}},
+)
 spin_system_hc_plain = spynach.assume(
     spynach.basis(spin_system_hc_plain, {"formalism": "sphten-liouv", "approximation": "none"}), "nmr"
 )
 fid_plain = spynach.evolution(spin_system_hc_plain, L, rho, 1 / 500, 63, "observable", coil=coil)
 print(np.abs(fid - fid_plain).max())
 projectors = spynach.reduce(spin_system_hc_nmr, L.conj().T, coil)
-print([p.shape[1] for p in projectors])     # L+(H) and L+(H)Lz(C) are all that reaches the coil
+print([p.shape[1] for p in projectors])  # L+(H) and L+(H)Lz(C) are all that reaches the coil
 ```
 
 Outputs: `'observable'` returns `coil^H rho(t)` at `nsteps + 1` points
@@ -463,7 +491,7 @@ a state with the `(l, m)` of every spin, as Spinach reports them:
 ```python
 traj = spynach.evolution(spin_system_hc_nmr, L, rho, 1 / 500, 63, "trajectory")
 amplitudes, labels = spynach.trajan(spin_system_hc_nmr, traj, "coherence_order")
-print(labels, amplitudes[:, 0].round(3))          # L+(H) starts as pure +1 coherence
+print(labels, amplitudes[:, 0].round(3))  # L+(H) starts as pure +1 coherence
 largest = spynach.stateinfo(spin_system_hc_nmr, traj[:, -1], 2)
 print(largest)
 ```
@@ -492,7 +520,7 @@ exch_pars = {
     "invert_axis": True,
 }
 fid_exch = spynach.liquid(spin_system_two_sites, spynach.acquire, exch_pars, "nmr")
-fid_exch *= np.exp(-6 * np.arange(exch_pars["npoints"]) / exch_pars["npoints"])   # exponential apodisation
+fid_exch *= np.exp(-6 * np.arange(exch_pars["npoints"]) / exch_pars["npoints"])  # exponential apodisation
 spectrum_exch = np.fft.fftshift(np.fft.fft(fid_exch, exch_pars["zerofill"]))
 plot_1d(spin_system_two_sites, spectrum_exch.real, exch_pars)
 ```

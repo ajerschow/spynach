@@ -72,16 +72,18 @@ import spynach
 sys = {"isotopes": ["1H"] * 8, "magnet": 7.046}
 inter = {
     "zeeman": {"scalar": [6.720, 6.720, 6.587, 6.587, 6.527, 6.063, 5.085, 4.555]},
-    "coupling": {"scalar": [
-        [0.0, 1.9170, 7.7884, 0.6061, 1.2447, -0.5347,  0.0390,  0.1582],
-        [0.0, 0.0,    0.6061, 7.7884, 1.2447, -0.5347,  0.0390,  0.1582],
-        [0.0, 0.0,    0.0,    1.4184, 7.4390,  0.3693, -0.0416,  0.0169],
-        [0.0, 0.0,    0.0,    0.0,    7.4390,  0.3693, -0.0416,  0.0169],
-        [0.0, 0.0,    0.0,    0.0,    0.0,    -0.2279,  0.2349,  0.2905],
-        [0.0, 0.0,    0.0,    0.0,    0.0,     0.0,    17.6002, 10.8954],
-        [0.0, 0.0,    0.0,    0.0,    0.0,     0.0,     0.0,     1.0382],
-        [0.0, 0.0,    0.0,    0.0,    0.0,     0.0,     0.0,     0.0],
-    ]},
+    "coupling": {
+        "scalar": [
+            [0.0, 1.9170, 7.7884, 0.6061, 1.2447, -0.5347, 0.0390, 0.1582],
+            [0.0, 0.0, 0.6061, 7.7884, 1.2447, -0.5347, 0.0390, 0.1582],
+            [0.0, 0.0, 0.0, 1.4184, 7.4390, 0.3693, -0.0416, 0.0169],
+            [0.0, 0.0, 0.0, 0.0, 7.4390, 0.3693, -0.0416, 0.0169],
+            [0.0, 0.0, 0.0, 0.0, 0.0, -0.2279, 0.2349, 0.2905],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 17.6002, 10.8954],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0382],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        ]
+    },
 }
 bas = {"formalism": "zeeman-hilb", "approximation": "none"}
 spin_system = spynach.create(sys, inter)
@@ -94,8 +96,8 @@ parameters = {
     "decouple": [],
     "offset": 1700,
     "sweep": 1000,
-    "npoints": 2048,     # Spinach example: 16384, see below
-    "zerofill": 8192,    # Spinach example: 65536
+    "npoints": 2048,  # Spinach example: 16384, see below
+    "zerofill": 8192,  # Spinach example: 65536
     "axis_units": "ppm",
     "invert_axis": 1,
 }
@@ -156,8 +158,8 @@ because both run without error:
 ```python
 Lp = spynach.operator(spin_system, "L+", "1H")
 Lm = spynach.operator(spin_system, "L-", "1H")
-matrix_product = Lp @ Lm                 # MATLAB Lp*Lm
-elementwise = Lp * Lm                    # MATLAB Lp.*Lm, a different matrix
+matrix_product = Lp @ Lm  # MATLAB Lp*Lm
+elementwise = Lp * Lm  # MATLAB Lp.*Lm, a different matrix
 ```
 
 ### Keyword arguments
@@ -202,8 +204,7 @@ spin_system=create(sys,inter);
 sys = {"isotopes": ["1H", "13C"], "magnet": 14.1}
 inter = {
     "zeeman": {"scalar": [2.0, 30.0]},
-    "coupling": {"scalar": [[None, 145.0],
-                            [None, None]]},
+    "coupling": {"scalar": [[None, 145.0], [None, None]]},
 }
 spin_system_hc = spynach.create(sys, inter)
 ```
@@ -254,8 +255,10 @@ inter.chem.concs=[1.0 1.0];
 ```
 
 ```python
-inter_exch = {"zeeman": {"scalar": [0.0, 3.0]},
-              "chem": {"parts": [[0], [1]], "rates": [[-2e3, 2e3], [2e3, -2e3]], "concs": [1.0, 1.0]}}
+inter_exch = {
+    "zeeman": {"scalar": [0.0, 3.0]},
+    "chem": {"parts": [[0], [1]], "rates": [[-2e3, 2e3], [2e3, -2e3]], "concs": [1.0, 1.0]},
+}
 spin_system_exchange = spynach.create({"isotopes": ["1H", "1H"], "magnet": 14.1}, inter_exch)
 print(spin_system_exchange.chem.parts)
 ```
@@ -307,10 +310,15 @@ bas.projections={+1};
 ```
 
 ```python
-bas_ik2 = {"formalism": "sphten-liouv", "approximation": "IK-2",
-           "connectivity": "scalar_couplings", "prox_level": 1, "projections": [[1]]}
+bas_ik2 = {
+    "formalism": "sphten-liouv",
+    "approximation": "IK-2",
+    "connectivity": "scalar_couplings",
+    "prox_level": 1,
+    "projections": [[1]],
+}
 spin_system_hc_liouv = spynach.basis(spin_system_hc, bas_ik2)
-print(spin_system_hc_liouv.basis.basis.T)     # unit state first, then coherence order +1 only
+print(spin_system_hc_liouv.basis.basis.T)  # unit state first, then coherence order +1 only
 ```
 
 - **Not ported yet:** `zeeman-liouv`, the `IK-DNP` and `IK-SBS`
@@ -337,8 +345,8 @@ In Spynach the type of the *first* argument does: a string gives a sum, a
 list gives a product.
 
 ```python
-Lz_sum = spynach.operator(spin_system_hc, "Lz", [0, 1])         # Lz(H) + Lz(C)
-LzSz = spynach.operator(spin_system_hc, ["Lz", "Lz"], [0, 1])   # Lz(H) Lz(C)
+Lz_sum = spynach.operator(spin_system_hc, "Lz", [0, 1])  # Lz(H) + Lz(C)
+LzSz = spynach.operator(spin_system_hc, ["Lz", "Lz"], [0, 1])  # Lz(H) Lz(C)
 ```
 
 - **Same:** operator labels `E`, `Lx`, `Ly`, `Lz`, `L+`, `L-`, `Tl,m`;
@@ -411,7 +419,7 @@ H_zeeman = spynach.hamiltonian(spynach.assume(spin_system_hc, "nmr", "zeeman"))
 
 ```python
 spin_system_hc_liouv = spynach.assume(spin_system_hc_none, "nmr")
-H_comm = spynach.hamiltonian(spin_system_hc_liouv)                  # [H, .] in Liouville space
+H_comm = spynach.hamiltonian(spin_system_hc_liouv)  # [H, .] in Liouville space
 H_left = spynach.hamiltonian(spin_system_hc_liouv, "left")
 H_right = spynach.hamiltonian(spin_system_hc_liouv, "right")
 ```
@@ -535,11 +543,11 @@ from scipy.io import loadmat, savemat
 
 from spynach.oracle import assert_matches, compare
 
-reference_fid = fid + 1e-12 * fid[0]                    # pretend this came from Spinach
+reference_fid = fid + 1e-12 * fid[0]  # pretend this came from Spinach
 with tempfile.TemporaryDirectory() as folder:
-    savemat(Path(folder) / "reference.mat", {"fid": reference_fid})   # MATLAB: save('reference.mat', 'fid', '-v7')
+    savemat(Path(folder) / "reference.mat", {"fid": reference_fid})  # MATLAB: save('reference.mat', 'fid', '-v7')
     ref = loadmat(Path(folder) / "reference.mat")
-result = compare(fid, ref["fid"].ravel(), rtol=1e-9, atol=0, name="fid")   # MATLAB saves a 1 x n row
+result = compare(fid, ref["fid"].ravel(), rtol=1e-9, atol=0, name="fid")  # MATLAB saves a 1 x n row
 print(result)
 print(result.passed, result.rel_err)
 ```

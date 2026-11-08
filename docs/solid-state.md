@@ -43,12 +43,16 @@ def dense(x):
 
 
 sys = {"isotopes": ["1H", "1H"], "magnet": 14.1}
-inter = {"zeeman": {"eigs": [[-7, -7, -1], [4, 2, 9]],           # ppm, principal values
-                    "euler": [[0, 0, 0], [0.3, 0.9, 1.2]]}}      # rad, ZYZ Euler angles
+inter = {
+    "zeeman": {
+        "eigs": [[-7, -7, -1], [4, 2, 9]],  # ppm, principal values
+        "euler": [[0, 0, 0], [0.3, 0.9, 1.2]],
+    }
+}  # rad, ZYZ Euler angles
 spin_system_csa = spynach.create(sys, inter)
 R = euler2dcm([0.3, 0.9, 1.2])
-shielding = (spin_system_csa.zeeman_matrix[1] / spin_system_csa.basefrqs[1] - np.eye(3)) * 1e6   # back to ppm
-print(np.linalg.eigvalsh(shielding))          # the eigenvalues given, in ppm
+shielding = (spin_system_csa.zeeman_matrix[1] / spin_system_csa.basefrqs[1] - np.eye(3)) * 1e6  # back to ppm
+print(np.linalg.eigvalsh(shielding))  # the eigenvalues given, in ppm
 ```
 
 `eigs` and `euler` must be given together, with the same `None` pattern;
@@ -78,7 +82,7 @@ b = (
     * spin_system_pair.tols.mu0
     / (4 * np.pi * r**3)
 )  # dipolar constant, rad/s
-print(np.round(spin_system_pair.coupling_matrix[0][1] / b, 6))     # b/2 diag(1, 1, -2) along the bond
+print(np.round(spin_system_pair.coupling_matrix[0][1] / b, 6))  # b/2 diag(1, 1, -2) along the bond
 print(f"one-bond 1H-13C dipolar coupling: {abs(b) / (2 * np.pi) / 1e3:.1f} kHz")
 ```
 
@@ -96,10 +100,8 @@ and the Euler angles, as Spinach's `eeqq2nqi`:
 ```python
 from spynach.conventions import eeqq2nqi
 
-nqi = eeqq2nqi(1.24e6, 0.22, 1, [0, 0, 0])        # 14N: e^2qQ/h = 1.24 MHz, eta = 0.22
-spin_system_nitrogen = spynach.create(
-    {"isotopes": ["14N"], "magnet": 21.1}, {"coupling": {"matrix": [[nqi.tolist()]]}}
-)
+nqi = eeqq2nqi(1.24e6, 0.22, 1, [0, 0, 0])  # 14N: e^2qQ/h = 1.24 MHz, eta = 0.22
+spin_system_nitrogen = spynach.create({"isotopes": ["14N"], "magnet": 21.1}, {"coupling": {"matrix": [[nqi.tolist()]]}})
 ```
 
 Quadratic couplings have no isotropic part: they enter only through the
@@ -133,7 +135,7 @@ spin_system_single = spynach.assume(
     "nmr",
 )
 I, Q = spynach.hamiltonian(spin_system_single, aniso=True)
-print(len(Q), [len(q) for q in Q])     # ranks 1 and 2, with 2r + 1 components each
+print(len(Q), [len(q) for q in Q])  # ranks 1 and 2, with 2r + 1 components each
 angles = [0.3, 0.9, 1.2]
 H = dense(I) + dense(spynach.orientation(Q, angles))
 Z = euler2dcm(angles) @ spin_system_single.zeeman_matrix[0] @ euler2dcm(angles).T
@@ -145,12 +147,16 @@ For a dipolar pair the same machinery gives the familiar
 `(3 cos^2 beta - 1)` dependence, vanishing at the magic angle:
 
 ```python
-spin_system_dipolar = spynach.assume(spynach.basis(spynach.create({"isotopes": ["1H", "1H"], "magnet": 14.1},
-                                               {"coordinates": [[0, 0, 0], [0, 0, 3.0]]}),
-                                 {"formalism": "zeeman-hilb", "approximation": "none"}), "nmr")
+spin_system_dipolar = spynach.assume(
+    spynach.basis(
+        spynach.create({"isotopes": ["1H", "1H"], "magnet": 14.1}, {"coordinates": [[0, 0, 0], [0, 0, 3.0]]}),
+        {"formalism": "zeeman-hilb", "approximation": "none"},
+    ),
+    "nmr",
+)
 I_dip, Q_dip = spynach.hamiltonian(spin_system_dipolar, aniso=True)
 splitting = lambda beta: np.ptp(np.linalg.eigvalsh(dense(spynach.orientation(Q_dip, [0, beta, 0]))))
-print(splitting(np.pi / 2) / splitting(0.0), splitting(np.arccos(1 / np.sqrt(3))))   # 1/2, and 0 at the magic angle
+print(splitting(np.pi / 2) / splitting(0.0), splitting(np.arccos(1 / np.sqrt(3))))  # 1/2, and 0 at the magic angle
 ```
 
 Everything works the same in Liouville space, where the components are
@@ -167,9 +173,16 @@ hands it to the sequence:
 spin_system = spynach.basis(
     spin_system_csa, {"formalism": "sphten-liouv", "approximation": "none", "projections": [[1]]}
 )
-pars = {"spins": ["1H"], "offset": 0.0, "sweep": 15000.0, "npoints": 128, "zerofill": 512,
-        "rho0": spynach.state(spin_system, "L+", "1H"), "coil": spynach.state(spin_system, "L+", "1H"),
-        "axis_units": "ppm"}
+pars = {
+    "spins": ["1H"],
+    "offset": 0.0,
+    "sweep": 15000.0,
+    "npoints": 128,
+    "zerofill": 512,
+    "rho0": spynach.state(spin_system, "L+", "1H"),
+    "coil": spynach.state(spin_system, "L+", "1H"),
+    "axis_units": "ppm",
+}
 fid_crystal = spynach.crystal(spin_system, spynach.acquire, {**pars, "orientation": [0.3, 0.9, 1.2]}, "nmr")
 ```
 
@@ -191,7 +204,7 @@ sequences that are not invariant under the third angle, icosahedral
 grid = spynach.load_grid("rep_2ang_200pts_sph")
 print(sorted(grid), grid["weights"].sum())
 fid_powder = spynach.powder(spin_system, spynach.acquire, {**pars, "grid": "rep_2ang_200pts_sph"}, "nmr")
-print(fid_powder[0], fid_crystal[0])       # at t = 0 every orientation gives the full signal
+print(fid_powder[0], fid_crystal[0])  # at t = 0 every orientation gives the full signal
 ```
 
 The static CSA powder pattern of Spinach's
@@ -226,10 +239,13 @@ weak and pseudosecular hyperfine couplings, all nuclear terms;
 hyperfine tensor at X-band:
 
 ```python
-spin_system_nitroxide = spynach.create({"isotopes": ["E", "14N"], "magnet": 0.33},
-                          {"zeeman": {"eigs": [[2.0089, 2.0061, 2.0027], None], "euler": [[0, 0, 0], None]},
-                           "coupling": {"eigs": [[None, [16e6, 16e6, 86e6]], [None, None]],
-                                        "euler": [[None, [0, 0, 0]], [None, None]]}})
+spin_system_nitroxide = spynach.create(
+    {"isotopes": ["E", "14N"], "magnet": 0.33},
+    {
+        "zeeman": {"eigs": [[2.0089, 2.0061, 2.0027], None], "euler": [[0, 0, 0], None]},
+        "coupling": {"eigs": [[None, [16e6, 16e6, 86e6]], [None, None]], "euler": [[None, [0, 0, 0]], [None, None]]},
+    },
+)
 spin_system_nitroxide = spynach.basis(spin_system_nitroxide, {"formalism": "sphten-liouv", "approximation": "none"})
 esr_pars = {
     "spins": ["E"],

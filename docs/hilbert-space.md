@@ -68,18 +68,17 @@ import spynach
 sys = {"isotopes": ["1H", "1H"], "magnet": 14.1}
 inter = {
     "zeeman": {"scalar": [1.00, 1.10]},
-    "coupling": {"scalar": [[0, 12.0],
-                            [0, 0]]},
+    "coupling": {"scalar": [[0, 12.0], [0, 0]]},
 }
 spin_system = spynach.create(sys, inter)
 spin_system = spynach.basis(spin_system, {"formalism": "zeeman-hilb", "approximation": "none"})
 
 # Experiment: transverse proton magnetisation, detected on the same channel
 parameters = {
-    "spins": ["1H"],      # isotope of the working channel
-    "offset": 630,        # transmitter offset, Hz
-    "sweep": 200,         # spectral width, Hz (dwell time 1/sweep)
-    "npoints": 1024,      # complex points in the FID
+    "spins": ["1H"],  # isotope of the working channel
+    "offset": 630,  # transmitter offset, Hz
+    "sweep": 200,  # spectral width, Hz (dwell time 1/sweep)
+    "npoints": 1024,  # complex points in the FID
     "rho0": spynach.state(spin_system, "L+", "1H"),
     "coil": spynach.state(spin_system, "L+", "1H"),
 }
@@ -176,11 +175,13 @@ formalism, which is not ported yet.
 ```python
 spin_system_exchange = spynach.create(
     {"isotopes": ["1H", "1H"], "magnet": 14.1},
-    {"zeeman": {"scalar": [0.0, 3.0]},
-     "chem": {"parts": [[0], [1]], "rates": [[-2e3, 2e3], [2e3, -2e3]], "concs": [1.0, 1.0]}},
+    {
+        "zeeman": {"scalar": [0.0, 3.0]},
+        "chem": {"parts": [[0], [1]], "rates": [[-2e3, 2e3], [2e3, -2e3]], "concs": [1.0, 1.0]},
+    },
 )
 print(spin_system_exchange.chem.parts)
-print(spin_system_exchange.chem.rates.sum(axis=0))     # conservation of matter: columns sum to zero
+print(spin_system_exchange.chem.rates.sum(axis=0))  # conservation of matter: columns sum to zero
 ```
 
 The result is a frozen `SpinSystem`. Internally everything is in angular
@@ -194,7 +195,7 @@ spin_system = spynach.create(
 print(spin_system.nspins, spin_system.mults.tolist())  # number of spins, multiplicities 2S+1
 carrier_mhz = spin_system.basefrqs / (2 * np.pi) / 1e6  # -gamma*B0, rad/s -> MHz
 print(carrier_mhz.round(1))
-print(spin_system.coupling_matrix[1][0])                # absent couplings are None
+print(spin_system.coupling_matrix[1][0])  # absent couplings are None
 ```
 
 Isotope data (multiplicity and magnetogyric ratio) come from Spinach's
@@ -204,7 +205,7 @@ Isotope data (multiplicity and magnetogyric ratio) come from Spinach's
 
 ```python
 spin_system = spynach.basis(spin_system, {"formalism": "zeeman-hilb", "approximation": "none"})
-print(spin_system.basis.basis)    # dim x nspins Zeeman level table
+print(spin_system.basis.basis)  # dim x nspins Zeeman level table
 ```
 
 `zeeman-hilb` works with the full Hilbert space of dimension
@@ -218,9 +219,9 @@ Operators are built from a label and a spin selection. **Spin indices are
 0-based.** There are three forms:
 
 ```python
-Lz_H = spynach.operator(spin_system, "Lz", "1H")          # sum over all 1H spins
-Lz_01 = spynach.operator(spin_system, "Lz", [0, 1])       # sum over spins 0 and 1
-LzSp = spynach.operator(spin_system, ["Lz", "L+"], [0, 1]) # product Lz(0) L+(1)
+Lz_H = spynach.operator(spin_system, "Lz", "1H")  # sum over all 1H spins
+Lz_01 = spynach.operator(spin_system, "Lz", [0, 1])  # sum over spins 0 and 1
+LzSp = spynach.operator(spin_system, ["Lz", "L+"], [0, 1])  # product Lz(0) L+(1)
 ```
 
 A string as the first argument means a sum of single-spin operators; a list
@@ -256,8 +257,8 @@ assumption set is the usual high-field liquid-state approximation:
 
 ```python
 H = spynach.hamiltonian(spynach.assume(spin_system, "nmr"))
-H_zeeman = spynach.hamiltonian(spynach.assume(spin_system, "nmr", "zeeman"))      # drop couplings
-H_coupling = spynach.hamiltonian(spynach.assume(spin_system, "nmr", "couplings")) # drop Zeeman terms
+H_zeeman = spynach.hamiltonian(spynach.assume(spin_system, "nmr", "zeeman"))  # drop couplings
+H_coupling = spynach.hamiltonian(spynach.assume(spin_system, "nmr", "couplings"))  # drop Zeeman terms
 ```
 
 Small Hamiltonians come back as dense NumPy arrays, large sparse ones as
@@ -282,7 +283,7 @@ H_off = spynach.frqoffset(spin_system, H, {"spins": ["1H"], "offset": 1200})
 
 ```python
 dt = 1 / 500
-P = spynach.propagator(spin_system, H_off, dt)       # expm(-1j * H_off * dt)
+P = spynach.propagator(spin_system, H_off, dt)  # expm(-1j * H_off * dt)
 
 rho0 = spynach.state(spin_system, "L+", "1H")
 coil = spynach.state(spin_system, "L+", "1H")
@@ -310,7 +311,8 @@ detects `parameters["coil"]`. It reproduces the step-by-step route above:
 
 ```python
 fid_liquid = spynach.liquid(
-    spin_system, spynach.acquire,
+    spin_system,
+    spynach.acquire,
     {"spins": ["1H"], "offset": 1200, "sweep": 500, "npoints": 1024, "rho0": rho0, "coil": coil},
     "nmr",
 )
@@ -327,15 +329,27 @@ acquires:
 def pulse_acquire(spin_system, parameters, H, R, K):
     L = H + 1j * R + 1j * K
     Ly = spynach.operator(spin_system, "Ly", parameters["spins"][0])
-    pulse = spynach.propagator(spin_system, Ly, np.pi / 2)   # rotation angle as "time"
+    pulse = spynach.propagator(spin_system, Ly, np.pi / 2)  # rotation angle as "time"
     rho = pulse @ parameters["rho0"] @ pulse.conj().T
     return spynach.evolution(
-        spin_system, L, rho, 1 / parameters["sweep"], parameters["npoints"] - 1, "observable",
+        spin_system,
+        L,
+        rho,
+        1 / parameters["sweep"],
+        parameters["npoints"] - 1,
+        "observable",
         coil=parameters["coil"],
     )
 
-pars = {"spins": ["1H"], "offset": 1200, "sweep": 500, "npoints": 1024,
-        "rho0": spynach.state(spin_system, "Lz", "1H"), "coil": spynach.state(spin_system, "L+", "1H")}
+
+pars = {
+    "spins": ["1H"],
+    "offset": 1200,
+    "sweep": 500,
+    "npoints": 1024,
+    "rho0": spynach.state(spin_system, "Lz", "1H"),
+    "coil": spynach.state(spin_system, "L+", "1H"),
+}
 fid_pulse = spynach.liquid(spin_system, pulse_acquire, pars, "nmr")
 
 # The pulse turns Lz into Lx = (L+ + L-)/2; only the L+ half is detected
@@ -388,8 +402,9 @@ print(f"doublet splitting {high - low:.1f} Hz, peak height ratio {spectra[1].max
 ```python
 from spynach.plotting import plot_1d
 
-plot_1d(spin_system, spectra, pars_hc, names=["acquire from L+", "90° pulse from Lz"],
-        title="1H spectrum of a 1H-13C pair")
+plot_1d(
+    spin_system, spectra, pars_hc, names=["acquire from L+", "90° pulse from Lz"], title="1H spectrum of a 1H-13C pair"
+)
 ```
 
 ![1H spectrum of a 1H-13C pair from the two sequences](figures/hilbert-space-hc-pair.png)
@@ -470,7 +485,7 @@ To compare your own results with a fixture:
 from spynach.oracle import assert_matches, find_case, load_fixture
 
 path = find_case("hilb_pa_hc_2spin")
-if path is not None:   # fixtures are optional
+if path is not None:  # fixtures are optional
     fx = load_fixture(path)
     result = assert_matches(H_off, fx["/ham/H_off"], rtol=1e-13, atol=0, name="H_off")
     print(result)

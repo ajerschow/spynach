@@ -124,8 +124,15 @@ for path, values in leak.items():
     fig.add_scatter(x=betas, y=values, mode="lines+markers", name=f"pathway {','.join(map(str, path))}")
 fig.add_scatter(x=betas, y=(betas / 2) ** 2, mode="lines", line={"dash": "dot"}, name="(β/2)²")
 fig.add_scatter(x=betas, y=np.sqrt(2) * betas / 2, mode="lines", line={"dash": "dot"}, name="√2 β/2")
-fig.update_layout(title="Leakage of the imperfect spin echo", xaxis_title="β / rad", yaxis_title="pathway weight",
-                  xaxis_type="log", yaxis_type="log", width=640, height=400)
+fig.update_layout(
+    title="Leakage of the imperfect spin echo",
+    xaxis_title="β / rad",
+    yaxis_title="pathway weight",
+    xaxis_type="log",
+    yaxis_type="log",
+    width=640,
+    height=400,
+)
 fig
 ```
 
@@ -165,12 +172,16 @@ ste_cycle = PhaseCycle.explicit(
 wanted_ste = [(0, -1, 1, 0, 1, -1, 0, -1), (0, 1, -1, 0, -1, 1, 0, -1)]
 for spoilers in (False, True):
     result = simulate(stimulated_echo(spoilers), ste_cycle, wanted=wanted_ste)
-    print(f"spoilers {spoilers!s:5}: {len(result)} pathways above threshold, {result.leakage(0.01)} unwanted above 1%, "
-          f"strongest unwanted {result.amplitude[~result.wanted][0]:.3f}: {result.orders[~result.wanted][0].tolist()}")
+    print(
+        f"spoilers {spoilers!s:5}: {len(result)} pathways above threshold, {result.leakage(0.01)} unwanted above 1%, "
+        f"strongest unwanted {result.amplitude[~result.wanted][0]:.3f}: {result.orders[~result.wanted][0].tolist()}"
+    )
 ```
 
 ```python
-plot_pathways(simulate(stimulated_echo(False), ste_cycle, wanted=wanted_ste), top=6, title="Stimulated echo without the spoilers")
+plot_pathways(
+    simulate(stimulated_echo(False), ste_cycle, wanted=wanted_ste), top=6, title="Stimulated echo without the spoilers"
+)
 ```
 
 ![Stimulated echo without the spoilers](figures/ctps-examples-ste-no-spoilers.png)
@@ -207,8 +218,14 @@ noesy_cycle = PhaseCycle.explicit(
 for workers in (1, 2):
     start = time.perf_counter()
     result = simulate(noesy, noesy_cycle, cutoff=1e-4, workers=workers)
-    print(f"{result.n_enumerated} pathways, {len(result)} above 1e-4, {time.perf_counter() - start:.2f} s with {workers} worker(s)")
-print("strongest:", [tuple(int(v) for v in o) for o in result.orders[:2]], [round(float(a), 4) for a in result.amplitude[:2]])
+    print(
+        f"{result.n_enumerated} pathways, {len(result)} above 1e-4, {time.perf_counter() - start:.2f} s with {workers} worker(s)"
+    )
+print(
+    "strongest:",
+    [tuple(int(v) for v in o) for o in result.orders[:2]],
+    [round(float(a), 4) for a in result.amplitude[:2]],
+)
 ```
 
 ## HSQC with two nuclei
@@ -238,7 +255,9 @@ hsqc = Sequence(
 hsqc_cycle = PhaseCycle.explicit([[0]] * 4 + [[0, 2], [0, 0, 2, 2], [0], [0], [0]], receiver=[0, 2, 2, 0], base=4)
 hsqc_wanted = [(0, 1, -1, -1, 0, 1, 0, 1, -1, -1), (0, 1, -1, -1, 0, -1, 0, 1, -1, -1)]
 hsqc_result = simulate(hsqc, hsqc_cycle, wanted=hsqc_wanted)
-print(f"{hsqc_result.n_enumerated} pathways, {len(hsqc_result)} above threshold, {hsqc_result.leakage(0.05)} unwanted above 5%")
+print(
+    f"{hsqc_result.n_enumerated} pathways, {len(hsqc_result)} above threshold, {hsqc_result.leakage(0.05)} unwanted above 5%"
+)
 for row in hsqc_result.table()[:4]:
     print(row["pathway"], "wanted" if row["wanted"] else "      ", f"total {row['total']:.3f}  grad {row['grad']:.3f}")
 ```
@@ -264,28 +283,38 @@ every unwanted pathway must have `pc = 0`:
 mqmas = Sequence.simple(3, 3)
 # the nested cycle: 7 steps on pulse 1 (selecting Δp = +3) nested with 5 on pulse 3 (Δp = -2), on the common base 35
 levels = PhaseCycle.nested([[5 * k for k in range(7)], [0], [7 * k for k in range(5)]], receiver=[0], base=35)
-rec = [(-3 * levels.phases[0][m] + 2 * levels.phases[2][m]) % 35 for m in range(35)]  # φ_rec = -Σ Δp_j φ_j for the wanted pathway
+rec = [
+    (-3 * levels.phases[0][m] + 2 * levels.phases[2][m]) % 35 for m in range(35)
+]  # φ_rec = -Σ Δp_j φ_j for the wanted pathway
 nested35 = PhaseCycle.explicit(levels.phases, receiver=rec, base=35)
 
 
 def verify(sequence, cycle, wanted):
     result = simulate(sequence, cycle, wanted=wanted, epsilon=0, cutoff=0)
     unwanted = np.abs(result.pc[~result.wanted])
-    print(f"{cycle.cog_string():>40}: {cycle.steps:3d} steps, {result.wanted.sum()} wanted at |pc| = 1, "
-          f"largest unwanted |pc| = {unwanted.max() if unwanted.size else 0:.1e}")
+    print(
+        f"{cycle.cog_string():>40}: {cycle.steps:3d} steps, {result.wanted.sum()} wanted at |pc| = 1, "
+        f"largest unwanted |pc| = {unwanted.max() if unwanted.size else 0:.1e}"
+    )
 
 
 verify(mqmas, nested35, [(0, 3, 1, -1)])
 verify(mqmas, PhaseCycle.cogwheel(23, [0, 3, 4], 14), [(0, 3, 1, -1)])
 verify(Sequence.simple(3, 3, orders=[-3, -1, 0, 1, 3]), PhaseCycle.cogwheel(11, [3, 1, 0], 4), [(0, 3, 1, -1)])
 verify(Sequence.simple(3, 3, end=[-1, 0, 1]), PhaseCycle.cogwheel(29, [9, 11, 2], 28), [(0, 3, 1, -1)])
-verify(Sequence.simple(3, 3, end=[-1, 0, 1], orders=[-3, -1, 0, 1, 3]), PhaseCycle.cogwheel(19, [3, 8, 1], 9), [(0, 3, 1, -1)])
+verify(
+    Sequence.simple(3, 3, end=[-1, 0, 1], orders=[-3, -1, 0, 1, 3]),
+    PhaseCycle.cogwheel(19, [3, 8, 1], 9),
+    [(0, 3, 1, -1)],
+)
 ```
 
 ```python
 from ctps.plot import plot_selection_diagram
 
-plot_selection_diagram(PhaseCycle.cogwheel(11, [3, 1, 0], 4), Sequence.simple(3, 3, orders=[-3, -1, 0, 1, 3]), wanted=[(0, 3, 1, -1)])
+plot_selection_diagram(
+    PhaseCycle.cogwheel(11, [3, 1, 0], 4), Sequence.simple(3, 3, orders=[-3, -1, 0, 1, 3]), wanted=[(0, 3, 1, -1)]
+)
 ```
 
 ![Selection diagram of the 11-step MQMAS cogwheel cycle](figures/ctps-examples-mqmas-cog11.png)
@@ -301,8 +330,16 @@ up to 201 would take a while:
 ```python
 print("HCL:", hcl_cycle([5, 3, 1], [5, 5, 5]).cog_string())
 verify(Sequence.simple(4, 5), PhaseCycle.cogwheel(201, [157, 142, 3, 0], 108), [(0, 5, 3, 1, -1)])
-verify(Sequence.simple(4, 5, orders=[-5, -3, -1, 0, 1, 3, 5]), PhaseCycle.cogwheel(55, [33, 30, 1, 0], 7), [(0, 5, 3, 1, -1)])
-verify(Sequence.simple(4, 5, orders=[-5, -3, -1, 0, 1, 3, 5], periods={3: [1], 4: [-1]}), PhaseCycle.cogwheel(29, [3, 1, 0, 0], 16), [(0, 5, 3, 1, -1)])
+verify(
+    Sequence.simple(4, 5, orders=[-5, -3, -1, 0, 1, 3, 5]),
+    PhaseCycle.cogwheel(55, [33, 30, 1, 0], 7),
+    [(0, 5, 3, 1, -1)],
+)
+verify(
+    Sequence.simple(4, 5, orders=[-5, -3, -1, 0, 1, 3, 5], periods={3: [1], 4: [-1]}),
+    PhaseCycle.cogwheel(29, [3, 1, 0, 0], 16),
+    [(0, 5, 3, 1, -1)],
+)
 ```
 
 ## Multi-echo trains: 2n + 1 steps
@@ -338,12 +375,18 @@ pfg = Sequence.simple(7, 1, periods={3: [0], 6: [0]})
 wanted_pfg = [(0, -1, 1, 0, 1, -1, 0, -1), (0, 1, -1, 0, -1, 1, 0, -1)]
 print("phase cycling alone:", find_cycle(pfg, wanted_pfg).best.cog_string())
 with_gradients = Sequence(
-    pfg.nuclei, pfg.pulses, stimulated_echo().periods[:3] + stimulated_echo().periods[3:], pfg.allowed, Sample(5 * ms, 2.5 * ms)
+    pfg.nuclei,
+    pfg.pulses,
+    stimulated_echo().periods[:3] + stimulated_echo().periods[3:],
+    pfg.allowed,
+    Sample(5 * ms, 2.5 * ms),
 )
 orders, g = pathway_weights(with_gradients)
 print(f"{len(orders)} pathways; {int((g < 1e-3).sum())} already below 1e-3 from the gradients")
 weighted = find_cycle(with_gradients, wanted_pfg, weights=g, tolerance=0.05)
-print(f"with the gradients taken into account: {weighted.best.cog_string()}, surviving weight {weighted.best.residual:.3f}")
+print(
+    f"with the gradients taken into account: {weighted.best.cog_string()}, surviving weight {weighted.best.residual:.3f}"
+)
 ```
 
 ## MRS crushers and fixed-length cycles
@@ -417,8 +460,10 @@ for row in fx["rows"]:
     i = index[tuple(row["pathway"])]
     phase = np.degrees(np.angle(check.pc[i])) % 360
     note = "" if row["pathway"] in fx["wanted"] else "   diff needs the delay after the last gradient (CCCP.m source)"
-    print(f"{','.join(f'{p:+d}' for p in row['pathway'])}  {abs(check.pc[i]):.4f} ({row['pc']})  {phase:5.0f} ({row['pc_phase_deg']})"
-          f"   {check.grad[i]:.4f} ({row['grad']})   {check.diff[i]:.4f} ({row['diff']}){note}")
+    print(
+        f"{','.join(f'{p:+d}' for p in row['pathway'])}  {abs(check.pc[i]):.4f} ({row['pc']})  {phase:5.0f} ({row['pc_phase_deg']})"
+        f"   {check.grad[i]:.4f} ({row['grad']})   {check.diff[i]:.4f} ({row['diff']}){note}"
+    )
 ```
 
 ## Every published cogwheel cycle
@@ -438,7 +483,11 @@ from ctps.engine.phase import cogwheel_selects, receiver_winding
 def enumerate_case(case):
     n = len(case["nu"])
     overrides = {int(k): v for k, v in case.get("periods", {}).items()}
-    sets = [list(case["p0"])] + [overrides.get(i, case["orders"]) for i in range(1, n)] + [overrides.get(n, case["detect"])]
+    sets = (
+        [list(case["p0"])]
+        + [overrides.get(i, case["orders"]) for i in range(1, n)]
+        + [overrides.get(n, case["detect"])]
+    )
     return np.array(list(itertools.product(*sets)), dtype=np.int16)
 
 
@@ -513,8 +562,10 @@ print(f"largest relative deviation of the leading term from d^l at beta = {beta}
 
 leading = transfer_matrix("imperfect_180", 2, l=2, beta=2e-3, epsilon=3e-3)
 exact = transfer_matrix("imperfect_180", 2, l=2, beta=2e-3, epsilon=3e-3, exact=True)
-print("near-pi transfers, leading term versus exact rotation, largest relative difference:",
-      f"{np.max(np.abs(leading - exact) / np.maximum(exact, 1e-30)):.1e}")
+print(
+    "near-pi transfers, leading term versus exact rotation, largest relative difference:",
+    f"{np.max(np.abs(leading - exact) / np.maximum(exact, 1e-30)):.1e}",
+)
 
 U = transfer_matrix("small_flip", 3, l=1, n_spins=3, beta=0.02)  # three spins-1/2, d = beta/2 = 0.01
 at = lambda pp, p: U[pp + 3, p + 3]  # noqa: E731
@@ -538,8 +589,10 @@ rng = np.random.default_rng(0)
 dp = rng.integers(-3, 4, size=(200, 5))
 phases = [rng.integers(0, 8, size=rng.integers(1, 9)).tolist() for _ in range(5)]
 random_cycle = PhaseCycle.explicit(phases, rng.integers(0, 8, size=4).tolist(), base=8)
-print("integer versus direct sum, largest difference:",
-      f"{np.abs(phase_cycle_factor(dp, random_cycle, integer=True) - phase_cycle_factor(dp, random_cycle, integer=False)).max():.1e}")
+print(
+    "integer versus direct sum, largest difference:",
+    f"{np.abs(phase_cycle_factor(dp, random_cycle, integer=True) - phase_cycle_factor(dp, random_cycle, integer=False)).max():.1e}",
+)
 
 whole = simulate(paper, paper_cycle, epsilon=1e-9, cutoff=0)
 parts = simulate(paper, paper_cycle, epsilon=1e-9, cutoff=0, chunk=5000, workers=2)

@@ -193,7 +193,13 @@ system = {"g": [2.0, 2.1], "lw": 1.2}
 exp = {"mwFreq": 9.5, "Range": [300, 360], "nPoints": 300}
 measured = es.pepper(system, exp, {"FuzzLevel": 0}).spec
 # EasySpin: result = esfit(spc,@pepper,{Sys0,Exp,Opt},{Vary},FitOpt)
-result = es.esfit(measured, es.pepper, [{"g": [2.01, 2.09], "lw": 1.2}, exp, {"FuzzLevel": 0}], [{"g": [0.03, 0.03]}], {"Verbosity": 0})
+result = es.esfit(
+    measured,
+    es.pepper,
+    [{"g": [2.01, 2.09], "lw": 1.2}, exp, {"FuzzLevel": 0}],
+    [{"g": [0.03, 0.03]}],
+    {"Verbosity": 0},
+)
 print(result.pnames, result.pfit.round(5), f"rmsd {result.rmsd:.1e}")
 ```
 
@@ -227,7 +233,9 @@ print(spectrum.x.shape, spectrum.info["Transitions"].tolist())
 | the plot without outputs | no plotting |
 
 ```python
-chi = es.curry({"S": 0.5, "g": 2}, {"Temperature": [10, 100], "Field": 0}, {"Output": "chimol"})  # EasySpin: chi = curry(Sys,Exp,Opt)
+chi = es.curry(
+    {"S": 0.5, "g": 2}, {"Temperature": [10, 100], "Field": 0}, {"Output": "chimol"}
+)  # EasySpin: chi = curry(Sys,Exp,Opt)
 print(chi.shape, chi.round(12))
 ```
 

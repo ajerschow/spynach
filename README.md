@@ -76,10 +76,16 @@ spin_system = spynach.create(
     {"zeeman": {"scalar": [1.00, 1.10]}, "coupling": {"scalar": [[0, 12.0], [0, 0]]}},
 )
 spin_system = spynach.basis(spin_system, {"formalism": "zeeman-hilb", "approximation": "none"})
-pars = {"spins": ["1H"], "offset": 630, "sweep": 200, "npoints": 1024,
-        "rho0": spynach.state(spin_system, "L+", "1H"), "coil": spynach.state(spin_system, "L+", "1H")}
+pars = {
+    "spins": ["1H"],
+    "offset": 630,
+    "sweep": 200,
+    "npoints": 1024,
+    "rho0": spynach.state(spin_system, "L+", "1H"),
+    "coil": spynach.state(spin_system, "L+", "1H"),
+}
 fid = spynach.liquid(spin_system, spynach.acquire, pars, "nmr")
-fid = spynach.apodisation(fid, [("exp", 6)])     # halve the first point, exponential window
+fid = spynach.apodisation(fid, [("exp", 6)])  # halve the first point, exponential window
 spectrum = np.fft.fftshift(np.fft.fft(fid, 4096))
 ```
 

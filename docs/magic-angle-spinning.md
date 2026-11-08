@@ -44,7 +44,7 @@ from spynach.contexts import fourdif
 phases, D1 = fourdif(9, 1)
 print(phases / (2 * np.pi / 9))
 f = np.exp(3j * phases)
-print(np.abs(D1 @ f - 3j * f).max())          # d/dphi of exp(i k phi) is exact for k up to 4
+print(np.abs(D1 @ f - 3j * f).max())  # d/dphi of exp(i k phi) is exact for k up to 4
 ```
 
 The state vector is the stack of the spin state at every rotor phase, spin
@@ -73,14 +73,27 @@ orientation. Spinach's
 `examples/nmr_solids/mas_powder_csa_fplanck.m` with a coarser grid:
 
 ```python
-spin_system_csa = spynach.create({"isotopes": ["1H", "1H"], "magnet": 14.1},
-                    {"zeeman": {"eigs": [[-7, -7, -1], [4, 2, 9]], "euler": [[0, 0, 0], [0, 0, 0]]}})
+spin_system_csa = spynach.create(
+    {"isotopes": ["1H", "1H"], "magnet": 14.1},
+    {"zeeman": {"eigs": [[-7, -7, -1], [4, 2, 9]], "euler": [[0, 0, 0], [0, 0, 0]]}},
+)
 spin_system_csa = spynach.basis(
     spin_system_csa, {"formalism": "sphten-liouv", "approximation": "none", "projections": [[1]]}
 )
-pars = {"spins": ["1H"], "offset": 0.0, "rate": 500.0, "axis": [1, 1, 1], "max_rank": 17,
-        "grid": "leb_2ang_rank_17", "sweep": 2e4, "npoints": 512, "zerofill": 4096, "axis_units": "ppm",
-        "rho0": spynach.state(spin_system_csa, "L+", "1H"), "coil": spynach.state(spin_system_csa, "L+", "1H")}
+pars = {
+    "spins": ["1H"],
+    "offset": 0.0,
+    "rate": 500.0,
+    "axis": [1, 1, 1],
+    "max_rank": 17,
+    "grid": "leb_2ang_rank_17",
+    "sweep": 2e4,
+    "npoints": 512,
+    "zerofill": 4096,
+    "axis_units": "ppm",
+    "rho0": spynach.state(spin_system_csa, "L+", "1H"),
+    "coil": spynach.state(spin_system_csa, "L+", "1H"),
+}
 fid = spynach.singlerot(spin_system_csa, spynach.acquire, pars, "nmr")
 ```
 
@@ -119,16 +132,14 @@ p1 = {
     "npoints": 161,
 }
 fid_one = spynach.singlerot(spin_system_single, spynach.acquire, p1, "nmr")
-period = int(round(p1["sweep"] / p1["rate"]))                      # dwell times per rotor period
+period = int(round(p1["sweep"] / p1["rate"]))  # dwell times per rotor period
 echoes = fid_one[::period]
-print(np.abs(echoes).round(6), abs(fid_one[period // 2]).round(3))   # exact rotor echoes, dephased in between
+print(np.abs(echoes).round(6), abs(fid_one[period // 2]).round(3))  # exact rotor echoes, dephased in between
 iso = spin_system_single.basefrqs[0] * 5e-6
-print(np.angle(echoes[1] / echoes[0]), np.angle(np.exp(-1j * iso / p1["rate"])))   # the isotropic shift phase
-fast = spynach.singlerot(
-    spin_system_single, spynach.acquire, {**p1, "rate": 5e5, "max_rank": 5, "npoints": 64}, "nmr"
-)
+print(np.angle(echoes[1] / echoes[0]), np.angle(np.exp(-1j * iso / p1["rate"])))  # the isotropic shift phase
+fast = spynach.singlerot(spin_system_single, spynach.acquire, {**p1, "rate": 5e5, "max_rank": 5, "npoints": 64}, "nmr")
 t = np.arange(64) / p1["sweep"]
-print(np.abs(fast - fast[0] * np.exp(-1j * iso * t)).max())   # only the isotropic shift is left
+print(np.abs(fast - fast[0] * np.exp(-1j * iso * t)).max())  # only the isotropic shift is left
 ```
 
 With several spins the echoes of the sum beat at the differences of the

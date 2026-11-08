@@ -60,7 +60,10 @@ exp = {"mwFreq": 9.5, "Range": [330, 350], "nPoints": 1024}
 matrix = es.pepper(powder, exp, {"FuzzLevel": 0})
 perturb = es.pepper(powder, exp, {"FuzzLevel": 0, "Method": "perturb2"})
 print("transitions:", matrix.info["Transitions"].tolist(), " orientations:", matrix.info["nOrientations"])
-print("matrix and second-order perturbation theory differ by", f"{np.abs(matrix.spec - perturb.spec).max() / np.abs(matrix.spec).max():.1%}")
+print(
+    "matrix and second-order perturbation theory differ by",
+    f"{np.abs(matrix.spec - perturb.spec).max() / np.abs(matrix.spec).max():.1%}",
+)
 ```
 
 ```python
@@ -68,8 +71,14 @@ import plotly.graph_objects as go
 
 fig = go.Figure()
 fig.add_trace(go.Scatter(x=matrix.x, y=matrix.spec, mode="lines", name="matrix diagonalisation"))
-fig.add_trace(go.Scatter(x=perturb.x, y=perturb.spec + 0.15 * matrix.spec.max(), mode="lines", name="2nd-order perturbation (offset)"))
-fig.update_layout(title="Nitroxide powder spectrum at X band", xaxis_title="B / mT", yaxis_title="dA/dB", width=700, height=420)
+fig.add_trace(
+    go.Scatter(
+        x=perturb.x, y=perturb.spec + 0.15 * matrix.spec.max(), mode="lines", name="2nd-order perturbation (offset)"
+    )
+)
+fig.update_layout(
+    title="Nitroxide powder spectrum at X band", xaxis_title="B / mT", yaxis_title="dA/dB", width=700, height=420
+)
 fig
 ```
 
@@ -86,17 +95,40 @@ rows with `Exp["MolFrame"]` make it a crystal, summed over the orientations
 = 0` gives the absorption spectrum:
 
 ```python
-cu4n = {"S": 1 / 2, "g": [2.05, 2.05, 2.2], "Nucs": "63Cu,14N,14N,14N,14N", "A": [[50, 50, 500]] + [[40, 40, 40]] * 4, "lwpp": 1}
+cu4n = {
+    "S": 1 / 2,
+    "g": [2.05, 2.05, 2.2],
+    "Nucs": "63Cu,14N,14N,14N,14N",
+    "A": [[50, 50, 500]] + [[40, 40, 40]] * 4,
+    "lwpp": 1,
+}
 cu_exp = {"mwFreq": 9.5, "Range": [260, 360]}
 hybrid = es.pepper(cu4n, cu_exp, {"FuzzLevel": 0, "Method": "hybrid", "HybridCoreNuclei": [1]})
 second = es.pepper(cu4n, cu_exp, {"FuzzLevel": 0, "Method": "perturb2"})
-print("Cu(II) with four 14N: hybrid and perturb2 differ by", f"{np.abs(hybrid.spec - second.spec).max() / np.abs(hybrid.spec).max():.1%}")
+print(
+    "Cu(II) with four 14N: hybrid and perturb2 differ by",
+    f"{np.abs(hybrid.spec - second.spec).max() / np.abs(hybrid.spec).max():.1%}",
+)
 strained = es.pepper({**nitroxide, "HStrain": [20, 20, 60]}, exp, {"FuzzLevel": 0})
 per_transition = es.pepper(powder, exp, {"FuzzLevel": 0, "separate": "transitions"})
-crystal = es.pepper(powder, {**exp, "SampleFrame": [[0, 0, 0], [0.3, 1.1, 0.7]], "MolFrame": [0, 0, 0]}, {"FuzzLevel": 0, "separate": "orientations"})
+crystal = es.pepper(
+    powder,
+    {**exp, "SampleFrame": [[0, 0, 0], [0.3, 1.1, 0.7]], "MolFrame": [0, 0, 0]},
+    {"FuzzLevel": 0, "separate": "orientations"},
+)
 absorption = es.pepper(powder, {**exp, "Harmonic": 0}, {"FuzzLevel": 0})
-print("strained spectrum, per-transition spectra, crystal spectra:", strained.spec.shape, per_transition.spec.shape, crystal.spec.shape)
-print("absorption area:", (absorption.spec.sum() * (absorption.x[1] - absorption.x[0])).round(3), " first derivative sums to", matrix.spec.sum().round(9))
+print(
+    "strained spectrum, per-transition spectra, crystal spectra:",
+    strained.spec.shape,
+    per_transition.spec.shape,
+    crystal.spec.shape,
+)
+print(
+    "absorption area:",
+    (absorption.spec.sum() * (absorption.x[1] - absorption.x[0])).round(3),
+    " first derivative sums to",
+    matrix.spec.sum().round(9),
+)
 ```
 
 ## Solution spectra: `garlic`
@@ -115,7 +147,12 @@ frequency sweep. The lines are accumulated by binning (the default),
 summed from a template, or evaluated explicitly (`Opt["AccumMethod"]`).
 
 ```python
-solution = {"g": [2.0088, 2.0064, 2.0027], "Nucs": "14N", "A": es.unitconvert(np.array([7.59, 5.95, 31.76]) / 10, "mT->MHz"), "lwpp": 0.02}
+solution = {
+    "g": [2.0088, 2.0064, 2.0027],
+    "Nucs": "14N",
+    "A": es.unitconvert(np.array([7.59, 5.95, 31.76]) / 10, "mT->MHz"),
+    "lwpp": 0.02,
+}
 rigid = es.garlic({**solution, "tcorr": 1e-11}, {"mwFreq": 9.5, "Range": [336, 341], "nPoints": 2048})
 slow = es.garlic({**solution, "tcorr": 1e-9}, {"mwFreq": 9.5, "Range": [336, 341], "nPoints": 2048})
 widths, mI = es.fastmotion(solution, 340, 1e-9)
@@ -129,15 +166,30 @@ import plotly.graph_objects as go
 fig = go.Figure()
 fig.add_trace(go.Scatter(x=rigid.x, y=rigid.spec / np.abs(rigid.spec).max(), mode="lines", name="tcorr = 10 ps"))
 fig.add_trace(go.Scatter(x=slow.x, y=slow.spec / np.abs(slow.spec).max(), mode="lines", name="tcorr = 1 ns"))
-fig.update_layout(title="Nitroxide in solution: fast-motion broadening", xaxis_title="B / mT", yaxis_title="normalised dA/dB", width=700, height=420)
+fig.update_layout(
+    title="Nitroxide in solution: fast-motion broadening",
+    xaxis_title="B / mT",
+    yaxis_title="normalised dA/dB",
+    width=700,
+    height=420,
+)
 fig
 ```
 
 ![Nitroxide solution spectra from garlic at two rotational correlation times](figures/easyspyn-simulators-garlic.png)
 
 ```python
-protons = es.garlic({"g": 2.0, "Nucs": "1H,1H", "n": [3, 2], "A": [30, 12], "lw": [0.2, 0]}, {"mwFreq": 9.5, "Range": [325, 352], "Harmonic": 0})
-print("CH3-CH2 pattern:", protons.info["resfields"].size, "lines, the strongest at", protons.x[protons.spec.argmax()].round(2), "mT")
+protons = es.garlic(
+    {"g": 2.0, "Nucs": "1H,1H", "n": [3, 2], "A": [30, 12], "lw": [0.2, 0]},
+    {"mwFreq": 9.5, "Range": [325, 352], "Harmonic": 0},
+)
+print(
+    "CH3-CH2 pattern:",
+    protons.info["resfields"].size,
+    "lines, the strongest at",
+    protons.x[protons.spec.argmax()].round(2),
+    "mT",
+)
 sweep = es.garlic({"g": 2.006, "Nucs": "14N", "A": 47, "lw": 0.1}, {"Field": 340, "mwRange": [9.4, 9.6]})
 print("frequency sweep at 340 mT: lines at", np.sort(sweep.info["resfields"]).round(4), "GHz")
 ```
@@ -184,8 +236,16 @@ B = np.linspace(300, 360, 300)
 fig = go.Figure()
 fig.add_trace(go.Scatter(x=B, y=measured, mode="lines", name="data", line={"color": "gray"}))
 fig.add_trace(go.Scatter(x=B, y=result.fit, mode="lines", name="fit"))
-fig.add_trace(go.Scatter(x=B, y=result.residuals - 0.6 * np.abs(measured).max(), mode="lines", name="residuals (offset)"))
-fig.update_layout(title="esfit: g and line width of an axial S = 1/2 powder", xaxis_title="B / mT", yaxis_title="dA/dB", width=700, height=420)
+fig.add_trace(
+    go.Scatter(x=B, y=result.residuals - 0.6 * np.abs(measured).max(), mode="lines", name="residuals (offset)")
+)
+fig.update_layout(
+    title="esfit: g and line width of an axial S = 1/2 powder",
+    xaxis_title="B / mT",
+    yaxis_title="dA/dB",
+    width=700,
+    height=420,
+)
 fig
 ```
 
@@ -236,19 +296,41 @@ res = es.endorfrq(proton, {"Field": 350, "SampleFrame": [0.3, 1.1, 0.7]})
 print("ENDOR lines of one orientation (MHz):", np.sort(res.pos.ravel()).round(3), " transitions:", res.trans.tolist())
 matrix = es.salt(proton, endor_exp)
 perturb = es.salt(proton, endor_exp, {"Method": "perturb2"})
-print("matrix and perturbation spectra differ by", f"{np.abs(matrix.spec - perturb.spec).max() / matrix.spec.max():.1%}")
+print(
+    "matrix and perturbation spectra differ by", f"{np.abs(matrix.spec - perturb.spec).max() / matrix.spec.max():.1%}"
+)
 ```
 
 ```python
 import plotly.graph_objects as go
 
-nitrogen = {"Nucs": "14N", "g": [2.25, 2.25, 2], "A": [44, 49, 54], "Q": [0.84, 0.84, -1.68], "HStrain": [100, 100, 100], "lwEndor": 0.5}
+nitrogen = {
+    "Nucs": "14N",
+    "g": [2.25, 2.25, 2],
+    "A": [44, 49, 54],
+    "Q": [0.84, 0.84, -1.68],
+    "HStrain": [100, 100, 100],
+    "lwEndor": 0.5,
+}
 full = es.salt(nitrogen, {"Range": [16, 65], "Field": 326.5, "mwFreq": 9.7, "nPoints": 1001})
 selected = es.salt(nitrogen, {"Range": [16, 65], "Field": 326.5, "mwFreq": 9.7, "nPoints": 1001, "ExciteWidth": 50})
 fig = go.Figure()
 fig.add_trace(go.Scatter(x=full.x, y=full.spec / full.spec.max(), mode="lines", name="full excitation"))
-fig.add_trace(go.Scatter(x=selected.x, y=selected.spec / selected.spec.max(), mode="lines", name=f"50 MHz excitation (selectivity {selected.info['Selectivity']:.1f})"))
-fig.update_layout(title="14N ENDOR of an axial Cu(II)-like centre: orientation selection", xaxis_title="radiofrequency / MHz", yaxis_title="normalised intensity", width=700, height=420)
+fig.add_trace(
+    go.Scatter(
+        x=selected.x,
+        y=selected.spec / selected.spec.max(),
+        mode="lines",
+        name=f"50 MHz excitation (selectivity {selected.info['Selectivity']:.1f})",
+    )
+)
+fig.update_layout(
+    title="14N ENDOR of an axial Cu(II)-like centre: orientation selection",
+    xaxis_title="radiofrequency / MHz",
+    yaxis_title="normalised intensity",
+    width=700,
+    height=420,
+)
 fig
 ```
 
@@ -273,10 +355,16 @@ temperature-independent susceptibility.
 dimer = {"S": [0.5, 0.5], "g": [2, 2], "ee": 2 * 4 * 30e3}  # antiferromagnetic exchange, J = -4 cm^-1 as ee = -2J
 T = np.arange(1, 301.0)
 chimolT = es.curry(dimer, {"Temperature": T, "Field": 100}, {"Output": "chimolT"})
-curie = 2 * 0.5 * 1.5 * 4 * es.mu0 * es.bmagn**2 * es.avogadro / 3 / es.boltzm  # two uncoupled S = 1/2 at high temperature
+curie = (
+    2 * 0.5 * 1.5 * 4 * es.mu0 * es.bmagn**2 * es.avogadro / 3 / es.boltzm
+)  # two uncoupled S = 1/2 at high temperature
 print("chimol*T at 1 K and 300 K (m^3 K/mol):", chimolT.ravel()[[0, -1]].round(8), " two free spins:", round(curie, 8))
 mu = es.curry({"S": 0.5, "g": 2.0}, {"Temperature": 2.0, "Field": [0, 2000, 5000, 10000]}, {"Output": "muBM"})
-print("S = 1/2 magnetisation at 2 K follows tanh:", mu.ravel().round(4), np.tanh(es.bmagn * np.array([0, 2, 5, 10]) / (es.boltzm * 2.0)).round(4))
+print(
+    "S = 1/2 magnetisation at 2 K follows tanh:",
+    mu.ravel().round(4),
+    np.tanh(es.bmagn * np.array([0, 2, 5, 10]) / (es.boltzm * 2.0)).round(4),
+)
 ```
 
 ```python
@@ -284,8 +372,16 @@ import plotly.graph_objects as go
 
 fig = go.Figure()
 fig.add_trace(go.Scatter(x=T, y=chimolT.ravel() * 1e6, mode="lines", name="S = 1/2 dimer, J = -4 cm-1"))
-fig.add_trace(go.Scatter(x=[T[0], T[-1]], y=[curie * 1e6] * 2, mode="lines", line={"dash": "dash"}, name="two free spins"))
-fig.update_layout(title="Susceptibility of an antiferromagnetic dimer (curry)", xaxis_title="T / K", yaxis_title="chi_mol T / 1e-6 m^3 K mol^-1", width=700, height=420)
+fig.add_trace(
+    go.Scatter(x=[T[0], T[-1]], y=[curie * 1e6] * 2, mode="lines", line={"dash": "dash"}, name="two free spins")
+)
+fig.update_layout(
+    title="Susceptibility of an antiferromagnetic dimer (curry)",
+    xaxis_title="T / K",
+    yaxis_title="chi_mol T / 1e-6 m^3 K mol^-1",
+    width=700,
+    height=420,
+)
 fig
 ```
 
@@ -325,7 +421,12 @@ the accuracy of the basis truncation and is not ported.
 slow = {"g": [2.008, 2.0061, 2.0027], "Nucs": "14N", "A": [16, 16, 86], "lw": 0.1}
 sweep = {"mwFreq": 9.8, "Range": [344, 354], "nPoints": 512}
 spectra = {tc: es.chili({**slow, "tcorr": tc}, sweep) for tc in (1e-10, 1e-9, 1e-8, 1e-7)}
-print("basis functions:", spectra[1e-9].info["nBasis"], " peak-to-peak amplitudes:", [round(s.spec.max() - s.spec.min()) for s in spectra.values()])
+print(
+    "basis functions:",
+    spectra[1e-9].info["nBasis"],
+    " peak-to-peak amplitudes:",
+    [round(s.spec.max() - s.spec.min()) for s in spectra.values()],
+)
 ```
 
 ```python
@@ -333,18 +434,44 @@ import plotly.graph_objects as go
 
 fig = go.Figure()
 for k, (tc, s) in enumerate(spectra.items()):
-    fig.add_trace(go.Scatter(x=s.x, y=s.spec / np.abs(s.spec).max() - 1.5 * k, mode="lines", name=f"tcorr = {tc * 1e9:g} ns"))
-fig.update_layout(title="Nitroxide from fast to slow tumbling (chili)", xaxis_title="B / mT", yaxis_title="normalised dA/dB (offset)", width=700, height=480)
+    fig.add_trace(
+        go.Scatter(x=s.x, y=s.spec / np.abs(s.spec).max() - 1.5 * k, mode="lines", name=f"tcorr = {tc * 1e9:g} ns")
+    )
+fig.update_layout(
+    title="Nitroxide from fast to slow tumbling (chili)",
+    xaxis_title="B / mT",
+    yaxis_title="normalised dA/dB (offset)",
+    width=700,
+    height=480,
+)
 fig
 ```
 
 ![Nitroxide slow-motion spectra for correlation times from 0.1 to 100 ns](figures/easyspyn-simulators-chili.png)
 
 ```python
-momd = {"g": [2.008, 2.006, 2.003], "Nucs": "14N", "A": [20, 20, 85], "lw": 0.3, "tcorr": 1e-8, "Potential": [[2, 0, 0, 1]]}
-restrained = es.chili(momd, {"mwFreq": 9.5, "CenterSweep": [338, 20], "nPoints": 300}, {"GridSize": 5, "LLMK": [8, 0, 2, 2]})
-free = es.chili({k: v for k, v in momd.items() if k != "Potential"}, {"mwFreq": 9.5, "CenterSweep": [338, 20], "nPoints": 300}, {"LLMK": [8, 0, 2, 2]})
-print("MOMD with an ordering potential: norm of the equilibrium vector", round(restrained.info["normPeq"], 4), " spectra differ by", f"{np.abs(restrained.spec / np.abs(restrained.spec).max() - free.spec / np.abs(free.spec).max()).max():.2f}")
+momd = {
+    "g": [2.008, 2.006, 2.003],
+    "Nucs": "14N",
+    "A": [20, 20, 85],
+    "lw": 0.3,
+    "tcorr": 1e-8,
+    "Potential": [[2, 0, 0, 1]],
+}
+restrained = es.chili(
+    momd, {"mwFreq": 9.5, "CenterSweep": [338, 20], "nPoints": 300}, {"GridSize": 5, "LLMK": [8, 0, 2, 2]}
+)
+free = es.chili(
+    {k: v for k, v in momd.items() if k != "Potential"},
+    {"mwFreq": 9.5, "CenterSweep": [338, 20], "nPoints": 300},
+    {"LLMK": [8, 0, 2, 2]},
+)
+print(
+    "MOMD with an ordering potential: norm of the equilibrium vector",
+    round(restrained.info["normPeq"], 4),
+    " spectra differ by",
+    f"{np.abs(restrained.spec / np.abs(restrained.spec).max() - free.spec / np.abs(free.spec).max()).max():.2f}",
+)
 ```
 
 ## Pulse EPR: `saffron`
@@ -379,8 +506,18 @@ weak_n14 = {"Nucs": "14N", "A": [-1, -1, 2], "Q": [-1, -1, 2]}
 three_pulse = es.saffron(weak_n14, {"Field": 350, "Sequence": "3pESEEM", "dt": 0.01, "nPoints": 512, "tau": 0.1})
 hyscore = es.saffron(weak_n14, {"Field": 350, "Sequence": "HYSCORE", "dt": 0.02, "nPoints": 128, "tau": 0.1})
 nu_n = es.larmorfrq("14N", 350)[0, 0]
-print("time axis starts at tau + T =", three_pulse.x[0], "us; nuclear Larmor frequency", round(nu_n, 3), "MHz;",
-      "HYSCORE spectrum", hyscore.info["fd"].shape, "on", round(hyscore.info["f1"][-1], 2), "MHz")
+print(
+    "time axis starts at tau + T =",
+    three_pulse.x[0],
+    "us; nuclear Larmor frequency",
+    round(nu_n, 3),
+    "MHz;",
+    "HYSCORE spectrum",
+    hyscore.info["fd"].shape,
+    "on",
+    round(hyscore.info["f1"][-1], 2),
+    "MHz",
+)
 ```
 
 ```python
@@ -388,12 +525,28 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 fig = make_subplots(rows=1, cols=2, subplot_titles=("three-pulse ESEEM", "HYSCORE (double-quantum region)"))
-fig.add_trace(go.Scatter(x=three_pulse.x, y=np.real(three_pulse.spec), mode="lines", name="echo modulation"), row=1, col=1)
+fig.add_trace(
+    go.Scatter(x=three_pulse.x, y=np.real(three_pulse.spec), mode="lines", name="echo modulation"), row=1, col=1
+)
 f1, f2 = hyscore.info["f1"], hyscore.info["f2"]
 win1, win2 = (f1 >= 0) & (f1 <= 8), (f2 >= 0) & (f2 <= 8)  # the plotted window only keeps the notebook small
 f1, f2, z = f1[win1], f2[win2], np.abs(hyscore.info["fd"])[np.ix_(win1, win2)]
-top = z[(f1 > 1.5)[:, None] & (f2 > 1.5)[None, :]].max()  # levels relative to the peaks away from the low-frequency corner
-fig.add_trace(go.Contour(x=f2, y=f1, z=z, contours={"coloring": "lines", "start": 0.1 * top, "end": top, "size": 0.1 * top}, colorscale=[[0, "#1f77b4"], [1, "#d62728"]], showscale=False, name="|FT|"), row=1, col=2)
+top = z[
+    (f1 > 1.5)[:, None] & (f2 > 1.5)[None, :]
+].max()  # levels relative to the peaks away from the low-frequency corner
+fig.add_trace(
+    go.Contour(
+        x=f2,
+        y=f1,
+        z=z,
+        contours={"coloring": "lines", "start": 0.1 * top, "end": top, "size": 0.1 * top},
+        colorscale=[[0, "#1f77b4"], [1, "#d62728"]],
+        showscale=False,
+        name="|FT|",
+    ),
+    row=1,
+    col=2,
+)
 fig.update_xaxes(title_text="t / us", row=1, col=1)
 fig.update_xaxes(title_text="nu2 / MHz", range=[0, 8], row=1, col=2)
 fig.update_yaxes(title_text="nu1 / MHz", range=[0, 8], row=1, col=2)
@@ -404,8 +557,24 @@ fig
 ![Three-pulse ESEEM trace and HYSCORE spectrum of a weakly coupled 14N](figures/easyspyn-simulators-saffron.png)
 
 ```python
-mims = es.saffron({"Nucs": "1H", "A": [1, 1, 5], "lwEndor": 0.1}, {"Sequence": "MimsENDOR", "Field": 325, "tau": 0.1, "Range": [5, 25], "nPoints": 401})
-custom = es.saffron(weak_n14, {"Field": 350, "Sequence": [{"Flip": np.pi / 2}, 0.1, {"Flip": np.pi / 2}, 0.0, {"Flip": np.pi / 2}, 0.1], "nPoints": 512, "Dim1": [["d2", 0.01]]})
-print("Mims ENDOR doublet at", np.round(mims.x[np.argsort(mims.spec)[-1]], 2), "MHz;",
-      "the custom three-pulse sequence reproduces the predefined one to", f"{np.abs(custom.spec - three_pulse.spec).max():.1e}")
+mims = es.saffron(
+    {"Nucs": "1H", "A": [1, 1, 5], "lwEndor": 0.1},
+    {"Sequence": "MimsENDOR", "Field": 325, "tau": 0.1, "Range": [5, 25], "nPoints": 401},
+)
+custom = es.saffron(
+    weak_n14,
+    {
+        "Field": 350,
+        "Sequence": [{"Flip": np.pi / 2}, 0.1, {"Flip": np.pi / 2}, 0.0, {"Flip": np.pi / 2}, 0.1],
+        "nPoints": 512,
+        "Dim1": [["d2", 0.01]],
+    },
+)
+print(
+    "Mims ENDOR doublet at",
+    np.round(mims.x[np.argsort(mims.spec)[-1]], 2),
+    "MHz;",
+    "the custom three-pulse sequence reproduces the predefined one to",
+    f"{np.abs(custom.spec - three_pulse.spec).max():.1e}",
+)
 ```

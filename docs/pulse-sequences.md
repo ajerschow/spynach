@@ -39,9 +39,10 @@ along the direct dimension, columns along the indirect one. Spinach's
 import numpy as np
 import spynach
 
-spin_system_derome = spynach.create({"isotopes": ["1H"] * 3, "magnet": 16.1},
-                       {"zeeman": {"scalar": [3.70, 3.92, 4.50]},
-                        "coupling": {"scalar": [[0, 10, 4], [0, 0, 12], [0, 0, 0]]}})
+spin_system_derome = spynach.create(
+    {"isotopes": ["1H"] * 3, "magnet": 16.1},
+    {"zeeman": {"scalar": [3.70, 3.92, 4.50]}, "coupling": {"scalar": [[0, 10, 4], [0, 0, 12], [0, 0, 0]]}},
+)
 spin_system_derome = spynach.basis(spin_system_derome, {"formalism": "sphten-liouv", "approximation": "none"})
 
 
@@ -51,18 +52,29 @@ def my_cosy(spin_system, parameters, H, R, K):
     coil = spynach.state(spin_system, "L+", "1H", "cheap")
     Lx = spynach.operator(spin_system, "Lx", "1H")
     rho = spynach.step(spin_system, Lx, rho, np.pi / 2)
-    stack = spynach.evolution(
-        spin_system, L, rho, 1 / parameters["sweep"], parameters["npoints"][0] - 1, "trajectory"
-    )
-    stack = spynach.coherence(spin_system, stack.T, [("1H", 1)]).T          # select the +1 pathway in t1
+    stack = spynach.evolution(spin_system, L, rho, 1 / parameters["sweep"], parameters["npoints"][0] - 1, "trajectory")
+    stack = spynach.coherence(spin_system, stack.T, [("1H", 1)]).T  # select the +1 pathway in t1
     stack = spynach.step(spin_system, Lx, stack, parameters["angle"])
     return spynach.evolution(
-        spin_system, L, stack, 1 / parameters["sweep"], parameters["npoints"][1] - 1, "observable", coil=coil,
+        spin_system,
+        L,
+        stack,
+        1 / parameters["sweep"],
+        parameters["npoints"][1] - 1,
+        "observable",
+        coil=coil,
     )
 
 
-pars = {"angle": np.pi / 2, "offset": 2800.0, "sweep": 700.0, "npoints": [64, 64], "zerofill": [256, 256],
-        "spins": ["1H"], "axis_units": "ppm"}
+pars = {
+    "angle": np.pi / 2,
+    "offset": 2800.0,
+    "sweep": 700.0,
+    "npoints": [64, 64],
+    "zerofill": [256, 256],
+    "spins": ["1H"],
+    "axis_units": "ppm",
+}
 fid = spynach.liquid(spin_system_derome, my_cosy, pars, "nmr")
 print(np.allclose(fid, spynach.liquid(spin_system_derome, spynach.cosy, pars, "nmr")))
 ```
@@ -124,16 +136,26 @@ add a homodecoupling term. `homospoil(spin_system, rho, "destroy")` kills every
 coherence (a gradient pulse), `"keep"` retains zero-quantum ones:
 
 ```python
-spin_system_hc = spynach.basis(spynach.create({"isotopes": ["1H", "13C"], "magnet": 14.1},
-                                {"zeeman": {"scalar": [2.0, 30.0]}, "coupling": {"scalar": [[0, 145.0], [0, 0]]}}),
-                  {"formalism": "sphten-liouv", "approximation": "none"})
-acq = {"spins": ["1H"], "offset": 1200.0, "sweep": 2000.0, "npoints": 128,
-       "rho0": spynach.state(spin_system_hc, "L+", "1H"), "coil": spynach.state(spin_system_hc, "L+", "1H")}
+spin_system_hc = spynach.basis(
+    spynach.create(
+        {"isotopes": ["1H", "13C"], "magnet": 14.1},
+        {"zeeman": {"scalar": [2.0, 30.0]}, "coupling": {"scalar": [[0, 145.0], [0, 0]]}},
+    ),
+    {"formalism": "sphten-liouv", "approximation": "none"},
+)
+acq = {
+    "spins": ["1H"],
+    "offset": 1200.0,
+    "sweep": 2000.0,
+    "npoints": 128,
+    "rho0": spynach.state(spin_system_hc, "L+", "1H"),
+    "coil": spynach.state(spin_system_hc, "L+", "1H"),
+}
 coupled = spynach.liquid(spin_system_hc, spynach.acquire, acq, "nmr")
 decoupled = spynach.liquid(spin_system_hc, spynach.acquire, {**acq, "decouple": ["13C"]}, "nmr")
 t = np.arange(128) / 2000.0
 omega = spin_system_hc.basefrqs[0] * 2.0e-6 + 2 * np.pi * 1200.0  # 2 ppm shift in the frame of the 1200 Hz offset
-print(np.abs(decoupled - decoupled[0] * np.exp(-1j * omega * t)).max())   # a pure singlet
+print(np.abs(decoupled - decoupled[0] * np.exp(-1j * omega * t)).max())  # a pure singlet
 ```
 
 ## COSY
@@ -155,13 +177,29 @@ combined after the F1 transform. It needs relaxation, and the thermal
 equilibrium as the initial state (`needs=["rho_eq"]`):
 
 ```python
-spin_system_pair = spynach.create({"isotopes": ["1H", "1H"], "magnet": 14.1},
-                     {"zeeman": {"scalar": [1.0, 3.0]}, "coordinates": [[0, 0, 0], [0, 0, 2.5]],
-                      "relaxation": ["redfield"], "equilibrium": "IME", "rlx_keep": "kite",
-                      "temperature": 298, "tau_c": [[2e-9]]})
+spin_system_pair = spynach.create(
+    {"isotopes": ["1H", "1H"], "magnet": 14.1},
+    {
+        "zeeman": {"scalar": [1.0, 3.0]},
+        "coordinates": [[0, 0, 0], [0, 0, 2.5]],
+        "relaxation": ["redfield"],
+        "equilibrium": "IME",
+        "rlx_keep": "kite",
+        "temperature": 298,
+        "tau_c": [[2e-9]],
+    },
+)
 spin_system_pair = spynach.basis(spin_system_pair, {"formalism": "sphten-liouv", "approximation": "none"})
-noesy_pars = {"tmix": 0.3, "offset": 1200.0, "sweep": [2000.0, 2000.0], "npoints": [64, 64], "zerofill": [256, 256],
-              "spins": ["1H"], "needs": ["rho_eq"], "axis_units": "ppm"}
+noesy_pars = {
+    "tmix": 0.3,
+    "offset": 1200.0,
+    "sweep": [2000.0, 2000.0],
+    "npoints": [64, 64],
+    "zerofill": [256, 256],
+    "spins": ["1H"],
+    "needs": ["rho_eq"],
+    "axis_units": "ppm",
+}
 fid_noesy = spynach.liquid(spin_system_pair, spynach.noesy, noesy_pars, "nmr")
 cos = spynach.apodisation(fid_noesy["cos"], [("sqcos",), ("sqcos",)])
 sin = spynach.apodisation(fid_noesy["sin"], [("sqcos",), ("sqcos",)])
@@ -201,9 +239,13 @@ delays. Natural-abundance 13C spectra are sums over isotopomers:
 removed (`kill_spin`), each of which is simulated separately:
 
 ```python
-spin_system_sugar = spynach.create({"isotopes": ["1H", "13C", "13C", "1H"], "magnet": 5.9},
-                      {"zeeman": {"scalar": [3.0, 40.0, 50.0, 1.0]},
-                       "coupling": {"scalar": [[0, 140, 0, 7], [0, 0, 35, 0], [0, 0, 0, 150], [0, 0, 0, 0]]}})
+spin_system_sugar = spynach.create(
+    {"isotopes": ["1H", "13C", "13C", "1H"], "magnet": 5.9},
+    {
+        "zeeman": {"scalar": [3.0, 40.0, 50.0, 1.0]},
+        "coupling": {"scalar": [[0, 140, 0, 7], [0, 0, 35, 0], [0, 0, 0, 150], [0, 0, 0, 0]]},
+    },
+)
 hsqc_pars = {
     "J": 140.0,
     "sweep": [3000.0, 2000.0],
@@ -227,8 +269,17 @@ for spin_system_sub in spynach.dilute(spin_system_sugar, "13C"):
     )
     hsqc_spectrum += np.fft.fftshift(np.fft.fft(pos + np.conj(neg), 256, axis=1), axes=1)
 plot_2d(
-    spin_system_sugar, hsqc_spectrum.real, hsqc_pars, max_points=128, ncont=20, delta=(0.05, 1.0, 0.05, 1.0), k=2,
-    ncol=256, m=6, signs="positive", title="HSQC, two isotopomers",
+    spin_system_sugar,
+    hsqc_spectrum.real,
+    hsqc_pars,
+    max_points=128,
+    ncont=20,
+    delta=(0.05, 1.0, 0.05, 1.0),
+    k=2,
+    ncol=256,
+    m=6,
+    signs="positive",
+    title="HSQC, two isotopomers",
 )
 ```
 

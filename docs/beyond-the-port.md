@@ -48,7 +48,10 @@ echo = Sequence(
 cycle = PhaseCycle.explicit(phases=[[0], [0, 2]], receiver=[0, 0], base=4)
 result = simulate(echo, cycle, wanted=[(0, 1, -1)], cutoff=0)
 for row in result.table():
-    print(row["pathway"], f"pc {row['pc']:.2f}  grad {row['grad']:.4f}  diff {row['diff']:.3f}  pulse {row['pulse']:.3f}  total {row['total']:.2e}")
+    print(
+        row["pathway"],
+        f"pc {row['pc']:.2f}  grad {row['grad']:.4f}  diff {row['diff']:.3f}  pulse {row['pulse']:.3f}  total {row['total']:.2e}",
+    )
 ```
 
 ```python
@@ -100,11 +103,18 @@ which is what GitHub's viewer shows.
 import spynach
 
 spin_system = spynach.create(
-    {"isotopes": ["1H", "1H"], "magnet": 14.1}, {"zeeman": {"scalar": [1.0, 1.1]}, "coupling": {"scalar": [[0, 12.0], [0, 0]]}}
+    {"isotopes": ["1H", "1H"], "magnet": 14.1},
+    {"zeeman": {"scalar": [1.0, 1.1]}, "coupling": {"scalar": [[0, 12.0], [0, 0]]}},
 )
 spin_system = spynach.basis(spin_system, {"formalism": "zeeman-hilb", "approximation": "none"})
-parameters = {"spins": ["1H"], "offset": 630, "sweep": 200, "npoints": 512,
-              "rho0": spynach.state(spin_system, "L+", "1H"), "coil": spynach.state(spin_system, "L+", "1H")}
+parameters = {
+    "spins": ["1H"],
+    "offset": 630,
+    "sweep": 200,
+    "npoints": 512,
+    "rho0": spynach.state(spin_system, "L+", "1H"),
+    "coil": spynach.state(spin_system, "L+", "1H"),
+}
 fid = spynach.apodisation(spynach.liquid(spin_system, spynach.acquire, parameters, "nmr"), [("exp", 6)])
 ```
 
@@ -168,11 +178,20 @@ callback of `powder` and `singlerot`, and `esfit` its iteration count through
 `IterFcn`; the callback works the same way outside the browser:
 
 ```python
-csa_system = spynach.create({"isotopes": ["1H"], "magnet": 14.1}, {"zeeman": {"eigs": [[-2, -2, 4]], "euler": [[0, 0, 0]]}})
+csa_system = spynach.create(
+    {"isotopes": ["1H"], "magnet": 14.1}, {"zeeman": {"eigs": [[-2, -2, 4]], "euler": [[0, 0, 0]]}}
+)
 csa_system = spynach.basis(csa_system, {"formalism": "sphten-liouv", "approximation": "none"})
-powder_pars = {"spins": ["1H"], "offset": 0.0, "sweep": 2e4, "npoints": 64, "grid": "leb_2ang_rank_11",
-               "rho0": spynach.state(csa_system, "L+", "1H"), "coil": spynach.state(csa_system, "L+", "1H"),
-               "progress": lambda done, total: print(f"orientation {done}/{total}") if done % 10 == 0 else None}
+powder_pars = {
+    "spins": ["1H"],
+    "offset": 0.0,
+    "sweep": 2e4,
+    "npoints": 64,
+    "grid": "leb_2ang_rank_11",
+    "rho0": spynach.state(csa_system, "L+", "1H"),
+    "coil": spynach.state(csa_system, "L+", "1H"),
+    "progress": lambda done, total: print(f"orientation {done}/{total}") if done % 10 == 0 else None,
+}
 powder_fid = spynach.powder(csa_system, spynach.acquire, powder_pars, "nmr")
 ```
 
@@ -203,7 +222,13 @@ import easyspyn as es
 nitroxide = {"g": [2.0088, 2.0061, 2.0027], "Nucs": "14N", "A": [16, 16, 86]}
 print("levels at 340 mT along z (MHz):", es.levels(nitroxide, "z", 340).round(1))
 powder = es.pepper({**nitroxide, "lwpp": 0.3}, {"mwFreq": 9.5, "Range": [330, 350]}, {"FuzzLevel": 0})
-print("powder spectrum:", powder.spec.shape, "points, extrema at", powder.x[[powder.spec.argmax(), powder.spec.argmin()]].round(2), "mT")
+print(
+    "powder spectrum:",
+    powder.spec.shape,
+    "points, extrema at",
+    powder.x[[powder.spec.argmax(), powder.spec.argmin()]].round(2),
+    "mT",
+)
 ```
 
 ## Relaxation pathways by mechanism
@@ -224,8 +249,10 @@ import spynach
 
 ch = spynach.create(
     {"isotopes": ["13C", "1H"], "magnet": 14.1},
-    {"zeeman": {"eigs": [[-40, -40, 80], [0, 0, 0]], "euler": [[0, 0, 0], [0, 0, 0]]},
-     "coordinates": [[0, 0, 0], [0, 0, 1.09]]},
+    {
+        "zeeman": {"eigs": [[-40, -40, 80], [0, 0, 0]], "euler": [[0, 0, 0], [0, 0, 0]]},
+        "coordinates": [[0, 0, 0], [0, 0, 1.09]],
+    },
 )
 ch_pathways = spynach.relaxation_pathways(ch, tau_c=1e-9)
 print(ch_pathways.expression("C+", "C+Hz", "DD/CSA"))
@@ -260,8 +287,9 @@ import numpy as np
 import spynach
 from spynach.propagation import iserstep
 
-proton = spynach.basis(spynach.create({"isotopes": ["1H"], "magnet": 14.1}, {}),
-                       {"formalism": "sphten-liouv", "approximation": "none"})
+proton = spynach.basis(
+    spynach.create({"isotopes": ["1H"], "magnet": 14.1}, {}), {"formalism": "sphten-liouv", "approximation": "none"}
+)
 rd = spynach.radiation_damping(proton, np.zeros((4, 4)), "1H", rate=50.0)
 rho = spynach.step(proton, spynach.operator(proton, "Ly", "1H"), spynach.state(proton, "Lz", "1H"), np.pi * 170 / 180)
 for n in range(400):

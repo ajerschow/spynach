@@ -70,7 +70,14 @@ removed, and errors are EasySpin's: a missing `A`, a wrong size, `ee`
 together with `J`, a mis-capitalised field name.
 
 ```python
-mn = {"S": 5 / 2, "D": [1000, 100], "DFrame": [0.2, 0.5, 0.9], "B4": [1, 2, -3, 0.5, 10, -0.5, 3, -2, 1], "Nucs": "55Mn", "A": 250}
+mn = {
+    "S": 5 / 2,
+    "D": [1000, 100],
+    "DFrame": [0.2, 0.5, 0.9],
+    "B4": [1, 2, -3, 0.5, 10, -0.5, 3, -2, 1],
+    "Nucs": "55Mn",
+    "A": 250,
+}
 print("D principal values:", es.validatespinsys(mn)["D"].round(2))
 print("states:", es.hsdim(mn), " spins:", es.spinvec(mn))
 try:
@@ -129,9 +136,15 @@ B = np.array([0, 0, 340.0])  # mT along the molecular z axis
 H = es.ham(spin_system, B)
 print("dimension", H.shape, " Hermitian:", np.allclose(H, H.conj().T))
 print("H equals H0 - B.mu:", np.allclose(H, H0 - B[2] * muz))
-print("the components add up to H0:", np.allclose(H0, es.ham_zf(spin_system) + es.ham_hf(spin_system) + es.ham_nq(spin_system)))
+print(
+    "the components add up to H0:",
+    np.allclose(H0, es.ham_zf(spin_system) + es.ham_hf(spin_system) + es.ham_nq(spin_system)),
+)
 H0_again, muzL = es.ham(spin_system, [120, -45, 300], split=True)
-print("along a tilted field, H = H0 - |B| muzL:", np.allclose(es.ham(spin_system, [120, -45, 300]), H0_again - np.linalg.norm([120, -45, 300]) * muzL))
+print(
+    "along a tilted field, H = H0 - |B| muzL:",
+    np.allclose(es.ham(spin_system, [120, -45, 300]), H0_again - np.linalg.norm([120, -45, 300]) * muzL),
+)
 ```
 
 Tensor frames work as in EasySpin: `AFrame` are the Euler angles of the A
@@ -175,7 +188,13 @@ E_mn = es.levels(mn, "z", fields)  # (301, 36)
 fig = go.Figure()
 for k in range(E_mn.shape[1]):
     fig.add_trace(go.Scatter(x=fields, y=E_mn[:, k], mode="lines", line={"width": 1}, showlegend=False))
-fig.update_layout(title="Mn(II), S = 5/2 with 55Mn: energy levels along z", xaxis_title="B / mT", yaxis_title="E / MHz", width=700, height=450)
+fig.update_layout(
+    title="Mn(II), S = 5/2 with 55Mn: energy levels along z",
+    xaxis_title="B / mT",
+    yaxis_title="E / MHz",
+    width=700,
+    height=450,
+)
 fig
 ```
 
@@ -297,7 +316,13 @@ sticks = np.zeros(B.size)
 sticks[[400, 1000, 1600]] = [1, 2, 1]
 spectrum = es.convspec(sticks, B[1] - B[0], 0.8, 1, 0.5)  # first-derivative pseudo-Voigt lines
 print("areas:", (absorption.sum() * (B[1] - B[0])).round(6), " derivative sums to", derivative.sum().round(9))
-print("convolved spectrum has", spectrum.size, "points and extrema at", B[[spectrum.argmax(), spectrum.argmin()]].round(2), "mT")
+print(
+    "convolved spectrum has",
+    spectrum.size,
+    "points and extrema at",
+    B[[spectrum.argmax(), spectrum.argmin()]].round(2),
+    "mT",
+)
 ```
 
 Powder spectra integrate over orientations on `sphgrid`, EasySpin's SOPHE
@@ -308,7 +333,13 @@ whole sphere, `'Dinfh'` for a quarter meridian), with weights summing to
 
 ```python
 grid = es.sphgrid("D2h", 19, triangulate=True)
-print(grid.n, "knots,", grid.tri_idx.shape[0], "triangles; weights sum to 4 pi:", (grid.weights.sum() / (4 * np.pi)).round(12))
+print(
+    grid.n,
+    "knots,",
+    grid.tri_idx.shape[0],
+    "triangles; weights sum to 4 pi:",
+    (grid.weights.sum() / (4 * np.pi)).round(12),
+)
 print("first knots (phi, theta):", np.column_stack([grid.phi, grid.theta])[:4].round(4).tolist())
 ```
 

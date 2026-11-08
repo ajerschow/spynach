@@ -84,7 +84,9 @@ wanted = [(0, -1, 1, 0, 1, -1, 0, -1), (0, 1, -1, 0, -1, 1, 0, -1)]
 result = simulate(ste, cycle, wanted=wanted)
 print(f"{result.n_enumerated} pathways enumerated, {len(result)} above threshold")
 for row in result.table()[:4]:
-    print(row["pathway"], f"total {row['total']:.4f}  pc {row['pc']:.4f}  grad {row['grad']:.4f}  diff {row['diff']:.4f}")
+    print(
+        row["pathway"], f"total {row['total']:.4f}  pc {row['pc']:.4f}  grad {row['grad']:.4f}  diff {row['diff']:.4f}"
+    )
 ```
 
 The two wanted pathways carry `pc = 1`, `grad = 1` and `diff = 0.515`, the
@@ -185,7 +187,9 @@ print("HCL construction:", hcl_cycle([3, 1], [3, 3]).cog_string())
 found = find_cycle(mqmas, [(0, 3, 1, -1)])
 print("smallest cycle:", found.best.cog_string(), "after scanning N =", found.scanned[0], "..", found.scanned[-1])
 every = find_cycle(mqmas, [(0, 3, 1, -1)], N_min=23, N_max=23, all_solutions=True)
-print(len(every.solutions), "representative(s) at N = 23: the 22 cycles of Levitt 2002 are one orbit under unit multiples")
+print(
+    len(every.solutions), "representative(s) at N = 23: the 22 cycles of Levitt 2002 are one orbit under unit multiples"
+)
 ```
 
 The selection diagram of Levitt, Madhu and Hughes shows why: the running phase
@@ -248,9 +252,7 @@ first INEPT, carbon ±1 during the evolution, and proton −1 at detection:
 C = Nucleus("13C")
 kinds = ["90", "180", "180", "90", "90", "90", "90", "180", "180"]
 nuclei = ["1H", "1H", "13C", "1H", "13C", "13C", "1H", "1H", "13C"]
-pulses = tuple(
-    Pulse(n, "perfect_180" if k == "180" else "free", label=f"{n} {k}") for n, k in zip(nuclei, kinds)
-)
+pulses = tuple(Pulse(n, "perfect_180" if k == "180" else "free", label=f"{n} {k}") for n, k in zip(nuclei, kinds))
 hsqc = Sequence(
     nuclei=(H, C),
     pulses=pulses,
