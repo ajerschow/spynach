@@ -480,8 +480,8 @@ treatment is needed once couplings are comparable to the damping rate.
 ## In the browser
 
 The playground runs the doublet of the previous section with the shift
-difference, the coupling, the damping rate, the probe phase and the tilt
-in its parameter form
+difference, the coupling, the damping rate, the probe phase, the tilt and
+the line broadening in its parameter form
 ([`try.html#ex-rd`](https://ajerschow.github.io/spynach/try.html#ex-rd)),
 and shows the proton spectrum with and without radiation damping next to
 the return of the longitudinal magnetisation.
