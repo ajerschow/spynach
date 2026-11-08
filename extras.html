@@ -70,6 +70,14 @@
   </div>
 </section>
 
+<section id="radiation-damping">
+  <header><span class="eyebrow">Probe feedback</span><h2>Radiation damping</h2></header>
+  <div>
+    <p><code>spynach.radiation_damping</code> puts the feedback of the probe into the Liouvillian of any spin system: the transverse magnetisation of the tuned isotope sets a field that rotates the magnetisation back towards equilibrium, so the generator depends on the state and <code>iserstep</code>, a port of Spinach's Lie-group and Runge-Kutta-Munthe-Kaas integrators, propagates it. The damping rate and the tuning phase are the inputs (<code>rd_rate</code> and <code>rd_phase</code> convert Q, filling factor, concentration and detuning); an inhomogeneous line is an ensemble of isochromats sharing the coil.</p>
+    <p>The <a href="https://github.com/ajerschow/spynach/blob/main/docs/radiation-damping.md">guide</a> checks the integrator against Spinach's <code>product_quadratures_2</code> example and the feedback against the Bloembergen-Pound closed form, shows the frequency pulling of a detuned probe, the slower return of a broad line, and a strongly coupled pair where the line-by-line classical picture fails. <a href="try.html#ex-rd">Try the doublet in the browser</a>.</p>
+  </div>
+</section>
+
 <section id="relaxation">
   <header><span class="eyebrow">Relaxation</span><h2>Relaxation pathways by mechanism</h2></header>
   <div>

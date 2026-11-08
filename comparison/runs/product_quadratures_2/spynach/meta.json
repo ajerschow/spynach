@@ -1,0 +1,27 @@
+{
+  "side": "spynach",
+  "case": "product_quadratures_2",
+  "created_utc": "2026-11-08T14:35:01Z",
+  "spynach_root": "/Users/alexej/Documents/PROG/spynach",
+  "spynach_commit": "e4be22e92a8a3bf38e7332daf1d7fafc7e9f7baa",
+  "spynach_describe": "v0.5.0-7-ge4be22e-dirty",
+  "spynach_dirty": true,
+  "spynach_version": "0.5.0",
+  "python_version": "3.12.5",
+  "numpy_version": "2.5.4",
+  "scipy_version": "1.18.1",
+  "numba_version": "0.68.1",
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "hostname": "MacBook-Pro-8",
+  "cores": 12,
+  "blas": {
+    "numpy": "accelerate",
+    "scipy": "Accelerate"
+  },
+  "thread_env": {
+    "OPENBLAS_NUM_THREADS": "4"
+  },
+  "gpu": false,
+  "gpu_device": "",
+  "options": {}
+}

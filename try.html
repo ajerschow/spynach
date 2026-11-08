@@ -475,6 +475,54 @@ print(f"{spin_system.basis.nstates} Liouville states, FID {fid.shape}, spectrum 
 show_image(spectrum.real.T, axis, axis, title=f"COSY-{angle:g}", xlabel="F2: " + xlabel, ylabel="F1: " + xlabel)
 </script>
 
+<script type="text/plain" class="example" id="ex-rd" data-group="NMR (spynach)" data-title="Radiation damping of a coupled pair">
+import numpy as np
+import spynach
+from spynach.propagation import iserstep
+
+# --- Spin system: two strongly coupled protons ---
+magnet = 14.1  # GUI: Magnet field | T | Field of the magnet; 14.1 T is a 600 MHz spectrometer | 1..28
+dnu = 12.0  # GUI: Shift difference | Hz | Chemical shift difference of the two protons; comparable to J makes an AB pair | 0..100
+J = 10.0  # GUI: J coupling | Hz | Scalar coupling between the two protons | 0..30
+
+# --- Probe: radiation damping ---
+rate = 60.0  # GUI: Damping rate | 1/s | Radiation damping rate 1/T_rd at the equilibrium magnetisation; 0 switches the probe feedback off | 0..300
+phase = 0.0  # GUI: Probe phase | rad | Tuning phase of the probe; 0 is tuned, a detuned probe damps less and pulls the lines | -1.5..1.5
+tilt = 170.0  # GUI: Flip angle | degrees | Pulse that starts the evolution; near 180 the inverted magnetisation returns through the maser-like swing | 0..180
+duration = 0.1  # GUI: Duration | s | Length of the recorded free induction decay | 0.02..0.5
+
+spin_system = spynach.create(
+    {"isotopes": ["1H", "1H"], "magnet": magnet},
+    {"zeeman": {"scalar": [4.70, 4.70 + dnu / (42.577478 * magnet)]}, "coupling": {"scalar": [[0, J], [0, 0]]}},
+)
+spin_system = spynach.assume(spynach.basis(spin_system, {"formalism": "sphten-liouv", "approximation": "none"}), "nmr")
+# The carrier sits between the two protons; the 1H frequency is 42.577 MHz per tesla
+H = spynach.frqoffset(spin_system, spynach.hamiltonian(spin_system), {"spins": ["1H"], "offset": [4.70 * 42.577478 * magnet + dnu / 2]})
+rho0 = spynach.step(spin_system, spynach.operator(spin_system, "Ly", "1H"), spynach.state(spin_system, "Lz", "1H"), np.radians(tilt))
+
+# The probe feedback makes the generator depend on the state; iserstep integrates it
+rd = spynach.radiation_damping(spin_system, H, "1H", rate, phase=phase)
+dt = 1e-4
+nsteps = int(round(duration / dt))
+traces = np.zeros((nsteps, 3))
+rho = rho0
+for n in range(nsteps):
+    rho = iserstep(spin_system, rd, n * dt, "LG4", rho, dt)
+    traces[n] = rd.magnetisation(rho)
+fid_damped = traces[:, 0] + 1j * traces[:, 1]
+
+# The same decay without the probe feedback, for comparison
+coil = spynach.state(spin_system, "L-", "1H")  # <L-|rho> = <I+>, the same quantity as above
+fid_free = spynach.evolution(spin_system, H, rho0, dt, nsteps - 1, "observable", coil=coil) / rd.mz_eq
+
+zerofill = 8 * nsteps
+freqs = np.fft.fftshift(np.fft.fftfreq(zerofill, dt))
+spectra = [np.abs(np.fft.fftshift(np.fft.fft(f, zerofill))) for f in (fid_damped, fid_free)]
+print(f"m_z after {duration * 1e3:.0f} ms: {traces[-1, 2]:+.3f} with the probe, {np.cos(np.radians(tilt)):+.3f} without")
+show_spectrum(spectra, freqs, names=["with radiation damping", "without"], title=f"Two protons {dnu:g} Hz apart, J = {J:g} Hz, 1/T_rd = {rate:g} s⁻¹", xlabel="offset from the carrier / Hz")
+show_fid(traces[:, 2], 1 / dt, title="Longitudinal magnetisation m_z(t) / equilibrium")
+</script>
+
 <script type="text/plain" class="example" id="ex-epr-pepper" data-group="EPR (EasySpyn)" data-title="Nitroxide powder spectrum (pepper)">
 import numpy as np
 import easyspyn as es

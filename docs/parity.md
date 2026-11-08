@@ -28,7 +28,7 @@ kind of quantity, not the case:
   above gives about 1e-10 x acquisition time in an FID.
 
 The tables below give, for every comparison the suite makes, the tolerance it
-uses and the difference it measured on 2026-10-18. Any relative tolerance that is
+uses and the difference it measured on 2026-11-08. Any relative tolerance that is
 hundreds of times larger than the measured difference is margin for other
 machines, not slack in the port. For checking your own results against a
 Spinach run, see [Checking your own workflow against
@@ -36,18 +36,19 @@ Spinach](coming-from-spinach.md#checking-your-own-workflow-against-spinach).
 
 ## Summary
 
-540 tests, of which 323 are fixture comparisons over 45 fixture cases.
+1232 tests, of which 331 are fixture comparisons over 46 fixture cases.
 
 | family | fixture cases | tests | comparisons | largest measured difference (at tolerance) |
 |---|---|---|---|---|
 | Liouville-space setup | 12 | 132 | 1896 | 5.4e-15 (1e-12), 2.0e-16 (1e-14); exact |
-| Liouville-space propagation | 9 | 54 | 108 | 4.6e-13 (1e-09), 9.0e-15 (1e-12), 0.0e+00 (1e-14) |
-| Hilbert-space pulse-acquire | 4 | 64 | 195 | 8.3e-11 (1e-09), 4.0e-15 (1e-10), 3.1e-16 (1e-11), 6.6e-15 (1e-12), 3.6e-15 (1e-13), 4.4e-16 (1e-14) |
-| anisotropic interactions | 5 | 25 | 247 | 7.5e-14 (1e-09), 8.1e-15 (1e-12), 1.1e-16 (1e-13), 4.6e-16 (1e-14) |
-| relaxation | 5 | 20 | 50 | 3.8e-15 (1e-09), 0.0e+00 (1e-12) |
-| scalar relaxation | 3 | 9 | 17 | 6.8e-14 (1e-09), 5.2e-17 (1e-12) |
-| magic angle spinning | 4 | 16 | 24 | 5.1e-14 (1e-09), 0.0e+00 (1e-12), 3.6e-17 (1e-14) |
+| Liouville-space propagation | 9 | 54 | 108 | 4.6e-13 (1e-09), 9.2e-15 (1e-12), 0.0e+00 (1e-14) |
+| Hilbert-space pulse-acquire | 4 | 64 | 195 | 8.3e-11 (1e-09), 1.6e-16 (1e-10), 2.7e-16 (1e-11), 6.6e-15 (1e-12), 3.6e-15 (1e-13), 4.4e-16 (1e-14) |
+| anisotropic interactions | 5 | 25 | 247 | 7.6e-14 (1e-09), 8.1e-15 (1e-12), 7.7e-17 (1e-13), 3.7e-16 (1e-14) |
+| relaxation | 5 | 20 | 50 | 7.3e-15 (1e-09), 0.0e+00 (1e-12) |
+| scalar relaxation | 3 | 9 | 17 | 6.8e-14 (1e-09), 2.1e-17 (1e-12) |
+| magic angle spinning | 4 | 16 | 24 | 5.5e-14 (1e-09), 0.0e+00 (1e-12), 0.0e+00 (1e-14) |
 | pulse sequences | 3 | 3 | 26 | 1.0e-13 (1e-09), 1.5e-16 (1e-12), 5.6e-17 (1e-14) |
+| state-dependent integrator | 1 | 8 | 31 | 4.3e-14 (1e-10), 1.3e-15 (1e-12); exact |
 
 ## Every comparison
 
@@ -890,9 +891,9 @@ Relative difference `||actual - expected|| / ||expected||`; `0` is bit-exact. On
 | `liouv_styrene_ik0_2` | `test_filters` | `` | 277 | 0 | 0 | 0.0e+00 |
 | `liouv_styrene_ik0_2` | `test_hamiltonian` | `` | 277x277 | 1e-12 | 0 | 0.0e+00 |
 | `liouv_styrene_ik0_2` | `test_hamiltonian` | `` | 277x277 | 1e-12 | 0 | 0.0e+00 |
-| `liouv_styrene_ik0_2` | `test_hamiltonian` | `H` | 277x277 | 1e-12 | 0 | 6.5e-16 |
+| `liouv_styrene_ik0_2` | `test_hamiltonian` | `H` | 277x277 | 1e-12 | 0 | 0.0e+00 |
 | `liouv_styrene_ik0_2` | `test_hamiltonian` | `H_left` | 277x277 | 1e-12 | 0 | 0.0e+00 |
-| `liouv_styrene_ik0_2` | `test_hamiltonian` | `H_off` | 277x277 | 1e-12 | 0 | 1.8e-15 |
+| `liouv_styrene_ik0_2` | `test_hamiltonian` | `H_off` | 277x277 | 1e-12 | 0 | 0.0e+00 |
 | `liouv_styrene_ik0_2` | `test_hamiltonian` | `H_right` | 277x277 | 1e-12 | 0 | 0.0e+00 |
 | `liouv_styrene_ik0_2` | `test_kinetics` | `K` | 277x277 | 0 | 0 | 0.0e+00 |
 | `liouv_styrene_ik0_2` | `test_product_tables` | `lpst_2` | 4x4x4 | 0 | 0 | 0.0e+00 |
@@ -910,9 +911,9 @@ Relative difference `||actual - expected|| / ||expected||`; `0` is bit-exact. On
 | `liouv_styrene_ik0_4` | `test_filters` | `` | 7459 | 0 | 0 | 0.0e+00 |
 | `liouv_styrene_ik0_4` | `test_hamiltonian` | `` | 7459x7459 | 1e-12 | 0 | 0.0e+00 |
 | `liouv_styrene_ik0_4` | `test_hamiltonian` | `` | 7459x7459 | 1e-12 | 0 | 0.0e+00 |
-| `liouv_styrene_ik0_4` | `test_hamiltonian` | `H` | 7459x7459 | 1e-12 | 0 | 3.9e-16 |
-| `liouv_styrene_ik0_4` | `test_hamiltonian` | `H_left` | 7459x7459 | 1e-12 | 0 | 6.2e-16 |
-| `liouv_styrene_ik0_4` | `test_hamiltonian` | `H_off` | 7459x7459 | 1e-12 | 0 | 1.1e-15 |
+| `liouv_styrene_ik0_4` | `test_hamiltonian` | `H` | 7459x7459 | 1e-12 | 0 | 3.3e-16 |
+| `liouv_styrene_ik0_4` | `test_hamiltonian` | `H_left` | 7459x7459 | 1e-12 | 0 | 5.8e-16 |
+| `liouv_styrene_ik0_4` | `test_hamiltonian` | `H_off` | 7459x7459 | 1e-12 | 0 | 9.1e-16 |
 | `liouv_styrene_ik0_4` | `test_hamiltonian` | `H_right` | 7459x7459 | 1e-12 | 0 | 5.8e-16 |
 | `liouv_styrene_ik0_4` | `test_kinetics` | `K` | 7459x7459 | 0 | 0 | 0.0e+00 |
 | `liouv_styrene_ik0_4` | `test_product_tables` | `lpst_2` | 4x4x4 | 0 | 0 | 0.0e+00 |
@@ -930,10 +931,10 @@ Relative difference `||actual - expected|| / ||expected||`; `0` is bit-exact. On
 | `liouv_styrene_ik1` | `test_filters` | `` | 1789 | 0 | 0 | 0.0e+00 |
 | `liouv_styrene_ik1` | `test_hamiltonian` | `` | 1789x1789 | 1e-12 | 0 | 0.0e+00 |
 | `liouv_styrene_ik1` | `test_hamiltonian` | `` | 1789x1789 | 1e-12 | 0 | 0.0e+00 |
-| `liouv_styrene_ik1` | `test_hamiltonian` | `H` | 1789x1789 | 1e-12 | 0 | 3.9e-16 |
-| `liouv_styrene_ik1` | `test_hamiltonian` | `H_left` | 1789x1789 | 1e-12 | 0 | 4.6e-16 |
-| `liouv_styrene_ik1` | `test_hamiltonian` | `H_off` | 1789x1789 | 1e-12 | 0 | 1.1e-15 |
-| `liouv_styrene_ik1` | `test_hamiltonian` | `H_right` | 1789x1789 | 1e-12 | 0 | 5.9e-16 |
+| `liouv_styrene_ik1` | `test_hamiltonian` | `H` | 1789x1789 | 1e-12 | 0 | 2.1e-16 |
+| `liouv_styrene_ik1` | `test_hamiltonian` | `H_left` | 1789x1789 | 1e-12 | 0 | 4.2e-16 |
+| `liouv_styrene_ik1` | `test_hamiltonian` | `H_off` | 1789x1789 | 1e-12 | 0 | 5.8e-16 |
+| `liouv_styrene_ik1` | `test_hamiltonian` | `H_right` | 1789x1789 | 1e-12 | 0 | 2.9e-16 |
 | `liouv_styrene_ik1` | `test_kinetics` | `K` | 1789x1789 | 0 | 0 | 0.0e+00 |
 | `liouv_styrene_ik1` | `test_product_tables` | `lpst_2` | 4x4x4 | 0 | 0 | 0.0e+00 |
 | `liouv_styrene_ik1` | `test_product_tables` | `rpst_2` | 4x4x4 | 0 | 0 | 0.0e+00 |
@@ -950,9 +951,9 @@ Relative difference `||actual - expected|| / ||expected||`; `0` is bit-exact. On
 | `liouv_styrene_ik2_proj` | `test_filters` | `` | 11441 | 0 | 0 | 0.0e+00 |
 | `liouv_styrene_ik2_proj` | `test_hamiltonian` | `` | 11441x11441 | 1e-12 | 0 | 0.0e+00 |
 | `liouv_styrene_ik2_proj` | `test_hamiltonian` | `` | 11441x11441 | 1e-12 | 0 | 0.0e+00 |
-| `liouv_styrene_ik2_proj` | `test_hamiltonian` | `H` | 11441x11441 | 1e-12 | 0 | 7.8e-16 |
-| `liouv_styrene_ik2_proj` | `test_hamiltonian` | `H_left` | 11441x11441 | 1e-12 | 0 | 5.1e-16 |
-| `liouv_styrene_ik2_proj` | `test_hamiltonian` | `H_off` | 11441x11441 | 1e-12 | 0 | 1.9e-15 |
+| `liouv_styrene_ik2_proj` | `test_hamiltonian` | `H` | 11441x11441 | 1e-12 | 0 | 8.7e-16 |
+| `liouv_styrene_ik2_proj` | `test_hamiltonian` | `H_left` | 11441x11441 | 1e-12 | 0 | 5.9e-16 |
+| `liouv_styrene_ik2_proj` | `test_hamiltonian` | `H_off` | 11441x11441 | 1e-12 | 0 | 2.1e-15 |
 | `liouv_styrene_ik2_proj` | `test_hamiltonian` | `H_right` | 11441x11441 | 1e-12 | 0 | 1.0e-15 |
 | `liouv_styrene_ik2_proj` | `test_kinetics` | `K` | 11441x11441 | 0 | 0 | 0.0e+00 |
 | `liouv_styrene_ik2_proj` | `test_product_tables` | `lpst_2` | 4x4x4 | 0 | 0 | 0.0e+00 |
@@ -1960,67 +1961,67 @@ Relative difference `||actual - expected|| / ||expected||`; `0` is bit-exact. On
 
 | case | test | quantity | shape | rtol | atol | measured |
 |---|---|---|---|---|---|---|
-| `liouv_pa_ab` | `test_evolution_outputs` | `final` | 16 | 1e-09 | 0 | 2.5e-14 |
-| `liouv_pa_ab` | `test_evolution_outputs` | `observable` | 256 | 1e-09 | 0 | 5.6e-14 |
-| `liouv_pa_ab` | `test_evolution_outputs` | `trajectory` | 16x32 | 1e-09 | 0 | 7.2e-15 |
+| `liouv_pa_ab` | `test_evolution_outputs` | `final` | 16 | 1e-09 | 0 | 2.7e-14 |
+| `liouv_pa_ab` | `test_evolution_outputs` | `observable` | 256 | 1e-09 | 0 | 5.3e-14 |
+| `liouv_pa_ab` | `test_evolution_outputs` | `trajectory` | 16x32 | 1e-09 | 0 | 6.8e-15 |
 | `liouv_pa_ab` | `test_liouvillian_and_states` | `` | 16 | 1e-14 | 0 | 0.0e+00 |
 | `liouv_pa_ab` | `test_liouvillian_and_states` | `` | 16 | 1e-14 | 0 | 0.0e+00 |
 | `liouv_pa_ab` | `test_liouvillian_and_states` | `L` | 16x16 | 1e-12 | 0 | 0.0e+00 |
-| `liouv_pa_ab` | `test_liquid_acquire_end_to_end` | `fid liquid` | 256 | 1e-09 | 0 | 5.6e-14 |
-| `liouv_pa_ab` | `test_liquid_acquire_end_to_end` | `spectrum` | 1024 | 1e-09 | 0 | 5.6e-14 |
-| `liouv_pa_ab` | `test_propagator_and_step` | `` | 16 | 1e-12 | 0 | 7.9e-17 |
+| `liouv_pa_ab` | `test_liquid_acquire_end_to_end` | `fid liquid` | 256 | 1e-09 | 0 | 5.3e-14 |
+| `liouv_pa_ab` | `test_liquid_acquire_end_to_end` | `spectrum` | 1024 | 1e-09 | 0 | 5.3e-14 |
+| `liouv_pa_ab` | `test_propagator_and_step` | `` | 16 | 1e-12 | 0 | 1.5e-16 |
 | `liouv_pa_ab` | `test_propagator_and_step` | `` | 16x2 | 1e-12 | 0 | 1.7e-18 |
-| `liouv_pa_ab` | `test_propagator_and_step` | `P` | 16x16 | 1e-12 | 0 | 6.6e-16 |
-| `liouv_pa_ab` | `test_propagator_and_step` | `step` | 16 | 1e-12 | 0 | 1.7e-18 |
-| `liouv_pa_chain12_ik2` | `test_evolution_outputs` | `final` | 496 | 1e-09 | 0 | 3.3e-13 |
-| `liouv_pa_chain12_ik2` | `test_evolution_outputs` | `observable` | 512 | 1e-09 | 0 | 4.0e-13 |
+| `liouv_pa_ab` | `test_propagator_and_step` | `P` | 16x16 | 1e-12 | 0 | 6.8e-16 |
+| `liouv_pa_ab` | `test_propagator_and_step` | `step` | 16 | 1e-12 | 0 | 0.0e+00 |
+| `liouv_pa_chain12_ik2` | `test_evolution_outputs` | `final` | 496 | 1e-09 | 0 | 3.4e-13 |
+| `liouv_pa_chain12_ik2` | `test_evolution_outputs` | `observable` | 512 | 1e-09 | 0 | 4.1e-13 |
 | `liouv_pa_chain12_ik2` | `test_evolution_outputs` | `trajectory` | 496x32 | 1e-09 | 0 | 2.5e-14 |
 | `liouv_pa_chain12_ik2` | `test_liouvillian_and_states` | `` | 496 | 1e-14 | 0 | 0.0e+00 |
 | `liouv_pa_chain12_ik2` | `test_liouvillian_and_states` | `` | 496 | 1e-14 | 0 | 0.0e+00 |
 | `liouv_pa_chain12_ik2` | `test_liouvillian_and_states` | `L` | 496x496 | 1e-12 | 0 | 0.0e+00 |
-| `liouv_pa_chain12_ik2` | `test_liquid_acquire_end_to_end` | `fid liquid` | 512 | 1e-09 | 0 | 4.0e-13 |
-| `liouv_pa_chain12_ik2` | `test_liquid_acquire_end_to_end` | `spectrum` | 2048 | 1e-09 | 0 | 4.0e-13 |
+| `liouv_pa_chain12_ik2` | `test_liquid_acquire_end_to_end` | `fid liquid` | 512 | 1e-09 | 0 | 4.1e-13 |
+| `liouv_pa_chain12_ik2` | `test_liquid_acquire_end_to_end` | `spectrum` | 2048 | 1e-09 | 0 | 4.1e-13 |
 | `liouv_pa_chain12_ik2` | `test_propagator_and_step` | `` | 496 | 1e-12 | 0 | 0.0e+00 |
 | `liouv_pa_chain12_ik2` | `test_propagator_and_step` | `` | 496x2 | 1e-12 | 0 | 0.0e+00 |
 | `liouv_pa_chain12_ik2` | `test_propagator_and_step` | `P` | 496x496 | 1e-12 | 0 | 0.0e+00 |
 | `liouv_pa_chain12_ik2` | `test_propagator_and_step` | `step` | 496 | 1e-12 | 0 | 0.0e+00 |
 | `liouv_pa_exch_asym` | `test_evolution_outputs` | `final` | 7 | 1e-09 | 0 | 0.0e+00 |
-| `liouv_pa_exch_asym` | `test_evolution_outputs` | `observable` | 512 | 1e-09 | 0 | 1.2e-15 |
-| `liouv_pa_exch_asym` | `test_evolution_outputs` | `trajectory` | 7x32 | 1e-09 | 0 | 1.2e-15 |
+| `liouv_pa_exch_asym` | `test_evolution_outputs` | `observable` | 512 | 1e-09 | 0 | 4.6e-16 |
+| `liouv_pa_exch_asym` | `test_evolution_outputs` | `trajectory` | 7x32 | 1e-09 | 0 | 4.7e-16 |
 | `liouv_pa_exch_asym` | `test_liouvillian_and_states` | `` | 7 | 1e-14 | 0 | 0.0e+00 |
 | `liouv_pa_exch_asym` | `test_liouvillian_and_states` | `` | 7 | 1e-14 | 0 | 0.0e+00 |
 | `liouv_pa_exch_asym` | `test_liouvillian_and_states` | `L` | 7x7 | 1e-12 | 0 | 0.0e+00 |
-| `liouv_pa_exch_asym` | `test_liquid_acquire_end_to_end` | `fid liquid` | 512 | 1e-09 | 0 | 1.2e-15 |
-| `liouv_pa_exch_asym` | `test_liquid_acquire_end_to_end` | `spectrum` | 1024 | 1e-09 | 0 | 1.2e-15 |
-| `liouv_pa_exch_asym` | `test_propagator_and_step` | `` | 7 | 1e-12 | 0 | 5.3e-16 |
-| `liouv_pa_exch_asym` | `test_propagator_and_step` | `` | 7x2 | 1e-12 | 0 | 2.0e-20 |
-| `liouv_pa_exch_asym` | `test_propagator_and_step` | `P` | 7x7 | 1e-12 | 0 | 2.0e-16 |
+| `liouv_pa_exch_asym` | `test_liquid_acquire_end_to_end` | `fid liquid` | 512 | 1e-09 | 0 | 4.6e-16 |
+| `liouv_pa_exch_asym` | `test_liquid_acquire_end_to_end` | `spectrum` | 1024 | 1e-09 | 0 | 5.1e-16 |
+| `liouv_pa_exch_asym` | `test_propagator_and_step` | `` | 7 | 1e-12 | 0 | 0.0e+00 |
+| `liouv_pa_exch_asym` | `test_propagator_and_step` | `` | 7x2 | 1e-12 | 0 | 0.0e+00 |
+| `liouv_pa_exch_asym` | `test_propagator_and_step` | `P` | 7x7 | 1e-12 | 0 | 2.1e-16 |
 | `liouv_pa_exch_asym` | `test_propagator_and_step` | `step` | 7 | 1e-12 | 0 | 0.0e+00 |
 | `liouv_pa_exch_sym` | `test_evolution_outputs` | `final` | 7 | 1e-09 | 0 | 0.0e+00 |
-| `liouv_pa_exch_sym` | `test_evolution_outputs` | `observable` | 512 | 1e-09 | 0 | 6.3e-17 |
-| `liouv_pa_exch_sym` | `test_evolution_outputs` | `trajectory` | 7x32 | 1e-09 | 0 | 7.4e-17 |
+| `liouv_pa_exch_sym` | `test_evolution_outputs` | `observable` | 512 | 1e-09 | 0 | 3.3e-16 |
+| `liouv_pa_exch_sym` | `test_evolution_outputs` | `trajectory` | 7x32 | 1e-09 | 0 | 4.1e-16 |
 | `liouv_pa_exch_sym` | `test_liouvillian_and_states` | `` | 7 | 1e-14 | 0 | 0.0e+00 |
 | `liouv_pa_exch_sym` | `test_liouvillian_and_states` | `` | 7 | 1e-14 | 0 | 0.0e+00 |
 | `liouv_pa_exch_sym` | `test_liouvillian_and_states` | `L` | 7x7 | 1e-12 | 0 | 0.0e+00 |
-| `liouv_pa_exch_sym` | `test_liquid_acquire_end_to_end` | `fid liquid` | 512 | 1e-09 | 0 | 6.3e-17 |
-| `liouv_pa_exch_sym` | `test_liquid_acquire_end_to_end` | `spectrum` | 1024 | 1e-09 | 0 | 1.6e-16 |
-| `liouv_pa_exch_sym` | `test_propagator_and_step` | `` | 7 | 1e-12 | 0 | 4.1e-16 |
-| `liouv_pa_exch_sym` | `test_propagator_and_step` | `` | 7x2 | 1e-12 | 0 | 6.7e-17 |
-| `liouv_pa_exch_sym` | `test_propagator_and_step` | `P` | 7x7 | 1e-12 | 0 | 3.5e-16 |
-| `liouv_pa_exch_sym` | `test_propagator_and_step` | `step` | 7 | 1e-12 | 0 | 6.7e-17 |
-| `liouv_pa_hc_pt` | `test_evolution_outputs` | `final` | 16 | 1e-09 | 0 | 7.1e-15 |
-| `liouv_pa_hc_pt` | `test_evolution_outputs` | `observable` | 256 | 1e-09 | 0 | 4.2e-14 |
-| `liouv_pa_hc_pt` | `test_evolution_outputs` | `trajectory` | 16x32 | 1e-09 | 0 | 5.1e-15 |
+| `liouv_pa_exch_sym` | `test_liquid_acquire_end_to_end` | `fid liquid` | 512 | 1e-09 | 0 | 3.3e-16 |
+| `liouv_pa_exch_sym` | `test_liquid_acquire_end_to_end` | `spectrum` | 1024 | 1e-09 | 0 | 3.8e-16 |
+| `liouv_pa_exch_sym` | `test_propagator_and_step` | `` | 7 | 1e-12 | 0 | 0.0e+00 |
+| `liouv_pa_exch_sym` | `test_propagator_and_step` | `` | 7x2 | 1e-12 | 0 | 0.0e+00 |
+| `liouv_pa_exch_sym` | `test_propagator_and_step` | `P` | 7x7 | 1e-12 | 0 | 3.4e-16 |
+| `liouv_pa_exch_sym` | `test_propagator_and_step` | `step` | 7 | 1e-12 | 0 | 0.0e+00 |
+| `liouv_pa_hc_pt` | `test_evolution_outputs` | `final` | 16 | 1e-09 | 0 | 6.1e-15 |
+| `liouv_pa_hc_pt` | `test_evolution_outputs` | `observable` | 256 | 1e-09 | 0 | 4.3e-14 |
+| `liouv_pa_hc_pt` | `test_evolution_outputs` | `trajectory` | 16x32 | 1e-09 | 0 | 5.5e-15 |
 | `liouv_pa_hc_pt` | `test_liouvillian_and_states` | `` | 16 | 1e-14 | 0 | 0.0e+00 |
 | `liouv_pa_hc_pt` | `test_liouvillian_and_states` | `` | 16 | 1e-14 | 0 | 0.0e+00 |
 | `liouv_pa_hc_pt` | `test_liouvillian_and_states` | `L` | 16x16 | 1e-12 | 0 | 0.0e+00 |
-| `liouv_pa_hc_pt` | `test_liquid_acquire_end_to_end` | `fid liquid` | 256 | 1e-09 | 0 | 4.2e-14 |
-| `liouv_pa_hc_pt` | `test_liquid_acquire_end_to_end` | `spectrum` | 1024 | 1e-09 | 0 | 4.2e-14 |
-| `liouv_pa_hc_pt` | `test_propagator_and_step` | `` | 16 | 1e-12 | 0 | 6.3e-16 |
+| `liouv_pa_hc_pt` | `test_liquid_acquire_end_to_end` | `fid liquid` | 256 | 1e-09 | 0 | 4.3e-14 |
+| `liouv_pa_hc_pt` | `test_liquid_acquire_end_to_end` | `spectrum` | 1024 | 1e-09 | 0 | 4.3e-14 |
+| `liouv_pa_hc_pt` | `test_propagator_and_step` | `` | 16 | 1e-12 | 0 | 0.0e+00 |
 | `liouv_pa_hc_pt` | `test_propagator_and_step` | `` | 16x2 | 1e-12 | 0 | 0.0e+00 |
-| `liouv_pa_hc_pt` | `test_propagator_and_step` | `P` | 16x16 | 1e-12 | 0 | 9.0e-15 |
+| `liouv_pa_hc_pt` | `test_propagator_and_step` | `P` | 16x16 | 1e-12 | 0 | 9.2e-15 |
 | `liouv_pa_hc_pt` | `test_propagator_and_step` | `step` | 16 | 1e-12 | 0 | 0.0e+00 |
-| `liouv_pa_hd` | `test_evolution_outputs` | `final` | 36 | 1e-09 | 0 | 9.7e-15 |
+| `liouv_pa_hd` | `test_evolution_outputs` | `final` | 36 | 1e-09 | 0 | 1.0e-14 |
 | `liouv_pa_hd` | `test_evolution_outputs` | `observable` | 256 | 1e-09 | 0 | 3.4e-14 |
 | `liouv_pa_hd` | `test_evolution_outputs` | `trajectory` | 36x32 | 1e-09 | 0 | 4.1e-15 |
 | `liouv_pa_hd` | `test_liouvillian_and_states` | `` | 36 | 1e-14 | 0 | 0.0e+00 |
@@ -2030,7 +2031,7 @@ Relative difference `||actual - expected|| / ||expected||`; `0` is bit-exact. On
 | `liouv_pa_hd` | `test_liquid_acquire_end_to_end` | `spectrum` | 1024 | 1e-09 | 0 | 3.4e-14 |
 | `liouv_pa_hd` | `test_propagator_and_step` | `` | 36 | 1e-12 | 0 | 1.8e-16 |
 | `liouv_pa_hd` | `test_propagator_and_step` | `` | 36x2 | 1e-12 | 0 | 0.0e+00 |
-| `liouv_pa_hd` | `test_propagator_and_step` | `P` | 36x36 | 1e-12 | 0 | 1.0e-15 |
+| `liouv_pa_hd` | `test_propagator_and_step` | `P` | 36x36 | 1e-12 | 0 | 9.3e-16 |
 | `liouv_pa_hd` | `test_propagator_and_step` | `step` | 36 | 1e-12 | 0 | 0.0e+00 |
 | `liouv_pa_inad_krylov` | `test_evolution_outputs` | `final` | 64 | 1e-09 | 0 | 1.0e-15 |
 | `liouv_pa_inad_krylov` | `test_evolution_outputs` | `observable` | 256 | 1e-09 | 0 | 2.9e-15 |
@@ -2040,30 +2041,30 @@ Relative difference `||actual - expected|| / ||expected||`; `0` is bit-exact. On
 | `liouv_pa_inad_krylov` | `test_liouvillian_and_states` | `L` | 64x64 | 1e-12 | 0 | 0.0e+00 |
 | `liouv_pa_inad_krylov` | `test_liquid_acquire_end_to_end` | `fid liquid` | 256 | 1e-09 | 0 | 2.9e-15 |
 | `liouv_pa_inad_krylov` | `test_liquid_acquire_end_to_end` | `spectrum` | 1024 | 1e-09 | 0 | 2.9e-15 |
-| `liouv_pa_inad_krylov` | `test_propagator_and_step` | `` | 64 | 1e-12 | 0 | 0.0e+00 |
+| `liouv_pa_inad_krylov` | `test_propagator_and_step` | `` | 64 | 1e-12 | 0 | 2.3e-17 |
 | `liouv_pa_inad_krylov` | `test_propagator_and_step` | `` | 64x2 | 1e-12 | 0 | 0.0e+00 |
 | `liouv_pa_inad_krylov` | `test_propagator_and_step` | `P` | 64x64 | 1e-12 | 0 | 1.1e-15 |
-| `liouv_pa_inad_krylov` | `test_propagator_and_step` | `step` | 64 | 1e-12 | 0 | 0.0e+00 |
+| `liouv_pa_inad_krylov` | `test_propagator_and_step` | `step` | 64 | 1e-12 | 0 | 1.7e-18 |
 | `liouv_pa_styrene_ik0_2` | `test_evolution_outputs` | `final` | 277 | 1e-09 | 0 | 4.6e-13 |
-| `liouv_pa_styrene_ik0_2` | `test_evolution_outputs` | `observable` | 512 | 1e-09 | 0 | 3.2e-13 |
-| `liouv_pa_styrene_ik0_2` | `test_evolution_outputs` | `trajectory` | 277x32 | 1e-09 | 0 | 2.8e-14 |
+| `liouv_pa_styrene_ik0_2` | `test_evolution_outputs` | `observable` | 512 | 1e-09 | 0 | 3.5e-13 |
+| `liouv_pa_styrene_ik0_2` | `test_evolution_outputs` | `trajectory` | 277x32 | 1e-09 | 0 | 3.1e-14 |
 | `liouv_pa_styrene_ik0_2` | `test_liouvillian_and_states` | `` | 277 | 1e-14 | 0 | 0.0e+00 |
 | `liouv_pa_styrene_ik0_2` | `test_liouvillian_and_states` | `` | 277 | 1e-14 | 0 | 0.0e+00 |
-| `liouv_pa_styrene_ik0_2` | `test_liouvillian_and_states` | `L` | 277x277 | 1e-12 | 0 | 1.8e-15 |
-| `liouv_pa_styrene_ik0_2` | `test_liquid_acquire_end_to_end` | `fid liquid` | 512 | 1e-09 | 0 | 3.2e-13 |
-| `liouv_pa_styrene_ik0_2` | `test_liquid_acquire_end_to_end` | `spectrum` | 2048 | 1e-09 | 0 | 3.2e-13 |
+| `liouv_pa_styrene_ik0_2` | `test_liouvillian_and_states` | `L` | 277x277 | 1e-12 | 0 | 0.0e+00 |
+| `liouv_pa_styrene_ik0_2` | `test_liquid_acquire_end_to_end` | `fid liquid` | 512 | 1e-09 | 0 | 3.5e-13 |
+| `liouv_pa_styrene_ik0_2` | `test_liquid_acquire_end_to_end` | `spectrum` | 2048 | 1e-09 | 0 | 3.5e-13 |
 | `liouv_pa_styrene_ik0_2` | `test_propagator_and_step` | `` | 277 | 1e-12 | 0 | 0.0e+00 |
 | `liouv_pa_styrene_ik0_2` | `test_propagator_and_step` | `` | 277x2 | 1e-12 | 0 | 0.0e+00 |
 | `liouv_pa_styrene_ik0_2` | `test_propagator_and_step` | `P` | 277x277 | 1e-12 | 0 | 0.0e+00 |
 | `liouv_pa_styrene_ik0_2` | `test_propagator_and_step` | `step` | 277 | 1e-12 | 0 | 0.0e+00 |
-| `liouv_pa_styrene_ik1` | `test_evolution_outputs` | `final` | 1789 | 1e-09 | 0 | 2.5e-15 |
-| `liouv_pa_styrene_ik1` | `test_evolution_outputs` | `observable` | 512 | 1e-09 | 0 | 1.1e-14 |
-| `liouv_pa_styrene_ik1` | `test_evolution_outputs` | `trajectory` | 1789x32 | 1e-09 | 0 | 2.8e-15 |
+| `liouv_pa_styrene_ik1` | `test_evolution_outputs` | `final` | 1789 | 1e-09 | 0 | 2.3e-15 |
+| `liouv_pa_styrene_ik1` | `test_evolution_outputs` | `observable` | 512 | 1e-09 | 0 | 1.0e-14 |
+| `liouv_pa_styrene_ik1` | `test_evolution_outputs` | `trajectory` | 1789x32 | 1e-09 | 0 | 2.6e-15 |
 | `liouv_pa_styrene_ik1` | `test_liouvillian_and_states` | `` | 1789 | 1e-14 | 0 | 0.0e+00 |
 | `liouv_pa_styrene_ik1` | `test_liouvillian_and_states` | `` | 1789 | 1e-14 | 0 | 0.0e+00 |
-| `liouv_pa_styrene_ik1` | `test_liouvillian_and_states` | `L` | 1789x1789 | 1e-12 | 0 | 1.2e-15 |
-| `liouv_pa_styrene_ik1` | `test_liquid_acquire_end_to_end` | `fid liquid` | 512 | 1e-09 | 0 | 1.1e-14 |
-| `liouv_pa_styrene_ik1` | `test_liquid_acquire_end_to_end` | `spectrum` | 2048 | 1e-09 | 0 | 1.1e-14 |
+| `liouv_pa_styrene_ik1` | `test_liouvillian_and_states` | `L` | 1789x1789 | 1e-12 | 0 | 5.6e-16 |
+| `liouv_pa_styrene_ik1` | `test_liquid_acquire_end_to_end` | `fid liquid` | 512 | 1e-09 | 0 | 1.0e-14 |
+| `liouv_pa_styrene_ik1` | `test_liquid_acquire_end_to_end` | `spectrum` | 2048 | 1e-09 | 0 | 1.0e-14 |
 | `liouv_pa_styrene_ik1` | `test_propagator_and_step` | `` | 1789 | 1e-12 | 0 | 0.0e+00 |
 | `liouv_pa_styrene_ik1` | `test_propagator_and_step` | `` | 1789x2 | 1e-12 | 0 | 0.0e+00 |
 | `liouv_pa_styrene_ik1` | `test_propagator_and_step` | `P` | 1789x1789 | 1e-12 | 0 | 0.0e+00 |
@@ -2075,12 +2076,12 @@ Relative difference `||actual - expected|| / ||expected||`; `0` is bit-exact. On
 
 | case | test | quantity | shape | rtol | atol | measured |
 |---|---|---|---|---|---|---|
-| `hilb_pa_ab_2spin` | `test_evolution` | `fid evolution` | 1024x1 | 1e-09 | 0 | 1.7e-13 |
+| `hilb_pa_ab_2spin` | `test_evolution` | `fid evolution` | 1024x1 | 1e-09 | 0 | 1.9e-13 |
 | `hilb_pa_ab_2spin` | `test_fids` | `fid evolution` | 1024x1 | 1e-10 | 0 | 0.0e+00 |
 | `hilb_pa_ab_2spin` | `test_fids` | `fid liquid` | 1024x1 | 1e-10 | 0 | 0.0e+00 |
-| `hilb_pa_ab_2spin` | `test_fids` | `fid recomputed` | 1024x1 | 1e-10 | 0 | 1.9e-15 |
+| `hilb_pa_ab_2spin` | `test_fids` | `fid recomputed` | 1024x1 | 1e-10 | 0 | 1.0e-16 |
 | `hilb_pa_ab_2spin` | `test_fids` | `rho0 = L+` | 4x4 | 1e-12 | 0 | 0.0e+00 |
-| `hilb_pa_ab_2spin` | `test_fids` | `spectrum` | 4096x1 | 1e-12 | 0 | 3.0e-16 |
+| `hilb_pa_ab_2spin` | `test_fids` | `spectrum` | 4096x1 | 1e-12 | 0 | 2.9e-16 |
 | `hilb_pa_ab_2spin` | `test_hamiltonian` | `H` | 4x4 | 1e-13 | 0 | 0.0e+00 |
 | `hilb_pa_ab_2spin` | `test_hamiltonian` | `H hermitian` | 4x4 | 1e-12 | 0 | 0.0e+00 |
 | `hilb_pa_ab_2spin` | `test_hamiltonian` | `H split` | 4x4 | 1e-12 | 1e-09 | 1.5e-16 |
@@ -2105,8 +2106,8 @@ Relative difference `||actual - expected|| / ||expected||`; `0` is bit-exact. On
 | `hilb_pa_ab_2spin` | `test_operators` | `Ly(1)` | 4x4 | 1e-14 | 0 | 2.2e-16 |
 | `hilb_pa_ab_2spin` | `test_operators` | `Lz(0)` | 4x4 | 1e-14 | 0 | 2.2e-16 |
 | `hilb_pa_ab_2spin` | `test_operators` | `Lz(1)` | 4x4 | 1e-14 | 0 | 2.2e-16 |
-| `hilb_pa_ab_2spin` | `test_propagator` | `P` | 4x4 | 1e-12 | 0 | 2.2e-16 |
-| `hilb_pa_ab_2spin` | `test_propagator` | `P = expm(-iH dt)` | 4x4 | 1e-11 | 0 | 2.2e-16 |
+| `hilb_pa_ab_2spin` | `test_propagator` | `P` | 4x4 | 1e-12 | 0 | 2.4e-16 |
+| `hilb_pa_ab_2spin` | `test_propagator` | `P = expm(-iH dt)` | 4x4 | 1e-11 | 0 | 2.4e-16 |
 | `hilb_pa_ab_2spin` | `test_propagator` | `P unitary` | 4x4 | 1e-12 | 1e-12 | 3.2e-16 |
 | `hilb_pa_ab_2spin` | `test_spin_operators` | `` | 4x4 | 1e-12 | 0 | 0.0e+00 |
 | `hilb_pa_ab_2spin` | `test_spin_operators` | `E spin 0` | 4x4 | 1e-12 | 0 | 0.0e+00 |
@@ -2121,10 +2122,10 @@ Relative difference `||actual - expected|| / ||expected||`; `0` is bit-exact. On
 | `hilb_pa_ab_2spin` | `test_spin_operators` | `[Lx,Ly]=iLz spin 1` | 4x4 | 1e-12 | 0 | 0.0e+00 |
 | `hilb_pa_ab_2spin` | `test_states` | `coil` | 4x4 | 1e-14 | 0 | 2.2e-16 |
 | `hilb_pa_ab_2spin` | `test_states` | `rho0` | 4x4 | 1e-14 | 0 | 2.2e-16 |
-| `hilb_pa_abx_3spin` | `test_evolution` | `fid evolution` | 2048x1 | 1e-09 | 0 | 5.5e-13 |
+| `hilb_pa_abx_3spin` | `test_evolution` | `fid evolution` | 2048x1 | 1e-09 | 0 | 4.2e-13 |
 | `hilb_pa_abx_3spin` | `test_fids` | `fid evolution` | 2048x1 | 1e-10 | 0 | 0.0e+00 |
 | `hilb_pa_abx_3spin` | `test_fids` | `fid liquid` | 2048x1 | 1e-10 | 0 | 0.0e+00 |
-| `hilb_pa_abx_3spin` | `test_fids` | `fid recomputed` | 2048x1 | 1e-10 | 0 | 4.0e-15 |
+| `hilb_pa_abx_3spin` | `test_fids` | `fid recomputed` | 2048x1 | 1e-10 | 0 | 1.6e-16 |
 | `hilb_pa_abx_3spin` | `test_fids` | `rho0 = L+` | 8x8 | 1e-12 | 0 | 0.0e+00 |
 | `hilb_pa_abx_3spin` | `test_fids` | `spectrum` | 8192x1 | 1e-12 | 0 | 3.4e-16 |
 | `hilb_pa_abx_3spin` | `test_hamiltonian` | `H` | 8x8 | 1e-13 | 0 | 0.0e+00 |
@@ -2134,8 +2135,8 @@ Relative difference `||actual - expected|| / ||expected||`; `0` is bit-exact. On
 | `hilb_pa_abx_3spin` | `test_hamiltonian` | `H_off` | 8x8 | 1e-12 | 1e-09 | 0.0e+00 |
 | `hilb_pa_abx_3spin` | `test_hamiltonian` | `H_off` | 8x8 | 1e-13 | 0 | 6.6e-16 |
 | `hilb_pa_abx_3spin` | `test_hamiltonian` | `H_zeeman` | 8x8 | 1e-13 | 0 | 0.0e+00 |
-| `hilb_pa_abx_3spin` | `test_liquid_acquire_end_to_end` | `fid liquid` | 2048x1 | 1e-09 | 0 | 1.7e-12 |
-| `hilb_pa_abx_3spin` | `test_liquid_acquire_end_to_end` | `spectrum` | 8192x1 | 1e-09 | 0 | 1.7e-12 |
+| `hilb_pa_abx_3spin` | `test_liquid_acquire_end_to_end` | `fid liquid` | 2048x1 | 1e-09 | 0 | 1.6e-12 |
+| `hilb_pa_abx_3spin` | `test_liquid_acquire_end_to_end` | `spectrum` | 8192x1 | 1e-09 | 0 | 1.6e-12 |
 | `hilb_pa_abx_3spin` | `test_operators` | `` | 8x8 | 1e-14 | 0 | 4.4e-16 |
 | `hilb_pa_abx_3spin` | `test_operators` | `` | 8x8 | 1e-14 | 0 | 2.8e-16 |
 | `hilb_pa_abx_3spin` | `test_operators` | `` | 8x8 | 1e-14 | 0 | 2.2e-16 |
@@ -2157,8 +2158,8 @@ Relative difference `||actual - expected|| / ||expected||`; `0` is bit-exact. On
 | `hilb_pa_abx_3spin` | `test_operators` | `Lz(0)` | 8x8 | 1e-14 | 0 | 2.2e-16 |
 | `hilb_pa_abx_3spin` | `test_operators` | `Lz(1)` | 8x8 | 1e-14 | 0 | 2.2e-16 |
 | `hilb_pa_abx_3spin` | `test_operators` | `Lz(2)` | 8x8 | 1e-14 | 0 | 2.2e-16 |
-| `hilb_pa_abx_3spin` | `test_propagator` | `P` | 8x8 | 1e-12 | 0 | 3.1e-16 |
-| `hilb_pa_abx_3spin` | `test_propagator` | `P = expm(-iH dt)` | 8x8 | 1e-11 | 0 | 3.1e-16 |
+| `hilb_pa_abx_3spin` | `test_propagator` | `P` | 8x8 | 1e-12 | 0 | 2.7e-16 |
+| `hilb_pa_abx_3spin` | `test_propagator` | `P = expm(-iH dt)` | 8x8 | 1e-11 | 0 | 2.7e-16 |
 | `hilb_pa_abx_3spin` | `test_propagator` | `P unitary` | 8x8 | 1e-12 | 1e-12 | 4.6e-16 |
 | `hilb_pa_abx_3spin` | `test_spin_operators` | `` | 8x8 | 1e-12 | 0 | 0.0e+00 |
 | `hilb_pa_abx_3spin` | `test_spin_operators` | `E spin 0` | 8x8 | 1e-12 | 0 | 0.0e+00 |
@@ -2178,10 +2179,10 @@ Relative difference `||actual - expected|| / ||expected||`; `0` is bit-exact. On
 | `hilb_pa_abx_3spin` | `test_spin_operators` | `[Lx,Ly]=iLz spin 2` | 8x8 | 1e-12 | 0 | 0.0e+00 |
 | `hilb_pa_abx_3spin` | `test_states` | `coil` | 8x8 | 1e-14 | 0 | 2.2e-16 |
 | `hilb_pa_abx_3spin` | `test_states` | `rho0` | 8x8 | 1e-14 | 0 | 2.2e-16 |
-| `hilb_pa_hc_2spin` | `test_evolution` | `fid evolution` | 1024x1 | 1e-09 | 0 | 2.3e-15 |
+| `hilb_pa_hc_2spin` | `test_evolution` | `fid evolution` | 1024x1 | 1e-09 | 0 | 4.7e-14 |
 | `hilb_pa_hc_2spin` | `test_fids` | `fid evolution` | 1024x1 | 1e-10 | 0 | 0.0e+00 |
 | `hilb_pa_hc_2spin` | `test_fids` | `fid liquid` | 1024x1 | 1e-10 | 0 | 0.0e+00 |
-| `hilb_pa_hc_2spin` | `test_fids` | `fid recomputed` | 1024x1 | 1e-10 | 0 | 2.3e-15 |
+| `hilb_pa_hc_2spin` | `test_fids` | `fid recomputed` | 1024x1 | 1e-10 | 0 | 0.0e+00 |
 | `hilb_pa_hc_2spin` | `test_fids` | `rho0 = L+` | 4x4 | 1e-12 | 0 | 0.0e+00 |
 | `hilb_pa_hc_2spin` | `test_fids` | `spectrum` | 4096x1 | 1e-12 | 0 | 3.1e-16 |
 | `hilb_pa_hc_2spin` | `test_hamiltonian` | `H` | 4x4 | 1e-13 | 0 | 3.5e-15 |
@@ -2208,9 +2209,9 @@ Relative difference `||actual - expected|| / ||expected||`; `0` is bit-exact. On
 | `hilb_pa_hc_2spin` | `test_operators` | `Ly(1)` | 4x4 | 1e-14 | 0 | 2.2e-16 |
 | `hilb_pa_hc_2spin` | `test_operators` | `Lz(0)` | 4x4 | 1e-14 | 0 | 2.2e-16 |
 | `hilb_pa_hc_2spin` | `test_operators` | `Lz(1)` | 4x4 | 1e-14 | 0 | 2.2e-16 |
-| `hilb_pa_hc_2spin` | `test_propagator` | `P` | 4x4 | 1e-12 | 0 | 0.0e+00 |
-| `hilb_pa_hc_2spin` | `test_propagator` | `P = expm(-iH dt)` | 4x4 | 1e-11 | 0 | 0.0e+00 |
-| `hilb_pa_hc_2spin` | `test_propagator` | `P unitary` | 4x4 | 1e-12 | 1e-12 | 1.1e-17 |
+| `hilb_pa_hc_2spin` | `test_propagator` | `P` | 4x4 | 1e-12 | 0 | 5.6e-17 |
+| `hilb_pa_hc_2spin` | `test_propagator` | `P = expm(-iH dt)` | 4x4 | 1e-11 | 0 | 5.6e-17 |
+| `hilb_pa_hc_2spin` | `test_propagator` | `P unitary` | 4x4 | 1e-12 | 1e-12 | 0.0e+00 |
 | `hilb_pa_hc_2spin` | `test_spin_operators` | `` | 4x4 | 1e-12 | 0 | 0.0e+00 |
 | `hilb_pa_hc_2spin` | `test_spin_operators` | `E spin 0` | 4x4 | 1e-12 | 0 | 0.0e+00 |
 | `hilb_pa_hc_2spin` | `test_spin_operators` | `E spin 1` | 4x4 | 1e-12 | 0 | 0.0e+00 |
@@ -2224,12 +2225,12 @@ Relative difference `||actual - expected|| / ||expected||`; `0` is bit-exact. On
 | `hilb_pa_hc_2spin` | `test_spin_operators` | `[Lx,Ly]=iLz spin 1` | 4x4 | 1e-12 | 0 | 0.0e+00 |
 | `hilb_pa_hc_2spin` | `test_states` | `coil` | 4x4 | 1e-14 | 0 | 2.2e-16 |
 | `hilb_pa_hc_2spin` | `test_states` | `rho0` | 4x4 | 1e-14 | 0 | 2.2e-16 |
-| `hilb_pa_hd_2spin` | `test_evolution` | `fid evolution` | 1024x1 | 1e-09 | 0 | 2.0e-15 |
+| `hilb_pa_hd_2spin` | `test_evolution` | `fid evolution` | 1024x1 | 1e-09 | 0 | 3.8e-14 |
 | `hilb_pa_hd_2spin` | `test_fids` | `fid evolution` | 1024x1 | 1e-10 | 0 | 0.0e+00 |
 | `hilb_pa_hd_2spin` | `test_fids` | `fid liquid` | 1024x1 | 1e-10 | 0 | 0.0e+00 |
-| `hilb_pa_hd_2spin` | `test_fids` | `fid recomputed` | 1024x1 | 1e-10 | 0 | 2.0e-15 |
+| `hilb_pa_hd_2spin` | `test_fids` | `fid recomputed` | 1024x1 | 1e-10 | 0 | 7.9e-17 |
 | `hilb_pa_hd_2spin` | `test_fids` | `rho0 = L+` | 6x6 | 1e-12 | 0 | 0.0e+00 |
-| `hilb_pa_hd_2spin` | `test_fids` | `spectrum` | 4096x1 | 1e-12 | 0 | 3.2e-16 |
+| `hilb_pa_hd_2spin` | `test_fids` | `spectrum` | 4096x1 | 1e-12 | 0 | 3.1e-16 |
 | `hilb_pa_hd_2spin` | `test_hamiltonian` | `H` | 6x6 | 1e-13 | 0 | 0.0e+00 |
 | `hilb_pa_hd_2spin` | `test_hamiltonian` | `H hermitian` | 6x6 | 1e-12 | 0 | 0.0e+00 |
 | `hilb_pa_hd_2spin` | `test_hamiltonian` | `H split` | 6x6 | 1e-12 | 1e-09 | 6.6e-15 |
@@ -2254,8 +2255,8 @@ Relative difference `||actual - expected|| / ||expected||`; `0` is bit-exact. On
 | `hilb_pa_hd_2spin` | `test_operators` | `Ly(1)` | 6x6 | 1e-14 | 0 | 1.6e-16 |
 | `hilb_pa_hd_2spin` | `test_operators` | `Lz(0)` | 6x6 | 1e-14 | 0 | 2.2e-16 |
 | `hilb_pa_hd_2spin` | `test_operators` | `Lz(1)` | 6x6 | 1e-14 | 0 | 2.2e-16 |
-| `hilb_pa_hd_2spin` | `test_propagator` | `P` | 6x6 | 1e-12 | 0 | 0.0e+00 |
-| `hilb_pa_hd_2spin` | `test_propagator` | `P = expm(-iH dt)` | 6x6 | 1e-11 | 0 | 0.0e+00 |
+| `hilb_pa_hd_2spin` | `test_propagator` | `P` | 6x6 | 1e-12 | 0 | 4.5e-17 |
+| `hilb_pa_hd_2spin` | `test_propagator` | `P = expm(-iH dt)` | 6x6 | 1e-11 | 0 | 4.5e-17 |
 | `hilb_pa_hd_2spin` | `test_propagator` | `P unitary` | 6x6 | 1e-12 | 1e-12 | 9.1e-17 |
 | `hilb_pa_hd_2spin` | `test_spin_operators` | `` | 6x6 | 1e-12 | 0 | 0.0e+00 |
 | `hilb_pa_hd_2spin` | `test_spin_operators` | `E spin 0` | 6x6 | 1e-12 | 0 | 0.0e+00 |
@@ -2278,10 +2279,10 @@ Relative difference `||actual - expected|| / ||expected||`; `0` is bit-exact. On
 | case | test | quantity | shape | rtol | atol | measured |
 |---|---|---|---|---|---|---|
 | `aniso_csa_pair` | `test_crystal_and_powder_fids` | `` | 5 | 1e-14 | 0 | 0.0e+00 |
-| `aniso_csa_pair` | `test_crystal_and_powder_fids` | `crystal` | 128 | 1e-09 | 0 | 7.1e-16 |
+| `aniso_csa_pair` | `test_crystal_and_powder_fids` | `crystal` | 128 | 1e-09 | 0 | 6.3e-17 |
 | `aniso_csa_pair` | `test_crystal_and_powder_fids` | `powder leb11` | 128 | 1e-09 | 0 | 1.9e-14 |
-| `aniso_csa_pair` | `test_crystal_and_powder_fids` | `powder rep100` | 128 | 1e-09 | 0 | 7.4e-16 |
-| `aniso_csa_pair` | `test_crystal_and_powder_fids` | `spectrum` | 512 | 1e-09 | 0 | 7.7e-16 |
+| `aniso_csa_pair` | `test_crystal_and_powder_fids` | `powder rep100` | 128 | 1e-09 | 0 | 8.4e-16 |
+| `aniso_csa_pair` | `test_crystal_and_powder_fids` | `spectrum` | 512 | 1e-09 | 0 | 8.7e-16 |
 | `aniso_csa_pair` | `test_hamiltonian_components` | `H orientation 1` | 5x5 | 1e-12 | 0 | 0.0e+00 |
 | `aniso_csa_pair` | `test_hamiltonian_components` | `H orientation 2` | 5x5 | 1e-12 | 0 | 0.0e+00 |
 | `aniso_csa_pair` | `test_hamiltonian_components` | `I` | 5x5 | 1e-12 | 0 | 0.0e+00 |
@@ -2321,13 +2322,13 @@ Relative difference `||actual - expected|| / ||expected||`; `0` is bit-exact. On
 | `aniso_csa_pair` | `test_hamiltonian_components` | `Q2[4,3]` | 5x5 | 1e-12 | 0 | 0.0e+00 |
 | `aniso_csa_pair` | `test_hamiltonian_components` | `Q2[4,4]` | 5x5 | 1e-12 | 0 | 0.0e+00 |
 | `aniso_csa_pair` | `test_hamiltonian_components` | `wigner 1` | 3x3 | 1e-14 | 1e-15 | 0.0e+00 |
-| `aniso_csa_pair` | `test_hamiltonian_components` | `wigner 2` | 5x5 | 1e-14 | 1e-15 | 0.0e+00 |
-| `aniso_csa_pair` | `test_hamiltonian_components` | `wigner 3` | 7x7 | 1e-14 | 1e-15 | 4.6e-16 |
+| `aniso_csa_pair` | `test_hamiltonian_components` | `wigner 2` | 5x5 | 1e-14 | 1e-15 | 6.0e-17 |
+| `aniso_csa_pair` | `test_hamiltonian_components` | `wigner 3` | 7x7 | 1e-14 | 1e-15 | 3.7e-16 |
 | `aniso_csa_pair` | `test_interaction_tensors` | `zeeman 0` | 3x3 | 1e-13 | 0 | 0.0e+00 |
 | `aniso_csa_pair` | `test_interaction_tensors` | `zeeman 1` | 3x3 | 1e-13 | 0 | 0.0e+00 |
 | `aniso_dip_pair` | `test_crystal_and_powder_fids` | `` | 5 | 1e-14 | 0 | 0.0e+00 |
-| `aniso_dip_pair` | `test_crystal_and_powder_fids` | `crystal` | 128 | 1e-09 | 0 | 7.5e-14 |
-| `aniso_dip_pair` | `test_crystal_and_powder_fids` | `powder leb11` | 128 | 1e-09 | 0 | 3.8e-14 |
+| `aniso_dip_pair` | `test_crystal_and_powder_fids` | `crystal` | 128 | 1e-09 | 0 | 7.6e-14 |
+| `aniso_dip_pair` | `test_crystal_and_powder_fids` | `powder leb11` | 128 | 1e-09 | 0 | 4.0e-14 |
 | `aniso_dip_pair` | `test_crystal_and_powder_fids` | `powder rep100` | 128 | 1e-09 | 0 | 1.7e-14 |
 | `aniso_dip_pair` | `test_crystal_and_powder_fids` | `spectrum` | 512 | 1e-09 | 0 | 1.7e-14 |
 | `aniso_dip_pair` | `test_hamiltonian_components` | `H orientation 1` | 5x5 | 1e-12 | 0 | 0.0e+00 |
@@ -2369,14 +2370,14 @@ Relative difference `||actual - expected|| / ||expected||`; `0` is bit-exact. On
 | `aniso_dip_pair` | `test_hamiltonian_components` | `Q2[4,3]` | 5x5 | 1e-12 | 0 | 0.0e+00 |
 | `aniso_dip_pair` | `test_hamiltonian_components` | `Q2[4,4]` | 5x5 | 1e-12 | 0 | 0.0e+00 |
 | `aniso_dip_pair` | `test_hamiltonian_components` | `wigner 1` | 3x3 | 1e-14 | 1e-15 | 0.0e+00 |
-| `aniso_dip_pair` | `test_hamiltonian_components` | `wigner 2` | 5x5 | 1e-14 | 1e-15 | 0.0e+00 |
-| `aniso_dip_pair` | `test_hamiltonian_components` | `wigner 3` | 7x7 | 1e-14 | 1e-15 | 4.6e-16 |
+| `aniso_dip_pair` | `test_hamiltonian_components` | `wigner 2` | 5x5 | 1e-14 | 1e-15 | 6.0e-17 |
+| `aniso_dip_pair` | `test_hamiltonian_components` | `wigner 3` | 7x7 | 1e-14 | 1e-15 | 3.7e-16 |
 | `aniso_dip_pair` | `test_interaction_tensors` | `coupling 0,1` | 3x3 | 1e-13 | 0 | 0.0e+00 |
 | `aniso_dip_pair` | `test_interaction_tensors` | `coupling 1,0` | 3x3 | 1e-13 | 0 | 0.0e+00 |
 | `aniso_dip_pair` | `test_interaction_tensors` | `zeeman 0` | 3x3 | 1e-13 | 0 | 0.0e+00 |
 | `aniso_dip_pair` | `test_interaction_tensors` | `zeeman 1` | 3x3 | 1e-13 | 0 | 0.0e+00 |
 | `aniso_esr_nitroxide` | `test_crystal_and_powder_fids` | `` | 36 | 1e-14 | 0 | 0.0e+00 |
-| `aniso_esr_nitroxide` | `test_crystal_and_powder_fids` | `crystal` | 128 | 1e-09 | 0 | 6.2e-14 |
+| `aniso_esr_nitroxide` | `test_crystal_and_powder_fids` | `crystal` | 128 | 1e-09 | 0 | 6.3e-14 |
 | `aniso_esr_nitroxide` | `test_crystal_and_powder_fids` | `powder leb11` | 128 | 1e-09 | 0 | 1.8e-14 |
 | `aniso_esr_nitroxide` | `test_crystal_and_powder_fids` | `powder rep100` | 128 | 1e-09 | 0 | 1.8e-14 |
 | `aniso_esr_nitroxide` | `test_crystal_and_powder_fids` | `spectrum` | 512 | 1e-09 | 0 | 1.8e-14 |
@@ -2419,8 +2420,8 @@ Relative difference `||actual - expected|| / ||expected||`; `0` is bit-exact. On
 | `aniso_esr_nitroxide` | `test_hamiltonian_components` | `Q2[4,3]` | 36x36 | 1e-12 | 0 | 0.0e+00 |
 | `aniso_esr_nitroxide` | `test_hamiltonian_components` | `Q2[4,4]` | 36x36 | 1e-12 | 0 | 0.0e+00 |
 | `aniso_esr_nitroxide` | `test_hamiltonian_components` | `wigner 1` | 3x3 | 1e-14 | 1e-15 | 0.0e+00 |
-| `aniso_esr_nitroxide` | `test_hamiltonian_components` | `wigner 2` | 5x5 | 1e-14 | 1e-15 | 0.0e+00 |
-| `aniso_esr_nitroxide` | `test_hamiltonian_components` | `wigner 3` | 7x7 | 1e-14 | 1e-15 | 4.6e-16 |
+| `aniso_esr_nitroxide` | `test_hamiltonian_components` | `wigner 2` | 5x5 | 1e-14 | 1e-15 | 6.0e-17 |
+| `aniso_esr_nitroxide` | `test_hamiltonian_components` | `wigner 3` | 7x7 | 1e-14 | 1e-15 | 3.7e-16 |
 | `aniso_esr_nitroxide` | `test_interaction_tensors` | `coupling 0,1` | 3x3 | 1e-13 | 0 | 0.0e+00 |
 | `aniso_esr_nitroxide` | `test_interaction_tensors` | `zeeman 0` | 3x3 | 1e-13 | 0 | 0.0e+00 |
 | `aniso_esr_nitroxide` | `test_interaction_tensors` | `zeeman 1` | 3x3 | 1e-13 | 0 | 0.0e+00 |
@@ -2468,19 +2469,19 @@ Relative difference `||actual - expected|| / ||expected||`; `0` is bit-exact. On
 | `aniso_hc_tensors` | `test_hamiltonian_components` | `Q2[4,3]` | 4x4 | 1e-12 | 0 | 0.0e+00 |
 | `aniso_hc_tensors` | `test_hamiltonian_components` | `Q2[4,4]` | 4x4 | 1e-12 | 0 | 0.0e+00 |
 | `aniso_hc_tensors` | `test_hamiltonian_components` | `wigner 1` | 3x3 | 1e-14 | 1e-15 | 0.0e+00 |
-| `aniso_hc_tensors` | `test_hamiltonian_components` | `wigner 2` | 5x5 | 1e-14 | 1e-15 | 0.0e+00 |
-| `aniso_hc_tensors` | `test_hamiltonian_components` | `wigner 3` | 7x7 | 1e-14 | 1e-15 | 4.6e-16 |
-| `aniso_hc_tensors` | `test_interaction_tensors` | `coupling 0,1` | 3x3 | 1e-13 | 0 | 3.2e-19 |
+| `aniso_hc_tensors` | `test_hamiltonian_components` | `wigner 2` | 5x5 | 1e-14 | 1e-15 | 6.0e-17 |
+| `aniso_hc_tensors` | `test_hamiltonian_components` | `wigner 3` | 7x7 | 1e-14 | 1e-15 | 3.7e-16 |
+| `aniso_hc_tensors` | `test_interaction_tensors` | `coupling 0,1` | 3x3 | 1e-13 | 0 | 7.1e-19 |
 | `aniso_hc_tensors` | `test_interaction_tensors` | `coupling 1,0` | 3x3 | 1e-13 | 0 | 0.0e+00 |
 | `aniso_hc_tensors` | `test_interaction_tensors` | `zeeman 0` | 3x3 | 1e-13 | 0 | 2.1e-22 |
 | `aniso_hc_tensors` | `test_interaction_tensors` | `zeeman 1` | 3x3 | 1e-13 | 0 | 0.0e+00 |
 | `aniso_nqi_14n` | `test_crystal_and_powder_fids` | `` | 9x9 | 1e-14 | 0 | 1.6e-16 |
-| `aniso_nqi_14n` | `test_crystal_and_powder_fids` | `crystal` | 128 | 1e-09 | 0 | 7.6e-15 |
-| `aniso_nqi_14n` | `test_crystal_and_powder_fids` | `powder leb11` | 128 | 1e-09 | 0 | 4.4e-15 |
-| `aniso_nqi_14n` | `test_crystal_and_powder_fids` | `powder rep100` | 128 | 1e-09 | 0 | 4.8e-15 |
-| `aniso_nqi_14n` | `test_crystal_and_powder_fids` | `spectrum` | 512 | 1e-09 | 0 | 4.8e-15 |
+| `aniso_nqi_14n` | `test_crystal_and_powder_fids` | `crystal` | 128 | 1e-09 | 0 | 5.3e-16 |
+| `aniso_nqi_14n` | `test_crystal_and_powder_fids` | `powder leb11` | 128 | 1e-09 | 0 | 1.7e-15 |
+| `aniso_nqi_14n` | `test_crystal_and_powder_fids` | `powder rep100` | 128 | 1e-09 | 0 | 4.3e-15 |
+| `aniso_nqi_14n` | `test_crystal_and_powder_fids` | `spectrum` | 512 | 1e-09 | 0 | 4.3e-15 |
 | `aniso_nqi_14n` | `test_hamiltonian_components` | `H orientation 1` | 9x9 | 1e-12 | 0 | 0.0e+00 |
-| `aniso_nqi_14n` | `test_hamiltonian_components` | `H orientation 2` | 9x9 | 1e-12 | 0 | 2.1e-16 |
+| `aniso_nqi_14n` | `test_hamiltonian_components` | `H orientation 2` | 9x9 | 1e-12 | 0 | 0.0e+00 |
 | `aniso_nqi_14n` | `test_hamiltonian_components` | `I` | 9x9 | 1e-12 | 0 | 0.0e+00 |
 | `aniso_nqi_14n` | `test_hamiltonian_components` | `I_off` | 9x9 | 1e-12 | 0 | 0.0e+00 |
 | `aniso_nqi_14n` | `test_hamiltonian_components` | `Q1[0,0]` | 9x9 | 1e-12 | 0 | 0.0e+00 |
@@ -2503,9 +2504,9 @@ Relative difference `||actual - expected|| / ||expected||`; `0` is bit-exact. On
 | `aniso_nqi_14n` | `test_hamiltonian_components` | `Q2[1,3]` | 9x9 | 1e-12 | 0 | 0.0e+00 |
 | `aniso_nqi_14n` | `test_hamiltonian_components` | `Q2[1,4]` | 9x9 | 1e-12 | 0 | 0.0e+00 |
 | `aniso_nqi_14n` | `test_hamiltonian_components` | `Q2[2,0]` | 9x9 | 1e-12 | 0 | 6.8e-17 |
-| `aniso_nqi_14n` | `test_hamiltonian_components` | `Q2[2,1]` | 9x9 | 1e-12 | 0 | 2.3e-16 |
+| `aniso_nqi_14n` | `test_hamiltonian_components` | `Q2[2,1]` | 9x9 | 1e-12 | 0 | 2.3e-17 |
 | `aniso_nqi_14n` | `test_hamiltonian_components` | `Q2[2,2]` | 9x9 | 1e-12 | 0 | 0.0e+00 |
-| `aniso_nqi_14n` | `test_hamiltonian_components` | `Q2[2,3]` | 9x9 | 1e-12 | 0 | 2.3e-16 |
+| `aniso_nqi_14n` | `test_hamiltonian_components` | `Q2[2,3]` | 9x9 | 1e-12 | 0 | 2.3e-17 |
 | `aniso_nqi_14n` | `test_hamiltonian_components` | `Q2[2,4]` | 9x9 | 1e-12 | 0 | 6.8e-17 |
 | `aniso_nqi_14n` | `test_hamiltonian_components` | `Q2[3,0]` | 9x9 | 1e-12 | 0 | 0.0e+00 |
 | `aniso_nqi_14n` | `test_hamiltonian_components` | `Q2[3,1]` | 9x9 | 1e-12 | 0 | 0.0e+00 |
@@ -2518,10 +2519,10 @@ Relative difference `||actual - expected|| / ||expected||`; `0` is bit-exact. On
 | `aniso_nqi_14n` | `test_hamiltonian_components` | `Q2[4,3]` | 9x9 | 1e-12 | 0 | 0.0e+00 |
 | `aniso_nqi_14n` | `test_hamiltonian_components` | `Q2[4,4]` | 9x9 | 1e-12 | 0 | 0.0e+00 |
 | `aniso_nqi_14n` | `test_hamiltonian_components` | `wigner 1` | 3x3 | 1e-14 | 1e-15 | 0.0e+00 |
-| `aniso_nqi_14n` | `test_hamiltonian_components` | `wigner 2` | 5x5 | 1e-14 | 1e-15 | 0.0e+00 |
-| `aniso_nqi_14n` | `test_hamiltonian_components` | `wigner 3` | 7x7 | 1e-14 | 1e-15 | 4.6e-16 |
+| `aniso_nqi_14n` | `test_hamiltonian_components` | `wigner 2` | 5x5 | 1e-14 | 1e-15 | 6.0e-17 |
+| `aniso_nqi_14n` | `test_hamiltonian_components` | `wigner 3` | 7x7 | 1e-14 | 1e-15 | 3.7e-16 |
 | `aniso_nqi_14n` | `test_interaction_tensors` | `coupling 0,0` | 3x3 | 1e-13 | 0 | 0.0e+00 |
-| `aniso_nqi_14n` | `test_interaction_tensors` | `coupling 1,1` | 3x3 | 1e-13 | 0 | 1.1e-16 |
+| `aniso_nqi_14n` | `test_interaction_tensors` | `coupling 1,1` | 3x3 | 1e-13 | 0 | 7.7e-17 |
 | `aniso_nqi_14n` | `test_interaction_tensors` | `zeeman 0` | 3x3 | 1e-13 | 0 | 0.0e+00 |
 | `aniso_nqi_14n` | `test_interaction_tensors` | `zeeman 1` | 3x3 | 1e-13 | 0 | 0.0e+00 |
 
@@ -2534,22 +2535,22 @@ Relative difference `||actual - expected|| / ||expected||`; `0` is bit-exact. On
 | `relax_axial_dfs` | `test_equilibrium_and_thermalisation` | `` | 16 | 1e-09 | 0 | 1.3e-25 |
 | `relax_axial_dfs` | `test_equilibrium_and_thermalisation` | `` | 16x16 | 1e-09 | 0 | 4.2e-16 |
 | `relax_axial_dfs` | `test_equilibrium_and_thermalisation` | `HL` | 16x16 | 1e-12 | 0 | 0.0e+00 |
-| `relax_axial_dfs` | `test_equilibrium_and_thermalisation` | `IME` | 16x16 | 1e-09 | 0 | 1.8e-21 |
+| `relax_axial_dfs` | `test_equilibrium_and_thermalisation` | `IME` | 16x16 | 1e-09 | 0 | 0.0e+00 |
 | `relax_axial_dfs` | `test_equilibrium_and_thermalisation` | `R zero` | 16x16 | 1e-09 | 0 | 0.0e+00 |
 | `relax_axial_dfs` | `test_equilibrium_and_thermalisation` | `rho_eq` | 16 | 1e-09 | 0 | 0.0e+00 |
 | `relax_axial_dfs` | `test_relaxation_superoperators` | `R` | 16x16 | 1e-09 | 0 | 0.0e+00 |
 | `relax_axial_dfs` | `test_relaxation_superoperators` | `R oriented` | 16x16 | 1e-09 | 0 | 0.0e+00 |
-| `relax_axial_dfs` | `test_transient_noe` | `NOE` | 2x101 | 1e-09 | 0 | 7.1e-16 |
+| `relax_axial_dfs` | `test_transient_noe` | `NOE` | 2x101 | 1e-09 | 0 | 2.4e-17 |
 | `relax_axial_dfs` | `test_transient_noe` | `rho inverted` | 16 | 1e-09 | 0 | 0.0e+00 |
-| `relax_csa_dd_secular` | `test_equilibrium_and_thermalisation` | `` | 64 | 1e-09 | 0 | 3.6e-25 |
+| `relax_csa_dd_secular` | `test_equilibrium_and_thermalisation` | `` | 64 | 1e-09 | 0 | 5.9e-25 |
 | `relax_csa_dd_secular` | `test_equilibrium_and_thermalisation` | `` | 64x64 | 1e-09 | 0 | 1.0e-15 |
 | `relax_csa_dd_secular` | `test_equilibrium_and_thermalisation` | `HL` | 64x64 | 1e-12 | 0 | 0.0e+00 |
-| `relax_csa_dd_secular` | `test_equilibrium_and_thermalisation` | `IME` | 64x64 | 1e-09 | 0 | 1.1e-22 |
+| `relax_csa_dd_secular` | `test_equilibrium_and_thermalisation` | `IME` | 64x64 | 1e-09 | 0 | 7.1e-22 |
 | `relax_csa_dd_secular` | `test_equilibrium_and_thermalisation` | `R zero` | 64x64 | 1e-09 | 0 | 0.0e+00 |
 | `relax_csa_dd_secular` | `test_equilibrium_and_thermalisation` | `rho_eq` | 64 | 1e-09 | 0 | 1.0e-25 |
 | `relax_csa_dd_secular` | `test_relaxation_superoperators` | `R` | 64x64 | 1e-09 | 0 | 0.0e+00 |
 | `relax_csa_dd_secular` | `test_relaxation_superoperators` | `R oriented` | 64x64 | 1e-09 | 0 | 0.0e+00 |
-| `relax_csa_dd_secular` | `test_transient_noe` | `NOE` | 3x201 | 1e-09 | 0 | 7.0e-16 |
+| `relax_csa_dd_secular` | `test_transient_noe` | `NOE` | 3x201 | 1e-09 | 0 | 1.7e-16 |
 | `relax_csa_dd_secular` | `test_transient_noe` | `rho inverted` | 64 | 1e-09 | 0 | 0.0e+00 |
 | `relax_noe_het` | `test_equilibrium_and_thermalisation` | `` | 16 | 1e-09 | 0 | 7.3e-26 |
 | `relax_noe_het` | `test_equilibrium_and_thermalisation` | `` | 16x16 | 1e-09 | 0 | 3.4e-16 |
@@ -2559,9 +2560,9 @@ Relative difference `||actual - expected|| / ||expected||`; `0` is bit-exact. On
 | `relax_noe_het` | `test_equilibrium_and_thermalisation` | `rho_eq` | 16 | 1e-09 | 0 | 0.0e+00 |
 | `relax_noe_het` | `test_relaxation_superoperators` | `R` | 16x16 | 1e-09 | 0 | 0.0e+00 |
 | `relax_noe_het` | `test_relaxation_superoperators` | `R oriented` | 16x16 | 1e-09 | 0 | 0.0e+00 |
-| `relax_noe_het` | `test_transient_noe` | `NOE` | 2x401 | 1e-09 | 0 | 2.8e-15 |
+| `relax_noe_het` | `test_transient_noe` | `NOE` | 2x401 | 1e-09 | 0 | 7.6e-16 |
 | `relax_noe_het` | `test_transient_noe` | `rho inverted` | 16 | 1e-09 | 0 | 0.0e+00 |
-| `relax_noe_hom` | `test_equilibrium_and_thermalisation` | `` | 16 | 1e-09 | 0 | 2.2e-30 |
+| `relax_noe_hom` | `test_equilibrium_and_thermalisation` | `` | 16 | 1e-09 | 0 | 4.1e-25 |
 | `relax_noe_hom` | `test_equilibrium_and_thermalisation` | `` | 16x16 | 1e-09 | 0 | 4.3e-16 |
 | `relax_noe_hom` | `test_equilibrium_and_thermalisation` | `HL` | 16x16 | 1e-12 | 0 | 0.0e+00 |
 | `relax_noe_hom` | `test_equilibrium_and_thermalisation` | `IME` | 16x16 | 1e-09 | 0 | 0.0e+00 |
@@ -2569,7 +2570,7 @@ Relative difference `||actual - expected|| / ||expected||`; `0` is bit-exact. On
 | `relax_noe_hom` | `test_equilibrium_and_thermalisation` | `rho_eq` | 16 | 1e-09 | 0 | 0.0e+00 |
 | `relax_noe_hom` | `test_relaxation_superoperators` | `R` | 16x16 | 1e-09 | 0 | 0.0e+00 |
 | `relax_noe_hom` | `test_relaxation_superoperators` | `R oriented` | 16x16 | 1e-09 | 0 | 0.0e+00 |
-| `relax_noe_hom` | `test_transient_noe` | `NOE` | 2x1001 | 1e-09 | 0 | 3.8e-15 |
+| `relax_noe_hom` | `test_transient_noe` | `NOE` | 2x1001 | 1e-09 | 0 | 7.3e-15 |
 | `relax_noe_hom` | `test_transient_noe` | `rho inverted` | 16 | 1e-09 | 0 | 0.0e+00 |
 | `relax_t1t2_damp` | `test_equilibrium_and_thermalisation` | `` | 16 | 1e-09 | 0 | 0.0e+00 |
 | `relax_t1t2_damp` | `test_equilibrium_and_thermalisation` | `` | 16x16 | 1e-09 | 0 | 5.3e-16 |
@@ -2579,7 +2580,7 @@ Relative difference `||actual - expected|| / ||expected||`; `0` is bit-exact. On
 | `relax_t1t2_damp` | `test_equilibrium_and_thermalisation` | `rho_eq` | 16 | 1e-09 | 0 | 0.0e+00 |
 | `relax_t1t2_damp` | `test_relaxation_superoperators` | `R` | 16x16 | 1e-09 | 0 | 0.0e+00 |
 | `relax_t1t2_damp` | `test_relaxation_superoperators` | `R oriented` | 16x16 | 1e-09 | 0 | 0.0e+00 |
-| `relax_t1t2_damp` | `test_transient_noe` | `NOE` | 2x101 | 1e-09 | 0 | 1.0e-15 |
+| `relax_t1t2_damp` | `test_transient_noe` | `NOE` | 2x101 | 1e-09 | 0 | 1.3e-15 |
 | `relax_t1t2_damp` | `test_transient_noe` | `rho inverted` | 16 | 1e-09 | 0 | 0.0e+00 |
 
 </details>
@@ -2589,12 +2590,12 @@ Relative difference `||actual - expected|| / ||expected||`; `0` is bit-exact. On
 | case | test | quantity | shape | rtol | atol | measured |
 |---|---|---|---|---|---|---|
 | `scalar_srfk_pair` | `test_equilibrium_and_transient_noe` | `HL` | 16x16 | 1e-12 | 0 | 0.0e+00 |
-| `scalar_srfk_pair` | `test_equilibrium_and_transient_noe` | `NOE` | 2x101 | 1e-09 | 0 | 8.2e-15 |
+| `scalar_srfk_pair` | `test_equilibrium_and_transient_noe` | `NOE` | 2x101 | 1e-09 | 0 | 8.0e-15 |
 | `scalar_srfk_pair` | `test_equilibrium_and_transient_noe` | `rho inverted` | 16 | 1e-09 | 0 | 0.0e+00 |
 | `scalar_srfk_pair` | `test_equilibrium_and_transient_noe` | `rho_eq` | 16 | 1e-09 | 0 | 0.0e+00 |
 | `scalar_srfk_pair` | `test_relaxation_superoperators` | `R` | 16x16 | 1e-09 | 0 | 0.0e+00 |
-| `scalar_srfk_srsk_3spin` | `test_equilibrium_and_transient_noe` | `HL` | 144x144 | 1e-12 | 0 | 5.2e-17 |
-| `scalar_srfk_srsk_3spin` | `test_equilibrium_and_transient_noe` | `NOE` | 3x101 | 1e-09 | 0 | 2.9e-16 |
+| `scalar_srfk_srsk_3spin` | `test_equilibrium_and_transient_noe` | `HL` | 144x144 | 1e-12 | 0 | 1.5e-17 |
+| `scalar_srfk_srsk_3spin` | `test_equilibrium_and_transient_noe` | `NOE` | 3x101 | 1e-09 | 0 | 5.8e-16 |
 | `scalar_srfk_srsk_3spin` | `test_equilibrium_and_transient_noe` | `rho inverted` | 144 | 1e-09 | 0 | 0.0e+00 |
 | `scalar_srfk_srsk_3spin` | `test_equilibrium_and_transient_noe` | `rho_eq` | 144 | 1e-09 | 0 | 8.5e-22 |
 | `scalar_srfk_srsk_3spin` | `test_relaxation_superoperators` | `R` | 144x144 | 1e-09 | 0 | 6.8e-14 |
@@ -2603,8 +2604,8 @@ Relative difference `||actual - expected|| / ||expected||`; `0` is bit-exact. On
 | `scalar_srsk_hn` | `test_equilibrium_and_transient_noe` | `NOE` | 2x101 | 1e-09 | 0 | 9.0e-16 |
 | `scalar_srsk_hn` | `test_equilibrium_and_transient_noe` | `rho inverted` | 36 | 1e-09 | 0 | 0.0e+00 |
 | `scalar_srsk_hn` | `test_equilibrium_and_transient_noe` | `rho_eq` | 36 | 1e-09 | 0 | 8.5e-22 |
-| `scalar_srsk_hn` | `test_relaxation_superoperators` | `R` | 36x36 | 1e-09 | 0 | 2.4e-16 |
-| `scalar_srsk_hn` | `test_relaxation_superoperators` | `R without scalar relaxation` | 36x36 | 1e-09 | 0 | 2.8e-16 |
+| `scalar_srsk_hn` | `test_relaxation_superoperators` | `R` | 36x36 | 1e-09 | 0 | 3.0e-16 |
+| `scalar_srsk_hn` | `test_relaxation_superoperators` | `R without scalar relaxation` | 36x36 | 1e-09 | 0 | 2.2e-16 |
 
 </details>
 
@@ -2615,27 +2616,27 @@ Relative difference `||actual - expected|| / ||expected||`; `0` is bit-exact. On
 | `mas_crystal_offaxis` | `test_fokker_planck_generator` | `G` | 55x55 | 1e-12 | 0 | 0.0e+00 |
 | `mas_crystal_offaxis` | `test_rotor_grid_and_derivative` | `d/dphi` | 11x11 | 1e-14 | 0 | 0.0e+00 |
 | `mas_crystal_offaxis` | `test_states_and_fid` | `coil fp` | 55 | 1e-14 | 0 | 0.0e+00 |
-| `mas_crystal_offaxis` | `test_states_and_fid` | `fid` | 128 | 1e-09 | 0 | 5.1e-14 |
+| `mas_crystal_offaxis` | `test_states_and_fid` | `fid` | 128 | 1e-09 | 0 | 5.5e-14 |
 | `mas_crystal_offaxis` | `test_states_and_fid` | `rho0 fp` | 55 | 1e-14 | 0 | 0.0e+00 |
-| `mas_crystal_offaxis` | `test_states_and_fid` | `spectrum` | 512 | 1e-09 | 0 | 5.1e-14 |
+| `mas_crystal_offaxis` | `test_states_and_fid` | `spectrum` | 512 | 1e-09 | 0 | 5.5e-14 |
 | `mas_csa` | `test_fokker_planck_generator` | `G` | 75x75 | 1e-12 | 0 | 0.0e+00 |
-| `mas_csa` | `test_rotor_grid_and_derivative` | `d/dphi` | 15x15 | 1e-14 | 0 | 3.6e-17 |
+| `mas_csa` | `test_rotor_grid_and_derivative` | `d/dphi` | 15x15 | 1e-14 | 0 | 0.0e+00 |
 | `mas_csa` | `test_states_and_fid` | `coil fp` | 75 | 1e-14 | 0 | 0.0e+00 |
 | `mas_csa` | `test_states_and_fid` | `fid` | 128 | 1e-09 | 0 | 1.2e-14 |
 | `mas_csa` | `test_states_and_fid` | `rho0 fp` | 75 | 1e-14 | 0 | 0.0e+00 |
 | `mas_csa` | `test_states_and_fid` | `spectrum` | 512 | 1e-09 | 0 | 1.2e-14 |
 | `mas_dip` | `test_fokker_planck_generator` | `G` | 75x75 | 1e-12 | 0 | 0.0e+00 |
-| `mas_dip` | `test_rotor_grid_and_derivative` | `d/dphi` | 15x15 | 1e-14 | 0 | 3.6e-17 |
+| `mas_dip` | `test_rotor_grid_and_derivative` | `d/dphi` | 15x15 | 1e-14 | 0 | 0.0e+00 |
 | `mas_dip` | `test_states_and_fid` | `coil fp` | 75 | 1e-14 | 0 | 0.0e+00 |
-| `mas_dip` | `test_states_and_fid` | `fid` | 128 | 1e-09 | 0 | 6.1e-15 |
+| `mas_dip` | `test_states_and_fid` | `fid` | 128 | 1e-09 | 0 | 1.0e-14 |
 | `mas_dip` | `test_states_and_fid` | `rho0 fp` | 75 | 1e-14 | 0 | 0.0e+00 |
-| `mas_dip` | `test_states_and_fid` | `spectrum` | 512 | 1e-09 | 0 | 6.1e-15 |
+| `mas_dip` | `test_states_and_fid` | `spectrum` | 512 | 1e-09 | 0 | 1.0e-14 |
 | `mas_nqi` | `test_fokker_planck_generator` | `G` | 45x45 | 1e-12 | 0 | 0.0e+00 |
-| `mas_nqi` | `test_rotor_grid_and_derivative` | `d/dphi` | 15x15 | 1e-14 | 0 | 3.6e-17 |
+| `mas_nqi` | `test_rotor_grid_and_derivative` | `d/dphi` | 15x15 | 1e-14 | 0 | 0.0e+00 |
 | `mas_nqi` | `test_states_and_fid` | `coil fp` | 45 | 1e-14 | 0 | 0.0e+00 |
-| `mas_nqi` | `test_states_and_fid` | `fid` | 128 | 1e-09 | 0 | 9.7e-15 |
+| `mas_nqi` | `test_states_and_fid` | `fid` | 128 | 1e-09 | 0 | 9.8e-15 |
 | `mas_nqi` | `test_states_and_fid` | `rho0 fp` | 45 | 1e-14 | 0 | 0.0e+00 |
-| `mas_nqi` | `test_states_and_fid` | `spectrum` | 512 | 1e-09 | 0 | 9.7e-15 |
+| `mas_nqi` | `test_states_and_fid` | `spectrum` | 512 | 1e-09 | 0 | 9.8e-15 |
 
 </details>
 
@@ -2649,26 +2650,64 @@ Relative difference `||actual - expected|| / ||expected||`; `0` is bit-exact. On
 | `` | `test_cosy_derome_and_processing` | `` | 16 | 1e-12 | 0 | 1.5e-16 |
 | `` | `test_cosy_derome_and_processing` | `` | 6x8 | 1e-14 | 0 | 0.0e+00 |
 | `` | `test_cosy_derome_and_processing` | `` | 6x8 | 1e-14 | 0 | 0.0e+00 |
-| `` | `test_cosy_derome_and_processing` | `` | 32 | 1e-09 | 0 | 3.0e-14 |
+| `` | `test_cosy_derome_and_processing` | `` | 32 | 1e-09 | 0 | 2.7e-14 |
 | `` | `test_cosy_derome_and_processing` | `` | 64x8 | 1e-14 | 0 | 0.0e+00 |
 | `` | `test_cosy_derome_and_processing` | `` | 64x8 | 1e-14 | 0 | 0.0e+00 |
 | `` | `test_cosy_derome_and_processing` | `cosy` | 64x64 | 1e-09 | 0 | 1.0e-13 |
-| `` | `test_cosy_derome_and_processing` | `cosy apodised` | 64x64 | 1e-09 | 0 | 4.1e-14 |
-| `` | `test_cosy_derome_and_processing` | `cosy spectrum` | 128x128 | 1e-09 | 0 | 4.1e-14 |
-| `` | `test_cosy_derome_and_processing` | `refocus` | 64x8 | 1e-09 | 0 | 9.6e-15 |
-| `` | `test_cosy_derome_and_processing` | `trajectory` | 64x8 | 1e-09 | 0 | 4.8e-15 |
+| `` | `test_cosy_derome_and_processing` | `cosy apodised` | 64x64 | 1e-09 | 0 | 3.8e-14 |
+| `` | `test_cosy_derome_and_processing` | `cosy spectrum` | 128x128 | 1e-09 | 0 | 3.8e-14 |
+| `` | `test_cosy_derome_and_processing` | `refocus` | 64x8 | 1e-09 | 0 | 1.1e-14 |
+| `` | `test_cosy_derome_and_processing` | `trajectory` | 64x8 | 1e-09 | 0 | 5.6e-15 |
 | `` | `test_hsqc_with_dilution` | `H` | 256x256 | 1e-12 | 0 | 0.0e+00 |
 | `` | `test_hsqc_with_dilution` | `H decoupled` | 256x256 | 1e-12 | 0 | 0.0e+00 |
-| `` | `test_hsqc_with_dilution` | `hsqc neg 1` | 32x32 | 1e-09 | 0 | 4.0e-14 |
-| `` | `test_hsqc_with_dilution` | `hsqc neg 2` | 32x32 | 1e-09 | 0 | 4.7e-14 |
-| `` | `test_hsqc_with_dilution` | `hsqc pos 1` | 32x32 | 1e-09 | 0 | 2.0e-14 |
-| `` | `test_hsqc_with_dilution` | `hsqc pos 2` | 32x32 | 1e-09 | 0 | 3.5e-14 |
-| `` | `test_hsqc_with_dilution` | `hsqc spectrum` | 128x128 | 1e-09 | 0 | 2.3e-14 |
+| `` | `test_hsqc_with_dilution` | `hsqc neg 1` | 32x32 | 1e-09 | 0 | 4.5e-14 |
+| `` | `test_hsqc_with_dilution` | `hsqc neg 2` | 32x32 | 1e-09 | 0 | 5.0e-14 |
+| `` | `test_hsqc_with_dilution` | `hsqc pos 1` | 32x32 | 1e-09 | 0 | 1.5e-14 |
+| `` | `test_hsqc_with_dilution` | `hsqc pos 2` | 32x32 | 1e-09 | 0 | 3.8e-14 |
+| `` | `test_hsqc_with_dilution` | `hsqc spectrum` | 128x128 | 1e-09 | 0 | 2.5e-14 |
 | `` | `test_hsqc_with_dilution` | `rho decoupled` | 256 | 1e-14 | 0 | 0.0e+00 |
-| `` | `test_noesy_pair` | `noesy cos` | 48x48 | 1e-09 | 0 | 5.7e-15 |
-| `` | `test_noesy_pair` | `noesy oldschool` | 48x48 | 1e-09 | 0 | 5.7e-15 |
-| `` | `test_noesy_pair` | `noesy sin` | 48x48 | 1e-09 | 0 | 8.2e-15 |
+| `` | `test_noesy_pair` | `noesy cos` | 48x48 | 1e-09 | 0 | 5.5e-15 |
+| `` | `test_noesy_pair` | `noesy oldschool` | 48x48 | 1e-09 | 0 | 5.4e-15 |
+| `` | `test_noesy_pair` | `noesy sin` | 48x48 | 1e-09 | 0 | 7.4e-15 |
 | `` | `test_noesy_pair` | `rho_eq` | 16 | 1e-09 | 0 | 0.0e+00 |
+
+</details>
+
+<details><summary>state-dependent integrator: 31 comparisons over 1 cases</summary>
+
+| case | test | quantity | shape | rtol | atol | measured |
+|---|---|---|---|---|---|---|
+| `` | `test_lie_methods_run_the_nonlinear_case_in_liouville_space` | `` | 2x2 | 1e-10 | 1e-13 | 1.4e-16 |
+| `` | `test_lie_methods_run_the_nonlinear_case_in_liouville_space` | `` | 2x2 | 1e-10 | 1e-13 | 1.6e-16 |
+| `` | `test_lie_methods_run_the_nonlinear_case_in_liouville_space` | `` | 2x2 | 1e-10 | 1e-13 | 4.3e-14 |
+| `` | `test_lie_methods_run_the_nonlinear_case_in_liouville_space` | `` | 2x2 | 1e-10 | 1e-13 | 1.4e-16 |
+| `` | `test_lie_methods_run_the_nonlinear_case_in_liouville_space` | `` | 2x2 | 1e-10 | 1e-13 | 1.4e-16 |
+| `` | `test_lie_methods_run_the_nonlinear_case_in_liouville_space` | `` | 2x2 | 1e-10 | 1e-13 | 1.4e-16 |
+| `` | `test_lie_methods_run_the_nonlinear_case_in_liouville_space` | `` | 2x2 | 1e-10 | 1e-13 | 7.1e-17 |
+| `` | `test_parity_with_spinach` | `LG2` | 2x2 | 1e-12 | 1e-14 | 4.5e-16 |
+| `` | `test_parity_with_spinach` | `LG4A` | 2x2 | 1e-12 | 1e-14 | 6.6e-20 |
+| `` | `test_parity_with_spinach` | `PWCL` | 2x2 | 1e-12 | 1e-14 | 1.6e-16 |
+| `` | `test_parity_with_spinach` | `RKMK-DP5` | 2x2 | 1e-12 | 1e-14 | 9.1e-16 |
+| `` | `test_parity_with_spinach` | `RKMK-DP8` | 2x2 | 1e-12 | 1e-14 | 1.0e-15 |
+| `` | `test_parity_with_spinach` | `RKMK-RKF45` | 2x2 | 1e-12 | 1e-14 | 3.3e-16 |
+| `` | `test_parity_with_spinach` | `RKMK4` | 2x2 | 1e-12 | 1e-14 | 7.1e-16 |
+| `` | `test_parity_with_spinach` | `reference` | 2x2 | 1e-12 | 1e-14 | 8.3e-16 |
+| `` | `test_parity_with_spinach` | `rho` | 2x2 | 0 | 0 | 0.0e+00 |
+| `hilb` | `test_constant_generator_reduces_to_step` | `constant LG2` | 4x4 | 1e-12 | 1e-15 | 0.0e+00 |
+| `hilb` | `test_constant_generator_reduces_to_step` | `constant LG4A` | 4x4 | 1e-12 | 1e-15 | 2.8e-17 |
+| `hilb` | `test_constant_generator_reduces_to_step` | `constant PWCL` | 4x4 | 1e-12 | 1e-15 | 0.0e+00 |
+| `hilb` | `test_constant_generator_reduces_to_step` | `constant RKMK-DP5` | 4x4 | 1e-12 | 1e-15 | 6.2e-16 |
+| `hilb` | `test_constant_generator_reduces_to_step` | `constant RKMK-DP8` | 4x4 | 1e-12 | 1e-15 | 1.3e-15 |
+| `hilb` | `test_constant_generator_reduces_to_step` | `constant RKMK-RKF45` | 4x4 | 1e-12 | 1e-15 | 8.7e-16 |
+| `hilb` | `test_constant_generator_reduces_to_step` | `constant RKMK4` | 4x4 | 1e-12 | 1e-15 | 1.1e-16 |
+| `liouv` | `test_constant_generator_reduces_to_step` | `constant LG2` | 16 | 1e-12 | 1e-15 | 0.0e+00 |
+| `liouv` | `test_constant_generator_reduces_to_step` | `constant LG4` | 16 | 1e-12 | 1e-15 | 1.1e-16 |
+| `liouv` | `test_constant_generator_reduces_to_step` | `constant LG4A` | 16 | 1e-12 | 1e-15 | 0.0e+00 |
+| `liouv` | `test_constant_generator_reduces_to_step` | `constant PWCL` | 16 | 1e-12 | 1e-15 | 0.0e+00 |
+| `liouv` | `test_constant_generator_reduces_to_step` | `constant RKMK-DP5` | 16 | 1e-12 | 1e-15 | 5.6e-17 |
+| `liouv` | `test_constant_generator_reduces_to_step` | `constant RKMK-DP8` | 16 | 1e-12 | 1e-15 | 7.3e-17 |
+| `liouv` | `test_constant_generator_reduces_to_step` | `constant RKMK-RKF45` | 16 | 1e-12 | 1e-15 | 8.5e-16 |
+| `liouv` | `test_constant_generator_reduces_to_step` | `constant RKMK4` | 16 | 1e-12 | 1e-15 | 0.0e+00 |
 
 </details>
 

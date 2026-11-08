@@ -176,6 +176,7 @@ what each input is:
 | `krylov(spin_system,L,coil,rho,dt,nsteps,output)` | `krylov(spin_system, L, rho, dt, nsteps, output, coil=coil)` |
 | `thermalize(spin_system,R,[],[],rho_eq,'IME')` | `thermalize(spin_system, R, "IME", rho_eq=rho_eq)` |
 | `thermalize(spin_system,R,HLSPS,T,[],'dibari')` | `thermalize(spin_system, R, "dibari", H_left=HLSPS, temperature=T)` |
+| `iserstep(spin_system,{L,t,method},rho,dt)` | `iserstep(spin_system, L, t, method, rho, dt)`: the generator function, the start time and the method as three arguments |
 | `plot_2d(spin_system,spectrum,parameters,ncont,delta,k,ncol,m,signs)` | `plot_2d(spin_system, spectrum, parameters, ncont=20, delta=(...), k=2, signs="both")`, all six keyword-only, Spinach's names and defaults |
 
 Everything else keeps Spinach's positional form: `step(spin_system, L,
@@ -452,6 +453,7 @@ ignored by the simulation, as in Spinach.
 | `evolution(...,destination)` destination state screening | the same, Liouville space (`destination=` keyword) |
 | `reduce`, `zte`, `path_trace` (trajectory-level reduction), `sys.disable={'zte','pt','dss','merge','krylov','trajlevel'}`, `sys.enable={'krylov'}` | the same, Liouville space; permutation symmetry not ported |
 | `step` (single generator and 2/3-point Lie quadratures), `krylov` | the same in Liouville space; Hilbert-space `step` for one generator |
+| `iserstep` (state-dependent generators: `PWCL`, `LG2`, `LG4`, `LG4A`, `RKMK4`, `RKMK-DP5`, `RKMK-DP8`, `RKMK-RKF45`), also reached through `step` with a function handle | the same methods, called as `iserstep(spin_system, L, t, method, rho, dt)` (see [Keyword arguments](#keyword-arguments)); `LG4` in Liouville space only; `step` does not route function handles; see the [radiation damping guide](radiation-damping.md) |
 | `pulse`, `shaped_pulse_*` | not ported; use `propagator` or `step` |
 | `apodisation`, `plot_2d`, `dilute`/`kill_spin`, `decouple`, `homospoil` | the same; `apodisation(fid, [("exp", 6)])` takes tuples instead of nested cells, `plot_2d` draws a Plotly contour figure with the same `ncont, delta, k, ncol, m, signs` arguments as keywords, binning spectra longer than `max_points=512` per axis (largest magnitude per bin) so that the HTML stays small |
 | `propagator`: Pade `expm` below `small_matrix`, scaled and squared Taylor series above | the same |
@@ -554,9 +556,11 @@ HTML report.
 This guide lists what carries over and what is still missing. What Spynach
 has and Spinach does not is collected, with examples, in
 [Beyond the port](beyond-the-port.md): the coherence-transfer-pathway module
-`ctps` with its non-ideal pulse model and cogwheel search, the interactive
-figures and `figure_png`, `compare` and the parity page, and the executable
-documentation.
+`ctps` with its non-ideal pulse model and cogwheel search, radiation
+damping of spin systems and isochromat ensembles (`radiation_damping`, on
+top of the ported `iserstep`), the relaxation pathway analysis, the
+interactive figures and `figure_png`, `compare` and the parity page, and
+the executable documentation.
 
 ## Messages and errors
 

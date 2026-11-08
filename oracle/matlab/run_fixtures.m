@@ -18,7 +18,7 @@
 repo_dir='/Users/alexej/Documents/PROG/spynach';          % spynach checkout holding the dump scripts to run
 spinach_dir='/Users/alexej/Documents/PROG/spynach-spinach';
 fixtures_root='/Users/alexej/Documents/PROG/spynach-fixtures';
-dump_scripts={'dump_hilb_pa','dump_liouv_setup','dump_liouv_pa','dump_aniso','dump_relax','dump_mas','dump_seq','dump_scalar'};       % cases that already exist are skipped
+dump_scripts={'dump_hilb_pa','dump_liouv_setup','dump_liouv_pa','dump_aniso','dump_relax','dump_mas','dump_seq','dump_scalar','dump_iserstep'};       % cases that already exist are skipped
 
 %% Nothing below needs editing
 

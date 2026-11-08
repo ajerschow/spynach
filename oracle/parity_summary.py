@@ -43,7 +43,7 @@ JSON = ROOT / "oracle" / "parity_summary.json"
 PARITY_MD = ROOT / "docs" / "parity.md"
 PAGE = ROOT / "spinach.html"
 MARKERS = ("<!-- parity-summary -->", "<!-- /parity-summary -->")
-PARITY_TESTS = ["tests/slice", "tests/oracle/test_hilb_pa_fixtures.py"]
+PARITY_TESTS = ["tests/slice", "tests/oracle/test_hilb_pa_fixtures.py", "tests/unit/test_iserstep.py"]
 
 
 @dataclass(frozen=True)
@@ -66,6 +66,7 @@ FAMILIES = [
     Family("scalar relaxation", "scalar_", ("tests/slice/test_scalar_parity.py",)),
     Family("magic angle spinning", "mas_", ("tests/slice/test_mas_parity.py",)),
     Family("pulse sequences", "seq_", ("tests/slice/test_seq_parity.py",)),
+    Family("state-dependent integrator", "iserstep_", ("tests/unit/test_iserstep.py",)),
 ]
 
 POLICY = """\

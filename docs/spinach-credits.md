@@ -59,20 +59,29 @@ Functions of Spynach with no Spinach counterpart at all are listed with a dash. 
 | `spynach.operators.operator` | `kernel/operator.m` | port | Luke Edwards, Ilya Kuprov |
 | `spynach.operators.pauli` | `kernel/operators/pauli.m` | port | Ilya Kuprov |
 | `spynach.operators.superop` | `kernel/operators/superop.m` | port | Ilya Kuprov, Hannah Hogben |
+| `spynach.pathways.relaxation_pathways` | — | new | — |
 | `spynach.plotting.axis_1d` | `kernel/plotting/axis_1d.m` | port | Ilya Kuprov |
 | `spynach.plotting.axis_2d` | `kernel/plotting/plot_2d.m` (the axis calculation of plot_2d.m) | derived | Ilya Kuprov |
+| `spynach.plotting.chord_layout` | — | new | — |
 | `spynach.plotting.contspacing` | `kernel/plotting/contspacing.m` | port | Ilya Kuprov |
 | `spynach.plotting.figure_png` | — | new | — |
 | `spynach.plotting.ft_axis` | `kernel/plotting/ft_axis.m` | port | Ilya Kuprov |
 | `spynach.plotting.plot_1d` | `kernel/plotting/plot_1d.m` | port | Ilya Kuprov, Luke Edwards |
 | `spynach.plotting.plot_2d` | `kernel/plotting/plot_2d.m` | port | Ilya Kuprov |
 | `spynach.plotting.plot_fid` | — | new | — |
+| `spynach.plotting.plot_pathways` | — | new | — |
 | `spynach.plotting.plot_time_series` | — | new | — |
 | `spynach.plotting.plot_trajan` | — | new | — |
+| `spynach.probe.line_weights` | — | new | — |
+| `spynach.probe.radiation_damping` | — | new | — |
+| `spynach.probe.rd_phase` | — | new | — |
+| `spynach.probe.rd_rate` | — | new | — |
 | `spynach.processing.apodisation` | `kernel/utilities/apodisation.m` | port | Ilya Kuprov |
+| `spynach.propagation._comm` | `kernel/utilities/comm.m` | port | Ilya Kuprov |
 | `spynach.propagation._commutator_series` | `kernel/step.m` (subfunction comm_series) | derived | Ilya Kuprov, Luke Edwards, Anupama Acharya, Callum Musselwhite |
 | `spynach.propagation._reordered_taylor` | `kernel/step.m` (subfunction reordered_taylor) | derived | Ilya Kuprov, Luke Edwards, Anupama Acharya, Callum Musselwhite |
 | `spynach.propagation.evolution` | `kernel/evolution.m` | port | Ilya Kuprov, Luke Edwards, Ohad Levinkron |
+| `spynach.propagation.iserstep` | `kernel/pulses/iserstep.m` | port | Ilya Kuprov, Andrew Graham, Anupama Acharya |
 | `spynach.propagation.krylov` | `kernel/krylov.m` | port | Ilya Kuprov |
 | `spynach.propagation.propagator` | `kernel/propagator.m` | port | Ilya Kuprov, Luke Edwards |
 | `spynach.propagation.step` | `kernel/step.m` | port | Ilya Kuprov, Luke Edwards, Anupama Acharya, Callum Musselwhite |
@@ -156,6 +165,7 @@ Functions of Spynach with no Spinach counterpart at all are listed with a dash. 
 | `kernel/plotting/plot_1d.m` | Ilya Kuprov, Luke Edwards |
 | `kernel/plotting/plot_2d.m` | Ilya Kuprov |
 | `kernel/propagator.m` | Ilya Kuprov, Luke Edwards |
+| `kernel/pulses/iserstep.m` | Ilya Kuprov, Andrew Graham, Anupama Acharya |
 | `kernel/reduce.m` | Ilya Kuprov, Matthew Krzystyniak, Luke Edwards |
 | `kernel/relaxation.m` | Ilya Kuprov, Luke Edwards, Alexander Karabanov, Walter Kockenberger |
 | `kernel/spin.m` | Matthew Krzystyniak, Andreas Biternas, Ilya Kuprov |
@@ -169,6 +179,7 @@ Functions of Spynach with no Spinach counterpart at all are listed with a dash. 
 | `kernel/utilities/binpack.m` | Ilya Kuprov |
 | `kernel/utilities/cheap_norm.m` | Ilya Kuprov |
 | `kernel/utilities/clean_up.m` | Ilya Kuprov, Alex Nevzorov |
+| `kernel/utilities/comm.m` | Ilya Kuprov |
 | `kernel/utilities/corrfun.m` | Ilya Kuprov |
 | `kernel/utilities/dfpt.m` | Ilya Kuprov, Stefan Stoll |
 | `kernel/utilities/dilute.m` | Ilya Kuprov, Luke Edwards, Bud Macaulay |

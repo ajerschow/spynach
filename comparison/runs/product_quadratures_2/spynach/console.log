@@ -1,0 +1,5 @@
+== product_quadratures_2 (spynach at /Users/alexej/Documents/PROG/spynach) -> /Users/alexej/Documents/PROG/spynach/comparison/runs/product_quadratures_2/spynach
+reference                             4.3 s
+benchmark                            28.3 s
+plot                                  0.2 s
+total                                32.8 s

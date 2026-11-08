@@ -52,7 +52,7 @@ GROUPS = {
         "coming-from-spinach",
     ],
     "easyspin": ["easyspyn", "easyspyn-simulators", "coming-from-easyspin"],
-    "extras": ["ctps", "ctps-examples", "relaxation-pathways", "beyond-the-port"],
+    "extras": ["ctps", "ctps-examples", "relaxation-pathways", "radiation-damping", "beyond-the-port"],
 }
 # One line per Spinach comparison case, the only prose in the timing table.
 SPINACH_CASES = {
@@ -64,6 +64,9 @@ SPINACH_CASES = {
     "projections and state classes (31 states)",
     "maz_noesy_2": "methylaziridine, 7 protons + 14N with DFT shielding tensors and the 14N quadrupole: Redfield "
     "theory with scalar relaxation of both kinds, IK-2 basis (19 314 states), 2 s NOESY",
+    "product_quadratures_2": "the state-dependent integrator iserstep on a classical magnetisation vector under a "
+    "chirped offset, relaxation and radiation damping: a 4096-point RKMK-DP8 reference and seven methods on ten "
+    "grids of 256 to 2048 points",
 }
 SOURCE_PACKAGES = ("spynach", "ctps", "easyspyn")
 SOURCE_SUFFIXES = {".py", ".txt"}

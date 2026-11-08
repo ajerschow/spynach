@@ -139,6 +139,11 @@ Add-ons originating here, with no Spinach counterpart, each with an example in t
   cross-correlations, each with an exact expression in the coupling strengths and spectral densities, drawn as a
   chord diagram by `plot_pathways` ([docs/relaxation-pathways.md](docs/relaxation-pathways.md)), also in the
   browser playground ([try.html#ex-pathways](https://ajerschow.github.io/spynach/try.html#ex-pathways)).
+- **Radiation damping** (`spynach.radiation_damping`, `rd_rate`, `rd_phase`): the feedback of the probe on any
+  spin system as a state-dependent generator, with isochromat ensembles for inhomogeneous lines, propagated by
+  `iserstep` (a port of Spinach's Lie-group and Runge-Kutta-Munthe-Kaas integrators) and checked against the
+  Bloembergen-Pound closed form and the classical Bloch-Maxwell limit ([docs/radiation-damping.md](docs/radiation-damping.md)),
+  also in the browser playground ([try.html#ex-rd](https://ajerschow.github.io/spynach/try.html#ex-rd)).
 - **Interactive Plotly figures** from `spynach.plotting`, `plot_fid`,
   `plot_time_series` and `plot_trajan` with no Spinach equivalent, and
   `figure_png` for static copies.

@@ -55,6 +55,7 @@ NAMES: dict[str, str | None] = {
     "walter.kockenberger@nottingham.ac.uk": "Walter Kockenberger",
     "a.biternas@soton.ac.uk": "Andreas Biternas",
     "a.acharya@soton.ac.uk": "Anupama Acharya",
+    "a.graham@soton.ac.uk": "Andrew Graham",
     # not on the developer team page; names supplied by the project owner
     "stst@uw.edu": "Stefan Stoll",
     "c.musselwhite@soton.ac.uk": "Callum Musselwhite",

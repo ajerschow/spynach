@@ -6,7 +6,9 @@ forming the exponential, and ``evolution`` reduces the problem with
 :mod:`spynach.reduction` before propagating each subspace.
 
 Spinach authors, by original file (headers of Spinach 2.13; see docs/spinach-credits.md):
+  comm.m: Ilya Kuprov
   evolution.m: Ilya Kuprov, Luke Edwards, Ohad Levinkron
+  iserstep.m: Ilya Kuprov, Andrew Graham, Anupama Acharya
   krylov.m: Ilya Kuprov
   propagator.m: Ilya Kuprov, Luke Edwards
   step.m: Ilya Kuprov, Luke Edwards, Anupama Acharya, Callum Musselwhite
@@ -16,7 +18,7 @@ from __future__ import annotations
 
 import logging
 import math
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from dataclasses import replace
 
 import numpy as np
@@ -210,6 +212,227 @@ def _commutator_series(H: Matrix, rho: Matrix, t: float, nsteps: int) -> Matrix:
             log.warning("loss of accuracy in the commutator series, iter=%d, use evolution() here instead of step()", k)
         rho = chop(rho, eps)
     return scaling * rho
+
+
+ISERSTEP_METHODS = ("PWCL", "LG2", "LG4", "LG4A", "RKMK4", "RKMK-DP5", "RKMK-DP8", "RKMK-RKF45")
+
+
+def iserstep(
+    spin_system: SpinSystem, L: Callable[[float, Matrix], Matrix], t: float, method: str, rho: Matrix, timestep: float
+) -> Matrix:
+    """One step of ``d rho / dt = -1j * L(t, rho) @ rho`` with a state-dependent generator (port of ``iserstep.m``).
+
+    ``L(t, rho)`` returns the evolution generator (rad/s) at time ``t`` for the state ``rho``; ``t`` is the
+    time at the start of the step. The difference from :func:`step` is that the generator can depend on the
+    density matrix, which is what radiation damping, the distant dipolar field and other mean-field terms
+    need; a time-dependent generator alone is also fine. Spinach takes ``{L, t, method}`` as one cell array,
+    this port takes the three as arguments.
+
+    Methods: ``'PWCL'`` (the generator at the left edge, first order), ``'LG2'`` (midpoint generator, second
+    order), ``'LG4'`` (left, midpoint and estimated right generators through the fourth-order Lie quadrature
+    of :func:`step`), ``'LG4A'`` (the explicit fourth-order Lie-group method of Casas and Iserles, J. Phys.
+    A 39, 5445 (2006), Appendix A.1), ``'RKMK4'`` (fourth-order Runge-Kutta-Munthe-Kaas) and the
+    Runge-Kutta-Munthe-Kaas schemes with the Dormand-Prince 5(4) and 8(7) and Fehlberg 4(5) tableaux
+    (``'RKMK-DP5'``, ``'RKMK-DP8'``, ``'RKMK-RKF45'``), whose stages are corrected by the truncated
+    inverse of the differential of the exponential map. Every method exponentiates, so a unitary generator
+    gives a unitary step. ``'LG4'`` needs the three-generator :func:`step`, which is Liouville-space only;
+    the other methods work in both formalisms. A zero ``timestep`` returns ``rho``.
+
+    Spinach authors (iserstep.m): Ilya Kuprov, Andrew Graham, Anupama Acharya.
+    """
+    if method not in ISERSTEP_METHODS:
+        raise ValueError(f"method must be one of {ISERSTEP_METHODS}, not {method!r}.")
+    if not callable(L):
+        raise ValueError("L must be a function L(t, rho) returning the evolution generator.")
+    if not np.isscalar(t) or not np.isfinite(t):
+        raise ValueError("t must be a finite scalar.")
+    if not np.isscalar(timestep) or not np.isfinite(timestep):
+        raise ValueError("timestep must be a finite scalar.")
+    if timestep == 0:
+        return rho
+    dt = timestep
+    if method == "PWCL":
+        # Left generator from the left state, assumed constant over the step
+        return step(spin_system, L(t, rho), rho, dt)
+    if method == "LG2":
+        # Left generator, estimated midpoint state, midpoint generator over the whole step
+        LL = L(t, rho)
+        rho_mid = step(spin_system, LL, rho, dt / 2)
+        return step(spin_system, L(t + dt / 2, rho_mid), rho, dt)
+    if method == "LG4":
+        # Left and midpoint generators, endpoint estimated with the midpoint generator, then the quadrature
+        LL = L(t, rho)
+        rho_mid = step(spin_system, LL, rho, dt / 2)
+        LM = L(t + dt / 2, rho_mid)
+        rho_b = step(spin_system, LM, rho, dt)
+        return step(spin_system, [LL, LM, L(t + dt, rho_b)], rho, dt)
+    if method == "LG4A":
+        return _lie_group_4a(spin_system, L, t, rho, dt)
+    if method == "RKMK4":
+        LL = L(t, rho)
+        rho_mid = step(spin_system, LL, rho, dt / 2)
+        LMA = L(t + dt / 2, rho_mid)
+        rho_mid = step(spin_system, LMA + 1j * dt * (1 / 6) * _comm(LL, LMA), rho, dt / 2)
+        LMB = L(t + dt / 2, rho_mid)
+        rho_right = step(spin_system, LMB + 1j * dt * (1 / 6) * _comm(LL, LMB), rho, dt)
+        LR = L(t + dt, rho_right)
+        LA = (1 / 6) * (LL + 2 * LMA + 2 * LMB + LR)
+        LC = _comm(LL - LR, LMA + LMB) + _comm(LL, LR)
+        return step(spin_system, LA + 1j * dt * (1 / 36) * LC, rho, dt)
+    return _rkmk(method[5:], spin_system, L, t, rho, dt)
+
+
+def _comm(A: Matrix, B: Matrix) -> Matrix:
+    """Commutator ``A @ B - B @ A`` of two generators (``comm.m``).
+
+    Spinach authors (comm.m): Ilya Kuprov.
+    """
+    return A @ B - B @ A
+
+
+def _lie_group_4a(spin_system: SpinSystem, L, t: float, rho: Matrix, dt: float) -> Matrix:
+    """The fourth-order explicit Lie-group method of Casas and Iserles, Appendix A.1 (iserstep.m, case 'LG4A').
+
+    Spinach authors (iserstep.m, case LG4A): Ilya Kuprov, Andrew Graham, Anupama Acharya.
+    """
+    # Lie algebra elements are exponentiated by step() as exp(-1j * (1j/dt * u) * dt) = exp(u)
+    h, scale = dt, 1j / dt
+    a_fun = lambda tt, state: -1j * L(tt, state)  # noqa: E731
+    k1 = h * a_fun(t, rho)
+    Q1 = k1
+    u2 = 0.5 * Q1
+    k2 = h * a_fun(t + h / 2, step(spin_system, scale * u2, rho, dt))
+    Q2 = k2 - k1
+    u3 = 0.5 * Q1 + 0.25 * Q2
+    k3 = h * a_fun(t + h / 2, step(spin_system, scale * u3, rho, dt))
+    Q3 = k3 - k2
+    u4 = Q1 + Q2
+    k4 = h * a_fun(t + h, step(spin_system, scale * u4, rho, dt))
+    Q4 = k4 - 2 * k2 + k1
+    u5 = 0.5 * Q1 + 0.25 * Q2 + (1 / 3) * Q3 - (1 / 24) * Q4 - (1 / 48) * _comm(Q1, Q2)
+    k5 = h * a_fun(t + h / 2, step(spin_system, scale * u5, rho, dt))
+    Q5 = k5 - k2
+    u6 = Q1 + Q2 + (2 / 3) * Q3 + (1 / 6) * Q4 - (1 / 6) * _comm(Q1, Q2)
+    k6 = h * a_fun(t + h, step(spin_system, scale * u6, rho, dt))
+    Q6 = k6 - 2 * k2 + k1
+    v = Q1 + Q2 + (2 / 3) * Q5 + (1 / 6) * Q6 - (1 / 6) * (Q1 @ Q2 - (Q2 - Q3 + Q5 + 0.5 * Q6) @ Q1)
+    return step(spin_system, scale * v, rho, dt)
+
+
+# Bernoulli numbers B_0 ... B_10, for the truncated series of the inverse differential of the exponential map
+_BERNOULLI = (1, -1 / 2, 1 / 6, 0, -1 / 30, 0, 1 / 42, 0, -1 / 30, 0, 5 / 66)
+
+
+def _dexpinv(u: Matrix, v: Matrix, order: int) -> Matrix:
+    """``dexp^{-1}_u(v)`` as the Bernoulli series in nested commutators, truncated after ``order`` terms."""
+    if order > 10:
+        raise ValueError(f"extend _BERNOULLI for order {order}.")
+    w, ad_term = v, v
+    for n in range(1, order + 1):
+        ad_term = _comm(u, ad_term)
+        if _BERNOULLI[n] != 0:
+            w = w + (_BERNOULLI[n] / math.factorial(n)) * ad_term
+    return w
+
+
+def _rk_tableau(name: str) -> tuple[np.ndarray, np.ndarray, np.ndarray, int]:
+    """Stage matrix ``A``, weights ``b``, nodes ``c`` and order of the named explicit Runge-Kutta scheme."""
+    if name == "DP5":
+        c = np.array([0, 1 / 5, 3 / 10, 4 / 5, 8 / 9, 1, 1])
+        A = np.zeros((7, 7))
+        A[1, 0] = 1 / 5
+        A[2, :2] = [3 / 40, 9 / 40]
+        A[3, :3] = [44 / 45, -56 / 15, 32 / 9]
+        A[4, :4] = [19372 / 6561, -25360 / 2187, 64448 / 6561, -212 / 729]
+        A[5, :5] = [9017 / 3168, -355 / 33, 46732 / 5247, 49 / 176, -5103 / 18656]
+        A[6, :6] = [35 / 384, 0, 500 / 1113, 125 / 192, -2187 / 6784, 11 / 84]
+        b = np.array([35 / 384, 0, 500 / 1113, 125 / 192, -2187 / 6784, 11 / 84, 0])
+        return A, b, c, 5
+    if name == "RKF45":
+        c = np.array([0, 1 / 4, 3 / 8, 12 / 13, 1, 1 / 2])
+        A = np.zeros((6, 6))
+        A[1, 0] = 1 / 4
+        A[2, :2] = [3 / 32, 9 / 32]
+        A[3, :3] = [1932 / 2197, -7200 / 2197, 7296 / 2197]
+        A[4, :4] = [439 / 216, -8, 3680 / 513, -845 / 4104]
+        A[5, :5] = [-8 / 27, 2, -3544 / 2565, 1859 / 4104, -11 / 40]
+        b = np.array([16 / 135, 0, 6656 / 12825, 28561 / 56430, -9 / 50, 2 / 55])
+        return A, b, c, 5
+    if name == "DP8":
+        c = np.array(
+            [0, 1 / 18, 1 / 12, 1 / 8, 5 / 16, 3 / 8, 59 / 400, 93 / 200, 5490023248 / 9719169821, 13 / 20,
+             1201146811 / 1299019798, 1, 1]
+        )  # fmt: skip
+        A = np.zeros((13, 13))
+        A[1, 0] = 1 / 18
+        A[2, :2] = [1 / 48, 1 / 16]
+        A[3, 0], A[3, 2] = 1 / 32, 3 / 32
+        A[4, 0], A[4, 2], A[4, 3] = 5 / 16, -75 / 64, 75 / 64
+        A[5, 0], A[5, 3], A[5, 4] = 3 / 80, 3 / 16, 3 / 20
+        A[6, 0], A[6, 3:6] = 29443841 / 614563906, [77736538 / 692538347, -28693883 / 1125000000, 23124283 / 1800000000]
+        A[7, 0] = 16016141 / 946692911
+        A[7, 3:7] = [61564180 / 158732637, 22789713 / 633445777, 545815736 / 2771057229, -180193667 / 1043307555]
+        A[8, 0] = 39632708 / 573591083
+        A[8, 3:8] = [
+            -433636366 / 683701615, -421739975 / 2616292301, 100302831 / 723423059, 790204164 / 839813087,
+            800635310 / 3783071287,
+        ]  # fmt: skip
+        A[9, 0] = 246121993 / 1340847787
+        A[9, 3:9] = [
+            -37695042795 / 15268766246, -309121744 / 1061227803, -12992083 / 490766935, 6005943493 / 2108947869,
+            393006217 / 1396673457, 123872331 / 1001029789,
+        ]  # fmt: skip
+        A[10, 0] = -1028468189 / 846180014
+        A[10, 3:10] = [
+            8478235783 / 508512852, 1311729495 / 1432422823, -10304129995 / 1701304382, -48777925059 / 3047939560,
+            15336726248 / 1032824649, -45442868181 / 3398467696, 3065993473 / 597172653,
+        ]  # fmt: skip
+        A[11, 0] = 185892177 / 718116043
+        A[11, 3:11] = [
+            -3185094517 / 667107341, -477755414 / 1098053517, -703635378 / 230739211, 5731566787 / 1027545527,
+            5232866602 / 850066563, -4093664535 / 808688257, 3962137247 / 1805957418, 65686358 / 487910083,
+        ]  # fmt: skip
+        A[12, 0] = 403863854 / 491063109
+        A[12, 3:12] = [
+            -5068492393 / 434740067, -411421997 / 543043805, 652783627 / 914296604, 11173962825 / 925320556,
+            -13158990841 / 6184727034, 3936647629 / 1978049680, -160528059 / 685178525, 248638103 / 1413531060, 0,
+        ]  # fmt: skip
+        b = np.array(
+            [
+                14005451 / 335480064, 0, 0, 0, 0, -59238493 / 1068277825, 181606767 / 758867731,
+                561292985 / 797845732, -1041891430 / 1371343529, 760417239 / 1151165299, 118820643 / 751138087,
+                -528747749 / 2220607170, 1 / 4,
+            ]
+        )  # fmt: skip
+        return A, b, c, 8
+    raise ValueError(f"unknown Runge-Kutta tableau {name!r}.")
+
+
+def _rkmk(name: str, spin_system: SpinSystem, L, t: float, rho: Matrix, dt: float) -> Matrix:
+    """Explicit Runge-Kutta-Munthe-Kaas step with the named tableau (iserstep.m, subfunction RKMK).
+
+    Spinach authors (iserstep.m, subfunction RKMK): Ilya Kuprov, Andrew Graham, Anupama Acharya.
+    """
+    A, b, c, order = _rk_tableau(name)
+    order_dexp = order - 1
+    scale = 1j / dt
+    K: list[Matrix] = []
+    for n in range(len(b)):
+        # Lie algebra element of this stage, the stage state it gives, and the field there
+        u_n = None
+        for m in range(n):
+            if A[n, m] != 0:
+                term = dt * A[n, m] * K[m]
+                u_n = term if u_n is None else u_n + term
+        rho_n = rho if u_n is None else step(spin_system, scale * u_n, rho, dt)
+        k_raw = -1j * L(t + c[n] * dt, rho_n)
+        K.append(k_raw if u_n is None or order_dexp == 0 else _dexpinv(u_n, k_raw, order_dexp))
+    v = None
+    for n in range(len(b)):
+        if b[n] != 0:
+            term = dt * b[n] * K[n]
+            v = term if v is None else v + term
+    return rho if v is None else step(spin_system, scale * v, rho, dt)
 
 
 def krylov(

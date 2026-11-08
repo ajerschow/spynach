@@ -1,0 +1,106 @@
+== product_quadratures_2 (Spinach /Users/alexej/Documents/PROG/spynach-spinach) -> /Users/alexej/Documents/PROG/spynach/comparison/runs/product_quadratures_2/spinach
+[...arison > product_quadratures_2_spinach > create ]  scratch location: /Users/alexej/Documents/PROG/spynach-spinach/scratch
+[...product_quadratures_2_spinach > create > banner ]   
+[...product_quadratures_2_spinach > create > banner ]  ============================================
+[...product_quadratures_2_spinach > create > banner ]  =                                          =
+[...product_quadratures_2_spinach > create > banner ]  =               SPINACH v2.13              =
+[...product_quadratures_2_spinach > create > banner ]  =                                          =
+[...product_quadratures_2_spinach > create > banner ]  =                <a href = "https://spindynamics.org/wiki/index.php?title=Spinach_developer_team">author list</a>               =
+[...product_quadratures_2_spinach > create > banner ]  =                                          =
+[...product_quadratures_2_spinach > create > banner ]  =               <a href = "https://spindynamics.org/wiki/index.php?title=Main_Page">documentation</a>              =
+[...product_quadratures_2_spinach > create > banner ]  =                                          =
+[...product_quadratures_2_spinach > create > banner ]  =                   <a href = "https://link.springer.com/book/10.1007/978-3-031-05607-9">book</a>                   =
+[...product_quadratures_2_spinach > create > banner ]  =                                          =
+[...product_quadratures_2_spinach > create > banner ]  =                MIT License               =
+[...product_quadratures_2_spinach > create > banner ]  =                                          =
+[...product_quadratures_2_spinach > create > banner ]  ============================================
+[...product_quadratures_2_spinach > create > banner ]   
+[...uct_quadratures_2_spinach > create > tolerances ]  Drop interaction tensors with 2-norms below (Hz)                 1.00000000e-10       (safe default)
+[...uct_quadratures_2_spinach > create > tolerances ]  Drop Liouvillian elements with norm below (rad/s)                1.00000000e-10       (safe default)
+[...uct_quadratures_2_spinach > create > tolerances ]  Drop relaxation superoperator elements with norm below (Hz)      1.00000000e-10       (safe default)
+[...uct_quadratures_2_spinach > create > tolerances ]  Drop propagator elements with norm below                         1.00000000e-10       (safe default)
+[...uct_quadratures_2_spinach > create > tolerances ]  Drop subspaces with populations below                            1.00000000e-10       (safe default)
+[...uct_quadratures_2_spinach > create > tolerances ]  Drop irreps with populations below                               1.00000000e-10       (safe default)
+[...uct_quadratures_2_spinach > create > tolerances ]  Steady state convergence tolerance                               1.00000000e-08       (safe default)
+[...uct_quadratures_2_spinach > create > tolerances ]  Number of time steps in ZTE sample                               32                   (safe default)
+[...uct_quadratures_2_spinach > create > tolerances ]  ZTE track drop threshold                                         1.00000000e-24       (safe default)
+[...uct_quadratures_2_spinach > create > tolerances ]  ZTE off for state vector densities above                         0.5                  (safe default)
+[...uct_quadratures_2_spinach > create > tolerances ]  Drop dipolar couplings over more than (Angstrom)                 100                  (safe default)
+[...uct_quadratures_2_spinach > create > tolerances ]  Krylov propagation for dimensions above                          10000                (safe default)
+[...uct_quadratures_2_spinach > create > tolerances ]  Basis set printing hush threshold                                256                  (safe default)
+[...uct_quadratures_2_spinach > create > tolerances ]  Collect small subspaces into bundles of dimension                1000                 (safe default)
+[...uct_quadratures_2_spinach > create > tolerances ]  Force sparse algebra for matrix density below                    0.15                 (safe default)
+[...uct_quadratures_2_spinach > create > tolerances ]  Force full algebra for matrix dimension below                    200                  (safe default)
+[...uct_quadratures_2_spinach > create > tolerances ]  Rel. acc. for the elements of Redfield superoperator             1.00000000e-04       (safe default)
+[...uct_quadratures_2_spinach > create > tolerances ]  Matrix exponential differentiation algorithm                     auxmat               (safe default)
+[...uct_quadratures_2_spinach > create > tolerances ]  Number of PBC images for DD couplings in PBC systems             2                    (safe default)
+[...uct_quadratures_2_spinach > create > tolerances ]  Number of days before a cache record is deleted                  365                  (safe default)
+[...uct_quadratures_2_spinach > create > tolerances ]  Planck constant (hbar)                                           1.05457182e-34      
+[...uct_quadratures_2_spinach > create > tolerances ]  Boltzmann constant (k)                                           1.38064900e-23      
+[...uct_quadratures_2_spinach > create > tolerances ]  Free electron g-factor                                           2.00231930e+00      
+[...uct_quadratures_2_spinach > create > tolerances ]  Vacuum permeability                                              1.25663706e-06      
+[...uct_quadratures_2_spinach > create > tolerances ]  Bohr magneton                                                    9.27401007e-24      
+[...arison > product_quadratures_2_spinach > create ]  WARNING: the following functionality is disabled by the user
+[...arison > product_quadratures_2_spinach > create ]           > health checks at start-up
+[...arison > product_quadratures_2_spinach > create ]  job identifier: 407d0bc9272e7f9728ae3ab228791ed7
+[...arison > product_quadratures_2_spinach > create ]  random number generator shuffled
+[...arison > product_quadratures_2_spinach > create ]  starting a parallel pool with the following parameters:
+[...arison > product_quadratures_2_spinach > create ]           > parallel profile:  processes
+[...arison > product_quadratures_2_spinach > create ]           > workers requested: 11
+[...arison > product_quadratures_2_spinach > create ]           > worker port range: 20001-44999
+Starting parallel pool (parpool) using the 'Processes' profile ...
+Connected to parallel pool with 11 workers.
+[...product_quadratures_2_spinach > create > banner ]   
+[...product_quadratures_2_spinach > create > banner ]  ============================================
+[...product_quadratures_2_spinach > create > banner ]  =                                          =
+[...product_quadratures_2_spinach > create > banner ]  =               SPIN SYSTEM                =
+[...product_quadratures_2_spinach > create > banner ]  =                                          =
+[...product_quadratures_2_spinach > create > banner ]  ============================================
+[...product_quadratures_2_spinach > create > banner ]   
+[...arison > product_quadratures_2_spinach > create ]  a total of 1 particles in the simulation, of which 1 have a zero spin.
+[...arison > product_quadratures_2_spinach > create ]  magnetic induction of 0 Tesla (0 MHz proton frequency, 0 GHz electron frequency).
+[...quadratures_2_spinach > create > summary_zeeman ]  summary of Zeeman tensors and their anisotropies (ppm for nuclei, g-tensor for electrons)
+[...quadratures_2_spinach > create > summary_zeeman ]  =======================================================================================================
+[...quadratures_2_spinach > create > summary_zeeman ]  #    Spin  2S+1                      Matrix                      Tr/3         norm[rank1]  norm[rank2] 
+[...quadratures_2_spinach > create > summary_zeeman ]  -------------------------------------------------------------------------------------------------------
+[...quadratures_2_spinach > create > summary_zeeman ]  1    G     1      +0.000000e+00  +0.000000e+00  +0.000000e+00
+[...quadratures_2_spinach > create > summary_zeeman ]                    +0.000000e+00  +0.000000e+00  +0.000000e+00    +0.0000e+00  +0.0000e+00  +0.0000e+00  
+[...quadratures_2_spinach > create > summary_zeeman ]                    +0.000000e+00  +0.000000e+00  +0.000000e+00
+[...quadratures_2_spinach > create > summary_zeeman ]  =======================================================================================================
+[...arison > product_quadratures_2_spinach > create ]  WARNING - no giant spin terms supplied, zeros assumed.
+[...arison > product_quadratures_2_spinach > create ]  initializing interaction arrays...
+[...arison > product_quadratures_2_spinach > create ]  WARNING - no coordinates given, point dipolar interactions assumed to be zero.
+[...arison > product_quadratures_2_spinach > create ]  processing coupling data...
+[...dratures_2_spinach > create > summary_couplings ]  summary of coupling tensors and their anisotropies (Hz)
+[...dratures_2_spinach > create > summary_couplings ]  ======================================================================================================
+[...dratures_2_spinach > create > summary_couplings ]  Spin A  Spin B                     Matrix                      Tr/3         norm[rank1]  norm[rank2]  
+[...dratures_2_spinach > create > summary_couplings ]  ------------------------------------------------------------------------------------------------------
+[...dratures_2_spinach > create > summary_couplings ]  ======================================================================================================
+[...arison > product_quadratures_2_spinach > create ]  WARNING - spin temperature not specified, assuming 298 Kelvin
+[...arison > product_quadratures_2_spinach > create ]  WARNING - no relaxation theory specified
+[... product_quadratures_2_spinach > basis > banner ]   
+[... product_quadratures_2_spinach > basis > banner ]  ============================================
+[... product_quadratures_2_spinach > basis > banner ]  =                                          =
+[... product_quadratures_2_spinach > basis > banner ]  =                BASIS SET                 =
+[... product_quadratures_2_spinach > basis > banner ]  =                                          =
+[... product_quadratures_2_spinach > basis > banner ]  ============================================
+[... product_quadratures_2_spinach > basis > banner ]   
+[...dratures_2_spinach > basis > summary_basis_opts ]  spherical tensor basis set using Liouville space matrix formalism.
+[...dratures_2_spinach > basis > summary_basis_opts ]  starting with complete basis set on all spins...
+[...parison > product_quadratures_2_spinach > basis ]  coupling tensors with norm below 1e-10 Hz will be ignored.
+[...parison > product_quadratures_2_spinach > basis ]  chemical substance 1, 1 spins:
+[...parison > product_quadratures_2_spinach > basis ]  building basis set descriptor...
+[...parison > product_quadratures_2_spinach > basis ]  eliminating redundant states...
+[...parison > product_quadratures_2_spinach > basis ]  sorting the basis...
+[...parison > product_quadratures_2_spinach > basis ]  chemical substance 1: 0 states.
+[...t_quadratures_2_spinach > basis > summary_basis ]  final basis set summary (L,M quantum numbers in irreducible spherical tensor products).
+[...t_quadratures_2_spinach > basis > summary_basis ]  N        1
+[...t_quadratures_2_spinach > basis > summary_basis ]  1      (0,0)   
+[...t_quadratures_2_spinach > basis > summary_basis ]   
+[...t_quadratures_2_spinach > basis > summary_basis ]  state space dimension 1 (100% of the full state space).
+[...roduct_quadratures_2_spinach > basis > symmetry ]  no symmetry information available.
+[...parison > product_quadratures_2_spinach > basis ]  caching Lie structure tables...
+reference                             1.9 s
+benchmark                             9.3 s
+plot                                  3.7 s
+total                                37.5 s

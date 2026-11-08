@@ -125,3 +125,14 @@ before going further.
 - **Produces:** `seq_cosy_derome`, `seq_noesy_pair`, `seq_hsqc_dilute`
 - **Check:** `SPYNACH_FIXTURES=/fixtures pytest tests/slice/test_seq_parity.py -rs`; nothing should skip.
 - **Result:** done (host, 2026-10-11); three cases written, earlier cases skipped.
+
+## FR-008: state-dependent integrator `iserstep` (`dump_iserstep.m`)
+
+- **Status:** fulfilled 2026-11-08, `/Users/alexej/Documents/PROG/spynach-fixtures/2.13/`, run log `run_20261108T143104Z.log`; MATLAB R2026b, Spinach `03a88b7e` (2.13), clean; `pytest tests/unit/test_iserstep.py`: 8 passed
+- **Requested:** 2026-11-08, branch `main`
+- **Spinach:** clean checkout, 2.13 (`03a88b7e`), as before (it holds `kernel/pulses/iserstep.m`)
+- **Needs:** the same host setup. One case, one proton in Hilbert space, one step of each of the eight methods and the two-half-step DP8 reference of Spinach's `test_dynamic_iserstep_highorder.m`: under a second.
+- **Run:** `oracle/run_fixtures.sh` from the `main` checkout (`dump_iserstep` is in `dump_scripts`; existing cases are skipped).
+- **Produces:** `iserstep_hilb_1spin`
+- **Check:** `SPYNACH_FIXTURES=/Users/alexej/Documents/PROG/spynach-fixtures pytest tests/unit/test_iserstep.py -rs`; nothing should skip.
+- **Result:** done (host, 2026-11-08); one case written, earlier cases skipped. A first run failed in `oracle_meta` (`jsonencode` refuses complex inputs), so the dump records the density matrix as real and imaginary parts.

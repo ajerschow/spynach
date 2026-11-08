@@ -17,6 +17,7 @@ notebook is [`notebooks/beyond-the-port.ipynb`](notebooks/beyond-the-port.ipynb)
 6. [Spynach in the browser](#spynach-in-the-browser)
 7. [EPR with EasySpyn](#epr-with-easyspyn)
 8. [Relaxation pathways by mechanism](#relaxation-pathways-by-mechanism)
+9. [Radiation damping](#radiation-damping)
 
 ## Coherence transfer pathway selection: `ctps`
 
@@ -240,3 +241,39 @@ tetrahedral symmetry, and the check against `spynach.relaxation`. The same
 with the field, the geometry, the anisotropies, the quadrupolar coupling,
 the correlation time, the coherence order, the boron ranks and the secular
 approximation in its parameter form.
+
+## Radiation damping
+
+Spinach propagates under generators that are known before the step.
+Radiation damping, the feedback of the probe on the spins, makes the
+generator depend on the state: the transverse magnetisation of the tuned
+isotope induces a coil current whose field rotates the magnetisation back
+towards equilibrium. `spynach.radiation_damping` builds that generator for
+any spin system, from the damping rate and the tuning phase of the probe
+(`rd_rate` and `rd_phase` convert Q, filling factor, concentration and
+detuning), and `iserstep`, a port of Spinach's state-dependent integrator,
+propagates it. One proton inverted to 170 degrees returns to equilibrium
+along the Bloembergen-Pound curve `m_z = tanh(rate (t - t0))`:
+
+```python
+import numpy as np
+import spynach
+from spynach.propagation import iserstep
+
+proton = spynach.basis(spynach.create({"isotopes": ["1H"], "magnet": 14.1}, {}),
+                       {"formalism": "sphten-liouv", "approximation": "none"})
+rd = spynach.radiation_damping(proton, np.zeros((4, 4)), "1H", rate=50.0)
+rho = spynach.step(proton, spynach.operator(proton, "Ly", "1H"), spynach.state(proton, "Lz", "1H"), np.pi * 170 / 180)
+for n in range(400):
+    rho = iserstep(proton, rd, n * 2e-4, "LG4", rho, 2e-4)
+t0 = -np.arctanh(np.cos(np.pi * 170 / 180)) / 50.0
+print(f"m_z after 80 ms: {rd.magnetisation(rho)[2]:.4f}, closed form {np.tanh(50.0 * (0.08 - t0)):.4f}")
+```
+
+The guide [Radiation damping](radiation-damping.md) covers the integrator
+and its convergence orders against Spinach's `product_quadratures_2`
+example, the closed form, a detuned probe (damping and frequency pulling),
+an inhomogeneous line as an ensemble of isochromats sharing the coil, and a
+strongly coupled pair against the line-by-line classical picture. The
+doublet runs in the browser playground
+([`try.html#ex-rd`](https://ajerschow.github.io/spynach/try.html#ex-rd)).

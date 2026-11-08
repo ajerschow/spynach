@@ -1,0 +1,566 @@
+{
+  "by_total": [
+    {
+      "function": "run (product_quadratures_2_spynach.py:14)",
+      "file": "/Users/alexej/Documents/PROG/spynach/comparison/cases/product_quadratures_2/product_quadratures_2_spynach.py",
+      "calls": 1,
+      "total_s": 32.807058125000005,
+      "self_s": 1.3041000000000001e-05
+    },
+    {
+      "function": "simulate (product_quadratures_2.py:92)",
+      "file": "/Users/alexej/Documents/PROG/spynach/examples/fundamentals/product_quadratures_2.py",
+      "calls": 1,
+      "total_s": 32.652963834000005,
+      "self_s": 0.000864534
+    },
+    {
+      "function": "trajectory (product_quadratures_2.py:80)",
+      "file": "/Users/alexej/Documents/PROG/spynach/examples/fundamentals/product_quadratures_2.py",
+      "calls": 71,
+      "total_s": 32.649755416000005,
+      "self_s": 0.042354753
+    },
+    {
+      "function": "iserstep (propagation.py:220)",
+      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/propagation.py",
+      "calls": 66647,
+      "total_s": 32.605780752,
+      "self_s": 0.23038693200000002
+    },
+    {
+      "function": "step (propagation.py:88)",
+      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/propagation.py",
+      "calls": 374931,
+      "total_s": 25.731789163000002,
+      "self_s": 1.751329885
+    },
+    {
+      "function": "_reordered_taylor (propagation.py:138)",
+      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/propagation.py",
+      "calls": 374931,
+      "total_s": 21.079743991,
+      "self_s": 9.368920671
+    },
+    {
+      "function": "_rkmk (propagation.py:411)",
+      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/propagation.py",
+      "calls": 21967,
+      "total_s": 20.487534734,
+      "self_s": 1.5314142030000002
+    },
+    {
+      "function": "any (fromnumeric.py:2474)",
+      "file": "/Users/alexej/Documents/PROG/spynach/.venv-mac/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+      "calls": 4391761,
+      "total_s": 5.446446271,
+      "self_s": 1.3996370960000002
+    },
+    {
+      "function": "matmul (utilities.py:84)",
+      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/utilities.py",
+      "calls": 3902757,
+      "total_s": 5.150075646,
+      "self_s": 3.218818803
+    },
+    {
+      "function": "_lie_group_4a (propagation.py:293)",
+      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/propagation.py",
+      "calls": 8936,
+      "total_s": 4.3569250440000005,
+      "self_s": 0.222543338
+    },
+    {
+      "function": "_wrapreduction_any_all (fromnumeric.py:86)",
+      "file": "/Users/alexej/Documents/PROG/spynach/.venv-mac/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+      "calls": 4391761,
+      "total_s": 4.046809175,
+      "self_s": 2.2578967000000003
+    },
+    {
+      "function": "_dexpinv (propagation.py:326)",
+      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/propagation.py",
+      "calls": 209988,
+      "total_s": 2.980502533,
+      "self_s": 0.9408735100000001
+    },
+    {
+      "function": "issparse (_sparse.py:10)",
+      "file": "/Users/alexej/Documents/PROG/spynach/.venv-mac/lib/python3.12/site-packages/scipy/_lib/_sparse.py",
+      "calls": 4644440,
+      "total_s": 2.3452084870000003,
+      "self_s": 0.52944692
+    },
+    {
+      "function": "_comm (propagation.py:285)",
+      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/propagation.py",
+      "calls": 1362684,
+      "total_s": 2.072156629,
+      "self_s": 2.072156629
+    },
+    {
+      "function": "<method 'reduce' of 'numpy.ufunc' objects>",
+      "file": "~",
+      "calls": 5552315,
+      "total_s": 1.9833694190000002,
+      "self_s": 1.9833694190000002
+    },
+    {
+      "function": "<built-in method builtins.isinstance>",
+      "file": "~",
+      "calls": 5562117,
+      "total_s": 1.9082041820000002,
+      "self_s": 0.8891810120000001
+    },
+    {
+      "function": "<built-in method builtins.max>",
+      "file": "~",
+      "calls": 750474,
+      "total_s": 1.8765308450000002,
+      "self_s": 0.202369226
+    },
+    {
+      "function": "<genexpr> (propagation.py:111)",
+      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/propagation.py",
+      "calls": 767734,
+      "total_s": 1.673903718,
+      "self_s": 0.110371274
+    },
+    {
+      "function": "generator (product_quadratures_2.py:62)",
+      "file": "/Users/alexej/Documents/PROG/spynach/examples/fundamentals/product_quadratures_2.py",
+      "calls": 374931,
+      "total_s": 1.602399182,
+      "self_s": 0.972741084
+    },
+    {
+      "function": "norm1 (backend.py:108)",
+      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/backend.py",
+      "calls": 392803,
+      "total_s": 1.563532444,
+      "self_s": 0.33067031
+    },
+    {
+      "function": "__instancecheck__ (<frozen abc>:117)",
+      "file": "<frozen abc>",
+      "calls": 4644922,
+      "total_s": 1.019030753,
+      "self_s": 0.522532423
+    },
+    {
+      "function": "<built-in method numpy.array>",
+      "file": "~",
+      "calls": 794082,
+      "total_s": 0.6540722090000001,
+      "self_s": 0.6540722090000001
+    },
+    {
+      "function": "max (fromnumeric.py:3049)",
+      "file": "/Users/alexej/Documents/PROG/spynach/.venv-mac/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+      "calls": 392804,
+      "total_s": 0.602294589,
+      "self_s": 0.178121303
+    },
+    {
+      "function": "<built-in method _abc._abc_instancecheck>",
+      "file": "~",
+      "calls": 4644922,
+      "total_s": 0.49649833000000004,
+      "self_s": 0.49623308200000005
+    },
+    {
+      "function": "<method 'sum' of 'numpy.ndarray' objects>",
+      "file": "~",
+      "calls": 392809,
+      "total_s": 0.468851088,
+      "self_s": 0.100005274
+    },
+    {
+      "function": "<method 'items' of 'dict' objects>",
+      "file": "~",
+      "calls": 4785907,
+      "total_s": 0.435744499,
+      "self_s": 0.435744499
+    },
+    {
+      "function": "_wrapreduction (fromnumeric.py:66)",
+      "file": "/Users/alexej/Documents/PROG/spynach/.venv-mac/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+      "calls": 392808,
+      "total_s": 0.42420049400000004,
+      "self_s": 0.24114964800000002
+    },
+    {
+      "function": "dense (backend.py:60)",
+      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/backend.py",
+      "calls": 374931,
+      "total_s": 0.38984215800000005,
+      "self_s": 0.12155172700000001
+    },
+    {
+      "function": "_sum (_methods.py:47)",
+      "file": "/Users/alexej/Documents/PROG/spynach/.venv-mac/lib/python3.12/site-packages/numpy/_core/_methods.py",
+      "calls": 392809,
+      "total_s": 0.36884581400000005,
+      "self_s": 0.059733388000000005
+    },
+    {
+      "function": "<built-in method builtins.len>",
+      "file": "~",
+      "calls": 4945185,
+      "total_s": 0.316867905,
+      "self_s": 0.31684028000000003
+    },
+    {
+      "function": "_any_dispatcher (fromnumeric.py:2469)",
+      "file": "/Users/alexej/Documents/PROG/spynach/.venv-mac/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+      "calls": 4391761,
+      "total_s": 0.29119964800000003,
+      "self_s": 0.29119964800000003
+    },
+    {
+      "function": "<method 'max' of 'numpy.ndarray' objects>",
+      "file": "~",
+      "calls": 374932,
+      "total_s": 0.287219913,
+      "self_s": 0.09304026300000001
+    },
+    {
+      "function": "<lambda> (propagation.py:300)",
+      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/propagation.py",
+      "calls": 53616,
+      "total_s": 0.26508220400000004,
+      "self_s": 0.034179447
+    },
+    {
+      "function": "issparse (backend.py:47)",
+      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/backend.py",
+      "calls": 366752,
+      "total_s": 0.264519068,
+      "self_s": 0.06872742
+    },
+    {
+      "function": "__new__ (getlimits.py:169)",
+      "file": "/Users/alexej/Documents/PROG/spynach/.venv-mac/lib/python3.12/site-packages/numpy/_core/getlimits.py",
+      "calls": 374931,
+      "total_s": 0.252334579,
+      "self_s": 0.159526164
+    },
+    {
+      "function": "_amax (_methods.py:39)",
+      "file": "/Users/alexej/Documents/PROG/spynach/.venv-mac/lib/python3.12/site-packages/numpy/_core/_methods.py",
+      "calls": 374932,
+      "total_s": 0.19417965,
+      "self_s": 0.056292883
+    },
+    {
+      "function": "<built-in method builtins.abs>",
+      "file": "~",
+      "calls": 767734,
+      "total_s": 0.160694984,
+      "self_s": 0.160694984
+    },
+    {
+      "function": "isscalar (numeric.py:1911)",
+      "file": "/Users/alexej/Documents/PROG/spynach/.venv-mac/lib/python3.12/site-packages/numpy/_core/numeric.py",
+      "calls": 508315,
+      "total_s": 0.158343329,
+      "self_s": 0.108187273
+    },
+    {
+      "function": "plot (product_quadratures_2.py:121)",
+      "file": "/Users/alexej/Documents/PROG/spynach/examples/fundamentals/product_quadratures_2.py",
+      "calls": 1,
+      "total_s": 0.15408000000000002,
+      "self_s": 4.3336e-05
+    },
+    {
+      "function": "_rk_tableau (propagation.py:338)",
+      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/propagation.py",
+      "calls": 21967,
+      "total_s": 0.10143197100000001,
+      "self_s": 0.07098578400000001
+    }
+  ],
+  "by_self": [
+    {
+      "function": "_reordered_taylor (propagation.py:138)",
+      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/propagation.py",
+      "calls": 374931,
+      "total_s": 21.079743991,
+      "self_s": 9.368920671
+    },
+    {
+      "function": "matmul (utilities.py:84)",
+      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/utilities.py",
+      "calls": 3902757,
+      "total_s": 5.150075646,
+      "self_s": 3.218818803
+    },
+    {
+      "function": "_wrapreduction_any_all (fromnumeric.py:86)",
+      "file": "/Users/alexej/Documents/PROG/spynach/.venv-mac/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+      "calls": 4391761,
+      "total_s": 4.046809175,
+      "self_s": 2.2578967000000003
+    },
+    {
+      "function": "_comm (propagation.py:285)",
+      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/propagation.py",
+      "calls": 1362684,
+      "total_s": 2.072156629,
+      "self_s": 2.072156629
+    },
+    {
+      "function": "<method 'reduce' of 'numpy.ufunc' objects>",
+      "file": "~",
+      "calls": 5552315,
+      "total_s": 1.9833694190000002,
+      "self_s": 1.9833694190000002
+    },
+    {
+      "function": "step (propagation.py:88)",
+      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/propagation.py",
+      "calls": 374931,
+      "total_s": 25.731789163000002,
+      "self_s": 1.751329885
+    },
+    {
+      "function": "_rkmk (propagation.py:411)",
+      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/propagation.py",
+      "calls": 21967,
+      "total_s": 20.487534734,
+      "self_s": 1.5314142030000002
+    },
+    {
+      "function": "any (fromnumeric.py:2474)",
+      "file": "/Users/alexej/Documents/PROG/spynach/.venv-mac/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+      "calls": 4391761,
+      "total_s": 5.446446271,
+      "self_s": 1.3996370960000002
+    },
+    {
+      "function": "generator (product_quadratures_2.py:62)",
+      "file": "/Users/alexej/Documents/PROG/spynach/examples/fundamentals/product_quadratures_2.py",
+      "calls": 374931,
+      "total_s": 1.602399182,
+      "self_s": 0.972741084
+    },
+    {
+      "function": "_dexpinv (propagation.py:326)",
+      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/propagation.py",
+      "calls": 209988,
+      "total_s": 2.980502533,
+      "self_s": 0.9408735100000001
+    },
+    {
+      "function": "<built-in method builtins.isinstance>",
+      "file": "~",
+      "calls": 5562117,
+      "total_s": 1.9082041820000002,
+      "self_s": 0.8891810120000001
+    },
+    {
+      "function": "<built-in method numpy.array>",
+      "file": "~",
+      "calls": 794082,
+      "total_s": 0.6540722090000001,
+      "self_s": 0.6540722090000001
+    },
+    {
+      "function": "issparse (_sparse.py:10)",
+      "file": "/Users/alexej/Documents/PROG/spynach/.venv-mac/lib/python3.12/site-packages/scipy/_lib/_sparse.py",
+      "calls": 4644440,
+      "total_s": 2.3452084870000003,
+      "self_s": 0.52944692
+    },
+    {
+      "function": "__instancecheck__ (<frozen abc>:117)",
+      "file": "<frozen abc>",
+      "calls": 4644922,
+      "total_s": 1.019030753,
+      "self_s": 0.522532423
+    },
+    {
+      "function": "<built-in method _abc._abc_instancecheck>",
+      "file": "~",
+      "calls": 4644922,
+      "total_s": 0.49649833000000004,
+      "self_s": 0.49623308200000005
+    },
+    {
+      "function": "<method 'items' of 'dict' objects>",
+      "file": "~",
+      "calls": 4785907,
+      "total_s": 0.435744499,
+      "self_s": 0.435744499
+    },
+    {
+      "function": "norm1 (backend.py:108)",
+      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/backend.py",
+      "calls": 392803,
+      "total_s": 1.563532444,
+      "self_s": 0.33067031
+    },
+    {
+      "function": "<built-in method builtins.len>",
+      "file": "~",
+      "calls": 4945185,
+      "total_s": 0.316867905,
+      "self_s": 0.31684028000000003
+    },
+    {
+      "function": "_any_dispatcher (fromnumeric.py:2469)",
+      "file": "/Users/alexej/Documents/PROG/spynach/.venv-mac/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+      "calls": 4391761,
+      "total_s": 0.29119964800000003,
+      "self_s": 0.29119964800000003
+    },
+    {
+      "function": "_wrapreduction (fromnumeric.py:66)",
+      "file": "/Users/alexej/Documents/PROG/spynach/.venv-mac/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+      "calls": 392808,
+      "total_s": 0.42420049400000004,
+      "self_s": 0.24114964800000002
+    },
+    {
+      "function": "iserstep (propagation.py:220)",
+      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/propagation.py",
+      "calls": 66647,
+      "total_s": 32.605780752,
+      "self_s": 0.23038693200000002
+    },
+    {
+      "function": "_lie_group_4a (propagation.py:293)",
+      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/propagation.py",
+      "calls": 8936,
+      "total_s": 4.3569250440000005,
+      "self_s": 0.222543338
+    },
+    {
+      "function": "<built-in method builtins.max>",
+      "file": "~",
+      "calls": 750474,
+      "total_s": 1.8765308450000002,
+      "self_s": 0.202369226
+    },
+    {
+      "function": "max (fromnumeric.py:3049)",
+      "file": "/Users/alexej/Documents/PROG/spynach/.venv-mac/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+      "calls": 392804,
+      "total_s": 0.602294589,
+      "self_s": 0.178121303
+    },
+    {
+      "function": "<built-in method builtins.abs>",
+      "file": "~",
+      "calls": 767734,
+      "total_s": 0.160694984,
+      "self_s": 0.160694984
+    },
+    {
+      "function": "__new__ (getlimits.py:169)",
+      "file": "/Users/alexej/Documents/PROG/spynach/.venv-mac/lib/python3.12/site-packages/numpy/_core/getlimits.py",
+      "calls": 374931,
+      "total_s": 0.252334579,
+      "self_s": 0.159526164
+    },
+    {
+      "function": "dense (backend.py:60)",
+      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/backend.py",
+      "calls": 374931,
+      "total_s": 0.38984215800000005,
+      "self_s": 0.12155172700000001
+    },
+    {
+      "function": "<genexpr> (propagation.py:111)",
+      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/propagation.py",
+      "calls": 767734,
+      "total_s": 1.673903718,
+      "self_s": 0.110371274
+    },
+    {
+      "function": "isscalar (numeric.py:1911)",
+      "file": "/Users/alexej/Documents/PROG/spynach/.venv-mac/lib/python3.12/site-packages/numpy/_core/numeric.py",
+      "calls": 508315,
+      "total_s": 0.158343329,
+      "self_s": 0.108187273
+    },
+    {
+      "function": "<method 'sum' of 'numpy.ndarray' objects>",
+      "file": "~",
+      "calls": 392809,
+      "total_s": 0.468851088,
+      "self_s": 0.100005274
+    },
+    {
+      "function": "<method 'get' of 'dict' objects>",
+      "file": "~",
+      "calls": 769820,
+      "total_s": 0.094724846,
+      "self_s": 0.094724846
+    },
+    {
+      "function": "<method 'max' of 'numpy.ndarray' objects>",
+      "file": "~",
+      "calls": 374932,
+      "total_s": 0.287219913,
+      "self_s": 0.09304026300000001
+    },
+    {
+      "function": "_rk_tableau (propagation.py:338)",
+      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/propagation.py",
+      "calls": 21967,
+      "total_s": 0.10143197100000001,
+      "self_s": 0.07098578400000001
+    },
+    {
+      "function": "issparse (backend.py:47)",
+      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/backend.py",
+      "calls": 366752,
+      "total_s": 0.264519068,
+      "self_s": 0.06872742
+    },
+    {
+      "function": "<built-in method math.factorial>",
+      "file": "~",
+      "calls": 786336,
+      "total_s": 0.06002644100000001,
+      "self_s": 0.06002644100000001
+    },
+    {
+      "function": "_sum (_methods.py:47)",
+      "file": "/Users/alexej/Documents/PROG/spynach/.venv-mac/lib/python3.12/site-packages/numpy/_core/_methods.py",
+      "calls": 392809,
+      "total_s": 0.36884581400000005,
+      "self_s": 0.059733388000000005
+    },
+    {
+      "function": "_amax (_methods.py:39)",
+      "file": "/Users/alexej/Documents/PROG/spynach/.venv-mac/lib/python3.12/site-packages/numpy/_core/_methods.py",
+      "calls": 374932,
+      "total_s": 0.19417965,
+      "self_s": 0.056292883
+    },
+    {
+      "function": "<built-in method numpy.asarray>",
+      "file": "~",
+      "calls": 375078,
+      "total_s": 0.050144272000000004,
+      "self_s": 0.050144272000000004
+    },
+    {
+      "function": "to_device (backend.py:65)",
+      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/backend.py",
+      "calls": 767734,
+      "total_s": 0.046455137,
+      "self_s": 0.046455137
+    },
+    {
+      "function": "get_backend (backend.py:119)",
+      "file": "/Users/alexej/Documents/PROG/spynach/src/spynach/backend.py",
+      "calls": 749862,
+      "total_s": 0.044987653,
+      "self_s": 0.044987653
+    }
+  ]
+}

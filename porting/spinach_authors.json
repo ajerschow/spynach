@@ -69,6 +69,13 @@
    ],
    "unnamed": 0
   },
+  "comm.m": {
+   "path": "kernel/utilities/comm.m",
+   "authors": [
+    "Ilya Kuprov"
+   ],
+   "unnamed": 0
+  },
   "contspacing.m": {
    "path": "kernel/plotting/contspacing.m",
    "authors": [
@@ -261,6 +268,15 @@
    "authors": [
     "Ilya Kuprov",
     "Hannah Hogben"
+   ],
+   "unnamed": 0
+  },
+  "iserstep.m": {
+   "path": "kernel/pulses/iserstep.m",
+   "authors": [
+    "Ilya Kuprov",
+    "Andrew Graham",
+    "Anupama Acharya"
    ],
    "unnamed": 0
   },
@@ -923,6 +939,11 @@
    "relation": "port",
    "note": ""
   },
+  "spynach.pathways.relaxation_pathways": {
+   "files": [],
+   "relation": "new",
+   "note": ""
+  },
   "spynach.plotting.axis_1d": {
    "files": [
     {
@@ -941,6 +962,11 @@
     }
    ],
    "relation": "derived",
+   "note": ""
+  },
+  "spynach.plotting.chord_layout": {
+   "files": [],
+   "relation": "new",
    "note": ""
   },
   "spynach.plotting.contspacing": {
@@ -993,6 +1019,11 @@
    "relation": "new",
    "note": ""
   },
+  "spynach.plotting.plot_pathways": {
+   "files": [],
+   "relation": "new",
+   "note": ""
+  },
   "spynach.plotting.plot_time_series": {
    "files": [],
    "relation": "new",
@@ -1003,10 +1034,40 @@
    "relation": "new",
    "note": ""
   },
+  "spynach.probe.line_weights": {
+   "files": [],
+   "relation": "new",
+   "note": ""
+  },
+  "spynach.probe.radiation_damping": {
+   "files": [],
+   "relation": "new",
+   "note": ""
+  },
+  "spynach.probe.rd_phase": {
+   "files": [],
+   "relation": "new",
+   "note": ""
+  },
+  "spynach.probe.rd_rate": {
+   "files": [],
+   "relation": "new",
+   "note": ""
+  },
   "spynach.processing.apodisation": {
    "files": [
     {
      "file": "apodisation.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.propagation._comm": {
+   "files": [
+    {
+     "file": "comm.m",
      "note": ""
     }
    ],
@@ -1037,6 +1098,16 @@
    "files": [
     {
      "file": "evolution.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "spynach.propagation.iserstep": {
+   "files": [
+    {
+     "file": "iserstep.m",
      "note": ""
     }
    ],
@@ -1459,7 +1530,9 @@
    "apodisation.m"
   ],
   "spynach.propagation": [
+   "comm.m",
    "evolution.m",
+   "iserstep.m",
    "krylov.m",
    "propagator.m",
    "step.m"

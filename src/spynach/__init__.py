@@ -10,8 +10,9 @@ from spynach.hamiltonian import frqoffset, hamiltonian, orientation
 from spynach.kinetics import equilibrate, kinetics
 from spynach.operators import operator
 from spynach.pathways import relaxation_pathways
+from spynach.probe import line_weights, radiation_damping, rd_phase, rd_rate
 from spynach.processing import apodisation
-from spynach.propagation import evolution, krylov, propagator, step
+from spynach.propagation import evolution, iserstep, krylov, propagator, step
 from spynach.reduction import path_trace, reduce, zte
 from spynach.relaxation import equilibrium, relaxation, thermalize
 from spynach.sequences import acquire, cosy, hsqc, noesy
@@ -41,6 +42,8 @@ __all__ = [
     "hdot",
     "homospoil",
     "hsqc",
+    "iserstep",
+    "line_weights",
     "kill_spin",
     "kinetics",
     "krylov",
@@ -52,6 +55,9 @@ __all__ = [
     "path_trace",
     "powder",
     "propagator",
+    "radiation_damping",
+    "rd_phase",
+    "rd_rate",
     "reduce",
     "relaxation",
     "relaxation_pathways",

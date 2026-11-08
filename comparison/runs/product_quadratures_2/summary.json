@@ -1,0 +1,75 @@
+{
+ "case": "product_quadratures_2",
+ "run": "product_quadratures_2",
+ "gpu": false,
+ "built_utc": "2026-11-08T14:35:04Z",
+ "stages": [
+  {
+   "label": "reference",
+   "spinach": 1.880019625,
+   "spynach": 4.346952957974281
+  },
+  {
+   "label": "benchmark",
+   "spinach": 9.340953208333334,
+   "spynach": 28.30483095801901
+  },
+  {
+   "label": "plot",
+   "spinach": 3.6787195833333333,
+   "spynach": 0.1503673330298625
+  },
+  {
+   "label": "total (wall clock)",
+   "spinach": 37.46923616666667,
+   "spynach": 32.807091624999885
+  }
+ ],
+ "arrays": [
+  {
+   "name": "bench",
+   "rel": 4.994688843774436e-14,
+   "max_abs": 2.708944180085382e-14,
+   "note": ""
+  },
+  {
+   "name": "mu_traj",
+   "rel": 9.153072484646077e-15,
+   "max_abs": 4.829470157119431e-15,
+   "note": ""
+  },
+  {
+   "name": "np",
+   "rel": 0.0,
+   "max_abs": 0.0,
+   "note": "compared after squeezing singleton dimensions"
+  }
+ ],
+ "provenance": {
+  "spinach": {
+   "created_utc": "2026-11-08T14:33:44Z",
+   "spinach_describe": "2.13",
+   "matlab_version": "26.2.0.3386108 (R2026b)",
+   "hostname": "MacBook-Pro-8",
+   "platform": "MACA64",
+   "cores": 12,
+   "blas": "Apple Accelerate BLAS (ILP64)",
+   "pool_workers": 11
+  },
+  "spynach": {
+   "created_utc": "2026-11-08T14:35:01Z",
+   "spynach_describe": "v0.5.0-7-ge4be22e-dirty",
+   "python_version": "3.12.5",
+   "numpy_version": "2.5.4",
+   "scipy_version": "1.18.1",
+   "numba_version": "0.68.1",
+   "hostname": "MacBook-Pro-8",
+   "platform": "macOS-26.6.2-arm64-arm-64bit",
+   "cores": 12,
+   "blas": {
+    "numpy": "accelerate",
+    "scipy": "Accelerate"
+   }
+  }
+ }
+}

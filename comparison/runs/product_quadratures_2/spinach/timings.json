@@ -1,0 +1,17 @@
+{
+  "stages": [
+    {
+      "label": "reference",
+      "seconds": 1.880019625
+    },
+    {
+      "label": "benchmark",
+      "seconds": 9.3409532083333335
+    },
+    {
+      "label": "plot",
+      "seconds": 3.6787195833333333
+    }
+  ],
+  "total_s": 37.469236166666668
+}

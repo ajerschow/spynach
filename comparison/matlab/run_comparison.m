@@ -13,7 +13,7 @@
 %% Settings
 repo_dir='/Users/alexej/Documents/PROG/spynach';             % spynach checkout holding comparison/cases
 spinach_dir='/Users/alexej/Documents/PROG/spynach-spinach';  % Spinach checkout
-cases={'noesy_strychnine','zulf_pf6_1d','maz_noesy_2','li_exchange_equilibrium'};                 % case directories to run
+cases={'noesy_strychnine','zulf_pf6_1d','maz_noesy_2','li_exchange_equilibrium','product_quadratures_2'};                 % case directories to run
 gpu=false;                                                  % true: sys.enable={'gpu'} in every case, results in runs/<case>-gpu[-<tag>]/
 tag='';                                                     % run name suffix: runs/<case>[-gpu]-<tag>/; '' for runs/<case>[-gpu]/
 options=struct();                                           % per-case options, e.g. options.noesy_strychnine.npoints=64;

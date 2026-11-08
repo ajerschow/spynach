@@ -25,6 +25,7 @@ const SOURCE = [
   "src/spynach/oracle/fixture.py",
   "src/spynach/pathways.py",
   "src/spynach/plotting.py",
+  "src/spynach/probe.py",
   "src/spynach/processing.py",
   "src/spynach/propagation.py",
   "src/spynach/reduction.py",
