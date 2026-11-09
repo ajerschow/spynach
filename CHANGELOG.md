@@ -4,6 +4,7 @@ Releases are tagged `vX.Y.Z` on GitHub; the version is `spynach.__version__`.
 
 ## Unreleased
 
+- Playground: the plots are drawn with plotly.js (pinned 4.1.2 from cdn.jsdelivr.net) instead of the hand-drawn canvas: zoom by box or wheel, pan, double-click reset, hover read-out, legend toggling and PNG download, in the look of the notebooks' figures; the 2-D contour plots keep Spinach's level spacing through the level-index mapping of `plot_2d`. The chord diagram stays SVG.
 - Playground: the radiation damping example plots the x, y and z magnetisation against time (it showed m_z alone).
 - Playground: choosing an example from the drop-down updates the URL fragment, so the address bar is a direct link to it (`try.html#ex-…`, as the docs link examples).
 - Playground: the 23Na triple-quantum build-up of the contributed notebook `user_py/na23_tqf_buildup.ipynb` as the example `try.html#ex-na23-tqf` (group "Relaxation (spynach)": quadrupolar coupling, asymmetry, correlation time, field, temperature and preparation time in the form; the rank-3 tensor, the triple-quantum coherence after the second pulse and the Lz recovery, with the biexponential check printed).
