@@ -1706,6 +1706,8 @@ exampleSel.addEventListener("change", () => {
   }
   exampleSel.dataset.current = exampleSel.value;
   loadExample(exampleSel.value);
+  // Keep the address bar linkable: replaceState does not fire hashchange
+  try { history.replaceState(null, "", "#" + exampleSel.value); } catch (e) { /* file:// pages may refuse */ }
 });
 editor.addEventListener("input", () => {
   dirty = true;

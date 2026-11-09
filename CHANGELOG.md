@@ -4,6 +4,7 @@ Releases are tagged `vX.Y.Z` on GitHub; the version is `spynach.__version__`.
 
 ## Unreleased
 
+- Playground: choosing an example from the drop-down updates the URL fragment, so the address bar is a direct link to it (`try.html#ex-…`, as the docs link examples).
 - Playground: the 23Na triple-quantum build-up of the contributed notebook `user_py/na23_tqf_buildup.ipynb` as the example `try.html#ex-na23-tqf` (group "Relaxation (spynach)": quadrupolar coupling, asymmetry, correlation time, field, temperature and preparation time in the form; the rank-3 tensor, the triple-quantum coherence after the second pulse and the Lz recovery, with the biexponential check printed).
 - Code style: ruff 0.17 formats the Python blocks of the Markdown guides and lints notebooks; the guides' code blocks are reformatted accordingly (their notebooks regenerated, nothing computed changes) and the contributed 23Na notebook is lint-clean.
 
