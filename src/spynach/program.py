@@ -11,8 +11,14 @@ the state vector: it only advances ``k``, and at detection the average over a un
 envelope ``sinc(k_z z_max) · 2J₁(k_⊥ x_max)/(k_⊥ x_max)``, free diffusion the factor ``exp(-D b)`` (exact for
 any gradient shape, Bloch–Torrey). A read gradient during acquisition moves ``k`` linearly, so every
 pathway echoes at its own time. The explicit phase cycle (``mode='explicit'``) is run from the same
-program as the reference. No Spinach counterpart; see ``docs/pulse-programs.md``. Beta: the pulse programs,
-the phase-cycle selection and the gradient selection are new and their interface may still change.
+program as the reference; there the gradients are represented without a spatial grid either, on a lattice
+of Fourier modes along the gradient axis: the state is one vector per wavevector ``n k0``, with ``k0 =
+γ_ref A0`` for the base gradient area ``A0`` of which every gradient is an integer multiple; a gradient of
+``m`` units moves the order-``p`` block of mode ``n`` to mode ``n + m p`` (times ``γ*/γ_ref``), and
+detection weights every mode with the sample envelope. That representation holds the whole state at each
+wavevector, so it is also where mean-field terms (the distant dipolar field) can act. No Spinach counterpart;
+see ``docs/pulse-programs.md``. Beta: the pulse programs, the phase-cycle selection and the gradient selection
+are new and their interface may still change.
 
 Conventions: coherence orders follow the textbook (and ``ctps``) convention, in which the detected coherence
 has order ``-1``: a pulse of phase ``φ`` is ``cos φ Lx + sin φ Ly``, which multiplies a transfer ``p → p'`` of
@@ -38,7 +44,7 @@ from scipy.special import j1
 
 from spynach.filters import homospoil, isotope_orders, leakage, orders_present
 from spynach.operators import operator
-from spynach.propagation import evolution, step
+from spynach.propagation import evolution, propagator, step
 from spynach.states import state
 from spynach.system import SpinSystem
 from spynach.utilities import Matrix
@@ -494,7 +500,8 @@ class Program:
     """A pulse program: blocks in order, the sample, diffusion, and how to run it.
 
     ``mode`` is ``'pathways'`` (one branch per surviving pathway, the default) or ``'explicit'`` (the phase
-    cycle step by step; gradients other than :class:`Homospoil` are not representable there);
+    cycle step by step, gradients on the Fourier-mode lattice: all gradients collinear, their areas integer
+    multiples of ``gradient_unit``, by default the smallest area present);
     ``epsilon`` is the threshold on the phase-cycle weight ``|pc|``, ``crush_tol`` on the sample envelope
     during acquisition below which a pathway is not propagated; ``rho0`` the initial state (default ``Lz`` of
     the detected isotope, ``'cheap'``); ``max_order`` caps ``|p|`` per isotope (an ``int`` or
@@ -517,6 +524,7 @@ class Program:
     max_order: int | dict[str, int] | None = None
     cycle_length: int | None = None
     check_leakage: bool = False
+    gradient_unit: float | None = None
 
     def __post_init__(self) -> None:
         if self.mode not in ("pathways", "explicit"):
@@ -625,21 +633,24 @@ class Program:
         *,
         output: str = "fid",
         selection: Selection | None = None,
-    ) -> np.ndarray | PathwayFids:
-        """Run the program; ``output='fid'`` the summed FID, ``'pathways'`` a :class:`PathwayFids` per kept pathway.
+    ) -> np.ndarray | PathwayFids | ModeFids:
+        """Run the program; ``output='fid'`` the summed FID, ``'pathways'`` a :class:`PathwayFids` per kept pathway
+        (pathways mode), ``'modes'`` a :class:`ModeFids` per lattice mode (explicit mode).
 
         The FID has the shape ``(npoints,)``, or ``(npoints, n1)`` with an :class:`Evolve` block, ``(npoints,
         n1, n2)`` with two, as the built-in 2-D sequences.
         """
-        if output not in ("fid", "pathways"):
-            raise ValueError("output must be 'fid' or 'pathways'.")
+        if output not in ("fid", "pathways", "modes"):
+            raise ValueError("output must be 'fid', 'pathways' or 'modes'.")
         if spin_system.basis is None or spin_system.basis.formalism != "sphten-liouv":
             raise NotImplementedError("pulse programs run in the sphten-liouv formalism.")
         flat = _expand(self, spin_system)
         if self.mode == "explicit":
-            if output != "fid":
+            if output == "pathways":
                 raise ValueError("per-pathway output needs mode='pathways'.")
-            return _run_explicit(self, spin_system, flat, H, R, K)
+            return _run_explicit(self, spin_system, flat, H, R, K, output)
+        if output == "modes":
+            raise ValueError("per-mode output needs mode='explicit'.")
         selection = selection if selection is not None else self.select(spin_system)
         return _run_pathways(self, spin_system, flat, selection, H, R, K, output)
 
@@ -878,52 +889,256 @@ def _refocus(spin_system: SpinSystem, L: Matrix, rho: np.ndarray, timestep: floa
     return out.reshape(nstates, ncols)
 
 
+# ----------------------------------------------------------------------------------------------------------
+# The explicit runner: the phase cycle step by step, gradients on a Fourier-mode lattice
+
+
+@dataclass
+class _Lattice:
+    """The wavevector lattice of an explicit run: modes ``n k0 axis`` for ``n = -half .. half``.
+
+    ``ratio[s]`` is ``γ*/γ_ref`` of basis state ``s`` (``γ* = Σ γ_X p_X``, ``γ_ref`` that of the acquired isotope):
+    a gradient of ``m`` units moves state ``s`` of mode ``n`` to mode ``n + m ratio[s]``.
+    """
+
+    axis: np.ndarray
+    unit: float
+    k0: float
+    half: int
+    ratio: np.ndarray
+
+    @property
+    def modes(self) -> np.ndarray:
+        return np.arange(-self.half, self.half + 1)
+
+    @property
+    def size(self) -> int:
+        return 2 * self.half + 1
+
+    def units(self, area: np.ndarray, label: str) -> int:
+        """The integer number of units of a gradient area (a vector), ``0`` for no gradient."""
+        area = np.asarray(area, dtype=float)
+        norm = float(np.linalg.norm(area))
+        if norm == 0:
+            return 0
+        if np.linalg.norm(np.cross(area, self.axis)) > 1e-9 * norm:
+            raise ValueError(
+                f"explicit mode puts every gradient on one axis: {label} is not collinear with the first gradient."
+            )
+        m = float(area @ self.axis) / self.unit
+        if abs(m - round(m)) > 1e-9 * max(1.0, abs(m)):
+            raise ValueError(
+                f"explicit mode needs gradient areas that are integer multiples of one unit "
+                f"({self.unit:.6g} T s/m): {label} is {m:.6g} units; set Program(gradient_unit=...)."
+            )
+        return int(round(m))
+
+    def shifts(self, m: int, rho: np.ndarray, tol: float) -> np.ndarray:
+        """Integer mode shifts per basis state for ``m`` units; non-integer shifts of populated states raise."""
+        raw = m * self.ratio
+        rounded = np.round(raw)
+        off = np.abs(raw - rounded) > 1e-9
+        if np.any(off) and np.abs(rho[off]).max() > tol:
+            raise NotImplementedError(
+                "a gradient during coherences of a second isotope moves them by a non-integer number of modes "
+                "(the gyromagnetic ratios are not commensurate); explicit mode cannot represent this."
+            )
+        return rounded.astype(int)
+
+    def envelope(self, sample: Sample) -> np.ndarray:
+        """The sample envelope of every mode, ``(size,)``."""
+        return sample_envelope(self.modes[:, None] * self.k0 * self.axis[None, :], sample)
+
+
+def _lattice(program: Program, spin_system: SpinSystem, flat: _Flat, extra: int = 0) -> _Lattice | None:
+    """The lattice of an explicit run, ``None`` without gradients; ``extra`` modes are added on each side."""
+    acquire = flat.acquire
+    areas: list[tuple[str, np.ndarray]] = []
+    for q, period in enumerate(flat.periods):
+        for segment in period.segments:
+            if segment[0] == "ramp":
+                areas.append((f"the gradient in period {q}", np.asarray(segment[1], dtype=float)))
+    read = acquire.gradient.amplitude * acquire.timestep if acquire.gradient is not None else np.zeros(3)
+    areas.append(("the read gradient (per dwell)", read))
+    nonzero = [(label, a) for label, a in areas if np.linalg.norm(a) > 0]
+    if not nonzero:
+        return None
+    axis = nonzero[0][1] / np.linalg.norm(nonzero[0][1])
+    for label, a in nonzero:
+        if np.linalg.norm(np.cross(a, axis)) > 1e-9 * np.linalg.norm(a):
+            raise ValueError(
+                f"explicit mode puts every gradient on one axis: {label} is not collinear with the first gradient."
+            )
+    unit = float(program.gradient_unit) if program.gradient_unit else min(abs(float(a @ axis)) for _, a in nonzero)
+    if unit <= 0:
+        raise ValueError("gradient_unit must be positive.")
+    gamma_ref = float(spin_system.gammas[spin_system.isotopes.index(acquire.spins)])
+    per_state = _program_orders(spin_system)
+    gamma_star = sum(
+        float(spin_system.gammas[spin_system.isotopes.index(iso)]) * orders for iso, orders in per_state.items()
+    )
+    lattice = _Lattice(axis, unit, gamma_ref * unit, 0, np.asarray(gamma_star, dtype=float) / gamma_ref)
+    total = sum(abs(lattice.units(a, label)) for label, a in areas[:-1])
+    total += abs(lattice.units(read, areas[-1][0])) * (acquire.npoints - 1)
+    reach = float(np.abs(lattice.ratio).max()) * total
+    lattice.half = int(math.ceil(reach - 1e-9)) + int(extra)
+    return lattice
+
+
+def _shift_modes(rho: np.ndarray, shifts: np.ndarray, tol: float) -> np.ndarray:
+    """``rho`` of shape ``(nstates, nmodes, ncols)`` with state ``s`` moved ``shifts[s]`` modes up the lattice."""
+    out = np.zeros_like(rho)
+    size = rho.shape[1]
+    for d in np.unique(shifts):
+        rows = shifts == d
+        d = int(d)
+        if abs(d) >= size:
+            lost = rho[rows]
+        elif d >= 0:
+            out[rows, d:, :] = rho[rows, : size - d, :]
+            lost = rho[rows, size - d :, :]
+        else:
+            out[rows, : size + d, :] = rho[rows, -d:, :]
+            lost = rho[rows, :-d, :]
+        if lost.size and np.abs(lost).max() > tol:
+            raise RuntimeError("a gradient pushed amplitude beyond the mode lattice; this is a bug.")
+    return out
+
+
+@dataclass
+class ModeFids:
+    """The FID of every mode of an explicit run: ``fids[i]`` is the contribution of the mode ``modes[i]``, at
+    wavevector ``modes[i] * k0`` (rad/m) along ``axis``, weighted by its sample ``envelope[i]``; ``signals[i]``
+    is the same signal without the envelope; ``sum()`` is the FID.
+
+    Author: Alexej Jerschow.
+    """
+
+    fids: np.ndarray
+    signals: np.ndarray
+    modes: np.ndarray
+    k0: float
+    axis: np.ndarray
+    envelope: np.ndarray
+
+    def sum(self) -> np.ndarray:
+        return self.fids.sum(axis=0)
+
+
 def _run_explicit(
-    program: Program, spin_system: SpinSystem, flat: _Flat, H: Matrix, R: Matrix, K: Matrix
-) -> np.ndarray:
+    program: Program, spin_system: SpinSystem, flat: _Flat, H: Matrix, R: Matrix, K: Matrix, output: str
+) -> np.ndarray | ModeFids:
     """The phase cycle step by step: every pulse at its phase, the receiver factor applied, averaged over the cycle.
 
     The receiver multiplies the textbook signal by ``exp(-i φ_rec)``; Spinach's ``L+`` coil gives its complex
-    conjugate, so here the factor is ``exp(+i φ_rec)``.
+    conjugate, so here the factor is ``exp(+i φ_rec)``. Gradients put the state on the Fourier-mode lattice
+    (:class:`_Lattice`): the state is ``(nstates, nmodes, ncols)``, every linear step sees the modes as more
+    columns, a gradient moves each coherence-order block along the mode axis, and acquisition weights every
+    mode with its sample envelope.
     """
-    if any(kind == "gradient" for kind, _ in flat.events) or flat.acquire.gradient is not None:
-        raise ValueError(
-            "explicit mode cannot represent gradients (a spatial grid would be needed); use mode='pathways'."
-        )
     L = H + 1j * R + 1j * K
     L_relax = 1j * R + 1j * K
     rho0 = program._rho0(spin_system, flat)
     coil = program._coil(spin_system, flat)
+    tol = spin_system.tols.zte_tol
+    lattice = _lattice(program, spin_system, flat)
+    size = lattice.size if lattice else 1
+    nstates = rho0.size
+    modes = lattice.modes if lattice else np.zeros(1, dtype=int)
+    k0 = lattice.k0 if lattice else 0.0
+    axis = lattice.axis if lattice else np.array([0.0, 0.0, 1.0])
+    envelope = lattice.envelope(program.sample) if lattice else np.ones(1)
+    D = program.diffusion
+    acquire = flat.acquire
+    read_units = 0
+    if lattice and acquire.gradient is not None:
+        read_units = lattice.units(acquire.gradient.amplitude * acquire.timestep, "the read gradient")
+
+    def hold(rho: np.ndarray, duration: float) -> np.ndarray:
+        """Free diffusion for ``duration`` at fixed wavevectors."""
+        if D and lattice:
+            rho = rho * np.exp(-D * (modes * k0) ** 2 * duration)[None, :, None]
+        return rho
+
+    def ramp(rho: np.ndarray, m: int, duration: float) -> np.ndarray:
+        """A gradient of ``m`` units lasting ``duration``: the diffusion weight of the ramp, then the mode shift."""
+        shifts = lattice.shifts(m, np.abs(rho).max(axis=(1, 2)), tol)
+        if D:
+            n0 = modes[None, :]
+            n1 = n0 + shifts[:, None]
+            b = duration * k0**2 * (n0**2 + n0 * n1 + n1**2) / 3
+            rho = rho * np.exp(-D * b)[:, :, None]
+        return _shift_modes(rho, shifts, tol)
+
     total = None
-    for m in range(flat.steps):
-        phases = flat.phases_rad(m)
-        rho = rho0.reshape(-1, 1)
+    for m_step in range(flat.steps):
+        phases = flat.phases_rad(m_step)
+        rho = np.zeros((nstates, size, 1), dtype=complex)
+        rho[:, size // 2, 0] = rho0
         shape: list[int] = []
         for kind, payload in flat.events:
+            ncols = rho.shape[2]
             if kind == "pulse":
                 pulse = flat.pulses[payload]
                 phi = phases[payload]
                 op = math.cos(phi) * operator(spin_system, "Lx", pulse.spins) + math.sin(phi) * operator(
                     spin_system, "Ly", pulse.spins
                 )
-                rho = step(spin_system, op, rho, pulse.angle)
+                rho = step(spin_system, op, rho.reshape(nstates, -1), pulse.angle).reshape(nstates, size, ncols)
             elif kind == "delay":
                 generator = L if payload.generator == "full" else L_relax
-                rho = evolution(spin_system, generator, rho, payload.duration, 1, "final").reshape(rho.shape[0], -1)
+                flat_rho = evolution(spin_system, generator, rho.reshape(nstates, -1), payload.duration, 1, "final")
+                rho = hold(flat_rho.reshape(nstates, size, ncols), payload.duration)
+            elif kind == "gradient":
+                flat_rho = evolution(spin_system, L, rho.reshape(nstates, -1), payload.duration, 1, "final")
+                rho = flat_rho.reshape(nstates, size, ncols)
+                units = lattice.units(payload.amplitude * payload.duration, "a gradient")
+                rho = ramp(rho, units, payload.duration) if units else hold(rho, payload.duration)
             elif kind == "evolve":
-                rho = np.hstack(
+                t = np.arange(payload.npoints) * payload.timestep
+                columns = rho.reshape(nstates, -1)
+                flat_rho = np.hstack(
                     [
-                        evolution(spin_system, L, rho[:, c], payload.timestep, payload.npoints - 1, "trajectory")
-                        for c in range(rho.shape[1])
+                        evolution(spin_system, L, columns[:, c], payload.timestep, payload.npoints - 1, "trajectory")
+                        for c in range(columns.shape[1])
                     ]
                 )
+                rho = flat_rho.reshape(nstates, size, ncols * payload.npoints)
+                if D and lattice:
+                    weight = np.exp(-D * (modes[:, None] * k0) ** 2 * np.tile(t, ncols)[None, :])
+                    rho = rho * weight[None, :, :]
                 shape.append(payload.npoints)
             elif kind == "refocus":
-                rho = _refocus(spin_system, L, rho, payload.timestep, shape[-1])
+                n_last = shape[-1]
+                flat_rho = _refocus(spin_system, L, rho.reshape(nstates, -1), payload.timestep, n_last)
+                rho = flat_rho.reshape(nstates, size, ncols)
+                if D and lattice:
+                    t = np.tile(np.arange(n_last) * payload.timestep, ncols // n_last)
+                    rho = rho * np.exp(-D * (modes[:, None] * k0) ** 2 * t[None, :])[None, :, :]
             elif kind == "homospoil":
-                rho = homospoil(spin_system, rho.T, "keep" if payload.keep == "zqc" else "destroy").T
+                flag = "keep" if payload.keep == "zqc" else "destroy"
+                rho = homospoil(spin_system, rho.reshape(nstates, -1).T, flag).T.reshape(nstates, size, ncols)
             elif kind == "acquire":
-                fid = evolution(spin_system, L, rho, payload.timestep, payload.npoints - 1, "observable", coil=coil)
-                fid = fid.reshape(payload.npoints, *shape) * np.exp(1j * flat.receiver_rad(m))
-                total = fid if total is None else total + fid
-    return total / flat.steps
+                n, dt = payload.npoints, payload.timestep
+                if read_units:
+                    signals = np.zeros((n, size, ncols), dtype=complex)
+                    P = propagator(spin_system, L, dt)
+                    for i in range(n):
+                        signals[i] = np.einsum("s,smc->mc", np.conj(coil), rho)
+                        if i == n - 1:
+                            break
+                        rho = (P @ rho.reshape(nstates, -1)).reshape(nstates, size, ncols)
+                        rho = ramp(rho, read_units, dt)
+                else:
+                    signals = evolution(spin_system, L, rho.reshape(nstates, -1), dt, n - 1, "observable", coil=coil)
+                    signals = signals.reshape(n, size, ncols)
+                    if D and lattice:
+                        t = np.arange(n) * dt
+                        signals = signals * np.exp(-D * (modes[None, :] * k0) ** 2 * t[:, None])[:, :, None]
+                signals = np.moveaxis(signals, 1, 0).reshape(size, n, *shape) * np.exp(1j * flat.receiver_rad(m_step))
+                total = signals if total is None else total + signals
+    signals = total / flat.steps
+    fids = signals * envelope.reshape(-1, *([1] * (signals.ndim - 1)))
+    if output == "modes":
+        return ModeFids(fids, signals, modes, k0, axis, envelope)
+    return fids.sum(axis=0)

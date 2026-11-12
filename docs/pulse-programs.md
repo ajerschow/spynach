@@ -20,7 +20,9 @@ voxels, no Nyquist condition on the gradient strength, a crusher of a thousand
 cycles across the sample at the cost of nothing, where a grid would need two
 voxels per cycle. A read gradient during acquisition makes every pathway echo
 at its own time.
-The explicit cycle can still be run from the same program, as the reference.
+The explicit cycle can still be run from the same program, as the reference;
+there the gradients live on a lattice of Fourier modes along the gradient
+axis, again without a grid.
 Nothing here has a Spinach counterpart; it assumes the
 [pulse sequences](pulse-sequences.md) guide. The companion notebook is
 [`notebooks/pulse-programs.ipynb`](notebooks/pulse-programs.ipynb) ([interactive figures on nbviewer](https://nbviewer.org/github/ajerschow/spynach/blob/main/docs/notebooks/pulse-programs.ipynb)).
@@ -45,9 +47,10 @@ the gradients, delays and the cycle mode in a form.
 4. [Gradient selection without a grid](#gradient-selection-without-a-grid)
 5. [Reading pathways out with a gradient](#reading-pathways-out-with-a-gradient)
 6. [Diffusion weighting](#diffusion-weighting)
-7. [A triple-quantum filter for 23Na](#a-triple-quantum-filter-for-23na)
-8. [The pathways in ctps](#the-pathways-in-ctps)
-9. [What is checked, and the limits](#what-is-checked-and-the-limits)
+7. [The explicit cycle on the Fourier-mode lattice](#the-explicit-cycle-on-the-fourier-mode-lattice)
+8. [A triple-quantum filter for 23Na](#a-triple-quantum-filter-for-23na)
+9. [The pathways in ctps](#the-pathways-in-ctps)
+10. [What is checked, and the limits](#what-is-checked-and-the-limits)
 
 ## Blocks and conventions
 
@@ -384,6 +387,48 @@ for G in (0.05, 0.1, 0.2, 0.4):
     )
 ```
 
+## The explicit cycle on the Fourier-mode lattice
+
+`program.explicit()` runs the phase cycle step by step with the whole density
+matrix, and it takes the same gradients. It cannot carry a k-vector per
+pathway, since it does not know the pathways; instead the state is expanded in
+Fourier modes along the gradient axis, `ρ(s) = Σₙ ρₙ exp(i n k₀ s)`, one state
+vector per integer `n`. The base wavevector is `k₀ = γ A₀` for the base area
+`A₀` of which every gradient area in the program (the read gradient per
+dwell included) is an integer multiple: `Program(gradient_unit=A₀)` sets it,
+and by default it is the smallest area present. A pulse and a delay act on
+every mode alike, so the modes are just more columns of the state; a gradient
+of `m` units moves the coherence-order-`p` block of mode `n` to mode
+`n + m p`, which is a relabelling, not a propagation; detection weights mode
+`n` with the sample envelope at `n k₀` and sums. All gradients must be
+collinear (in any direction), and a second isotope may not carry coherence
+during a gradient unless the gyromagnetic ratios are commensurate. Pathway
+by pathway or mode by mode, the two runs are the same sum:
+
+```python
+from dataclasses import replace
+
+all_paths = spynach.liquid(
+    spin_system, lambda ss, p, H, R, K: replace(readout, crush_tol=0.0).run(ss, H, R, K), pars, "nmr"
+)
+modes = spynach.liquid(
+    spin_system, lambda ss, p, H, R, K: readout.explicit().run(ss, H, R, K, output="modes"), pars, "nmr"
+)
+print("explicit lattice against every pathway:", np.abs(modes.sum() - all_paths).max() / np.abs(all_paths).max())
+print(f"{modes.modes.size} modes, k0 = {modes.k0:.1f} rad/m (the read gradient per dwell)")
+strong = np.flatnonzero(np.abs(modes.fids).max(axis=1) > 0.05 * np.abs(modes.fids).max())
+for i in strong:
+    print(f"mode {modes.modes[i]:+d}: echo at {np.argmax(np.abs(modes.fids[i])) * 10e-6 * 1e3:.0f} ms")
+```
+
+The echoes of the previous section appear at the modes the read gradient
+carries through zero, one dwell at a time. Every pathway is there, including
+the ones `crush_tol` dropped from the pathway run (hence the comparison against
+`crush_tol=0`); the price is the cycle run step by step and a state as wide
+as the lattice. The lattice holds the whole state at each wavevector, which
+is what a mean-field term needs: the
+[distant dipolar field](distant-dipolar-field.md) is computed on it.
+
 ## A triple-quantum filter for 23Na
 
 A spin-3/2 such as 23Na outside extreme narrowing relaxes biexponentially,
@@ -643,14 +688,17 @@ print(checked_selection.leakage)
 The limits of the branch model, by construction: rf during a gradient (slice
 selection), B1 inhomogeneity, spatially structured samples and restricted
 diffusion are not representable; the sample is a uniform cylinder, diffusion
-free. The explicit mode cannot represent gradients at all (that would need a
-spatial grid) and refuses programs that contain them.
+free. The explicit mode carries the gradients on the Fourier-mode lattice,
+so it needs collinear gradients with areas on one integer grid.
 
 `tests/unit/test_program.py` checks, against a hand-written phase cycle loop
 over `step` and `evolution`: the DQF-COSY cycle (1-D and 2-D), partial weights
 of a three-step list, a four-step cycle on five spins that also passes
 `Δp = +3` and `−5`, nested, cogwheel and block cycles, an eight-step
-heteronuclear cycle with pulses on both channels, and the explicit mode; the
+heteronuclear cycle with pulses on both channels, and the explicit mode; every
+gradient program of the file in explicit mode against the pathway runner
+(the Fourier-mode lattice: an inclined axis, a read gradient, diffusion, an
+indirect dimension, a phase cycle, the 23Na filter) and the lattice's errors; the
 COSY, NOESY (States) and HSQC (echo/antiecho) programs against the ported
 sequences (which pins the sign convention: a program's order is minus
 Spinach's, and the receiver acts as `exp(+i φ_rec)` on Spinach's conjugate

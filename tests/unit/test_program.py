@@ -4,6 +4,7 @@ Author: Alexej Jerschow.
 """
 
 import sys
+from dataclasses import replace
 
 import numpy as np
 import pytest
@@ -655,6 +656,116 @@ def test_pgse_diffusion_against_stejskal_tanner_and_ctps():
     assert np.allclose(np.abs(fid[0]) / np.abs(fid[0, 0]), expected / expected[0], rtol=1e-8)
 
 
+def test_explicit_lattice_equals_the_pathway_runner():
+    """Explicit mode on the Fourier-mode lattice: every gradient program of this file, with every pathway kept
+    (``crush_tol=0``), gives the FID of the pathway runner to rounding; inclined axis, read gradient, diffusion,
+    an indirect dimension and a phase cycle included; the per-mode output sums to the FID and puts the echo in
+    mode 0."""
+    spin_system, pars = pair()
+    H, R, K = generators(spin_system, pars)
+    sample = Sample(z_max=5e-3, x_max=2.5e-3)
+    G, delta, tau, dt, n = 0.01, 1e-3, 2e-3, 1 / 8000, 32
+    theta = np.radians(30)
+    inclined = Gradient(delta, z=G * np.cos(theta), x=G * np.sin(theta))
+    programs = [
+        Program(
+            [
+                Pulse("1H", np.pi / 2),
+                Gradient(delta, z=G),
+                Delay(tau),
+                Pulse("1H", np.pi / 2),
+                Gradient(delta, z=G),
+                Acquire("1H", dt, n, gradient=Gradient(0, z=-G / 2)),
+            ],
+            sample=sample,
+        ),
+        Program(
+            [Pulse("1H", np.pi / 2), inclined, Delay(tau), Pulse("1H", np.pi / 2), inclined, Acquire("1H", dt, n)],
+            sample=sample,
+        ),
+        Program(
+            [
+                Pulse("1H", np.pi / 2, phase=[0, 90, 180, 270]),
+                Gradient(delta, z=G),
+                Delay(tau),
+                Pulse("1H", np.pi / 2),
+                Gradient(delta, z=G),
+                Acquire("1H", dt, n, receiver=[0, 90, 180, 270]),
+            ],
+            sample=sample,
+        ),
+        Program(
+            [
+                Pulse("1H", np.pi / 2),
+                Gradient(delta, z=G),
+                Evolve(dt, 4),
+                Pulse("1H", np.pi),
+                Gradient(delta, z=G),
+                Acquire("1H", dt, n, gradient=Gradient(0, z=-G / 4)),
+            ],
+            sample=sample,
+            diffusion=2e-9,
+        ),
+    ]
+    for program in programs:
+        program = replace(program, crush_tol=0.0)
+        assert relative(program.run(spin_system, H, R, K), program.explicit().run(spin_system, H, R, K)) < 1e-10
+    modes = replace(programs[0], crush_tol=0.0).explicit().run(spin_system, H, R, K, output="modes")
+    assert relative(modes.sum(), programs[0].explicit().run(spin_system, H, R, K)) < 1e-12
+    assert modes.fids.shape == (modes.modes.size, n) and np.allclose(modes.axis, [0, 0, 1])
+    # the 0, +1, -1 echo sits in mode 0 at t = 0 and the read gradient moves it out; the envelope of mode 0 is 1
+    zero = int(np.flatnonzero(modes.modes == 0)[0])
+    assert modes.envelope[zero] == 1 and np.argmax(np.abs(modes.fids[zero])) == 0
+    gamma = spin_system.gammas[0]
+    assert np.isclose(modes.k0, gamma * G / 2 * dt)  # the smallest area present: the read gradient per dwell
+    # the 23Na filter with gradients 1 : 1 : 4 and its equilibrium state
+    spin_system, H, R, K, rho_eq = sodium()
+    tqf = Program(
+        [
+            Pulse("23Na", np.pi / 2),
+            Gradient(1e-3, z=0.5),
+            Delay(2e-3),
+            Pulse("23Na", np.pi, phase=(90.0,)),
+            Delay(3e-3),
+            Pulse("23Na", np.pi / 2, phase=(90.0,)),
+            Gradient(1e-3, z=0.5),
+            Pulse("23Na", np.pi / 2),
+            Gradient(1e-3, z=2.0),
+            Acquire("23Na", 50e-6, 32),
+        ],
+        rho0=rho_eq,
+        crush_tol=0.0,
+    )
+    assert relative(tqf.run(spin_system, H, R, K), tqf.explicit().run(spin_system, H, R, K)) < 1e-10
+    # gradient_unit set by hand, and the errors of the lattice
+    spin_system, pars = pair()
+    H, R, K = generators(spin_system, pars)
+    by_hand = replace(programs[1], gradient_unit=G * delta / 2, crush_tol=0.0)
+    assert relative(by_hand.run(spin_system, H, R, K), by_hand.explicit().run(spin_system, H, R, K)) < 1e-10
+    with pytest.raises(ValueError, match="collinear"):
+        Program(
+            [Pulse("1H", np.pi / 2), Gradient(delta, z=G), Gradient(delta, x=G), Acquire("1H", dt, n)], mode="explicit"
+        ).run(spin_system, H, R, K)
+    with pytest.raises(ValueError, match="integer multiples"):
+        Program(
+            [Pulse("1H", np.pi / 2), Gradient(delta, z=G), Gradient(delta, z=G * np.sqrt(2)), Acquire("1H", dt, n)],
+            mode="explicit",
+        ).run(spin_system, H, R, K)
+    with pytest.raises(ValueError, match="gradient_unit must be positive"):
+        Program(
+            [Pulse("1H", np.pi / 2), Gradient(delta, z=G), Acquire("1H", dt, n)], mode="explicit", gradient_unit=-1
+        ).run(spin_system, H, R, K)
+    # a gradient during 13C coherence moves it by gamma_C / gamma_H modes: not on the lattice of the detected 1H
+    hetero = system(["1H", "13C"], zeeman={"scalar": [1.0, 10.0]}, coupling={"scalar": [[0, 140.0], [0, 0]]})
+    H, R, K = generators(hetero, {"spins": ["1H", "13C"], "offset": [1.0 * MHZ_PER_T * 14.1, 0.0]})
+    with pytest.raises(NotImplementedError, match="second isotope"):
+        Program(
+            [Pulse("13C", np.pi / 2), Gradient(delta, z=G), Pulse("13C", np.pi / 2), Acquire("1H", dt, n)],
+            mode="explicit",
+            rho0=spynach.state(hetero, "Lz", "13C"),
+        ).run(hetero, H, R, K)
+
+
 # ------------------------------------------------------------------------------- layer 4: limits made visible
 
 
@@ -714,12 +825,12 @@ def test_to_ctps_round_trip_and_errors(monkeypatch):
     )
     with pytest.raises(ValueError, match="exactly one Acquire"):
         Program([Pulse("1H", np.pi / 2)]).steps(spin_system)
-    with pytest.raises(ValueError, match="not representable|cannot represent"):
-        Program([Pulse("1H", np.pi / 2), Gradient(1e-3, z=0.1), Acquire("1H", 1 / 400, 8)], mode="explicit").run(
-            spin_system, *generators(spin_system, pars)
-        )
     with pytest.raises(ValueError, match="mode"):
         Program([Acquire("1H", 1 / 400, 8)], mode="loop")
+    with pytest.raises(ValueError, match="per-mode output"):
+        program.run(spin_system, *generators(spin_system, pars), output="modes")
+    with pytest.raises(ValueError, match="per-pathway output"):
+        program.explicit().run(spin_system, *generators(spin_system, pars), output="pathways")
     monkeypatch.setitem(sys.modules, "ctps", None)
     with pytest.raises(ImportError, match="ctps"):
         program.select(spin_system)
