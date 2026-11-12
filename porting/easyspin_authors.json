@@ -244,6 +244,54 @@
     }
    ]
   },
+  "eprload.m": {
+   "path": "easyspin/eprload.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 18
+    },
+    {
+     "name": "Stephan Pribitzer",
+     "commits": 1
+    }
+   ]
+  },
+  "eprload_BrukerBES3T.m": {
+   "path": "easyspin/private/eprload_BrukerBES3T.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 3
+    },
+    {
+     "name": "Claudia Tait",
+     "commits": 1
+    }
+   ]
+  },
+  "eprload_BrukerESP.m": {
+   "path": "easyspin/private/eprload_BrukerESP.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 3
+    }
+   ]
+  },
+  "eprsave.m": {
+   "path": "easyspin/eprsave.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 5
+    }
+   ]
+  },
   "equivcouple.m": {
    "path": "easyspin/equivcouple.m",
    "external": [],
@@ -533,6 +581,16 @@
     {
      "name": "Matthew Krzyaniak",
      "commits": 1
+    }
+   ]
+  },
+  "getmatrix.m": {
+   "path": "easyspin/private/getmatrix.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 3
     }
    ]
   },
@@ -919,6 +977,16 @@
     {
      "name": "Stefan Stoll",
      "commits": 13
+    }
+   ]
+  },
+  "parsefieldparams.m": {
+   "path": "easyspin/private/parsefieldparams.m",
+   "external": [],
+   "contributors": [
+    {
+     "name": "Stefan Stoll",
+     "commits": 3
     }
    ]
   },
@@ -1360,6 +1428,101 @@
     }
    ],
    "relation": "port",
+   "note": ""
+  },
+  "easyspyn.eprfiles._getmatrix": {
+   "files": [
+    {
+     "file": "getmatrix.m",
+     "note": "the binary reader, with NumPy"
+    }
+   ],
+   "relation": "derived",
+   "note": ""
+  },
+  "easyspyn.eprfiles._load_bes3t": {
+   "files": [
+    {
+     "file": "eprload_BrukerBES3T.m",
+     "note": "the BES3T reader, as a private function"
+    }
+   ],
+   "relation": "derived",
+   "note": ""
+  },
+  "easyspyn.eprfiles._load_esp": {
+   "files": [
+    {
+     "file": "eprload_BrukerESP.m",
+     "note": "the ESP/WinEPR reader, as a private function"
+    }
+   ],
+   "relation": "derived",
+   "note": ""
+  },
+  "easyspyn.eprfiles._parsefieldparams": {
+   "files": [
+    {
+     "file": "parsefieldparams.m",
+     "note": "the value parser"
+    }
+   ],
+   "relation": "derived",
+   "note": ""
+  },
+  "easyspyn.eprfiles._read_dsc": {
+   "files": [
+    {
+     "file": "eprload_BrukerBES3T.m",
+     "note": "the descriptor reader readDSCfile"
+    }
+   ],
+   "relation": "derived",
+   "note": ""
+  },
+  "easyspyn.eprfiles._read_par": {
+   "files": [
+    {
+     "file": "eprload_BrukerESP.m",
+     "note": "the parameter-file reader eprload_readPARfile"
+    }
+   ],
+   "relation": "derived",
+   "note": ""
+  },
+  "easyspyn.eprfiles._scale_bes3t": {
+   "files": [
+    {
+     "file": "eprload_BrukerBES3T.m",
+     "note": "the scaling step"
+    }
+   ],
+   "relation": "derived",
+   "note": ""
+  },
+  "easyspyn.eprfiles.eprload": {
+   "files": [
+    {
+     "file": "eprload.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "easyspyn.eprfiles.eprsave": {
+   "files": [
+    {
+     "file": "eprsave.m",
+     "note": ""
+    }
+   ],
+   "relation": "port",
+   "note": ""
+  },
+  "easyspyn.eprfiles.exp_from_params": {
+   "files": [],
+   "relation": "new",
    "note": ""
   },
   "easyspyn.fitting._algdefaults": {
@@ -2438,6 +2601,14 @@
    "endorfrq_perturb.m",
    "orisel.m",
    "salt.m"
+  ],
+  "easyspyn.eprfiles": [
+   "eprload.m",
+   "eprload_BrukerBES3T.m",
+   "eprload_BrukerESP.m",
+   "eprsave.m",
+   "getmatrix.m",
+   "parsefieldparams.m"
   ],
   "easyspyn.fitting": [
    "addnoise.m",

@@ -861,6 +861,43 @@ print("truth: g =", truth["g"], " lw =", truth["lw"])
 show_spectrum([data, result.fit, result.residuals - 0.6 * np.abs(data).max()], es.pepper(truth, exp).x, invert=False, title="Axial powder spectrum: data, fit and residuals", xlabel="B / mT", ylabel="dA/dB", names=["data with noise", "fit", "residuals (offset)"])
 </script>
 
+<script type="text/plain" class="example" id="ex-epr-eprload" data-group="EPR (EasySpyn)" data-title="Fitting a spectrum from a Bruker file (eprload)">
+from importlib.resources import files
+
+import numpy as np
+import easyspyn as es
+
+# --- A cw spectrum from a Bruker BES3T file pair (.DSC descriptor + .DTA data) bundled with easyspyn ---
+# The file is an axial S = 1/2 powder spectrum simulated with pepper, with noise, saved by eprsave and given the
+# parameter layer of a cw experiment; replace it by your own file in a script (eprload also reads Bruker ESP/WinEPR
+# .par/.spc pairs and text columns)
+scaling = "none"  # GUI: Scaling | - | Divide the data by the number of scans (n), the receiver gain (G), the square root of the microwave power (P) and the conversion time (c), or multiply by the temperature (T), from the parameters in the file, as EasySpin's eprload does | none, n, nG, nGPc, T
+
+# --- Fit: starting values and algorithm ---
+g_start = [2.01, 2.08]  # GUI: Starting g values | - | Where the search starts for the two g values (the file was simulated with 2.0 and 2.1) | 1.9..2.3
+lw_start = 2.0  # GUI: Starting line width | mT | Where the search starts for the line width (3 mT in the file); the search may move it by half of this | 1..10
+method = "simplex"  # GUI: Algorithm | - | Nelder-Mead simplex or Levenberg-Marquardt | simplex, levmar
+
+file = files("easyspyn") / "data" / "example_cw"  # example_cw.DSC and example_cw.DTA
+x, y, params = es.eprload(str(file), "" if scaling == "none" else scaling)
+print(f"{params['TITL']}")
+print(f"{int(params['XPTS'])} points from {x[0]:g} to {x[-1]:g} {params['XUNI']}, {params['MWFQ'] / 1e9:.4f} GHz, harmonic {int(params['RCHM'])}, "
+      f"modulation {params['B0MA'] * 1e4:g} G, {int(params['AVGS'])} scans, gain {params['RCAG']:g} dB, {params['MWPW'] * 1e3:g} mW, {params['STMP']:g} K")
+print(f"largest |y| = {np.abs(y).max():.4g}" + (f" after scaling by '{scaling}'" if scaling != "none" else ""))
+
+# The exp dict for pepper and esfit from the file: field range in mT, points, harmonic, modulation amplitude, temperature
+exp = es.exp_from_params(params, x)
+print("exp from the file:", exp)
+
+start = {"g": g_start, "lw": lw_start}
+vary = {"g": [0.05, 0.05], "lw": lw_start / 2}
+result = es.esfit(y, es.pepper, [start, exp, {"FuzzLevel": 0}], [vary], {"Method": method, "Verbosity": 1})
+for name, value, std in zip(result.pnames, result.pfit, result.pstd):
+    print(f"  {name:12s} {value:9.4f} +- {std:.4f}")
+print("the file was simulated with g = [2.0, 2.1], lw = 3 mT")
+show_spectrum([y, result.fit, result.residuals - 0.6 * np.abs(y).max()], x / 10, invert=False, title="Spectrum from the BES3T file: data, fit and residuals", xlabel="B / mT", ylabel="signal", names=["data (eprload)", "fit", "residuals (offset)"])
+</script>
+
 <script type="text/plain" class="example" id="ex-ctps" data-group="Pathways (ctps)" data-title="Pathway selection">
 import ctps
 from ctps import AllowedOrders, Nucleus, Period, PhaseCycle, Pulse, Sequence, simulate
@@ -1007,8 +1044,11 @@ a31 = np.abs(T31 @ traj) / m0                                   # rank-3 build-u
 Lz = spynach.state(spin_system, "Lz", "23Na")
 mz = (Lz @ traj).real / (Lz @ rho_eq).real                      # longitudinal recovery
 
-# A second 90-degree pulse converts T(3,1) into the triple-quantum coherence the filter selects
-a33 = np.abs(T33 @ spynach.step(spin_system, Lx, traj, np.pi / 2)) / m0
+# A second 90-degree pulse, 90° out of phase with the first, converts T(3,1) into the triple-quantum coherence the
+# filter selects: the rank-3 tensor built by relaxation from the y magnetisation is y-type, and a 90°x pulse would
+# turn it into even orders only (T(3,0), T(3,±2)); see the triple-quantum filter examples
+Ly = spynach.operator(spin_system, "Ly", "23Na")
+a33 = np.abs(T33 @ spynach.step(spin_system, Ly, traj, np.pi / 2)) / m0
 
 # Restricted to T(1,1) and T(3,1) the build-up is the difference of two exponentials (Jaccard, Wimperis, Bodenhausen 1986)
 analytic = abs(block[0, 1]) * (np.exp(-r_slow * t) - np.exp(-r_fast * t)) / (r_fast - r_slow)
@@ -1016,7 +1056,526 @@ print(f"omega_0 tau_c = {omega_0 * tau_c * 1e-9:.2f}; transverse rates {r_fast:.
 print(f"T(3,1) reaches {a31.max():.3f} at {t[a31.argmax()] * 1e3:.2f} ms, T(3,3) after the pulse {a33.max():.3f}; "
       f"Lz at {mz[-1]:.3f} of equilibrium after {t_max:g} ms")
 print(f"largest difference from the biexponential build-up: {np.abs(a31 - analytic).max():.1e}")
-show_spectrum([a11, a31, a33, mz], t * 1e3, invert=False, names=["T(1,1): single-quantum decay", "T(3,1): rank-3 build-up", "T(3,3) after a 90° pulse", "Lz / Lz(equilibrium)"], title=f"23Na, C_q = {cq:g} kHz, tau_c = {tau_c:g} ns, {magnet:g} T, {temperature:g} K", xlabel="preparation time / ms", ylabel="amplitude / magnetisation after the pulse")
+show_spectrum([a11, a31, a33, mz], t * 1e3, invert=False, names=["T(1,1): single-quantum decay", "T(3,1): rank-3 build-up", "T(3,3) after a 90°y pulse", "Lz / Lz(equilibrium)"], title=f"23Na, C_q = {cq:g} kHz, tau_c = {tau_c:g} ns, {magnet:g} T, {temperature:g} K", xlabel="preparation time / ms", ylabel="amplitude / magnetisation after the pulse")
+</script>
+
+<script type="text/plain" class="example" id="ex-na23-tqf-cycle" data-group="Relaxation (spynach)" data-title="23Na triple-quantum filter by phase cycling (beta)">
+import time
+import numpy as np
+import spynach
+from spynach.conventions import eeqq2nqi
+from spynach.program import Acquire, Block, Delay, Evolve, Program, Pulse, Refocus
+
+# --- Spin system: one 23Na (spin 3/2) relaxed by its fluctuating quadrupolar coupling, as in the build-up example ---
+cq = 200.0  # GUI: Quadrupolar coupling | kHz | e²qQ/h of the 23Na; the relaxation rates scale with its square | 20..1000
+tau_c = 1.0  # GUI: Correlation time | ns | Rotational correlation time; ω₀τ_c near 1 or above makes the relaxation biexponential and the filter pass a signal | 0.05..20
+magnet = 14.1  # GUI: Magnet field | T | Field of the magnet; 14.1 T is a 600 MHz spectrometer | 1..28
+
+# --- Triple-quantum filter: 90x - tau/2 - 180y - tau/2 - 90y - delta - 90x - acquire, six-step cycle on the preparation ---
+phase_offset = 30.0  # GUI: First phase | deg | First phase of the six-step cycle on the preparation block (then +60° each step): 30° keeps the route through T(3,±1) and cancels the one through T(3,0), 0° the opposite, in between both pass | 0..60
+delta = 1.0  # GUI: Triple-quantum delay | ms | Time the triple-quantum coherence evolves before the last pulse | 0.1..3
+t_max = 24.0  # GUI: Preparation time | ms | Longest preparation time tau of the build-up curve (32 values from 0) | 1..100
+ntau = 32
+
+nqi = eeqq2nqi(cq * 1e3, 0.0, 1.5, [0, 0, 0])
+spin_system = spynach.create(
+    {"isotopes": ["23Na"], "magnet": magnet},
+    {"coupling": {"matrix": [[nqi.tolist()]]}, "relaxation": ["redfield"], "rlx_keep": "secular",
+     "equilibrium": "dibari", "temperature": 298.0, "tau_c": [[tau_c * 1e-9]]},
+)
+spin_system = spynach.assume(spynach.basis(spin_system, {"formalism": "sphten-liouv", "approximation": "none"}), "nmr")
+H = spynach.hamiltonian(spin_system)
+R = spynach.relaxation(spin_system)
+K = 0 * R
+rho_eq = spynach.equilibrium(spin_system)  # the thermalised relaxation needs the unit state, so the program starts here
+ms = 1e-3
+d_tau = t_max * ms / (ntau - 1)
+tau = np.arange(ntau) * d_tau
+dt, npts = 50e-6, 400
+
+# The preparation with tau as an indirect dimension (Evolve, then Refocus for the second half); the second 90° pulse
+# is along y: relaxation turns the y magnetisation of the first pulse into a y-type rank-3 tensor, and a 90° pulse
+# only converts T(3,±1) into T(3,±3) when it is 90° out of phase with that tensor
+prep = [
+    Pulse("23Na", np.pi / 2),
+    Evolve(d_tau / 2, ntau, name="tau"),
+    Pulse("23Na", np.pi, phase=(90.0,)),
+    Refocus(d_tau / 2),
+    Pulse("23Na", np.pi / 2, phase=(90.0,)),
+]
+program = Program(
+    [
+        Block(prep, phase=[phase_offset + 60 * n for n in range(6)]),  # Δp = ±3 over the block passes
+        Delay(delta * ms),
+        Pulse("23Na", np.pi / 2),
+        Acquire("23Na", dt, npts, receiver=[0, 180]),
+    ],
+    rho0=rho_eq,
+)
+
+t0 = time.time()
+paths = program.run(spin_system, H, R, K, output="pathways")  # one FID (npts, ntau) per pathway with amplitude
+t_run = time.time() - t0
+explicit = program.explicit().run(spin_system, H, R, K)  # the six steps one by one, as the reference
+reference = Program([Pulse("23Na", np.pi / 2), Acquire("23Na", dt, npts)], rho0=rho_eq).run(spin_system, H, R, K)
+peak = lambda fid: np.abs(fid.sum(axis=0))  # the spectrum at the resonance, i.e. the FID integral
+unit = max(peak(reference).max(), 1e-300)  # the single-pulse signal
+
+# Routes by the order after the first pulse: ±1 is the transverse route (T(1,±1) → T(3,±1) → T(3,±3)),
+# 0 the longitudinal one (Lz recovering, T(3,0) building up, then T(3,±3))
+orders = paths.selection.orders[paths.index, 0, :]
+transverse = paths.fids[np.abs(orders[:, 1]) == 1].sum(axis=0)
+longitudinal = paths.fids[orders[:, 1] == 0].sum(axis=0)
+total = paths.sum()
+s_total, s_trans, s_long = peak(total) / unit, peak(transverse) / unit, peak(longitudinal) / unit
+
+# The T(3,1) build-up from the tensor projection of the build-up example, scaled to the transverse route
+Lx = spynach.operator(spin_system, "Lx", "23Na")
+traj = spynach.evolution(spin_system, H + 1j * R, spynach.step(spin_system, Lx, rho_eq, np.pi / 2), d_tau, ntau - 1, "trajectory")
+a31 = np.abs(spynach.state(spin_system, ["T3,1"], [0], "cheap") @ traj)
+a31_scaled = a31 * (s_trans.max() / a31.max() if a31.max() > 0 else 0)
+
+omega_0 = abs(spin_system.basefrqs[0])
+amplitude = np.array([peak(fid).max() for fid in paths.fids])
+print(f"omega_0 tau_c = {omega_0 * tau_c * 1e-9:.2f}; {program.steps(spin_system)} cycle steps, "
+      f"{len(paths.selection)} pathways pass the cycle, {len(paths.index)} carry amplitude; run {t_run:.2f} s")
+print("largest pathway contributions (cycle weight |pc| and phase):")
+for i in np.argsort(amplitude)[::-1][:6]:
+    pc = paths.selection.pc[paths.index[i]]
+    print(f"  {paths.selection.pathway(paths.index[i]):24s} {amplitude[i] / amplitude.max():.3f}  |pc| {abs(pc):.2f} at {np.degrees(np.angle(pc)):+.0f}°")
+print(f"filtered signal: {s_total.max():.4f} of the single-pulse signal at tau = {tau[s_total.argmax()] * 1e3:.1f} ms; "
+      f"transverse route {s_trans.max():.4f} at {tau[s_trans.argmax()] * 1e3:.1f} ms, longitudinal route {s_long.max():.4f} at {tau[s_long.argmax()] * 1e3:.1f} ms")
+print(f"largest difference from the explicit six-step cycle: {np.abs(total - explicit).max() / max(np.abs(explicit).max(), 1e-300):.1e}")
+if s_trans.max() > 0 and a31.max() > 0:
+    print(f"transverse route against the T(3,1) build-up, both normalised: {np.abs(s_trans / s_trans.max() - a31 / a31.max()).max():.1e}")
+
+show_spectrum(
+    [s_total, s_trans, s_long, a31_scaled],
+    tau * 1e3,
+    invert=False,
+    names=["filtered signal (all pathways)", "transverse route 0, ±1, ∓1, ±3, -1", "longitudinal route 0, 0, 0, ±3, -1", "T(3,1) build-up, scaled"],
+    title=f"23Na triple-quantum filter, six-step cycle from {phase_offset:g}°, C_q = {cq:g} kHz, tau_c = {tau_c:g} ns, {magnet:g} T",
+    xlabel="preparation time / ms",
+    ylabel="signal / single-pulse signal",
+)
+</script>
+
+<script type="text/plain" class="example" id="ex-na23-tqf-gradients" data-group="Relaxation (spynach)" data-title="23Na triple-quantum filter by gradients (beta)">
+import time
+import numpy as np
+import spynach
+from spynach.conventions import eeqq2nqi
+from spynach.program import Acquire, Block, Delay, Evolve, Gradient, Program, Pulse, Refocus
+
+# --- Spin system: one 23Na (spin 3/2) relaxed by its fluctuating quadrupolar coupling, as in the build-up example ---
+cq = 200.0  # GUI: Quadrupolar coupling | kHz | e²qQ/h of the 23Na; the relaxation rates scale with its square | 20..1000
+tau_c = 1.0  # GUI: Correlation time | ns | Rotational correlation time; ω₀τ_c near 1 or above makes the relaxation biexponential and the filter pass a signal | 0.05..20
+magnet = 14.1  # GUI: Magnet field | T | Field of the magnet; 14.1 T is a 600 MHz spectrometer | 1..28
+
+# --- Triple-quantum filter selected by gradients alone: 90x - G - tau/2 - 180y - tau/2 - 90y - G - 90x - 4G - acquire ---
+gradient = 0.3  # GUI: Gradient | T/m | Strength G of the gradients after the first and after the third pulse; the one before acquisition has 4G. The areas 1 : 1 : 4 refocus the one pathway 0, +1, -1, +3, -1 and dephase the longitudinal route through T(3,0), the magnetisation that recovers during the gradients, the mirror pathway through -3 and the single-quantum pathways: no phase cycle | 0.05..1
+delta = 1.0  # GUI: Gradient length | ms | Length of each gradient; the second one is the triple-quantum delay, and the first one and a matching delay add 2δ to the preparation time | 0.1..3
+t_max = 24.0  # GUI: Preparation time | ms | Longest preparation time tau of the build-up curve (32 values from 0, plus the 2δ of the first gradient and its matching delay) | 1..100
+ntau = 32
+
+nqi = eeqq2nqi(cq * 1e3, 0.0, 1.5, [0, 0, 0])
+spin_system = spynach.create(
+    {"isotopes": ["23Na"], "magnet": magnet},
+    {"coupling": {"matrix": [[nqi.tolist()]]}, "relaxation": ["redfield"], "rlx_keep": "secular",
+     "equilibrium": "dibari", "temperature": 298.0, "tau_c": [[tau_c * 1e-9]]},
+)
+spin_system = spynach.assume(spynach.basis(spin_system, {"formalism": "sphten-liouv", "approximation": "none"}), "nmr")
+H = spynach.hamiltonian(spin_system)
+R = spynach.relaxation(spin_system)
+K = 0 * R
+rho_eq = spynach.equilibrium(spin_system)  # the thermalised relaxation needs the unit state, so the program starts here
+ms = 1e-3
+d_tau = t_max * ms / (ntau - 1)
+tau = 2 * delta * ms + np.arange(ntau) * d_tau  # preparation time: the gradient, its matching delay, and tau/2 - 180 - tau/2
+dt, npts = 50e-6, 400
+
+# The first gradient winds the order +1 of the wanted pathway up (the 180° flips the order, not the accumulated k),
+# the second its order +3, and the last one unwinds the -1 that is detected: 1 + 3 - 4 = 0 for that pathway alone.
+# The second 90° pulse is along y (see the phase-cycling example); the Delay(δ) keeps the two halves of tau equal.
+program = Program(
+    [
+        Pulse("23Na", np.pi / 2),
+        Gradient(delta * ms, z=gradient),
+        Evolve(d_tau / 2, ntau, name="tau"),
+        Pulse("23Na", np.pi, phase=(90.0,)),
+        Refocus(d_tau / 2),
+        Delay(delta * ms),
+        Pulse("23Na", np.pi / 2, phase=(90.0,)),
+        Gradient(delta * ms, z=gradient),
+        Pulse("23Na", np.pi / 2),
+        Gradient(delta * ms, z=4 * gradient),
+        Acquire("23Na", dt, npts),
+    ],
+    rho0=rho_eq,
+)
+
+t0 = time.time()
+paths = program.run(spin_system, H, R, K, output="pathways")  # one FID (npts, ntau) per pathway above the crush tolerance
+t_run = time.time() - t0
+selection = paths.selection
+reference = Program([Pulse("23Na", np.pi / 2), Acquire("23Na", dt, npts)], rho0=rho_eq).run(spin_system, H, R, K)
+peak = lambda fid: np.abs(fid.sum(axis=0))  # the spectrum at the resonance, i.e. the FID integral
+unit = max(peak(reference).max(), 1e-300)  # the single-pulse signal
+
+# Sort the propagated pathways: refocused (k = 0 at acquisition, envelope 1, amplitude), the longitudinal route through T(3,0)
+# (order 0 after the first pulse, ±3 before the last; dephased here, so a residual), and the rest (sinc tails)
+orders = selection.orders[paths.index, 0, :]
+amplitude = np.array([peak(fid).max() for fid in paths.fids])
+refocused = (selection.envelope[paths.index] > 0.999) & (amplitude > 1e-6 * amplitude.max())
+longitudinal = (orders[:, 1] == 0) & (np.abs(orders[:, -2]) == 3)
+other = ~refocused & ~longitudinal
+total = paths.sum()
+s_total = peak(total) / unit
+s_ref = peak(paths.fids[refocused].sum(axis=0)) / unit
+s_long = peak(paths.fids[longitudinal].sum(axis=0)) / unit
+s_other = peak(paths.fids[other].sum(axis=0)) / unit
+
+# Cross-check against the six-step phase cycle with delays where this program has its gradients: the refocused
+# pathway, stripped of its weight in both runs (the y pulses give the uncycled program a phase per pathway too),
+# must agree to rounding
+check = Program(
+    [
+        Block(
+            [
+                Pulse("23Na", np.pi / 2),
+                Delay(delta * ms),
+                Evolve(d_tau / 2, ntau, name="tau"),
+                Pulse("23Na", np.pi, phase=(90.0,)),
+                Refocus(d_tau / 2),
+                Delay(delta * ms),
+                Pulse("23Na", np.pi / 2, phase=(90.0,)),
+            ],
+            phase=[30 + 60 * n for n in range(6)],
+        ),
+        Delay(delta * ms),
+        Pulse("23Na", np.pi / 2),
+        Delay(delta * ms),
+        Acquire("23Na", dt, npts, receiver=[0, 180]),
+    ],
+    rho0=rho_eq,
+).run(spin_system, H, R, K, output="pathways")
+by_path = {tuple(check.selection.orders[i, 0, :]): check.fids[n] / np.conj(check.selection.pc[i]) for n, i in enumerate(check.index)}
+from_cycle = sum(by_path[tuple(orders[n])] * np.conj(selection.pc[i]) for n, i in enumerate(paths.index) if refocused[n])
+s_check = peak(from_cycle) / unit
+
+k0 = np.abs(selection.k0[:, 2])
+omega_0 = abs(spin_system.basefrqs[0])
+k_unit = abs(spin_system.gammas[0]) * gradient * delta * ms
+print(f"omega_0 tau_c = {omega_0 * tau_c * 1e-9:.2f}; gradient area {gradient * delta:g} mT s/m: |k| = {k_unit:.0f} rad/m per unit of order, "
+      f"k z_max = {k_unit * program.sample.z_max:.0f} for the sample's half-length")
+print(f"{int(selection.kept.sum())} of {len(selection)} pathways above the crush tolerance {program.crush_tol:g}, "
+      f"{len(paths.index)} carry amplitude; run {t_run:.2f} s, no phase cycle")
+print("largest pathway contributions (envelope of the uniform sample and |k| at the start of acquisition):")
+for i in np.argsort(amplitude)[::-1][:6]:
+    j = paths.index[i]
+    print(f"  {selection.pathway(j):24s} {amplitude[i] / amplitude.max():.3f}  envelope {selection.envelope[j]:.4f}  |k0| {k0[j]:.0f} rad/m")
+print(f"refocused: {', '.join(selection.pathway(j) for j in paths.index[refocused])}; signal {s_ref.max():.4f} of the single-pulse signal "
+      f"at {tau[s_ref.argmax()] * 1e3:.1f} ms (one of the two transverse pathways: a quarter of the six-step cycle)")
+print(f"longitudinal route, dephased at k: {s_long.max():.5f}; other pathways through the sinc tails of the uniform sample: {s_other.max():.4f} "
+      f"(they fall as 1 / (k z_max): raise the gradient or its length)")
+print(f"same pathway from the six-step phase cycle: largest difference {np.abs(paths.fids[refocused].sum(axis=0) - from_cycle).max() / max(np.abs(from_cycle).max(), 1e-300):.1e}")
+
+show_spectrum(
+    [s_total, s_ref, s_long, s_other, s_check],
+    tau * 1e3,
+    invert=False,
+    names=["gradient-filtered signal (all kept pathways)", "refocused pathway 0, +1, -1, +3, -1", "longitudinal route (dephased, residual)", "other pathways (sinc tails)", "same pathway by phase cycling"],
+    title=f"23Na triple-quantum filter, gradients {gradient:g}, {gradient:g} and {4 * gradient:g} T/m × {delta:g} ms, C_q = {cq:g} kHz, tau_c = {tau_c:g} ns",
+    xlabel="preparation time / ms",
+    ylabel="signal / single-pulse signal",
+)
+</script>
+
+<script type="text/plain" class="example" id="ex-pathway-echoes" data-group="NMR (spynach)" data-title="Pathway echoes under a read gradient (beta)">
+import numpy as np
+import spynach
+from spynach.program import Acquire, Gradient, Program, Pulse, Sample
+
+# --- Spin system: two coupled protons ---
+shifts = [1.00, 1.50]  # GUI: Chemical shifts | ppm | Isotropic shifts of the two protons | 0..10
+J = 12.0  # GUI: J coupling | Hz | Scalar coupling between the two protons | 0..30
+
+# --- Pulse program: three 90° pulses, gradients of area 1 and 2, a read gradient of the opposite sign ---
+grad = 0.05  # GUI: Gradient | T/m | Strength of the gradients between the pulses and of the read gradient | 0.01..0.2
+delta = 1.0  # GUI: Gradient length | ms | The first gradient lasts delta, the second 2 delta; echoes come at multiples of delta | 0.2..3
+t_acq = 8.0  # GUI: Acquisition | ms | Length of the acquisition under the read gradient | 2..20
+z_max = 5.0  # GUI: Sample half-length | mm | Half the active length of the sample; sets the width of the echoes | 1..10
+crush = 0.05  # GUI: Crush tolerance | - | Pathways whose sample envelope stays below this in the window are not propagated | 0.001..0.5
+
+spin_system = spynach.create(
+    {"isotopes": ["1H", "1H"], "magnet": 14.1},
+    {"zeeman": {"scalar": shifts}, "coupling": {"scalar": [[0, J], [0, 0]]}},
+)
+spin_system = spynach.basis(spin_system, {"formalism": "sphten-liouv", "approximation": "none"})
+pars = {"spins": ["1H"], "offset": np.mean(shifts) * 42.577478 * 14.1}
+
+ms = 1e-3
+dt = 10e-6
+npoints = int(round(t_acq * ms / dt))
+program = Program(
+    [
+        Pulse("1H", np.pi / 2),
+        Gradient(delta * ms, z=grad),
+        Pulse("1H", np.pi / 2),
+        Gradient(2 * delta * ms, z=grad),
+        Pulse("1H", np.pi / 2),
+        Acquire("1H", dt, npoints, gradient=Gradient(0, z=-grad)),
+    ],
+    sample=Sample(z_max=z_max * ms, x_max=2.5 * ms),
+    crush_tol=crush,
+)
+
+# Which pathways survive, with their k-vectors at the start of acquisition and echo times
+selection = program.select(spin_system)
+print(selection)
+
+# One FID per propagated pathway; the sum is what the receiver records
+paths = spynach.liquid(spin_system, lambda ss, p, H, R, K: program.run(ss, H, R, K, output="pathways"), pars, "nmr")
+t = np.arange(npoints) * dt / ms
+traces = [np.abs(paths.fids[i]) for i in range(len(paths.index))]
+names = [f"{paths.pathway(i)} (echo {paths.echo_time[i] / ms:.0f} ms)" for i in range(len(paths.index))]
+show_spectrum(
+    traces + [np.abs(paths.sum())],
+    t,
+    invert=False,
+    names=names + ["sum"],
+    title=f"Pathway echoes, G = {grad:g} T/m, delta = {delta:g} ms",
+    xlabel="time / ms",
+    ylabel="|FID|",
+)
+</script>
+
+<script type="text/plain" class="example" id="ex-dqf-cosy" data-group="NMR (spynach)" data-title="DQF-COSY: phase cycle or pathways (beta)">
+import time
+import numpy as np
+import spynach
+from spynach.plotting import axis_1d
+from spynach.program import Acquire, Delay, Evolve, Program, Pulse
+
+# --- Spin system: three coupled protons ---
+shifts = [3.70, 3.92, 4.50]  # GUI: Chemical shifts | ppm | Isotropic shifts of the three protons | 0..10
+magnet = 16.1  # GUI: Magnet field | T | Field of the magnet | 1..28
+
+# --- How the four-step double-quantum filter is run ---
+mode = "pathways"  # GUI: Mode | - | pathways runs one branch of the density matrix per pathway the cycle passes; explicit runs the four-step cycle step by step | pathways, explicit
+sweep = 700.0  # GUI: Spectral width | Hz | Sweep width, the same in both dimensions | 200..2000
+n_points = 32  # GUI: Increments | - | Points per dimension before zero filling | 16..64
+zerofill = 256  # GUI: Zero filling | - | Points per dimension after zero filling | 64..512
+
+spin_system = spynach.create(
+    {"isotopes": ["1H"] * 3, "magnet": magnet},
+    {"zeeman": {"scalar": shifts}, "coupling": {"scalar": [[0, 10, 4], [0, 0, 12], [0, 0, 0]]}},
+)
+spin_system = spynach.basis(spin_system, {"formalism": "sphten-liouv", "approximation": "none"})
+offset = np.mean(shifts) * 42.577478 * magnet
+pars = {"offset": offset, "sweep": sweep, "npoints": [n_points, n_points], "zerofill": [zerofill, zerofill], "spins": ["1H"], "axis_units": "ppm"}
+
+# The program as it would be typed into a spectrometer: phase lists in degrees, lists repeat over the cycle
+dt = 1 / sweep
+four = [0, 90, 180, 270]
+dqf_cosy = Program(
+    [
+        Pulse("1H", np.pi / 2, phase=four),
+        Evolve(dt, n_points),
+        Pulse("1H", np.pi / 2, phase=four),
+        Delay(3e-6),
+        Pulse("1H", np.pi / 2),
+        Acquire("1H", dt, n_points, receiver=[0, 180, 0, 180]),
+    ]
+)
+if mode == "pathways":
+    print(dqf_cosy.select(spin_system))  # the pathways the cycle passes; those through 0, ±2, ±3 in t1 carry no amplitude
+program = dqf_cosy if mode == "pathways" else dqf_cosy.explicit()
+t0 = time.perf_counter()
+fid = spynach.liquid(spin_system, program, pars, "nmr")
+print(f"{mode} mode: {time.perf_counter() - t0:.2f} s ({dqf_cosy.steps(spin_system)}-step cycle, {spin_system.basis.nstates} states)")
+
+fid = spynach.apodisation(fid, [("sqcos",), ("sqcos",)])
+spectrum = np.fft.fftshift(np.fft.fft2(fid, pars["zerofill"]))
+axis, xlabel = axis_1d(spin_system, {**pars, "zerofill": zerofill})
+show_image(spectrum.real.T, axis, axis, title=f"DQF-COSY, {mode} mode", xlabel="F2: " + xlabel, ylabel="F1: " + xlabel)
+</script>
+
+<script type="text/plain" class="example" id="ex-gcosy" data-group="NMR (spynach)" data-title="Gradient-selected COSY (P or N type) (beta)">
+import numpy as np
+import spynach
+from spynach.plotting import axis_1d
+from spynach.program import Acquire, Evolve, Gradient, Program, Pulse, Sample
+
+# --- Spin system: two coupled protons ---
+shifts = [1.00, 1.10]  # GUI: Chemical shifts | ppm | Isotropic shifts of the two protons | 0..10
+J = 12.0  # GUI: J coupling | Hz | Scalar coupling between the two protons | 0..30
+
+# --- Gradient pair around the mixing pulse ---
+pathway = "P"  # GUI: Pathway | - | P: opposite gradients keep the 0, -1, -1 pathway (anti-echo); N: equal gradients keep 0, +1, -1 (echo) | P, N
+grad = 0.3  # GUI: Gradient | T/m | Strength of both gradients | 0.05..1
+length = 1.0  # GUI: Gradient length | ms | Duration of each gradient | 0.2..3
+z_max = 5.0  # GUI: Sample half-length | mm | Half the active length of the sample; sets how far a crushed pathway is attenuated | 1..10
+crush = 0.001  # GUI: Crush tolerance | - | Pathways whose sample envelope stays below this are not propagated | 0.0001..0.5
+sweep = 200.0  # GUI: Spectral width | Hz | Sweep width, the same in both dimensions | 50..1000
+n_points = 32  # GUI: Increments | - | Points per dimension before zero filling | 16..64
+zerofill = 256  # GUI: Zero filling | - | Points per dimension after zero filling | 64..512
+
+spin_system = spynach.create(
+    {"isotopes": ["1H", "1H"], "magnet": 14.1},
+    {"zeeman": {"scalar": shifts}, "coupling": {"scalar": [[0, J], [0, 0]]}},
+)
+spin_system = spynach.basis(spin_system, {"formalism": "sphten-liouv", "approximation": "none"})
+offset = np.mean(shifts) * 42.577478 * 14.1
+pars = {"offset": offset, "sweep": sweep, "npoints": [n_points, n_points], "zerofill": [zerofill, zerofill], "spins": ["1H"], "axis_units": "ppm"}
+
+ms = 1e-3
+dt = 1 / sweep
+sign = -1 if pathway == "P" else 1
+gcosy = Program(
+    [
+        Pulse("1H", np.pi / 2),
+        Evolve(dt, n_points),
+        Gradient(length * ms, z=grad),
+        Pulse("1H", np.pi / 2),
+        Gradient(length * ms, z=sign * grad),
+        Acquire("1H", dt, n_points),
+    ],
+    sample=Sample(z_max=z_max * ms, x_max=2.5 * ms),
+    crush_tol=crush,
+)
+selection = gcosy.select(spin_system)
+print(selection)
+crushed = selection.envelope[~selection.kept]
+if crushed.size:
+    print(f"strongest crushed pathway: envelope {crushed.max():.2e} of the echo (the sinc residual of {abs(selection.k0[~selection.kept]).max() * z_max * ms / (2 * np.pi):.0f} cycles across the sample)")
+fid = spynach.liquid(spin_system, gcosy, pars, "nmr")
+
+fid = spynach.apodisation(fid, [("sqcos",), ("sqcos",)])
+spectrum = np.fft.fftshift(np.fft.fft2(fid, pars["zerofill"]))
+axis, xlabel = axis_1d(spin_system, {**pars, "zerofill": zerofill})
+show_image(spectrum.real.T, axis, axis, title=f"{pathway}-type gradient-selected COSY", xlabel="F2: " + xlabel, ylabel="F1: " + xlabel)
+</script>
+
+<script type="text/plain" class="example" id="ex-pgse" data-group="NMR (spynach)" data-title="Diffusion weighting: PGSE (beta)">
+import numpy as np
+import spynach
+from spynach.program import Acquire, Delay, Gradient, Program, Pulse
+
+# --- Pulsed-gradient spin echo on water ---
+diffusion = 2.3  # GUI: Diffusion coefficient | 1e-9 m²/s | Self-diffusion coefficient; water at 25 °C is 2.3 | 0.1..5
+delta = 2.0  # GUI: Gradient length | ms | Duration of each gradient | 0.5..5
+big_delta = 50.0  # GUI: Diffusion time | ms | Separation of the two gradients | 10..200
+g_max = 0.5  # GUI: Largest gradient | T/m | The attenuation is computed up to this gradient strength | 0.1..1
+n_grad = 16  # GUI: Gradient values | - | Number of gradient strengths between 0 and the largest | 8..32
+
+spin_system = spynach.create({"isotopes": ["1H"], "magnet": 14.1}, {"zeeman": {"scalar": [4.7]}})
+spin_system = spynach.basis(spin_system, {"formalism": "sphten-liouv", "approximation": "none"})
+pars = {"spins": ["1H"], "offset": 4.7 * 42.577478 * 14.1}
+gamma = spin_system.gammas[0]
+ms = 1e-3
+D = diffusion * 1e-9
+
+
+def pgse(G, D):
+    # The branch of the echo pathway carries k(t); b = ∫|k|² dt is the exact ramp integral, no narrow-gradient approximation
+    return Program(
+        [
+            Pulse("1H", np.pi / 2),
+            Gradient(delta * ms, z=G),
+            Delay((big_delta - delta) * ms),
+            Pulse("1H", np.pi),
+            Gradient(delta * ms, z=G),
+            Acquire("1H", 1e-3, 2),
+        ],
+        diffusion=D,
+    )
+
+
+gradients = np.linspace(0, g_max, n_grad)
+reference = spynach.liquid(spin_system, pgse(0.0, 0.0), pars, "nmr")[0]
+measured = np.array([abs(spynach.liquid(spin_system, pgse(G, D), pars, "nmr")[0] / reference) for G in gradients])
+b_values = gamma**2 * gradients**2 * (delta * ms) ** 2 * (big_delta - delta / 3) * ms
+formula = np.exp(-D * b_values)
+print(f"b from 0 to {b_values[-1] * 1e-6:.0f} s/mm²; largest difference from Stejskal-Tanner: {np.abs(measured - formula).max():.1e}")
+for G, b, s in zip(gradients[:: max(1, n_grad // 4)], b_values[:: max(1, n_grad // 4)], measured[:: max(1, n_grad // 4)]):
+    print(f"  G = {G:.3f} T/m  b = {b * 1e-6:8.1f} s/mm²  attenuation {s:.4f}")
+
+show_spectrum(
+    [measured, formula],
+    gradients,
+    invert=False,
+    names=["pulse program", "Stejskal-Tanner"],
+    title=f"PGSE attenuation, D = {diffusion:g}e-9 m²/s, δ = {delta:g} ms, Δ = {big_delta:g} ms",
+    xlabel="gradient / T m⁻¹",
+    ylabel="|S(G)| / |S(0)|",
+)
+</script>
+
+<script type="text/plain" class="example" id="ex-phase-cycle" data-group="NMR (spynach)" data-title="Phase cycling: nested lists or cogwheel (beta)">
+import time
+import numpy as np
+import spynach
+from ctps import find_cycle
+from spynach.plotting import axis_1d
+from spynach.program import Acquire, Delay, Program, Pulse
+
+# --- Spin system: three coupled protons ---
+shifts = [3.70, 3.92, 4.50]  # GUI: Chemical shifts | ppm | Isotropic shifts of the three protons | 0..10
+
+# --- Stimulated echo: three 90° pulses, the pathway 0, +1, 0, -1 selected by the cycle ---
+cycle = "nested"  # GUI: Phase cycle | - | nested: four steps on the first pulse, four on the third, 16 in all; cogwheel: the shortest cogwheel cycle found by ctps for the same pathway; none: every pathway through | nested, cogwheel, none
+mode = "pathways"  # GUI: Mode | - | pathways runs one branch per surviving pathway; explicit runs the cycle step by step | pathways, explicit
+tau = 2.0  # GUI: Echo delay | ms | Delay between the first two pulses, refocused after the third | 0.5..10
+tau_m = 20.0  # GUI: Mixing time | ms | Delay between the second and the third pulse (longitudinal storage) | 1..100
+sweep = 700.0  # GUI: Spectral width | Hz | Sweep width | 200..2000
+n_points = 256  # GUI: Points | - | Points of the FID | 64..1024
+
+spin_system = spynach.create(
+    {"isotopes": ["1H"] * 3, "magnet": 16.1},
+    {"zeeman": {"scalar": shifts}, "coupling": {"scalar": [[0, 10, 4], [0, 0, 12], [0, 0, 0]]}},
+)
+spin_system = spynach.basis(spin_system, {"formalism": "sphten-liouv", "approximation": "none"})
+offset = np.mean(shifts) * 42.577478 * 16.1
+pars = {"offset": offset, "sweep": sweep, "npoints": n_points, "zerofill": 4 * n_points, "spins": ["1H"], "axis_units": "ppm"}
+
+ms = 1e-3
+dt = 1 / sweep
+
+
+def program(phases, receiver, cycle_length=None):
+    return Program(
+        [
+            Pulse("1H", np.pi / 2, phase=phases[0]),
+            Delay(tau * ms),
+            Pulse("1H", np.pi / 2, phase=phases[1]),
+            Delay(tau_m * ms),
+            Pulse("1H", np.pi / 2, phase=phases[2]),
+            Acquire("1H", dt, n_points, receiver=receiver),
+        ],
+        cycle_length=cycle_length,
+    )
+
+
+m = np.arange(16)
+nested = program([[0, 90, 180, 270], [0], list(90 * (m // 4))], list((-90 * (m % 4) + 90 * (m // 4)) % 360))
+if cycle == "nested":
+    chosen = nested
+elif cycle == "cogwheel":
+    sequence, _ = nested.to_ctps(spin_system)
+    solution = find_cycle(sequence, [(0, 1, 0, -1)]).best
+    print("shortest cogwheel for 0, +1, 0, -1:", solution.cog_string())
+    chosen = program([("cog", int(v)) for v in solution.nu], ("cog", int(solution.nu_rec)), cycle_length=int(solution.N))
+else:
+    chosen = program([[0], [0], [0]], [0])
+print(chosen.select(spin_system))
+t0 = time.perf_counter()
+fid = spynach.liquid(spin_system, chosen if mode == "pathways" else chosen.explicit(), pars, "nmr")
+print(f"{cycle} cycle, {mode} mode: {chosen.steps(spin_system)} steps, {time.perf_counter() - t0:.2f} s")
+
+spectrum = np.fft.fftshift(np.fft.fft(spynach.apodisation(fid, [("exp", 4)]), pars["zerofill"]))
+axis, xlabel = axis_1d(spin_system, pars)
+show_spectrum(spectrum.real, axis, title=f"Stimulated echo, {cycle} cycle, {mode} mode", xlabel=xlabel)
 </script>
 
 <script type="text/plain" class="example" id="ex-powder-fine" data-group="NMR (spynach)" data-title="Powder CSA, 1600 orientations">

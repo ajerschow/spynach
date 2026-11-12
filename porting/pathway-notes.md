@@ -1,5 +1,18 @@
 # Pathway-aware state-space restriction: notes
 
+Status (2026-11-11): the pathway side is built as pulse programs, `src/spynach/program.py` (guide
+`docs/pulse-programs.md`): a program with phase lists and gradients runs as one branch per surviving pathway,
+with per-branch k-vectors and diffusion, and `ctps` supplies the pathways through `Program.to_ctps` (a lazy
+import; `ctps` still imports nothing from `spynach`). The state-space restriction below is *not* pursued, after
+a measurement on a 7-spin 1H COSY (full basis, 16384 states, 16 x 16 points, 13.4 s): the pulses take under
+0.1 s, 12.9 s are three block propagators of 3003 states, and zero track elimination with path tracing already
+confines every period to the exact populated order blocks (16384 -> 6013 -> two blocks of 3003; detection
+3003 by destination screening). Slicing by pathway cannot shrink them further; what pathway knowledge buys is
+dropping a branch before a period (COSY computes the -1 block's propagator in t1, 4.1 s, although only +1 is
+kept after t1) and gradients without a grid. The larger lever left is a propagator cache keyed on the reduced
+block and timestep (COSY builds the +1-block propagator twice, NOESY's four-step loop rebuilds three
+propagators four times), a kernel change for its own pull request. The original notes follow.
+
 Status (2026-10-27): exploratory, not scheduled. Nothing here is to be implemented until the open questions
 below are answered. The file records the idea, what the kernel already does, and a possible shape of the work,
 so that the exploration can start from it.

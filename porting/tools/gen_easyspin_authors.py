@@ -60,6 +60,15 @@ EXTRA = {
     "easyspyn.pulsed._sf_peaks": [("sf_peaks.c", "derived", "the peak-binning kernel, in NumPy")],
     "easyspyn.pulsed._sf_evolve": [("saffron.m", "derived", "the time-domain evolution of the fast engine")],
     "easyspyn.pulsed._pathwayparser": [("saffron.m", "derived", "the pathway parser of the fast engine")],
+    "easyspyn.eprfiles._load_bes3t": [("eprload_BrukerBES3T.m", "derived", "the BES3T reader, as a private function")],
+    "easyspyn.eprfiles._read_dsc": [("eprload_BrukerBES3T.m", "derived", "the descriptor reader readDSCfile")],
+    "easyspyn.eprfiles._scale_bes3t": [("eprload_BrukerBES3T.m", "derived", "the scaling step")],
+    "easyspyn.eprfiles._load_esp": [("eprload_BrukerESP.m", "derived", "the ESP/WinEPR reader, as a private function")],
+    "easyspyn.eprfiles._read_par": [
+        ("eprload_BrukerESP.m", "derived", "the parameter-file reader eprload_readPARfile")
+    ],
+    "easyspyn.eprfiles._getmatrix": [("getmatrix.m", "derived", "the binary reader, with NumPy")],
+    "easyspyn.eprfiles._parsefieldparams": [("parsefieldparams.m", "derived", "the value parser")],
 }
 EXCLUDE_MODULES = {"__init__", "oracle"}
 SKIP_STEMS = {"main"}

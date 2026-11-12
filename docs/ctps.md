@@ -311,6 +311,11 @@ and is kept as a skipped fixture.
 with ten worked cases and the checks behind the tests as runnable examples.
 
 Not ported, on purpose: the density-matrix pulse-damping tier of CCCP.m
-(AX/AMX/AMXinv), which will come through Spynach; a command line and a GUI; GPU
-backends (hot loops are marked `# GPU:`). The module can be removed without
-touching Spynach (`src/ctps/README.md` gives the recipe).
+(AX/AMX/AMXinv), whose place is taken by Spynach's pulse programs
+([Pulse programs](pulse-programs.md): `Program.to_ctps` turns a program into
+a `Sequence` and `PhaseCycle`, `simulate` supplies the phase-cycle weights, and
+the spin dynamics of every surviving pathway is then exact for the spin system
+at hand); a command line and a GUI; GPU backends (hot loops are marked
+`# GPU:`). The module imports nothing from Spynach and can be removed without
+touching the kernel (`src/ctps/README.md` gives the recipe; `spynach.program`
+then raises `ImportError` when asked to select pathways).

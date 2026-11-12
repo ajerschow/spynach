@@ -20,6 +20,16 @@ How an EasySpyn function relates to its original:
 | `easyspyn.endor.endorfrq_perturb` | `easyspin/endorfrq_perturb.m` | port | Stefan Stoll |
 | `easyspyn.endor.orisel` | `easyspin/orisel.m` | port | Stefan Stoll |
 | `easyspyn.endor.salt` | `easyspin/salt.m` | port | Stefan Stoll, Joscha Nehrkorn |
+| `easyspyn.eprfiles._getmatrix` | `easyspin/private/getmatrix.m` (the binary reader, with NumPy) | derived | Stefan Stoll |
+| `easyspyn.eprfiles._load_bes3t` | `easyspin/private/eprload_BrukerBES3T.m` (the BES3T reader, as a private function) | derived | Stefan Stoll, Claudia Tait |
+| `easyspyn.eprfiles._load_esp` | `easyspin/private/eprload_BrukerESP.m` (the ESP/WinEPR reader, as a private function) | derived | Stefan Stoll |
+| `easyspyn.eprfiles._parsefieldparams` | `easyspin/private/parsefieldparams.m` (the value parser) | derived | Stefan Stoll |
+| `easyspyn.eprfiles._read_dsc` | `easyspin/private/eprload_BrukerBES3T.m` (the descriptor reader readDSCfile) | derived | Stefan Stoll, Claudia Tait |
+| `easyspyn.eprfiles._read_par` | `easyspin/private/eprload_BrukerESP.m` (the parameter-file reader eprload_readPARfile) | derived | Stefan Stoll |
+| `easyspyn.eprfiles._scale_bes3t` | `easyspin/private/eprload_BrukerBES3T.m` (the scaling step) | derived | Stefan Stoll, Claudia Tait |
+| `easyspyn.eprfiles.eprload` | `easyspin/eprload.m` | port | Stefan Stoll, Stephan Pribitzer |
+| `easyspyn.eprfiles.eprsave` | `easyspin/eprsave.m` | port | Stefan Stoll |
+| `easyspyn.eprfiles.exp_from_params` | — | new | — |
 | `easyspyn.fitting._algdefaults` | `easyspin/private/esfit_algdefaults.m` (translated as a private function) | derived | Stefan Stoll, Claudia Tait |
 | `easyspyn.fitting.addnoise` | `easyspin/addnoise.m` | port | Stefan Stoll, Matthew Krzyaniak |
 | `easyspyn.fitting.basecorr` | `easyspin/basecorr.m` | port | Stefan Stoll |
@@ -142,6 +152,8 @@ How an EasySpyn function relates to its original:
 | `easyspin/deriv.m` | Stefan Stoll (1) |
 | `easyspin/endorfrq.m` | Stefan Stoll (17), AlaCodon (GitHub user) (1), Claudia Tait (1) |
 | `easyspin/endorfrq_perturb.m` | Stefan Stoll (14) |
+| `easyspin/eprload.m` | Stefan Stoll (18), Stephan Pribitzer (1) |
+| `easyspin/eprsave.m` | Stefan Stoll (5) |
 | `easyspin/equivcouple.m` | Stefan Stoll (2) |
 | `easyspin/erot.m` | Stefan Stoll (3) |
 | `easyspin/esfit.m` | Stefan Stoll (35), Claudia Tait (20), Peter Martin (4) |
@@ -194,12 +206,15 @@ How an EasySpyn function relates to its original:
 | `easyspin/private/compisoloop.m` | Stefan Stoll (2), Claudia Tait (1) |
 | `easyspin/private/cubicsolve.c` | Stefan Stoll (1) |
 | `easyspin/private/diffsuperop.m` | Stefan Stoll (22), Jeremy Lehner (2) |
+| `easyspin/private/eprload_BrukerBES3T.m` | Stefan Stoll (3), Claudia Tait (1) |
+| `easyspin/private/eprload_BrukerESP.m` | Stefan Stoll (3) |
 | `easyspin/private/esfit_algdefaults.m` | Stefan Stoll (1), Claudia Tait (1) |
 | `easyspin/private/esspline1d.m` | Stefan Stoll (3) |
 | `easyspin/private/esspline2d.m` | Stefan Stoll (3) |
 | `easyspin/private/generateoribasis.m` | Stefan Stoll (5) |
 | `easyspin/private/getdstrainops.m` | Stefan Stoll (2) |
 | `easyspin/private/gethamdata.m` | Stefan Stoll (3), Matthew Krzyaniak (1) |
+| `easyspin/private/getmatrix.m` | Stefan Stoll (3) |
 | `easyspin/private/gridinterp.m` | Stefan Stoll (5) |
 | `easyspin/private/gridparam.m` | Stefan Stoll (1) |
 | `easyspin/private/hccm.m` | Stefan Stoll (2) |
@@ -210,6 +225,7 @@ How an EasySpyn function relates to its original:
 | `easyspin/private/lisum1i.c` | Stefan Stoll (2) |
 | `easyspin/private/magint.m` | Stefan Stoll (7), Jeremy Lehner (2), Peter Martin (2) |
 | `easyspin/private/nucstring2list.m` | Stefan Stoll (3) |
+| `easyspin/private/parsefieldparams.m` | Stefan Stoll (3) |
 | `easyspin/private/pqorder.m` | Stefan Stoll (5) |
 | `easyspin/private/projecttriangles.c` | Stefan Stoll (1) |
 | `easyspin/private/projectzones.c` | Stefan Stoll (1) |

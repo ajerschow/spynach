@@ -28,6 +28,9 @@ with EasySpin [`docs/coming-from-easyspin.md`](../../docs/coming-from-easyspin.m
   `cubicsolve`, `photoselect`, `nucspinrmv`.
 - `easyspyn.lineshapes`: `gaussian`, `lorentzian`, `lshape`, `voigtian`,
   `convspec`.
+- `easyspyn.eprfiles`: `eprload` (Bruker BES3T and ESP/WinEPR files, text
+  columns), `eprsave` (BES3T), `exp_from_params` (the `exp` dict of the
+  simulators and `esfit` from a loaded file).
 - `easyspyn.grids`: `sphgrid` (the SOPHE grid with its triangulation),
   `gridparam`.
 - `easyspyn.pepper`: `pepper`, cw EPR spectra of powders and crystals by the
@@ -91,7 +94,8 @@ with EasySpin [`docs/coming-from-easyspin.md`](../../docs/coming-from-easyspin.m
   symmetries beyond P1 (`sitetransforms`) and sample rotations, sparse
   matrices in `resfields`.
 - EasySpin's GUIs (`esfit`'s window, `eprconvert`), MD-trajectory methods
-  (`cardamom`, `mdhmm`), Bruker file readers.
+  (`cardamom`, `mdhmm`), the other formats of `eprload` (SpecMan, Magnettech,
+  Active Spectrum, Adani, JEOL, MAGRES, qese, Varian, ESE).
 
 ## Conventions
 

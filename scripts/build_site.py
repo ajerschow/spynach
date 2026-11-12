@@ -52,7 +52,14 @@ GROUPS = {
         "coming-from-spinach",
     ],
     "easyspin": ["easyspyn", "easyspyn-simulators", "coming-from-easyspin"],
-    "extras": ["ctps", "ctps-examples", "relaxation-pathways", "radiation-damping", "beyond-the-port"],
+    "extras": [
+        "ctps",
+        "ctps-examples",
+        "pulse-programs",
+        "relaxation-pathways",
+        "radiation-damping",
+        "beyond-the-port",
+    ],
 }
 # One line per Spinach comparison case, the only prose in the timing table.
 SPINACH_CASES = {
@@ -69,7 +76,7 @@ SPINACH_CASES = {
     "grids of 256 to 2048 points",
 }
 SOURCE_PACKAGES = ("spynach", "ctps", "easyspyn")
-SOURCE_SUFFIXES = {".py", ".txt"}
+SOURCE_SUFFIXES = {".py", ".txt", ".DSC", ".DTA"}  # .DSC/.DTA: the bundled EPR example file
 
 
 def esc(text: object) -> str:

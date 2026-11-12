@@ -10,6 +10,7 @@
 | [Magic angle spinning](magic-angle-spinning.md) | [magic-angle-spinning.ipynb](notebooks/magic-angle-spinning.ipynb) · [nbviewer](https://nbviewer.org/github/ajerschow/spynach/blob/main/docs/notebooks/magic-angle-spinning.ipynb) | the Fokker-Planck treatment of sample rotation: rotor phase grid and spectral derivative, the `singlerot` context, sidebands, rotor echoes |
 | [Pulse sequences](pulse-sequences.md) | [pulse-sequences.ipynb](notebooks/pulse-sequences.ipynb) · [nbviewer](https://nbviewer.org/github/ajerschow/spynach/blob/main/docs/notebooks/pulse-sequences.ipynb) | writing sequences, `apodisation` and `plot_2d`, decoupling and homospoil, COSY, NOESY, HSQC with isotopomer dilution |
 | [Coherence transfer pathways](ctps.md) | [ctps.ipynb](notebooks/ctps.ipynb) · [nbviewer](https://nbviewer.org/github/ajerschow/spynach/blob/main/docs/notebooks/ctps.ipynb) | the separate `ctps` module: pathway enumeration, phase cycling, gradients, diffusion, non-ideal pulses, cogwheel cycle search, the pathway explorer |
+| [Pulse programs, gradients, phase cycling (beta)](pulse-programs.md) | [pulse-programs.ipynb](notebooks/pulse-programs.ipynb) · [nbviewer](https://nbviewer.org/github/ajerschow/spynach/blob/main/docs/notebooks/pulse-programs.ipynb) | gradients without a spatial grid: sequences written with phase lists and gradients, run as one branch per surviving coherence pathway instead of the cycle, each pathway with its own k-vector; nested, cogwheel and block phase cycles; DQF-COSY, gradient-selected COSY, pathway echoes under a read gradient, PGSE diffusion, a 23Na triple-quantum filter by phase cycling and by gradients, the explicit cycle as the reference |
 | [Coherence transfer pathways: worked examples](ctps-examples.md) | [ctps-examples.ipynb](notebooks/ctps-examples.ipynb) · [nbviewer](https://nbviewer.org/github/ajerschow/spynach/blob/main/docs/notebooks/ctps-examples.ipynb) | a cookbook for `ctps`: double-quantum filter, imperfect spin echo, stimulated echo, NOESY-sized enumeration, HSQC, MQMAS nested versus cogwheel, multi-echo trains, cogwheel plus gradients, MRS crushers; then every check of the module's tests as a runnable example |
 | [Radiation damping](radiation-damping.md) | [radiation-damping.ipynb](notebooks/radiation-damping.ipynb) · [nbviewer](https://nbviewer.org/github/ajerschow/spynach/blob/main/docs/notebooks/radiation-damping.ipynb) | the state-dependent integrator `iserstep` (Lie-group and Runge-Kutta-Munthe-Kaas methods, a port of Spinach's) on the Bloch-Maxwell radiation damping model, convergence orders; the spin-system treatment of radiation damping |
 | [Beyond the port](beyond-the-port.md) | [beyond-the-port.ipynb](notebooks/beyond-the-port.ipynb) · [nbviewer](https://nbviewer.org/github/ajerschow/spynach/blob/main/docs/notebooks/beyond-the-port.ipynb) | features with no Spinach counterpart, each with an example: `ctps`, non-ideal pulses and cogwheel search, interactive figures and `figure_png`, `compare` and the parity page, executable documentation |
@@ -74,7 +75,11 @@ the changed outputs.
 the 23Na triple-quantum build-up notebook, lives in `user_py/` at the
 repository root (see its README); it is not generated from a guide and
 not run by the tests. The 23Na build-up is also a playground example
-([try.html#ex-na23-tqf](https://ajerschow.github.io/spynach/try.html#ex-na23-tqf)).
+([try.html#ex-na23-tqf](https://ajerschow.github.io/spynach/try.html#ex-na23-tqf)),
+and the triple-quantum filter on the same spin, by phase cycling and by
+gradients, follows in the [pulse programs](pulse-programs.md) guide
+([`#ex-na23-tqf-cycle`](https://ajerschow.github.io/spynach/try.html#ex-na23-tqf-cycle),
+[`#ex-na23-tqf-gradients`](https://ajerschow.github.io/spynach/try.html#ex-na23-tqf-gradients)).
 Each script is a translation of the Spinach example of the same name at
 the Spinach size (the guides above run reduced versions in seconds), and
 is meant for a side-by-side comparison with MATLAB: it writes its FIDs

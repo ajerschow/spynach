@@ -216,9 +216,11 @@ propagator caches.
 
 Symmetry, `doublerot`/`floquet`/`gridfree`, more sequences and shaped
 pulses, the polyadic generator container for imaging-scale problems, the
-GPU backend (`porting/gpu-notes.md`), the JAX layer. Pathway-aware state-space
-restriction from phase-cycle selection (exploratory, not scheduled, see
-`porting/pathway-notes.md`).
+GPU backend (`porting/gpu-notes.md`), the JAX layer, a propagator cache keyed on
+the reduced block and timestep (see `porting/pathway-notes.md` for the
+measurement). Pulse programs (`spynach.program`, phase cycles and gradients run
+as one branch per coherence pathway) are built; the state-space restriction
+once considered beside them is dropped after that measurement.
 
 # CTPS: the coherence-pathway module `ctps` is separate from this roadmap; see src/ctps/README.md.
 

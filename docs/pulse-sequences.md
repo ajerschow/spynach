@@ -294,6 +294,10 @@ isotopomers contain one 13C each.
 - the other sequences of `experiments/nmr_liquids` (`dqf_cosy`, `tocsy`,
   `hmqc`, `hmbc`, `roesy`, `inept`, `dept`, constant-time variants, ...),
   the solid-state and ESR experiments, and real (soft, shaped) pulses;
+  `gcosy` and the gradient pulses `grad_pulse`/`grad_sandw` have no port,
+  but [pulse programs](pulse-programs.md) write any phase-cycled or
+  gradient-selected sequence as blocks (DQF-COSY and the gradient-selected
+  COSY are in that guide) and run it as one branch per coherence pathway;
 - `apodisation` windows `bad-z1`/`bad-z2`; `plot_2d` of complex spectra
   side by side; `plot_3d`.
 

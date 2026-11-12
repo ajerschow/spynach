@@ -7,6 +7,7 @@ and ``docs/coming-from-easyspin.md``.
 
 from .constants import amu, avogadro, bmagn, boltzm, clight, echarge, evolt, gfree, hbar, mu0, nmagn, planck
 from .endor import EndorResonances, anisosubsys, endorfrq, endorfrq_perturb, orisel, salt
+from .eprfiles import eprload, eprsave, exp_from_params
 from .fitting import (
     FitResult,
     addnoise,
@@ -43,7 +44,7 @@ from .spinsystem import hsdim, spinvec, validatespinsys
 from .symmetry import hamsymm
 from .units import mhz2mt, mt2mhz, unitconvert
 
-__version__ = "0.6.0"
+__version__ = "0.7.0"
 
 __all__ = [
     "amu", "avogadro", "bmagn", "boltzm", "clight", "echarge", "evolt", "gfree", "hbar", "mu0", "nmagn", "planck",
@@ -54,6 +55,7 @@ __all__ = [
     "apowin", "exponfit", "fdaxis", "larmorfrq", "saffron", "sf_pathways",
     "FitResult", "addnoise", "basecorr", "deriv", "esfit", "esfit_genetic", "esfit_grid", "esfit_levmar",
     "esfit_montecarlo", "esfit_simplex", "esfit_swarm", "hccm", "jacobianest", "rescaledata",
+    "eprload", "eprsave", "exp_from_params",
     "SphGrid", "gridparam", "sphgrid",
     "esspline1d", "esspline2d", "gridinterp",
     "lisum1i", "projecttriangles", "projectzones",

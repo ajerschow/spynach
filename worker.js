@@ -27,6 +27,7 @@ const SOURCE = [
   "src/spynach/plotting.py",
   "src/spynach/probe.py",
   "src/spynach/processing.py",
+  "src/spynach/program.py",
   "src/spynach/propagation.py",
   "src/spynach/reduction.py",
   "src/spynach/relaxation.py",
@@ -50,8 +51,11 @@ const SOURCE = [
   "src/easyspyn/__init__.py",
   "src/easyspyn/components.py",
   "src/easyspyn/constants.py",
+  "src/easyspyn/data/example_cw.DSC",
+  "src/easyspyn/data/example_cw.DTA",
   "src/easyspyn/data/isotopedata.txt",
   "src/easyspyn/endor.py",
+  "src/easyspyn/eprfiles.py",
   "src/easyspyn/fitting.py",
   "src/easyspyn/garlic.py",
   "src/easyspyn/grids.py",
@@ -439,10 +443,13 @@ async function mountSources() {
       const rel = SOURCE[cursor++];
       const response = await fetch(new URL(rel + self.location.search, self.location.href));
       if (!response.ok) throw new Error("Could not fetch " + rel + " (" + response.status + "). Serve the repository root over HTTP.");
-      const text = await response.text();
       const dest = "/repo/" + rel;
       mkdirp(dest.slice(0, dest.lastIndexOf("/")));
-      pyodide.FS.writeFile(dest, text);
+      if (/\.(DTA|dta)$/.test(rel)) {
+        pyodide.FS.writeFile(dest, new Uint8Array(await response.arrayBuffer()));  // binary data file
+      } else {
+        pyodide.FS.writeFile(dest, await response.text());
+      }
       done += 1;
       if (done === SOURCE.length || done % 10 === 0) {
         post({ type: "status", text: "Loading the sources (" + done + "/" + SOURCE.length + ")" });

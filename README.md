@@ -140,6 +140,20 @@ Add-ons originating here, with no Spinach counterpart, each with an example in t
   J. Chem. Phys. 113, 979 (2000), and a **cogwheel cycle search** by exact
   integer arithmetic (`find_cycle`, `coverage`, `hcl_cycle`) plus the DOTCOPS
   crusher objective (`crusher_scheme`), in `ctps`.
+- **Pulse programs, gradients, phase cycling (beta)** (`spynach.program`): **gradients without a spatial grid**. A sequence written as
+  blocks with its phase lists and gradients runs as one branch of the density matrix per coherence pathway that
+  survives the phase cycle (pathways and weights from `ctps`), each branch carrying its gradient k-vector and
+  diffusion integral, so gradient selection, crushers, read-out gradients and PGSE diffusion are exact per-pathway
+  factors with no voxels and no Nyquist limit; per-pathway FIDs and echo times, and the explicit cycle as the
+  reference. The phase-cycle and gradient selection are new and in beta: the API may still change ([docs/pulse-programs.md](docs/pulse-programs.md); browser
+  examples [ex-dqf-cosy](https://ajerschow.github.io/spynach/try.html#ex-dqf-cosy),
+  [ex-phase-cycle](https://ajerschow.github.io/spynach/try.html#ex-phase-cycle),
+  [ex-gcosy](https://ajerschow.github.io/spynach/try.html#ex-gcosy),
+  [ex-pathway-echoes](https://ajerschow.github.io/spynach/try.html#ex-pathway-echoes),
+  [ex-pgse](https://ajerschow.github.io/spynach/try.html#ex-pgse), and a 23Na triple-quantum filter by phase
+  cycling and by gradients, checked against each other:
+  [ex-na23-tqf-cycle](https://ajerschow.github.io/spynach/try.html#ex-na23-tqf-cycle),
+  [ex-na23-tqf-gradients](https://ajerschow.github.io/spynach/try.html#ex-na23-tqf-gradients)).
 - **Relaxation pathways by mechanism** (`spynach.relaxation_pathways`): the Redfield relaxation matrix between
   product operators split into dipolar, CSA, quadrupolar and anisotropic-J contributions and all their
   cross-correlations, each with an exact expression in the coupling strengths and spectral densities, drawn as a
@@ -231,7 +245,7 @@ report are timed on the same machine.
 
 Releases are tagged `vX.Y.Z` and listed in [`CHANGELOG.md`](CHANGELOG.md);
 `spynach.__version__` gives the installed version, and
-`pip install spynach==0.6.0` installs a tagged one from PyPI (before 0.5.0:
+`pip install spynach==0.7.0` installs a tagged one from PyPI (before 0.5.0:
 `pip install "spynach @ git+https://github.com/ajerschow/spynach.git@v0.3.0"`). To release: set the version in `pyproject.toml`,
 `src/spynach/__init__.py` and `CITATION.cff` (a test keeps them equal), add
 the `CHANGELOG.md` entry, refresh `uv.lock`, run the checks above plus

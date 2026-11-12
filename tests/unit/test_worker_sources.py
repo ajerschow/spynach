@@ -7,7 +7,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 PACKAGES = ("spynach", "ctps", "easyspyn")
-SUFFIXES = {".py", ".txt"}
+SUFFIXES = {".py", ".txt", ".DSC", ".DTA"}  # as scripts/build_site.py SOURCE_SUFFIXES
 
 
 def test_worker_fetches_every_module_and_data_file():

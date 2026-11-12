@@ -19,12 +19,13 @@ updated with every ported function. The companion notebook is
 8. [Powder and crystal spectra: pepper](#powder-and-crystal-spectra-pepper)
 9. [Solution spectra: garlic](#solution-spectra-garlic)
 10. [Fitting: esfit](#fitting-esfit)
-11. [ENDOR: endorfrq, salt, orisel](#endor-endorfrq-salt-orisel)
-12. [Magnetometry: curry](#magnetometry-curry)
-13. [Slow motion: chili](#slow-motion-chili)
-14. [Pulse EPR: saffron](#pulse-epr-saffron)
-15. [Not ported](#not-ported)
-16. [Verification](#verification)
+11. [Loading data: eprload](#loading-data-eprload)
+12. [ENDOR: endorfrq, salt, orisel](#endor-endorfrq-salt-orisel)
+13. [Magnetometry: curry](#magnetometry-curry)
+14. [Slow motion: chili](#slow-motion-chili)
+15. [Pulse EPR: saffron](#pulse-epr-saffron)
+16. [Not ported](#not-ported)
+17. [Verification](#verification)
 
 ## The rules
 
@@ -203,6 +204,21 @@ result = es.esfit(
 print(result.pnames, result.pfit.round(5), f"rmsd {result.rmsd:.1e}")
 ```
 
+## Loading data: eprload
+
+| EasySpin | EasySpyn |
+|---|---|
+| `[x,y,Pars] = eprload(FileName)`, `y = eprload(FileName)`, `eprload(FileName)` plots | `eprload(file)` always returns `(x, y, params)`; nothing is plotted; a directory is an error (no file dialog) |
+| `eprload(FileName,Scaling)` with `'n'`, `'P'`, `'G'`, `'T'`, `'c'` | `eprload(file, "nG")`, the same letters and formulas, Bruker files only |
+| Bruker BES3T `.DSC`/`.DTA`, Bruker ESP/WinEPR `.par`/`.spc` | the same (a name without extension finds `.dta`, `.dsc`, `.spc`, `.par` in any case; companions are found case-insensitively); plus text columns `.txt`, `.csv`, `.tsv`, `.asc` (`format="text"` for other extensions) |
+| SpecMan, Magnettech, Active Spectrum, Adani, JEOL, MAGRES, qese, Varian, ETH formats | `NotImplementedError` naming the format |
+| `x` in the units of the file; a cell array of axes for 2-D data | the same: a NumPy array, or a list of arrays for 2-D and 3-D data |
+| `y` an `nx x 1` column (BES3T) or `1 x nx` row (ESP); `nx x ny` for 2-D; a cell array when `IKKF` lists several values | `y` of shape `(nx,)` in both formats, `(nx, ny)` for 2-D; a list of arrays for several values; integers become floats |
+| `Pars` struct, strings with numbers converted by `parsefieldparams` | `params` dict with the keys verbatim: floats, 1-D arrays for several numbers, `True`/`False`, strings otherwise (`'3345 G'` stays a string) |
+| continuation lines (`\`) of a descriptor: the last line is parsed on its own | all continuation lines are joined, so quoted multi-line values such as pulse programs come back whole |
+| `eprsave(FileName,x,data,TitleString,mwFreq)` | `eprsave(file, x, y, title="", mw_freq=None)`; the same files (big-endian float64, `.XGF`/`.YGF` for nonlinear axes) apart from the exported-from comment |
+| `Exp.mwFreq = Pars.MWFQ/1e9; Exp.Range = [x(1) x(end)]/10; ...` by hand | `exp_from_params(params, x, field_unit=None, mw_freq=None)`: `mwFreq`, `Range` (mT), `nPoints`, `Harmonic`, `ModAmp` (mT), `Temperature` from `MWFQ`/`MF`, `XUNI`/`JUN`, `RCHM`/`RHA`, `B0MA`/`RMA`, `STMP`/`TE`; errors for non-field or non-uniform sweeps |
+
 ## ENDOR: endorfrq, salt, orisel
 
 | EasySpin | EasySpyn |
@@ -286,7 +302,8 @@ print(eseem.spec.shape, eseem.info["fd"].shape)
 
 The simulator `spidyan` and `saffron`'s thyme engine (shaped pulses,
 explicit propagation, resonators, transient detection). `esfit`'s window
-and `eprconvert`. In `salt` and `curry`: partial ordering, sample
+and `eprconvert`. In `eprload`: the SpecMan, Magnettech, Active Spectrum,
+Adani, JEOL, MAGRES, qese, Varian and ETH formats. In `salt` and `curry`: partial ordering, sample
 rotations. In `chili`: the fast C kernel, Heisenberg exchange, the LMK basis
 option, user-supplied starting vectors. In `pepper` and `garlic`: frequency sweeps of
 powders, isotope mixtures, partial ordering, sample rotations, immediate
@@ -302,7 +319,7 @@ resonance-field functions, the GUIs, MD-trajectory methods (`cardamom`,
 Reference data are written by EasySpin itself: the dump scripts in
 `oracle/matlab/easyspin/dumps/` (`esdump_ham.m`, `esdump_resfields.m`,
 `esdump_pepper.m`, `esdump_esfit.m`, `esdump_endor.m`, `esdump_chili.m`,
-`esdump_saffron.m`) run in MATLAB with the installed EasySpin on the path
+`esdump_saffron.m`, `esdump_eprload.m`) run in MATLAB with the installed EasySpin on the path
 (read-only) and write one case per spin system or spectrum to
 `$EASYSPYN_FIXTURES/<version>/<case>/`, with the inputs recorded in
 `meta.json` so that `tests/easyspyn/test_parity*.py` rebuild each case from

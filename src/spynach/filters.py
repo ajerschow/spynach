@@ -23,6 +23,7 @@ from typing import Any
 
 import numpy as np
 import scipy.sparse as sps
+import scipy.sparse.linalg as spla
 
 from spynach.operators import lin2lm
 from spynach.system import SpinSystem
@@ -59,6 +60,13 @@ def coherence(spin_system: SpinSystem, rho: np.ndarray, spec: Sequence[tuple[Any
     Spinach authors (coherence.m): Ilya Kuprov, Luke Edwards.
     """
     _check(spin_system, rho)
+    return _apply(rho, coherence_mask(spin_system, spec))
+
+
+def coherence_mask(spin_system: SpinSystem, spec: Sequence[tuple[Any, Any]]) -> np.ndarray:
+    """Boolean mask over the basis states that :func:`coherence` keeps for ``spec`` (``sphten-liouv``)."""
+    if spin_system.basis is None or spin_system.basis.formalism != "sphten-liouv":
+        raise NotImplementedError("analytical order selection is only ported for the sphten-liouv formalism.")
     _, projections = lin2lm(spin_system.basis.basis)
     mask = np.ones(spin_system.basis.nstates, dtype=bool)
     for entry in spec:
@@ -69,7 +77,55 @@ def coherence(spin_system: SpinSystem, rho: np.ndarray, spec: Sequence[tuple[Any
         if np.any(orders != orders.astype(int)):
             raise ValueError("coherence orders in spec must be integers.")
         mask &= np.isin(projections[:, selected].sum(axis=1), orders)
-    return _apply(rho, mask)
+    return mask
+
+
+def isotope_orders(spin_system: SpinSystem) -> dict[str, np.ndarray]:
+    """Coherence order of every basis state for each isotope: ``{isotope: (nstates,) int}`` (``sphten-liouv``).
+
+    The order of an isotope is the sum of the projection quantum numbers of
+    its spins; summed over all isotopes it is ``basis.tot_proj``.
+    """
+    if spin_system.basis is None or spin_system.basis.formalism != "sphten-liouv":
+        raise NotImplementedError("coherence orders by isotope are only available in the sphten-liouv formalism.")
+    _, projections = lin2lm(spin_system.basis.basis)
+    isotopes = np.asarray(spin_system.isotopes)
+    return {iso: projections[:, isotopes == iso].sum(axis=1) for iso in dict.fromkeys(spin_system.isotopes)}
+
+
+def orders_present(spin_system: SpinSystem, rho: np.ndarray, isotope: str, tol: float | None = None) -> np.ndarray:
+    """Ascending coherence orders of ``isotope`` carried by ``rho`` (last axis the state space) above ``tol``.
+
+    ``tol`` defaults to ``tols.zte_tol``; a state stack contributes the largest amplitude of each state.
+    """
+    _check(spin_system, rho)
+    tol = spin_system.tols.zte_tol if tol is None else tol
+    amplitude = np.abs(np.asarray(rho)).reshape(-1, np.shape(rho)[-1]).max(axis=0)
+    return np.unique(isotope_orders(spin_system)[isotope][amplitude > tol])
+
+
+def leakage(spin_system: SpinSystem, L: Any, orders: dict[str, int]) -> float:
+    """``||(1 - P) L P||_1 / ||L||_1`` for the projector ``P`` onto the states with the given order per isotope.
+
+    Zero when ``L`` conserves those coherence orders (a rotating-frame Hamiltonian with secular
+    relaxation), so a branch of a pulse program that sits in that block stays there exactly; a value
+    comparable to one means ``L`` moves amplitude out of the block and a pathway-restricted run is not
+    equivalent to the explicit phase cycle.
+    """
+    mask = np.ones(spin_system.basis.nstates, dtype=bool)
+    for isotope, order in orders.items():
+        mask &= coherence_mask(spin_system, [(isotope, int(order))])
+    if not mask.any():
+        raise ValueError(f"no basis state has the coherence orders {orders}.")
+    L = sps.csc_array(L) if sps.issparse(L) else np.asarray(L)
+    inside = np.flatnonzero(mask)
+    outside = np.flatnonzero(~mask)
+    total = spla.norm(L, 1) if sps.issparse(L) else np.linalg.norm(L, 1)
+    if total == 0 or outside.size == 0:
+        return 0.0
+    block = L[outside][:, inside] if sps.issparse(L) else L[np.ix_(outside, inside)]
+    off = spla.norm(block, 1) if sps.issparse(block) else np.linalg.norm(block, 1)
+    return float(off / total)
 
 
 def _check(spin_system: SpinSystem, rho: np.ndarray) -> None:

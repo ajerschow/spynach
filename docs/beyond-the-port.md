@@ -11,6 +11,7 @@ notebook is [`notebooks/beyond-the-port.ipynb`](notebooks/beyond-the-port.ipynb)
 
 1. [Coherence transfer pathway selection: `ctps`](#coherence-transfer-pathway-selection-ctps)
 2. [Non-ideal pulses and cogwheel cycle search](#non-ideal-pulses-and-cogwheel-cycle-search)
+10. [Pulse programs, gradients, phase cycling (beta)](#pulse-programs-gradients-phase-cycling-beta)
 3. [Interactive figures and static copies](#interactive-figures-and-static-copies)
 4. [Checking results: `compare`, the parity page, timed reports](#checking-results-compare-the-parity-page-timed-reports)
 5. [Executable documentation, Colab, contributed notebooks](#executable-documentation-colab-contributed-notebooks)
@@ -305,3 +306,61 @@ an inhomogeneous line as an ensemble of isochromats sharing the coil, and a
 strongly coupled pair against the line-by-line classical picture. The
 doublet runs in the browser playground
 ([`try.html#ex-rd`](https://ajerschow.github.io/spynach/try.html#ex-rd)).
+
+## Pulse programs, gradients, phase cycling (beta)
+
+Spinach selects pathways by hand-written `coherence` filters and integrates a
+gradient pulse or a gradient pair over the sample with an auxiliary-matrix
+exponential; anything longer needs the `imaging` grid, with its voxels and its
+Nyquist limit on the gradient strength. A Spynach `Program`
+(`spynach.program`) is the sequence with its phase lists and gradients, run as
+one branch of the density matrix per pathway that survives the cycle (the
+pathways and their weights come from `ctps`), each branch carrying its gradient
+k-vector and diffusion integral: gradients become exact scalar factors with no
+spatial grid at all, crushers of any strength cost nothing, and a read gradient
+separates the pathways into echoes. Orders are in the textbook convention
+(the detected coherence is `-1`, the mirror image of Spinach's `+1` coil). The
+pulse programs, the phase-cycle selection and the gradient selection are new
+and in beta: the interface may still change. A gradient-selected COSY and its pathways, next to the filtered
+port:
+
+```python
+from spynach.program import Acquire, Evolve, Gradient, Program, Pulse
+
+spin_system_gcosy = spynach.basis(
+    spynach.create(
+        {"isotopes": ["1H", "1H"], "magnet": 14.1},
+        {"zeeman": {"scalar": [1.0, 1.5]}, "coupling": {"scalar": [[0, 12.0], [0, 0]]}},
+    ),
+    {"formalism": "sphten-liouv", "approximation": "none"},
+)
+pars_gcosy = {"angle": np.pi / 2, "offset": 750.0, "sweep": 300.0, "npoints": [32, 32], "spins": ["1H"]}
+gcosy = Program(
+    [
+        Pulse("1H", np.pi / 2),
+        Evolve(1 / 300, 32),
+        Gradient(1e-3, z=0.3),
+        Pulse("1H", np.pi / 2),
+        Gradient(1e-3, z=-0.3),
+        Acquire("1H", 1 / 300, 32),
+    ]
+)
+print(gcosy.select(spin_system_gcosy))
+fid_gcosy = spynach.liquid(spin_system_gcosy, gcosy, pars_gcosy, "nmr")
+print(fid_gcosy.shape, "P-type COSY, one pathway propagated;", "the guide:", "docs/pulse-programs.md")
+```
+
+The [Pulse programs](pulse-programs.md) guide runs DQF-COSY against its
+explicit four-step cycle, gradient selection against a coherence filter, a
+read gradient that separates the pathways into echoes, PGSE diffusion against
+Stejskal–Tanner, the pathway explorer of `ctps` on a program, and a 23Na
+triple-quantum filter by phase cycling and by gradients, checked against each
+other. These cases run in the browser playground:
+[`try.html#ex-dqf-cosy`](https://ajerschow.github.io/spynach/try.html#ex-dqf-cosy),
+[`#ex-phase-cycle`](https://ajerschow.github.io/spynach/try.html#ex-phase-cycle),
+[`#ex-gcosy`](https://ajerschow.github.io/spynach/try.html#ex-gcosy),
+[`#ex-pathway-echoes`](https://ajerschow.github.io/spynach/try.html#ex-pathway-echoes),
+[`#ex-pgse`](https://ajerschow.github.io/spynach/try.html#ex-pgse),
+[`#ex-na23-tqf-cycle`](https://ajerschow.github.io/spynach/try.html#ex-na23-tqf-cycle)
+and [`#ex-na23-tqf-gradients`](https://ajerschow.github.io/spynach/try.html#ex-na23-tqf-gradients).
+

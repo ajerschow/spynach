@@ -412,7 +412,8 @@ tensor conversions. The measured agreement is in
 [`porting/EASYSPIN_FIXTURES.md`](../porting/EASYSPIN_FIXTURES.md). In
 `pepper`, frequency sweeps, isotope mixtures (`Nucs = "Cu"`), partial
 ordering (`Exp["Ordering"]`), sample rotations and `Opt["ImmediateBinning"]`
-are not ported yet; `esfit`'s window is not ported; in `salt` and `curry`,
+are not ported yet; `esfit`'s window is not ported; `eprload` reads Bruker
+BES3T and ESP/WinEPR files and text columns, not the other formats; in `salt` and `curry`,
 partial ordering and sample rotations; in `chili`, the fast C kernel,
 Heisenberg exchange (part of it) and the LMK basis option; `saffron` and
 `spidyan` are the next phase; orbital angular momentum, higher-order Zeeman

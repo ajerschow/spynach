@@ -463,6 +463,7 @@ ignored by the simulation, as in Spinach.
 | `step` (single generator and 2/3-point Lie quadratures), `krylov` | the same in Liouville space; Hilbert-space `step` for one generator |
 | `iserstep` (state-dependent generators: `PWCL`, `LG2`, `LG4`, `LG4A`, `RKMK4`, `RKMK-DP5`, `RKMK-DP8`, `RKMK-RKF45`), also reached through `step` with a function handle | the same methods, called as `iserstep(spin_system, L, t, method, rho, dt)` (see [Keyword arguments](#keyword-arguments)); `LG4` in Liouville space only; `step` does not route function handles; see the [radiation damping guide](radiation-damping.md) |
 | `pulse`, `shaped_pulse_*` | not ported; use `propagator` or `step` |
+| `grad_pulse`, `grad_sandw` (sample-integrated gradient pulses), `gcosy`, the gradients of the `imaging` context | not ported as such: pulse programs, gradients, phase cycling (beta; `spynach.program`, no Spinach counterpart, [guide](pulse-programs.md)) write a sequence with phase lists and gradients and run one branch per surviving coherence pathway, with the gradient as an exact per-pathway k-vector, sample envelope and diffusion factor: gradients without a spatial grid. Their coherence orders follow the textbook convention (detected order -1), the mirror image of the `+1` that Spinach's `L+` coil state and `coherence` filters use; `homospoil` as a block. Spatially structured samples and slice selection (the `imaging` context) are not ported |
 | `apodisation`, `plot_2d`, `dilute`/`kill_spin`, `decouple`, `homospoil` | the same; `apodisation(fid, [("exp", 6)])` takes tuples instead of nested cells, `plot_2d` draws a Plotly contour figure with the same `ncont, delta, k, ncol, m, signs` arguments as keywords, binning spectra longer than `max_points=512` per axis (largest magnitude per bin) so that the HTML stays small |
 | `propagator`: Pade `expm` below `small_matrix`, scaled and squared Taylor series above | the same |
 | the sparse products of `propagator`, `step` and `clean_up` (MATLAB sparse arithmetic, `gpu` for the largest) | NumPy and SciPy, or (the default, since Numba is installed with Spynach) threaded Numba kernels (`spynach.kernels`) that multiply and round in one pass, give the same results (an element within an ulp of a rounding boundary can land on the neighbouring grid point, `1e-10` by default) and are routed through `spynach.backend` so that a GPU backend can replace them; `SPYNACH_NUMBA=0` switches them off |
@@ -564,7 +565,9 @@ HTML report.
 This guide lists what carries over and what is still missing. What Spynach
 has and Spinach does not is collected, with examples, in
 [Beyond the port](beyond-the-port.md): the coherence-transfer-pathway module
-`ctps` with its non-ideal pulse model and cogwheel search, radiation
+`ctps` with its non-ideal pulse model and cogwheel search, pulse programs
+that run a phase-cycled or gradient-selected sequence as one branch per
+surviving pathway (`spynach.program`), radiation
 damping of spin systems and isochromat ensembles (`radiation_damping`, on
 top of the ported `iserstep`), the relaxation pathway analysis, the
 interactive figures and `figure_png`, `compare` and the parity page, and

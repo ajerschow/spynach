@@ -16,11 +16,12 @@ numbers) and is verified against EasySpin 6.0.15; what differs is listed in
 
 1. [Powder and crystal spectra: `pepper`](#powder-and-crystal-spectra-pepper)
 2. [Solution spectra: `garlic`](#solution-spectra-garlic)
-3. [Fitting spectra: `esfit`](#fitting-spectra-esfit)
-4. [ENDOR: `endorfrq` and `salt`](#endor-endorfrq-and-salt)
-5. [Magnetometry: `curry`](#magnetometry-curry)
-6. [Slow motion: `chili`](#slow-motion-chili)
-7. [Pulse EPR: `saffron`](#pulse-epr-saffron)
+3. [Loading measured spectra: `eprload`](#loading-measured-spectra-eprload)
+4. [Fitting spectra: `esfit`](#fitting-spectra-esfit)
+5. [ENDOR: `endorfrq` and `salt`](#endor-endorfrq-and-salt)
+6. [Magnetometry: `curry`](#magnetometry-curry)
+7. [Slow motion: `chili`](#slow-motion-chili)
+8. [Pulse EPR: `saffron`](#pulse-epr-saffron)
 
 The examples share one spin system, the nitroxide of the foundation guide:
 
@@ -193,6 +194,79 @@ print(
 sweep = es.garlic({"g": 2.006, "Nucs": "14N", "A": 47, "lw": 0.1}, {"Field": 340, "mwRange": [9.4, 9.6]})
 print("frequency sweep at 340 mT: lines at", np.sort(sweep.info["resfields"]).round(4), "GHz")
 ```
+
+## Loading measured spectra: `eprload`
+
+`eprload(file)` reads a spectrometer file and returns `(x, y, params)`, as
+EasySpin's `eprload` does: Bruker BES3T pairs (`.DSC` descriptor and `.DTA`
+data, Xepr and Elexsys; either member or the name without extension; 1-D to
+3-D, real or complex, nonlinear axes from the `.XGF`/`.YGF`/`.ZGF` companion
+files), Bruker ESP and WinEPR pairs (`.par`/`.spc`), and text files of
+columns (`.txt`, `.csv`, `.tsv`, `.asc`; one column is `y`, two are `x, y`,
+more give `y` with one column per extra column). `x` is in the units of the
+file, Gauss for Bruker cw spectra, and a list of axes for 2-D data, whose
+`y` has the field along the first axis (`y[:, j]` is the j-th slice); `params`
+holds the parameter file with numbers converted and `true`/`false` as
+booleans. `eprload(file, "nG")` divides by the number of scans and the
+receiver gain (the letters `n P G T c` of EasySpin: scans, square root of
+the microwave power in mW, receiver gain, temperature in K, conversion time
+in ms). The other formats EasySpin reads (SpecMan, Magnettech, JEOL, ...)
+raise `NotImplementedError`.
+
+`exp_from_params(params, x)` turns the parameters into the `exp` dict that
+`pepper`, `garlic`, `chili` and `esfit` take: `mwFreq` in GHz from `MWFQ`
+(Hz) or `MF`, `Range` in mT and `nPoints` from the axis (the unit from `XUNI`
+or `JUN`, or `field_unit=`), `Harmonic` from `RCHM`, `ModAmp` in mT from
+`B0MA` (T) or `RMA` (G), `Temperature` from `STMP` or `TE` when present. The
+axis must be an ascending uniform field sweep; anything else raises
+`ValueError` with the advice to resample and give `Range` and `nPoints` by
+hand. `eprsave(file, x, y, title, mw_freq)` writes a BES3T pair, which is
+how this guide makes a file to load (the descriptor it writes has no
+experiment keys, so they are appended here as an instrument would write
+them):
+
+```python
+import tempfile
+from pathlib import Path
+
+truth = {"g": [2.0, 2.1], "lw": 3}
+exp = {"mwFreq": 9.5, "Range": [300, 360], "nPoints": 300}
+spectrum = es.pepper(truth, exp, {"FuzzLevel": 0})
+file = Path(tempfile.mkdtemp()) / "powder"
+es.eprsave(file, spectrum.x * 10, es.addnoise(spectrum.spec, 40, "n", rng=1), "axial powder", 9.5)  # in Gauss
+with open(file.with_suffix(".DSC"), "a") as handle:
+    handle.write("EXPT\tCW\nXUNI\tG\nXNAM\tField\nAVGS\t4\nRCAG\t30\nRCHM\t1\nB0MA\t1e-4\nSTMP\t295\n")
+x, y, params = es.eprload(file)
+print(
+    params["TITL"],
+    "|",
+    int(params["XPTS"]),
+    "points,",
+    params["XUNI"],
+    "| MWFQ",
+    params["MWFQ"],
+    "| IKKF",
+    params["IKKF"],
+)
+exp_file = es.exp_from_params(params, x)
+print(exp_file)
+_, y_scaled, _ = es.eprload(file, "nG")  # per scan and per unit gain
+print("scaling by scans and gain:", f"{np.abs(y).max() / np.abs(y_scaled).max():.4g}")
+```
+
+A fit then takes the loaded data and the `exp` from the file:
+
+```python
+start = [{"g": [2.005, 2.095], "lw": 2.5}, exp_file, {"FuzzLevel": 0}]
+result = es.esfit(y, es.pepper, start, [{"g": [0.02, 0.02], "lw": 1.5}], {"Verbosity": 0})
+for name, value, std in zip(result.pnames, result.pfit, result.pstd, strict=True):
+    print(f"{name:14s} {value:9.5f} +- {std:.5f}")
+```
+
+The same runs in the browser on a file bundled with the package
+([`try.html#ex-epr-eprload`](https://ajerschow.github.io/spynach/try.html#ex-epr-eprload));
+there, a file first goes into Pyodide's file system (`pyodide.FS.writeFile`)
+and is then read by path as anywhere else.
 
 ## Fitting spectra: `esfit`
 

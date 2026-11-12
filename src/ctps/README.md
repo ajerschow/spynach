@@ -25,7 +25,10 @@ The user guide is [`docs/ctps.md`](../../docs/ctps.md) and the cookbook
 ## Not here, on purpose
 
 - The density-matrix pulse-damping tier of CCCP.m (AX/AMX/AMXinv propagators,
-  `calcord`); it will come through Spynach. The plug-in point is
+  `calcord`); Spynach's pulse programs (`spynach.program`, `docs/pulse-programs.md`)
+  take its place: they convert to a `Sequence` and `PhaseCycle` with
+  `Program.to_ctps`, take the phase-cycle weights from `simulate`, and propagate
+  every surviving pathway exactly. The plug-in point for cheaper pulse models stays
   `Pulse.kind` with the `PulseModel` idea in `ctps.engine.pulse`.
 - GPU backends (hot loops are marked `# GPU:`), a command line, a GUI, a
   YAML format, `ipywidgets` editors.
@@ -43,7 +46,9 @@ Jerschow & Müller 1998 throughout: `n` pulses, `n + 1` periods numbered from 0,
 
 ## Rolling it back
 
-The module touches nothing in `src/spynach`. To remove it:
+The module touches nothing in `src/spynach`; `spynach.program` imports it lazily
+(`Program.to_ctps`, `Program.select`) and raises `ImportError` without it, the
+rest of Spynach is unaffected. To remove it:
 
 ```
 git rm -r src/ctps tests/ctps docs/ctps.md docs/notebooks/ctps.ipynb docs/figures/ctps-*.png
