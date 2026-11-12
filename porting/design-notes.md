@@ -404,3 +404,22 @@ between echoes (Spinach shares this).
 - IK-1 with a proximity graph needs `inter.coordinates` (dipolar couplings),
   which is out of scope; the fixtures use `prox_level` with no coordinates
   (proximity graph = identity) and `connectivity = 'scalar_couplings'`.
+
+## 9. The distant dipolar field (2026-11-12)
+
+No Spinach counterpart. The field of a one-dimensionally modulated magnetisation is local (Deville, Bernier
+and Delrieux, Phys. Rev. B 19, 5666 (1979)): in the secular rotating-frame form `B_d(s) = μ0 Δ [M(s)/3 −
+M_z(s) ẑ]` with `Δ = (3 cos²θ − 1)/2`; the sign follows from the macroscopic field `μ0 [M − k̂ (k̂·M)]` minus
+the Lorentz-sphere field `(2/3) μ0 M`, so a helix along `B0` is a stack of discs (`−(2/3) μ0 M_z`), and the
+uniform mode carries the sample-shape factor `Δ0 = (3 N_z − 1)/2` (Lorentz minus demagnetising field, axially
+symmetric sample). Representation: the Fourier-mode lattice of the explicit runner of `spynach.program` (one
+state vector per wavevector, gradients as shifts of the coherence-order blocks); the field is the convolution
+`dρ_n/dt = −i L0 ρ_n − i Σ_m L_d(m) ρ_{n−m}` with `L_d(m)` the commutation superoperator of the mean-field
+Hamiltonian from the Fourier coefficients of the magnetisation in mode `m`, assembled as a sparse block
+generator for the ported `iserstep`. Mean-field closure in the spirit of Jeener (J. Chem. Phys. 112, 5091
+(2000)) and Lee, Richter, Warren et al. (J. Chem. Phys. 105, 874 (1996)): `M = n γ ħ <F>` with the ratio to
+the equilibrium magnetisation and `τ_d = 1/(|γ| μ0 M0)` as the only parameter. Validation without an oracle:
+the Bessel closed forms of CRAZED and of the multiple spin echoes (Bowtell, Bowley and Glover, J. Magn.
+Reson. 88, 643 (1990)), a 1-D grid of positions with the local field, and the demagnetising limits. The
+uniform-mode treatment matters at the few-per-cent level once the CRAZED signal is appreciable (the signal's
+own magnetisation makes no field in a sphere), which the closed forms of the literature neglect.

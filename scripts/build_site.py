@@ -58,6 +58,7 @@ GROUPS = {
         "pulse-programs",
         "relaxation-pathways",
         "radiation-damping",
+        "distant-dipolar-field",
         "beyond-the-port",
     ],
 }

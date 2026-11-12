@@ -19,6 +19,7 @@ notebook is [`notebooks/beyond-the-port.ipynb`](notebooks/beyond-the-port.ipynb)
 7. [EPR with EasySpyn](#epr-with-easyspyn)
 8. [Relaxation pathways by mechanism](#relaxation-pathways-by-mechanism)
 9. [Radiation damping](#radiation-damping)
+11. [The distant dipolar field](#the-distant-dipolar-field)
 
 ## Coherence transfer pathway selection: `ctps`
 
@@ -306,6 +307,44 @@ an inhomogeneous line as an ensemble of isochromats sharing the coil, and a
 strongly coupled pair against the line-by-line classical picture. The
 doublet runs in the browser playground
 ([`try.html#ex-rd`](https://ajerschow.github.io/spynach/try.html#ex-rd)).
+
+## The distant dipolar field
+
+The magnetisation of the sample is itself a source of field, and a helix
+of magnetisation written by a gradient has a local dipolar field that
+winds the transverse magnetisation: the CRAZED signal, which grows from
+nothing, and the multiple spin echoes under a read gradient. The field
+depends on the state, as radiation damping does, and `spynach.dipolar_field`
+builds its mean-field generator for `iserstep`. Inside a pulse program it
+is computed on the Fourier-mode lattice of explicit mode, where the state is
+one vector per wavevector and the field is a convolution over the modes, so
+there is still no spatial grid. One proton after 90°-gradient-90° and a
+second gradient of twice the area gives the CRAZED build-up, which starts
+as `t / (4 tau_d)`:
+
+```python
+from spynach.ddf import DipolarFieldSpec
+from spynach.program import Acquire, Gradient, Program, Pulse
+
+water = spynach.assume(spynach.basis(spynach.create({"isotopes": ["1H"], "magnet": 9.4}, {"zeeman": {"scalar": [0.0]}}), {"formalism": "sphten-liouv", "approximation": "none"}), "nmr")
+H_water = spynach.hamiltonian(water)
+crazed = Program(
+    [Pulse("1H", np.pi / 2), Gradient(20e-6, z=2.0), Pulse("1H", np.pi / 2), Gradient(20e-6, z=4.0), Acquire("1H", 2e-3, 25)],
+    mode="explicit",
+    field=DipolarFieldSpec("1H", tau_d=0.1, nmodes=8, demagnetising=1.0),
+)
+one_pulse = Program([Pulse("1H", np.pi / 2), Acquire("1H", 2e-3, 1)], mode="explicit").run(water, H_water, 0 * H_water, 0 * H_water)[0]
+build_up = np.abs(crazed.run(water, H_water, 0 * H_water, 0 * H_water) / one_pulse)
+print(f"CRAZED signal after 48 ms: {build_up[-1]:.4f} of the single-pulse signal, t / (4 tau_d) = {0.048 / 0.4:.4f}")
+```
+
+The guide [The distant dipolar field](distant-dipolar-field.md) has the
+conventions (the sign fixed by the demagnetising limit, the sample-shape
+factor of the uniform mode), the demagnetising shift without gradients, the
+build-up against the Bessel closed form at several angles, the multiple
+spin echoes, the concentration weights and the lattice against a grid of
+positions; three playground examples run it in the browser
+([`try.html#ex-ddf-crazed`](https://ajerschow.github.io/spynach/try.html#ex-ddf-crazed)).
 
 ## Pulse programs, gradients, phase cycling (beta)
 

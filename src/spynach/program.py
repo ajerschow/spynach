@@ -42,9 +42,10 @@ from typing import Any
 import numpy as np
 from scipy.special import j1
 
+from spynach.ddf import DipolarFieldSpec, dipolar_field
 from spynach.filters import homospoil, isotope_orders, leakage, orders_present
 from spynach.operators import operator
-from spynach.propagation import evolution, propagator, step
+from spynach.propagation import evolution, iserstep, propagator, step
 from spynach.states import state
 from spynach.system import SpinSystem
 from spynach.utilities import Matrix
@@ -506,7 +507,9 @@ class Program:
     during acquisition below which a pathway is not propagated; ``rho0`` the initial state (default ``Lz`` of
     the detected isotope, ``'cheap'``); ``max_order`` caps ``|p|`` per isotope (an ``int`` or
     ``{isotope: int}``) to keep the enumeration small; ``cycle_length`` fixes the cycle length (needed
-    by cogwheel phases); ``check_leakage`` measures, per order block met, how much of the generator leaves it.
+    by cogwheel phases); ``check_leakage`` measures, per order block met, how much of the generator leaves it;
+    ``field`` is a :class:`spynach.ddf.DipolarFieldSpec`, the distant dipolar field of the sample, integrated
+    on the lattice of explicit mode (``mode='explicit'`` is then required; ``Evolve`` is not available).
 
     A program is a pulse sequence in Spynach's sense: ``program(spin_system, parameters, H, R, K)`` runs it,
     so ``spynach.liquid(spin_system, program, parameters, "nmr")`` works as for the built-in sequences.
@@ -525,10 +528,13 @@ class Program:
     cycle_length: int | None = None
     check_leakage: bool = False
     gradient_unit: float | None = None
+    field: DipolarFieldSpec | None = None
 
     def __post_init__(self) -> None:
         if self.mode not in ("pathways", "explicit"):
             raise ValueError("Program.mode must be 'pathways' or 'explicit'.")
+        if self.field is not None and self.mode != "explicit":
+            raise ValueError("the dipolar field needs mode='explicit' (Program.explicit()).")
         object.__setattr__(self, "blocks", tuple(self.blocks))
 
     def explicit(self) -> Program:
@@ -985,8 +991,12 @@ def _lattice(program: Program, spin_system: SpinSystem, flat: _Flat, extra: int 
     return lattice
 
 
-def _shift_modes(rho: np.ndarray, shifts: np.ndarray, tol: float) -> np.ndarray:
-    """``rho`` of shape ``(nstates, nmodes, ncols)`` with state ``s`` moved ``shifts[s]`` modes up the lattice."""
+def _shift_modes(rho: np.ndarray, shifts: np.ndarray, tol: float, strict: bool = True) -> np.ndarray:
+    """``rho`` of shape ``(nstates, nmodes, ncols)`` with state ``s`` moved ``shifts[s]`` modes up the lattice.
+
+    Amplitude pushed off the lattice is a bug when ``strict`` (the lattice covers every gradient) and the
+    truncation of the harmonics a dipolar field made otherwise.
+    """
     out = np.zeros_like(rho)
     size = rho.shape[1]
     for d in np.unique(shifts):
@@ -1000,7 +1010,7 @@ def _shift_modes(rho: np.ndarray, shifts: np.ndarray, tol: float) -> np.ndarray:
         else:
             out[rows, : size + d, :] = rho[rows, -d:, :]
             lost = rho[rows, :-d, :]
-        if lost.size and np.abs(lost).max() > tol:
+        if strict and lost.size and np.abs(lost).max() > tol:
             raise RuntimeError("a gradient pushed amplitude beyond the mode lattice; this is a bug.")
     return out
 
@@ -1034,14 +1044,17 @@ def _run_explicit(
     conjugate, so here the factor is ``exp(+i φ_rec)``. Gradients put the state on the Fourier-mode lattice
     (:class:`_Lattice`): the state is ``(nstates, nmodes, ncols)``, every linear step sees the modes as more
     columns, a gradient moves each coherence-order block along the mode axis, and acquisition weights every
-    mode with its sample envelope.
+    mode with its sample envelope. With a :class:`DipolarFieldSpec` every delay, gradient and dwell is
+    integrated by :func:`iserstep` with the mean-field generator of :mod:`spynach.ddf` on the lattice (the
+    gradient's own duration evolves at the wavevectors before the shift; diffusion is in the generator).
     """
     L = H + 1j * R + 1j * K
     L_relax = 1j * R + 1j * K
     rho0 = program._rho0(spin_system, flat)
     coil = program._coil(spin_system, flat)
     tol = spin_system.tols.zte_tol
-    lattice = _lattice(program, spin_system, flat)
+    spec = program.field
+    lattice = _lattice(program, spin_system, flat, extra=spec.nmodes if spec is not None else 0)
     size = lattice.size if lattice else 1
     nstates = rho0.size
     modes = lattice.modes if lattice else np.zeros(1, dtype=int)
@@ -1053,6 +1066,40 @@ def _run_explicit(
     read_units = 0
     if lattice and acquire.gradient is not None:
         read_units = lattice.units(acquire.gradient.amplitude * acquire.timestep, "the read gradient")
+    fields: dict[str, Any] = {}
+    if spec is not None:
+        if any(kind in ("evolve", "refocus") for kind, _ in flat.events):
+            raise NotImplementedError(
+                "Evolve and Refocus are not available with a dipolar field (read the build-up during acquisition)."
+            )
+        angle = math.acos(min(1.0, abs(float(axis[2]))))
+        for key, L0 in (("full", L), ("relaxation", L_relax)):
+            fields[key] = dipolar_field(
+                spin_system,
+                L0,
+                spec.isotope,
+                spec.tau_d,
+                angle=angle,
+                demagnetising=spec.demagnetising,
+                nmodes=lattice.half if lattice else 0,
+                k0=k0,
+                rho_eq=rho0,
+                diffusion=D,
+                weights=spec.weights,
+            )
+        sub_dt = float(spec.timestep) if spec.timestep else acquire.timestep
+        if sub_dt <= 0:
+            raise ValueError("the field's timestep must be positive.")
+
+    def advance(rho: np.ndarray, duration: float, key: str) -> np.ndarray:
+        """``duration`` of evolution under the dipolar field, in sub-steps of the spec's timestep."""
+        generator = fields[key]
+        nsub = max(1, int(math.ceil(duration / sub_dt - 1e-9)))
+        h = duration / nsub
+        vec = generator.stack(rho[:, :, 0])
+        for _ in range(nsub):
+            vec = iserstep(spin_system, generator, 0.0, spec.method, vec, h)
+        return generator.columns(vec)[:, :, None]
 
     def hold(rho: np.ndarray, duration: float) -> np.ndarray:
         """Free diffusion for ``duration`` at fixed wavevectors."""
@@ -1060,15 +1107,18 @@ def _run_explicit(
             rho = rho * np.exp(-D * (modes * k0) ** 2 * duration)[None, :, None]
         return rho
 
-    def ramp(rho: np.ndarray, m: int, duration: float) -> np.ndarray:
-        """A gradient of ``m`` units lasting ``duration``: the diffusion weight of the ramp, then the mode shift."""
+    def ramp(rho: np.ndarray, m: int, duration: float, held: bool = False) -> np.ndarray:
+        """A gradient of ``m`` units lasting ``duration``: the diffusion weight of the ramp (less the weight of a
+        hold at the starting wavevectors when ``held``, the generator having applied it), then the mode shift."""
         shifts = lattice.shifts(m, np.abs(rho).max(axis=(1, 2)), tol)
         if D:
             n0 = modes[None, :]
             n1 = n0 + shifts[:, None]
             b = duration * k0**2 * (n0**2 + n0 * n1 + n1**2) / 3
+            if held:
+                b = b - duration * k0**2 * n0**2
             rho = rho * np.exp(-D * b)[:, :, None]
-        return _shift_modes(rho, shifts, tol)
+        return _shift_modes(rho, shifts, tol, strict=spec is None)
 
     total = None
     for m_step in range(flat.steps):
@@ -1086,13 +1136,20 @@ def _run_explicit(
                 )
                 rho = step(spin_system, op, rho.reshape(nstates, -1), pulse.angle).reshape(nstates, size, ncols)
             elif kind == "delay":
+                if spec is not None:
+                    rho = advance(rho, payload.duration, payload.generator)
+                    continue
                 generator = L if payload.generator == "full" else L_relax
                 flat_rho = evolution(spin_system, generator, rho.reshape(nstates, -1), payload.duration, 1, "final")
                 rho = hold(flat_rho.reshape(nstates, size, ncols), payload.duration)
             elif kind == "gradient":
+                units = lattice.units(payload.amplitude * payload.duration, "a gradient")
+                if spec is not None:
+                    rho = advance(rho, payload.duration, "full")
+                    rho = ramp(rho, units, payload.duration, held=True) if units else rho
+                    continue
                 flat_rho = evolution(spin_system, L, rho.reshape(nstates, -1), payload.duration, 1, "final")
                 rho = flat_rho.reshape(nstates, size, ncols)
-                units = lattice.units(payload.amplitude * payload.duration, "a gradient")
                 rho = ramp(rho, units, payload.duration) if units else hold(rho, payload.duration)
             elif kind == "evolve":
                 t = np.arange(payload.npoints) * payload.timestep
@@ -1120,7 +1177,16 @@ def _run_explicit(
                 rho = homospoil(spin_system, rho.reshape(nstates, -1).T, flag).T.reshape(nstates, size, ncols)
             elif kind == "acquire":
                 n, dt = payload.npoints, payload.timestep
-                if read_units:
+                if spec is not None:
+                    signals = np.zeros((n, size, ncols), dtype=complex)
+                    for i in range(n):
+                        signals[i] = np.einsum("s,smc->mc", np.conj(coil), rho)
+                        if i == n - 1:
+                            break
+                        rho = advance(rho, dt, "full")
+                        if read_units:
+                            rho = ramp(rho, read_units, dt, held=True)
+                elif read_units:
                     signals = np.zeros((n, size, ncols), dtype=complex)
                     P = propagator(spin_system, L, dt)
                     for i in range(n):

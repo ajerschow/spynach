@@ -569,7 +569,8 @@ has and Spinach does not is collected, with examples, in
 that run a phase-cycled or gradient-selected sequence as one branch per
 surviving pathway (`spynach.program`), radiation
 damping of spin systems and isochromat ensembles (`radiation_damping`, on
-top of the ported `iserstep`), the relaxation pathway analysis, the
+top of the ported `iserstep`), the distant dipolar field on the
+Fourier-mode lattice (`dipolar_field`, [guide](distant-dipolar-field.md)), the relaxation pathway analysis, the
 interactive figures and `figure_png`, `compare` and the parity page, and
 the executable documentation.
 

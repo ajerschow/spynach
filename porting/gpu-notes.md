@@ -87,3 +87,11 @@ than propagation at the sizes where a GPU would matter.
   `step`). For `evolution` loops the state should stay on the device
   across steps, as `krylov.m` does; restructure `evolution` so that the
   per-subspace loop is one device session.
+
+## Distant dipolar field (2026-11-12)
+
+- `ddf.DipolarField.__call__` assembles the block generator `kron(I, L0) + Σ_m kron(S_m, L_d(m))` over
+  the Fourier modes at every integrator stage (marked `# GPU:`): one sparse Kronecker product per mode that
+  carries magnetisation. On a device the convolution over modes is a batched matmul of the three fixed
+  superoperators with the coefficient sequences, and the stack of modes is one `(nstates, nmodes)` array;
+  `iserstep` then exponentiates through `step` as for radiation damping.

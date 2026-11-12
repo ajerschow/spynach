@@ -220,7 +220,10 @@ GPU backend (`porting/gpu-notes.md`), the JAX layer, a propagator cache keyed on
 the reduced block and timestep (see `porting/pathway-notes.md` for the
 measurement). Pulse programs (`spynach.program`, phase cycles and gradients run
 as one branch per coherence pathway) are built; the state-space restriction
-once considered beside them is dropped after that measurement.
+once considered beside them is dropped after that measurement. The distant
+dipolar field (`spynach.ddf`, 2026-11-12) runs on the Fourier-mode lattice of
+explicit mode; radiation damping together with the field, a second isotope on
+a commensurate lattice and `Evolve` with a field remain.
 
 # CTPS: the coherence-pathway module `ctps` is separate from this roadmap; see src/ctps/README.md.
 

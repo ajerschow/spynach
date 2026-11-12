@@ -13,6 +13,7 @@ const SOURCE = [
   "src/spynach/basis.py",
   "src/spynach/contexts.py",
   "src/spynach/conventions.py",
+  "src/spynach/ddf.py",
   "src/spynach/filters.py",
   "src/spynach/hamiltonian.py",
   "src/spynach/isotopes.py",

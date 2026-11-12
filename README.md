@@ -164,6 +164,12 @@ Add-ons originating here, with no Spinach counterpart, each with an example in t
   `iserstep` (a port of Spinach's Lie-group and Runge-Kutta-Munthe-Kaas integrators) and checked against the
   Bloembergen-Pound closed form and the classical Bloch-Maxwell limit ([docs/radiation-damping.md](docs/radiation-damping.md)),
   also in the browser playground ([try.html#ex-rd](https://ajerschow.github.io/spynach/try.html#ex-rd)).
+- **The distant dipolar field** (`spynach.dipolar_field`, `ddf_time`): the mean-field generator of a spin system
+  in its own dipolar field, for `iserstep` and inside pulse programs, computed on the Fourier-mode lattice of the
+  explicit cycle (one state vector per wavevector, the field a convolution over modes, no spatial grid): the
+  demagnetising shift by sample shape, the CRAZED build-up against its Bessel closed form, multiple spin echoes
+  under a read gradient ([docs/distant-dipolar-field.md](docs/distant-dipolar-field.md)), also in the browser
+  playground ([try.html#ex-ddf-crazed](https://ajerschow.github.io/spynach/try.html#ex-ddf-crazed)).
 - **Interactive Plotly figures** from `spynach.plotting`, `plot_fid`,
   `plot_time_series` and `plot_trajan` with no Spinach equivalent, and
   `figure_png` for static copies.

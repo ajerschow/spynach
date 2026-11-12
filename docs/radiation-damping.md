@@ -11,7 +11,8 @@ Spinach's `product_quadratures_2` example as the test problem, and then
 the spin-system treatment, `radiation_damping`, which puts the same
 feedback into the Liouvillian of a coupled, relaxing spin system or an
 ensemble of isochromats. Spinach has no radiation damping; the integrator
-is a port, the rest is new. The companion notebook is
+is a port, the rest is new. The [distant dipolar field](distant-dipolar-field.md)
+is the other state-dependent generator built for `iserstep`. The companion notebook is
 [`notebooks/radiation-damping.ipynb`](notebooks/radiation-damping.ipynb)
 ([interactive figures on nbviewer](https://nbviewer.org/github/ajerschow/spynach/blob/main/docs/notebooks/radiation-damping.ipynb)).
 

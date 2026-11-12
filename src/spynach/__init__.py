@@ -5,6 +5,7 @@ __version__ = "0.7.0"  # keep equal to [project].version in pyproject.toml (test
 from spynach.assume import assume
 from spynach.basis import basis
 from spynach.contexts import crystal, liquid, load_grid, powder, singlerot
+from spynach.ddf import ddf_time, dipolar_field
 from spynach.filters import coherence, correlation, decouple, homospoil
 from spynach.hamiltonian import frqoffset, hamiltonian, orientation
 from spynach.kinetics import equilibrate, kinetics
@@ -32,8 +33,10 @@ __all__ = [
     "cosy",
     "create",
     "crystal",
+    "ddf_time",
     "decouple",
     "dilute",
+    "dipolar_field",
     "equilibrate",
     "equilibrium",
     "evolution",

@@ -209,9 +209,21 @@ def rd_rate(
     at ``concentration`` (mol/L of that nucleus) in the field of the spin system at ``temperature`` (default
     ``inter['temperature']``). Water at 11.7 T with Q = 200 and eta = 0.5 gives about 600 s^-1, T_rd of 1.6 ms.
     """
+    if eta <= 0 or Q <= 0:
+        raise ValueError("eta, Q and concentration must be positive.")
+    gamma, _ = spin(isotope)
+    M0 = curie_magnetisation(spin_system, isotope, concentration=concentration, temperature=temperature)
+    return float(spin_system.tols.mu0 * eta * Q * abs(gamma) * M0 / 2)
+
+
+def curie_magnetisation(
+    spin_system: SpinSystem, isotope: str, *, concentration: float, temperature: float | None = None
+) -> float:
+    """The Curie magnetisation ``M0 = n gamma^2 hbar^2 I(I+1) B0 / (3 k T)`` (A/m) of ``isotope`` at ``concentration``
+    (mol/L of that nucleus) in the field of the spin system at ``temperature`` (default ``inter['temperature']``)."""
     if isotope not in spin_system.isotopes:
         raise ValueError(f"{isotope!r} is not in the spin system.")
-    if eta <= 0 or Q <= 0 or concentration <= 0:
+    if concentration <= 0:
         raise ValueError("eta, Q and concentration must be positive.")
     tols = spin_system.tols
     temperature = spin_system.rlx.temperature if temperature is None else float(temperature)
@@ -220,8 +232,7 @@ def rd_rate(
     gamma, mult = spin(isotope)
     I = (mult - 1) / 2
     n = concentration * 1e3 * AVOGADRO
-    M0 = n * gamma**2 * tols.hbar**2 * I * (I + 1) * spin_system.magnet / (3 * tols.kbol * temperature)
-    return float(tols.mu0 * eta * Q * abs(gamma) * M0 / 2)
+    return float(n * gamma**2 * tols.hbar**2 * I * (I + 1) * spin_system.magnet / (3 * tols.kbol * temperature))
 
 
 def rd_phase(spin_system: SpinSystem, isotope: str, *, Q: float, detuning: float) -> float:
