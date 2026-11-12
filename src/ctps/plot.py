@@ -5,6 +5,8 @@ needed); the colours and chrome are those of ``spynach.plotting``, copied here s
 stays importable on its own. ``plot_pathways`` draws the pulse sequence above the coherence
 orders as the 1998 Fig. 4 does, with the line width of every pathway scaled by its weight; a
 slider steps through the ranked pathways, highlighting one and showing its factored weights.
+
+Author: Alexej Jerschow.
 """
 
 from __future__ import annotations

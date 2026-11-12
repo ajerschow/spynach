@@ -6,6 +6,8 @@ own pulses as a mixed-radix product of the allowed orders, with the period masks
 periods a segment spans intersected and their weights multiplied. A ``perfect_180`` pulse
 forces ``p -> -p``. Nuclei are combined lazily by index grids over chunks (the outer sum of
 CCCP.m without materialising it).
+
+Author: Alexej Jerschow.
 """
 
 from __future__ import annotations

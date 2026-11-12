@@ -22,6 +22,8 @@ Jerschow & Müller 1998). Spinach labels the basis the other way round: its ``L+
 component, and its signal is the complex conjugate of the textbook one, so a program's order ``p`` is the
 basis order ``-p`` of :func:`spynach.coherence` and the receiver acts on Spinach's signal as ``exp(+i φ_rec)``.
 Gradients are in T/m with their real duration, ``k`` in rad/m.
+
+Author: Alexej Jerschow.
 """
 
 from __future__ import annotations
@@ -52,6 +54,8 @@ class Pulse:
     ``phase`` is the phase list in degrees, cycled with the program, or ``("cog", nu)`` for a cogwheel
     winding number (the program then needs ``cycle_length``). A list of isotopes becomes consecutive pulses
     with the same phases, as ``Lx_F1 + Lx_F2`` in the HSQC port; spin numbers must share one isotope.
+
+    Author: Alexej Jerschow.
     """
 
     spins: str | Sequence[str] | Sequence[int]
@@ -75,7 +79,10 @@ class Delay:
 
 @dataclass(frozen=True)
 class Gradient:
-    """A rectangular gradient of ``duration`` (s) with amplitudes ``x``, ``y``, ``z`` in T/m."""
+    """A rectangular gradient of ``duration`` (s) with amplitudes ``x``, ``y``, ``z`` in T/m.
+
+    Author: Alexej Jerschow.
+    """
 
     duration: float
     z: float = 0.0
@@ -117,7 +124,10 @@ class Homospoil:
 
 @dataclass(frozen=True)
 class Block:
-    """A group of blocks whose pulses all receive the extra phase list ``phase`` (block phase cycling)."""
+    """A group of blocks whose pulses all receive the extra phase list ``phase`` (block phase cycling).
+
+    Author: Alexej Jerschow.
+    """
 
     blocks: Sequence[Any]
     phase: PhaseSpec = (0.0,)
@@ -148,7 +158,10 @@ class Sample:
 
 
 def sample_envelope(k: np.ndarray, sample: Sample) -> np.ndarray:
-    """Average of ``exp(-i k·r)`` over the sample for k-vectors ``(..., 3)`` in rad/m: the signal envelope."""
+    """Average of ``exp(-i k·r)`` over the sample for k-vectors ``(..., 3)`` in rad/m: the signal envelope.
+
+    Author: Alexej Jerschow.
+    """
     k = np.asarray(k, dtype=float)
     u = k[..., 2] * sample.z_max
     f_z = np.sinc(u / np.pi)
@@ -159,7 +172,10 @@ def sample_envelope(k: np.ndarray, sample: Sample) -> np.ndarray:
 
 
 def ramp_integral(k0: np.ndarray, k1: np.ndarray, duration: float) -> float:
-    """``∫|k(t)|² dt`` over a linear ramp from ``k0`` to ``k1`` lasting ``duration``."""
+    """``∫|k(t)|² dt`` over a linear ramp from ``k0`` to ``k1`` lasting ``duration``.
+
+    Author: Alexej Jerschow.
+    """
     return float(duration * (k0 @ k0 + k0 @ k1 + k1 @ k1) / 3)
 
 
@@ -487,6 +503,8 @@ class Program:
 
     A program is a pulse sequence in Spynach's sense: ``program(spin_system, parameters, H, R, K)`` runs it,
     so ``spynach.liquid(spin_system, program, parameters, "nmr")`` works as for the built-in sequences.
+
+    Author: Alexej Jerschow.
     """
 
     blocks: Sequence[Any]

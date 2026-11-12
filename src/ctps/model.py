@@ -7,6 +7,8 @@ is the order jump at pulse ``j`` for the nucleus the pulse acts on; a pulse phas
 multiplies the signal by ``exp(-i Δp φ)`` and the receiver phase ``φ_rec`` by
 ``exp(-i φ_rec)`` (Eq. 12). Gradient areas ``h`` are ``∫G dt`` per period and axis in T·s/m;
 gyromagnetic ratios are in rad/s/T; delays are in seconds.
+
+Author: Alexej Jerschow.
 """
 
 from __future__ import annotations

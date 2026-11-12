@@ -24,6 +24,8 @@ The Hughes–Carravetta–Levitt construction (2004 Eq. 23-26) gives a cycle at 
 symmetric order ranges and a single wanted pathway; its ``N`` is conjectured minimal when the
 winding differences share no prime factor, and is used here as the upper limit of the scan,
 never to skip smaller ``N``.
+
+Author: Alexej Jerschow.
 """
 
 from __future__ import annotations

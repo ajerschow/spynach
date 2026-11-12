@@ -6,6 +6,8 @@ roots of unity, so that exact zeros are exact (a design choice of this port; CCC
 precomputed sines and cosines per pathway). Cogwheel cycles ``COG_N(ν; ν_rec)`` select a
 pathway iff ``Σ_j ν_j Δp_j + ν_rec ≡ 0 (mod N)`` (Jerschow & Kumar 2003 Eq. 4), the receiver of
 a wanted pathway being ``ν_rec = -Σ ν_j Δp⁰_j mod N``.
+
+Author: Alexej Jerschow.
 """
 
 from __future__ import annotations

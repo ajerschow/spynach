@@ -1,4 +1,7 @@
-"""``simulate``: enumerate, weight and rank the coherence transfer pathways of a sequence under a phase cycle."""
+"""``simulate``: enumerate, weight and rank the coherence transfer pathways of a sequence under a phase cycle.
+
+Author: Alexej Jerschow.
+"""
 
 from __future__ import annotations
 

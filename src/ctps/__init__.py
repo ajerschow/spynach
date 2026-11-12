@@ -3,6 +3,8 @@
 A port of CCCP.m (Jerschow & Müller, J. Magn. Reson. 134, 17 (1998)) and CCCP++ (Jerschow &
 Kumar, J. Magn. Reson. 160, 59 (2003)) with the non-ideal pulse treatment of Jerschow, J. Chem.
 Phys. 113, 979 (2000) and an optimiser for phase cycles. Independent of ``spynach``.
+
+Author: Alexej Jerschow.
 """
 
 from ctps.model import (

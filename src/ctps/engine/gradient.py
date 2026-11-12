@@ -11,6 +11,8 @@ half-length ``z_max``) and ``|2J₁(u)/u|`` for ``|u| < 2.44`` else ``2√(2/π)
 ``F = exp[-D Σ_q |K_q|² Δ_q]`` (Eq. 41/42) with ``Δ_q`` the duration of period ``q``. Flow along z
 with a uniform velocity distribution over ``±v_max``: ``F = sinc(v_max Σ_i γ*_i h_iz t_i)``
 (Eq. 46/48), ``t_i`` the start time of period ``i``.
+
+Author: Alexej Jerschow.
 """
 
 from __future__ import annotations

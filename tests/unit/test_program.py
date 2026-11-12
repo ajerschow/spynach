@@ -1,4 +1,7 @@
-"""Pulse programs: the branch run against the explicit phase cycle, the ported sequences, spatial averaging and ctps."""
+"""Pulse programs: the branch run against the explicit phase cycle, the ported sequences, spatial averaging and ctps.
+
+Author: Alexej Jerschow.
+"""
 
 import sys
 
@@ -734,7 +737,10 @@ def test_sample_envelope():
 
 
 def sodium():
-    """One 23Na spin under slow-motion quadrupolar relaxation (C_q 200 kHz, tau_c 1 ns, 14.1 T), as the playground."""
+    """One 23Na spin under slow-motion quadrupolar relaxation (C_q 200 kHz, tau_c 1 ns, 14.1 T), as the playground.
+
+    Author: Alexej Jerschow.
+    """
     from spynach.conventions import eeqq2nqi
 
     nqi = eeqq2nqi(200e3, 0.0, 1.5, [0, 0, 0])

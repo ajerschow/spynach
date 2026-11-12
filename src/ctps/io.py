@@ -2,6 +2,8 @@
 
 The legacy loaders for CCCP.m example scripts and CCCP++ ``.par`` files are added once the
 original sources are available in the container (they define the exact formats).
+
+Author: Alexej Jerschow.
 """
 
 from __future__ import annotations

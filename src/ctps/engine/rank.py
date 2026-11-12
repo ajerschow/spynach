@@ -1,4 +1,7 @@
-"""Thresholds and ranking, in CCCP.m's order: discard after the phase cycle, after the gradients, after diffusion."""
+"""Thresholds and ranking, in CCCP.m's order: discard after the phase cycle, after the gradients, after diffusion.
+
+Author: Alexej Jerschow.
+"""
 
 from __future__ import annotations
 

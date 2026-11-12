@@ -21,6 +21,8 @@ last phase factor is ``exp(-imγ)``; below Eq. 7 the pairing is ``t' = l + m' - 
 ``Δm`` means ``Σ_i |m_i - m_{i-1}|`` as Table IV uses it. The legacy CCCP.m model
 (``kind="cccp_1998"``: ``(1 - ε²/2)^|p|`` inverted, ``ε^|p|`` non-inverted) is kept for parity
 with the MATLAB program only.
+
+Author: Alexej Jerschow.
 """
 
 from __future__ import annotations
