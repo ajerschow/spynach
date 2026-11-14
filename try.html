@@ -476,7 +476,7 @@ print(f"{spin_system.basis.nstates} Liouville states, FID {fid.shape}, spectrum 
 show_image(spectrum.real.T, axis, axis, title=f"COSY-{angle:g}", xlabel="F2: " + xlabel, ylabel="F1: " + xlabel)
 </script>
 
-<script type="text/plain" class="example" id="ex-rd" data-group="NMR (spynach)" data-title="Radiation damping of a coupled pair">
+<script type="text/plain" class="example" id="ex-rd" data-group="Nonlinear (spynach)" data-title="Radiation damping of a coupled pair">
 import numpy as np
 import spynach
 from spynach.propagation import iserstep
@@ -524,6 +524,178 @@ print(f"m_z after {duration * 1e3:.0f} ms: {traces[-1, 2]:+.3f} with the probe, 
 show_spectrum(spectra, freqs, names=["with radiation damping", "without"], title=f"Two protons {dnu:g} Hz apart, J = {J:g} Hz, 1/T_rd = {rate:g} s⁻¹", xlabel="offset from the carrier / Hz")
 t = np.arange(1, nsteps + 1) * dt
 show_spectrum([traces[:, 0], traces[:, 1], traces[:, 2]], t * 1e3, invert=False, names=["M_x", "M_y", "M_z"], title="Magnetisation under radiation damping / equilibrium", xlabel="time / ms", ylabel="M / M_eq")
+</script>
+
+<script type="text/plain" class="example" id="ex-ddf-shift" data-group="Nonlinear (spynach)" data-title="Distant dipolar field: the demagnetising shift (beta)">
+import numpy as np
+import spynach
+from spynach.propagation import iserstep
+
+# --- One proton in its own dipolar field, no gradients: the uniform magnetisation and the sample shape ---
+magnet = 9.4  # GUI: Magnet field | T | Field of the magnet | 1..28
+tau_d = 100.0  # GUI: Dipolar time | ms | Dipolar demagnetising time 1/(γ μ0 M0) at the equilibrium magnetisation; water at 9.4 T and 300 K is about 100 ms | 5..1000
+shape = "cylinder along B0"  # GUI: Sample shape | - | The shape sets the field of the uniform magnetisation (Lorentz field minus demagnetising field): none in a sphere, half the helix field and opposite in a long cylinder along B0, the full disc field across it | sphere, cylinder along B0, disc across B0
+tilt = 60.0  # GUI: Flip angle | degrees | Pulse that starts the evolution; the shift goes as the cosine of the flip angle | 0..180
+duration = 0.4  # GUI: Duration | s | Length of the recorded trajectory | 0.05..2
+
+factors = {"sphere": 1 / 3, "cylinder along B0": 0.0, "disc across B0": 1.0}
+spin_system = spynach.create({"isotopes": ["1H"], "magnet": magnet}, {"zeeman": {"scalar": [0.0]}})
+spin_system = spynach.assume(spynach.basis(spin_system, {"formalism": "sphten-liouv", "approximation": "none"}), "nmr")
+H = spynach.hamiltonian(spin_system)
+rho0 = spynach.step(spin_system, spynach.operator(spin_system, "Ly", "1H"), spynach.state(spin_system, "Lz", "1H"), np.radians(tilt))
+dt = 2e-3
+nsteps = max(2, int(round(duration / dt)))
+t = np.arange(1, nsteps + 1) * dt
+
+# dipolar_field builds the state-dependent generator, as radiation_damping does; iserstep integrates it
+traces = {}
+for name in dict.fromkeys(["sphere", shape]):
+    ddf = spynach.dipolar_field(spin_system, H + 0j * H, "1H", tau_d * 1e-3, demagnetising=factors[name])
+    rho = ddf.stack(rho0)  # the uniform mode alone
+    m = np.zeros((nsteps, 3), dtype=complex)
+    for n in range(nsteps):
+        rho = iserstep(spin_system, ddf, n * dt, "LG4", rho, dt)
+        mx, my, mz = ddf.magnetisation(rho)
+        m[n] = mx[0], my[0], mz[0]
+    traces[name] = m
+phases = {name: np.unwrap(np.angle(m[:, 0] + 1j * m[:, 1])) for name, m in traces.items()}
+slope = (phases[shape][-1] - phases[shape][0]) / (t[-1] - t[0])
+formula = (3 * factors[shape] - 1) / 2 * np.cos(np.radians(tilt)) / (tau_d * 1e-3)
+print(f"{shape}: precession {slope:+.3f} rad/s = {slope / (2 * np.pi):+.3f} Hz; (3 N_z - 1)/2 cos(beta) / tau_d = {formula:+.3f} rad/s")
+print(f"m_z stays {traces[shape][-1, 2].real:+.4f} (cos beta = {np.cos(np.radians(tilt)):+.4f}): the field only precesses the transverse magnetisation")
+show_spectrum(
+    [phases[name] - phases[name][0] for name in phases],
+    t,
+    invert=False,
+    names=list(phases),
+    title=f"Demagnetising shift after a {tilt:g}° pulse, tau_d = {tau_d:g} ms",
+    xlabel="time / s",
+    ylabel="precession angle / rad",
+)
+show_spectrum(
+    [traces[shape][:, 0].real, traces[shape][:, 1].real, traces[shape][:, 2].real],
+    t,
+    invert=False,
+    names=["m_x", "m_y", "m_z"],
+    title=f"Magnetisation in the {shape}",
+    xlabel="time / s",
+    ylabel="M / M_eq",
+)
+</script>
+
+<script type="text/plain" class="example" id="ex-ddf-crazed" data-group="Nonlinear (spynach)" data-title="Distant dipolar field: the CRAZED build-up (beta)">
+import numpy as np
+import spynach
+from scipy.special import jv
+from spynach.ddf import DipolarFieldSpec
+from spynach.program import Acquire, Gradient, Program, Pulse
+
+# --- CRAZED: 90x - G - 90x - mG - acquire; the helix of longitudinal magnetisation winds the transverse one ---
+tau_d = 100.0  # GUI: Dipolar time | ms | Dipolar demagnetising time 1/(γ μ0 M0); water at 9.4 T and 300 K is about 100 ms | 20..500
+ratio = 2  # GUI: Second gradient | - | Area of the second gradient in units of the first: 2 is the CRAZED experiment, 1 the ordinary gradient echo, 3 the next harmonic | 1..3
+theta = 0.0  # GUI: Gradient angle | degrees | Angle of the gradient axis to B0: the field vanishes at the magic angle 54.7 and has half the strength, reversed, across B0 | 0..90
+uniform = "sphere"  # GUI: Uniform mode | - | Field of the uniform magnetisation, set by the sample shape: none in a sphere; the field of the helix itself makes the Bessel closed form exact | sphere, as the helix
+nmodes = 8  # GUI: Harmonics | - | Modes kept beyond the ones the gradients reach; the field generates them one neighbour at a time, with amplitudes falling like Bessel functions | 2..16
+t_max = 200.0  # GUI: Acquisition | ms | Length of the acquisition, during which the signal builds up | 50..400
+
+spin_system = spynach.create({"isotopes": ["1H"], "magnet": 9.4}, {"zeeman": {"scalar": [0.0]}})
+spin_system = spynach.assume(spynach.basis(spin_system, {"formalism": "sphten-liouv", "approximation": "none"}), "nmr")
+H = spynach.hamiltonian(spin_system)
+R = 0 * H
+m = int(ratio)
+angle = np.radians(theta)
+delta_s = (3 * np.cos(angle) ** 2 - 1) / 2  # the field of a helix at this angle, in units of the one along B0
+n_z = 1 / 3 if uniform == "sphere" else (2 * delta_s + 1) / 3
+delta, G, dt = 20e-6, 2.0, 2e-3
+npoints = max(2, int(round(t_max * 1e-3 / dt)))
+t = np.arange(npoints) * dt + delta  # the field acts during the second gradient as well
+
+# The field is integrated on the lattice of Fourier modes of explicit mode: no spatial grid
+crazed = Program(
+    [
+        Pulse("1H", np.pi / 2),
+        Gradient(delta, z=G * np.cos(angle), x=G * np.sin(angle)),
+        Pulse("1H", np.pi / 2),
+        Gradient(delta, z=m * G * np.cos(angle), x=m * G * np.sin(angle)),
+        Acquire("1H", dt, npoints),
+    ],
+    mode="explicit",
+    field=DipolarFieldSpec("1H", tau_d * 1e-3, nmodes=int(nmodes), demagnetising=n_z),
+)
+modes = crazed.run(spin_system, H, R, R, output="modes")
+single = Program([Pulse("1H", np.pi / 2), Acquire("1H", dt, 1)], mode="explicit").run(spin_system, H, R, R)[0]
+signal = modes.signals[modes.modes == 0][0] / single  # the uniform mode: what the coil sees from a long sample
+a = abs(delta_s) * t / (tau_d * 1e-3)
+safe = np.where(a > 0, a, 1.0)
+closed = np.where(a > 0, m / safe * jv(m, safe), 0.5 if m == 1 else 0.0)
+print(f"second gradient {m} x the first, gradient at {theta:g}° to B0: Delta = {delta_s:+.3f}, tau_d = {tau_d:g} ms")
+print(f"largest |signal| {np.abs(signal).max():.4f} of the single-pulse signal; the closed form (m/a) J_m(a) with a = |Delta| t / tau_d peaks at {np.abs(closed).max():.4f}")
+print(f"largest difference from the closed form {np.abs(np.abs(signal) - np.abs(closed)).max():.1e}" + ("" if uniform != "sphere" else " (in a sphere the signal's own uniform magnetisation makes no field)"))
+strong = np.argsort(np.abs(modes.signals).max(axis=1))[::-1][:5]
+for i in sorted(strong, key=lambda i: modes.modes[i]):
+    print(f"  mode {modes.modes[i]:+d}, k = {modes.modes[i] * modes.k0:.0f} rad/m: largest |signal| {np.abs(modes.signals[i]).max() / abs(single):.3f}, sample envelope {modes.envelope[i]:.1e}")
+show_spectrum(
+    [np.abs(signal), np.abs(closed)],
+    t * 1e3,
+    invert=False,
+    names=["pulse program", "(m/a) J_m(a)"],
+    title=f"CRAZED build-up, second gradient {m} x the first, tau_d = {tau_d:g} ms, {theta:g}° to B0",
+    xlabel="time / ms",
+    ylabel="|S(t)| / S0",
+)
+</script>
+
+<script type="text/plain" class="example" id="ex-ddf-echoes" data-group="Nonlinear (spynach)" data-title="Distant dipolar field: multiple spin echoes (beta)">
+import numpy as np
+import spynach
+from scipy.special import jv
+from spynach.ddf import DipolarFieldSpec
+from spynach.program import Acquire, Gradient, Program, Pulse, Sample
+
+# --- 90x - G - 90x, then a read gradient: the harmonics of the helix echo one after the other ---
+tau_d = 20.0  # GUI: Dipolar time | ms | Dipolar demagnetising time; a few times shorter than water's, so that several echoes fit in the window | 5..200
+m0 = 16  # GUI: First gradient | - | Area of the first gradient in units of the read gradient per dwell: the echoes come every m0 dwells | 8..24
+dwell = 0.5  # GUI: Dwell time | ms | Sampling interval; the read gradient unwinds one unit of the helix per dwell | 0.1..1
+npoints = 100  # GUI: Points | - | Number of points acquired | 40..100
+z_max = 5.0  # GUI: Sample length | mm | Half the active length of the cylindrical sample; the read gradient is scaled so that one unit of area is two radians across it, which gives the echoes their width | 2..10
+
+spin_system = spynach.create({"isotopes": ["1H"], "magnet": 9.4}, {"zeeman": {"scalar": [0.0]}})
+spin_system = spynach.assume(spynach.basis(spin_system, {"formalism": "sphten-liouv", "approximation": "none"}), "nmr")
+H = spynach.hamiltonian(spin_system)
+R = 0 * H
+sample = Sample(z_max=z_max * 1e-3, x_max=z_max * 0.5e-3)
+gamma = spin_system.gammas[0]
+dt = dwell * 1e-3
+unit = 2 / (gamma * sample.z_max)  # one unit of gradient area per dwell: k0 z_max = 2
+n = int(npoints)
+echoes = Program(
+    [
+        Pulse("1H", np.pi / 2),
+        Gradient(1e-3, z=int(m0) * unit / 1e-3),
+        Pulse("1H", np.pi / 2),
+        Acquire("1H", dt, n, gradient=Gradient(0, z=-unit / dt)),
+    ],
+    mode="explicit",
+    sample=sample,
+    field=DipolarFieldSpec("1H", tau_d * 1e-3, nmodes=6, demagnetising=1.0),
+)
+single = Program([Pulse("1H", np.pi / 2), Acquire("1H", dt, 1)], mode="explicit").run(spin_system, H, R, R)[0]
+fid = echoes.run(spin_system, H, R, R) / single
+t = np.arange(n) * dt
+print(f"read gradient {unit / dt * 1e3:.2f} mT/m, first gradient {int(m0)} units: an echo every {int(m0) * dwell:g} ms; tau_d = {tau_d:g} ms")
+for k in range(1, 8):
+    i = k * int(m0)
+    if i < n:
+        a = t[i] / (tau_d * 1e-3)
+        print(f"  echo {k} at {t[i] * 1e3:.1f} ms: |S| {np.abs(fid[i]):.3f}, (n/a) J_n(a) = {abs(k / a * jv(k, a)):.3f}" + ("  (the gradient echo)" if k == 1 else ""))
+show_spectrum(
+    np.abs(fid),
+    t * 1e3,
+    invert=False,
+    title=f"Multiple spin echoes under a read gradient, tau_d = {tau_d:g} ms",
+    xlabel="time / ms",
+    ylabel="|S(t)| / S0",
+)
 </script>
 
 <script type="text/plain" class="example" id="ex-epr-pepper" data-group="EPR (EasySpyn)" data-title="Nitroxide powder spectrum (pepper)">
@@ -1509,178 +1681,6 @@ show_spectrum(
     title=f"PGSE attenuation, D = {diffusion:g}e-9 m²/s, δ = {delta:g} ms, Δ = {big_delta:g} ms",
     xlabel="gradient / T m⁻¹",
     ylabel="|S(G)| / |S(0)|",
-)
-</script>
-
-<script type="text/plain" class="example" id="ex-ddf-shift" data-group="NMR (spynach)" data-title="Distant dipolar field: the demagnetising shift (beta)">
-import numpy as np
-import spynach
-from spynach.propagation import iserstep
-
-# --- One proton in its own dipolar field, no gradients: the uniform magnetisation and the sample shape ---
-magnet = 9.4  # GUI: Magnet field | T | Field of the magnet | 1..28
-tau_d = 100.0  # GUI: Dipolar time | ms | Dipolar demagnetising time 1/(γ μ0 M0) at the equilibrium magnetisation; water at 9.4 T and 300 K is about 100 ms | 5..1000
-shape = "cylinder along B0"  # GUI: Sample shape | - | The shape sets the field of the uniform magnetisation (Lorentz field minus demagnetising field): none in a sphere, half the helix field and opposite in a long cylinder along B0, the full disc field across it | sphere, cylinder along B0, disc across B0
-tilt = 60.0  # GUI: Flip angle | degrees | Pulse that starts the evolution; the shift goes as the cosine of the flip angle | 0..180
-duration = 0.4  # GUI: Duration | s | Length of the recorded trajectory | 0.05..2
-
-factors = {"sphere": 1 / 3, "cylinder along B0": 0.0, "disc across B0": 1.0}
-spin_system = spynach.create({"isotopes": ["1H"], "magnet": magnet}, {"zeeman": {"scalar": [0.0]}})
-spin_system = spynach.assume(spynach.basis(spin_system, {"formalism": "sphten-liouv", "approximation": "none"}), "nmr")
-H = spynach.hamiltonian(spin_system)
-rho0 = spynach.step(spin_system, spynach.operator(spin_system, "Ly", "1H"), spynach.state(spin_system, "Lz", "1H"), np.radians(tilt))
-dt = 2e-3
-nsteps = max(2, int(round(duration / dt)))
-t = np.arange(1, nsteps + 1) * dt
-
-# dipolar_field builds the state-dependent generator, as radiation_damping does; iserstep integrates it
-traces = {}
-for name in dict.fromkeys(["sphere", shape]):
-    ddf = spynach.dipolar_field(spin_system, H + 0j * H, "1H", tau_d * 1e-3, demagnetising=factors[name])
-    rho = ddf.stack(rho0)  # the uniform mode alone
-    m = np.zeros((nsteps, 3), dtype=complex)
-    for n in range(nsteps):
-        rho = iserstep(spin_system, ddf, n * dt, "LG4", rho, dt)
-        mx, my, mz = ddf.magnetisation(rho)
-        m[n] = mx[0], my[0], mz[0]
-    traces[name] = m
-phases = {name: np.unwrap(np.angle(m[:, 0] + 1j * m[:, 1])) for name, m in traces.items()}
-slope = (phases[shape][-1] - phases[shape][0]) / (t[-1] - t[0])
-formula = (3 * factors[shape] - 1) / 2 * np.cos(np.radians(tilt)) / (tau_d * 1e-3)
-print(f"{shape}: precession {slope:+.3f} rad/s = {slope / (2 * np.pi):+.3f} Hz; (3 N_z - 1)/2 cos(beta) / tau_d = {formula:+.3f} rad/s")
-print(f"m_z stays {traces[shape][-1, 2].real:+.4f} (cos beta = {np.cos(np.radians(tilt)):+.4f}): the field only precesses the transverse magnetisation")
-show_spectrum(
-    [phases[name] - phases[name][0] for name in phases],
-    t,
-    invert=False,
-    names=list(phases),
-    title=f"Demagnetising shift after a {tilt:g}° pulse, tau_d = {tau_d:g} ms",
-    xlabel="time / s",
-    ylabel="precession angle / rad",
-)
-show_spectrum(
-    [traces[shape][:, 0].real, traces[shape][:, 1].real, traces[shape][:, 2].real],
-    t,
-    invert=False,
-    names=["m_x", "m_y", "m_z"],
-    title=f"Magnetisation in the {shape}",
-    xlabel="time / s",
-    ylabel="M / M_eq",
-)
-</script>
-
-<script type="text/plain" class="example" id="ex-ddf-crazed" data-group="NMR (spynach)" data-title="Distant dipolar field: the CRAZED build-up (beta)">
-import numpy as np
-import spynach
-from scipy.special import jv
-from spynach.ddf import DipolarFieldSpec
-from spynach.program import Acquire, Gradient, Program, Pulse
-
-# --- CRAZED: 90x - G - 90x - mG - acquire; the helix of longitudinal magnetisation winds the transverse one ---
-tau_d = 100.0  # GUI: Dipolar time | ms | Dipolar demagnetising time 1/(γ μ0 M0); water at 9.4 T and 300 K is about 100 ms | 20..500
-ratio = 2  # GUI: Second gradient | - | Area of the second gradient in units of the first: 2 is the CRAZED experiment, 1 the ordinary gradient echo, 3 the next harmonic | 1..3
-theta = 0.0  # GUI: Gradient angle | degrees | Angle of the gradient axis to B0: the field vanishes at the magic angle 54.7 and has half the strength, reversed, across B0 | 0..90
-uniform = "sphere"  # GUI: Uniform mode | - | Field of the uniform magnetisation, set by the sample shape: none in a sphere; the field of the helix itself makes the Bessel closed form exact | sphere, as the helix
-nmodes = 8  # GUI: Harmonics | - | Modes kept beyond the ones the gradients reach; the field generates them one neighbour at a time, with amplitudes falling like Bessel functions | 2..16
-t_max = 200.0  # GUI: Acquisition | ms | Length of the acquisition, during which the signal builds up | 50..400
-
-spin_system = spynach.create({"isotopes": ["1H"], "magnet": 9.4}, {"zeeman": {"scalar": [0.0]}})
-spin_system = spynach.assume(spynach.basis(spin_system, {"formalism": "sphten-liouv", "approximation": "none"}), "nmr")
-H = spynach.hamiltonian(spin_system)
-R = 0 * H
-m = int(ratio)
-angle = np.radians(theta)
-delta_s = (3 * np.cos(angle) ** 2 - 1) / 2  # the field of a helix at this angle, in units of the one along B0
-n_z = 1 / 3 if uniform == "sphere" else (2 * delta_s + 1) / 3
-delta, G, dt = 20e-6, 2.0, 2e-3
-npoints = max(2, int(round(t_max * 1e-3 / dt)))
-t = np.arange(npoints) * dt + delta  # the field acts during the second gradient as well
-
-# The field is integrated on the lattice of Fourier modes of explicit mode: no spatial grid
-crazed = Program(
-    [
-        Pulse("1H", np.pi / 2),
-        Gradient(delta, z=G * np.cos(angle), x=G * np.sin(angle)),
-        Pulse("1H", np.pi / 2),
-        Gradient(delta, z=m * G * np.cos(angle), x=m * G * np.sin(angle)),
-        Acquire("1H", dt, npoints),
-    ],
-    mode="explicit",
-    field=DipolarFieldSpec("1H", tau_d * 1e-3, nmodes=int(nmodes), demagnetising=n_z),
-)
-modes = crazed.run(spin_system, H, R, R, output="modes")
-single = Program([Pulse("1H", np.pi / 2), Acquire("1H", dt, 1)], mode="explicit").run(spin_system, H, R, R)[0]
-signal = modes.signals[modes.modes == 0][0] / single  # the uniform mode: what the coil sees from a long sample
-a = abs(delta_s) * t / (tau_d * 1e-3)
-safe = np.where(a > 0, a, 1.0)
-closed = np.where(a > 0, m / safe * jv(m, safe), 0.5 if m == 1 else 0.0)
-print(f"second gradient {m} x the first, gradient at {theta:g}° to B0: Delta = {delta_s:+.3f}, tau_d = {tau_d:g} ms")
-print(f"largest |signal| {np.abs(signal).max():.4f} of the single-pulse signal; the closed form (m/a) J_m(a) with a = |Delta| t / tau_d peaks at {np.abs(closed).max():.4f}")
-print(f"largest difference from the closed form {np.abs(np.abs(signal) - np.abs(closed)).max():.1e}" + ("" if uniform != "sphere" else " (in a sphere the signal's own uniform magnetisation makes no field)"))
-strong = np.argsort(np.abs(modes.signals).max(axis=1))[::-1][:5]
-for i in sorted(strong, key=lambda i: modes.modes[i]):
-    print(f"  mode {modes.modes[i]:+d}, k = {modes.modes[i] * modes.k0:.0f} rad/m: largest |signal| {np.abs(modes.signals[i]).max() / abs(single):.3f}, sample envelope {modes.envelope[i]:.1e}")
-show_spectrum(
-    [np.abs(signal), np.abs(closed)],
-    t * 1e3,
-    invert=False,
-    names=["pulse program", "(m/a) J_m(a)"],
-    title=f"CRAZED build-up, second gradient {m} x the first, tau_d = {tau_d:g} ms, {theta:g}° to B0",
-    xlabel="time / ms",
-    ylabel="|S(t)| / S0",
-)
-</script>
-
-<script type="text/plain" class="example" id="ex-ddf-echoes" data-group="NMR (spynach)" data-title="Distant dipolar field: multiple spin echoes (beta)">
-import numpy as np
-import spynach
-from scipy.special import jv
-from spynach.ddf import DipolarFieldSpec
-from spynach.program import Acquire, Gradient, Program, Pulse, Sample
-
-# --- 90x - G - 90x, then a read gradient: the harmonics of the helix echo one after the other ---
-tau_d = 20.0  # GUI: Dipolar time | ms | Dipolar demagnetising time; a few times shorter than water's, so that several echoes fit in the window | 5..200
-m0 = 16  # GUI: First gradient | - | Area of the first gradient in units of the read gradient per dwell: the echoes come every m0 dwells | 8..24
-dwell = 0.5  # GUI: Dwell time | ms | Sampling interval; the read gradient unwinds one unit of the helix per dwell | 0.1..1
-npoints = 100  # GUI: Points | - | Number of points acquired | 40..100
-z_max = 5.0  # GUI: Sample length | mm | Half the active length of the cylindrical sample; the read gradient is scaled so that one unit of area is two radians across it, which gives the echoes their width | 2..10
-
-spin_system = spynach.create({"isotopes": ["1H"], "magnet": 9.4}, {"zeeman": {"scalar": [0.0]}})
-spin_system = spynach.assume(spynach.basis(spin_system, {"formalism": "sphten-liouv", "approximation": "none"}), "nmr")
-H = spynach.hamiltonian(spin_system)
-R = 0 * H
-sample = Sample(z_max=z_max * 1e-3, x_max=z_max * 0.5e-3)
-gamma = spin_system.gammas[0]
-dt = dwell * 1e-3
-unit = 2 / (gamma * sample.z_max)  # one unit of gradient area per dwell: k0 z_max = 2
-n = int(npoints)
-echoes = Program(
-    [
-        Pulse("1H", np.pi / 2),
-        Gradient(1e-3, z=int(m0) * unit / 1e-3),
-        Pulse("1H", np.pi / 2),
-        Acquire("1H", dt, n, gradient=Gradient(0, z=-unit / dt)),
-    ],
-    mode="explicit",
-    sample=sample,
-    field=DipolarFieldSpec("1H", tau_d * 1e-3, nmodes=6, demagnetising=1.0),
-)
-single = Program([Pulse("1H", np.pi / 2), Acquire("1H", dt, 1)], mode="explicit").run(spin_system, H, R, R)[0]
-fid = echoes.run(spin_system, H, R, R) / single
-t = np.arange(n) * dt
-print(f"read gradient {unit / dt * 1e3:.2f} mT/m, first gradient {int(m0)} units: an echo every {int(m0) * dwell:g} ms; tau_d = {tau_d:g} ms")
-for k in range(1, 8):
-    i = k * int(m0)
-    if i < n:
-        a = t[i] / (tau_d * 1e-3)
-        print(f"  echo {k} at {t[i] * 1e3:.1f} ms: |S| {np.abs(fid[i]):.3f}, (n/a) J_n(a) = {abs(k / a * jv(k, a)):.3f}" + ("  (the gradient echo)" if k == 1 else ""))
-show_spectrum(
-    np.abs(fid),
-    t * 1e3,
-    invert=False,
-    title=f"Multiple spin echoes under a read gradient, tau_d = {tau_d:g} ms",
-    xlabel="time / ms",
-    ylabel="|S(t)| / S0",
 )
 </script>
 

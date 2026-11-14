@@ -52,9 +52,9 @@ like a stack of thin discs, `−(2/3) μ0 M_z` along `z`; one across `B0` like a
 stack of slabs, `+(1/3) μ0 M_z`; and at the magic angle the field vanishes.
 The uniform part of the magnetisation is the exception: it sees the Lorentz
 field minus the demagnetising field of the sample shape, which for an
-axially symmetric sample has the same form with `Δ0 = (3 N_z − 1)/2` for
+axially symmetric sample has the same form with `Δ_shape = (3 N_z − 1)/2` for
 the demagnetising factor `N_z` along `B0`: a sphere (`N_z = 1/3`) has no
-uniform field, a long cylinder along `B0` has `Δ0 = −1/2`, a thin disc
+uniform field, a long cylinder along `B0` has `Δ_shape = −1/2`, a thin disc
 across it `+1`, the limits of the modulated modes.
 
 The strength is the dipolar demagnetising time `τ_d = 1/(|γ| μ0 M0)`, about
@@ -90,8 +90,8 @@ print(f"tau_d of water at 9.4 T and 300 K: {tau_d * 1e3:.0f} ms")
 
 Without gradients there is one mode, the uniform magnetisation, and the
 field is the shape-dependent demagnetising shift: after a pulse of flip
-angle `β` the line sits at `Δ0 cos β / τ_d` from where it would be in a
-sphere. `dipolar_field(spin_system, L0, isotope, tau_d, demagnetising=N_z)`
+angle `β` the line sits at `Δ_shape cos β / τ_d` (in rad/s; `Δ_shape = (3 N_z − 1)/2`,
+the factor of the uniform mode above) from where it would be in a sphere. `dipolar_field(spin_system, L0, isotope, tau_d, demagnetising=N_z)`
 builds the generator `L(t, rho)` for `iserstep`, as `radiation_damping`
 does; `.stack(rho)` puts a state into the uniform mode, `.magnetisation`
 reads the Fourier coefficients of `m_x`, `m_y`, `m_z` back:

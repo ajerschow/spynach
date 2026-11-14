@@ -7,7 +7,7 @@ in the rotating frame and secular form, ``B_d(s) = μ0 Δ [ M(s)/3 − M_z(s) �
 for the angle ``θ`` between ``s`` and ``B0``, so the field vanishes at the magic angle; a helix along ``B0``
 acts like a stack of thin discs (``−(2/3) μ0 M_z`` along ``z``), one across it like a stack of slabs.
 The uniform part of the magnetisation sees the Lorentz field minus the demagnetising field of the sample
-shape, which for an axially symmetric sample has the same form with ``Δ0 = (3 N_z − 1)/2`` for the
+shape, which for an axially symmetric sample has the same form with ``Δ_shape = (3 N_z − 1)/2`` for the
 demagnetising factor ``N_z`` along ``B0`` (a sphere, ``1/3``, has none; a long cylinder along ``B0`` has
 ``−1/2``, a thin disc across it ``+1``, the limits of the modulated modes).
 

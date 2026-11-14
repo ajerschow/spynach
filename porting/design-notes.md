@@ -411,7 +411,7 @@ No Spinach counterpart. The field of a one-dimensionally modulated magnetisation
 and Delrieux, Phys. Rev. B 19, 5666 (1979)): in the secular rotating-frame form `B_d(s) = μ0 Δ [M(s)/3 −
 M_z(s) ẑ]` with `Δ = (3 cos²θ − 1)/2`; the sign follows from the macroscopic field `μ0 [M − k̂ (k̂·M)]` minus
 the Lorentz-sphere field `(2/3) μ0 M`, so a helix along `B0` is a stack of discs (`−(2/3) μ0 M_z`), and the
-uniform mode carries the sample-shape factor `Δ0 = (3 N_z − 1)/2` (Lorentz minus demagnetising field, axially
+uniform mode carries the sample-shape factor `Δ_shape = (3 N_z − 1)/2` (Lorentz minus demagnetising field, axially
 symmetric sample). Representation: the Fourier-mode lattice of the explicit runner of `spynach.program` (one
 state vector per wavevector, gradients as shifts of the coherence-order blocks); the field is the convolution
 `dρ_n/dt = −i L0 ρ_n − i Σ_m L_d(m) ρ_{n−m}` with `L_d(m)` the commutation superoperator of the mean-field

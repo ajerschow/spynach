@@ -153,7 +153,7 @@ class GridField:
     def __init__(self, spin_system, L0, isotope, tau_d, nz, npoints, rho_eq):
         self.model = dipolar_field(spin_system, L0, isotope, tau_d, rho_eq=rho_eq)
         self.L0 = sps.csr_array(L0)
-        self.delta_s, self.delta_0 = 1.0, (3 * nz - 1) / 2
+        self.delta_s, self.delta_shape = 1.0, (3 * nz - 1) / 2
         self.tau_d, self.npoints = tau_d, npoints
         self.nstates = self.model.nstates
 
@@ -167,7 +167,7 @@ class GridField:
         parts = []
         for c in m.coils:
             values = np.conj(c) @ cols / m.mz_eq
-            parts.append(self.delta_s * (values - values.mean()) + self.delta_0 * values.mean())
+            parts.append(self.delta_s * (values - values.mean()) + self.delta_shape * values.mean())
         mx, my, mz = parts
         for j in range(self.npoints):
             H_d = m.sign / self.tau_d * (2 / 3 * mz[j] * m.Cz - (mx[j] * m.Cx + my[j] * m.Cy) / 3)
