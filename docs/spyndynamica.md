@@ -7,15 +7,15 @@ operators and spherical tensor operators with symbolic coefficients, and product
 weak-coupling evolution are exact algebra. Liouville space adds operator bases and superoperators, and a
 numeric engine propagates sequences of pulses and delays with strong coupling and relaxation. Signals come
 with their Fourier transform and lineshapes, and the isotope table is included. Time-dependent Hamiltonians
-are integrated numerically, and ensemble and powder averages use SpinDynamica's orientation sets. The COMPUTE
-method for periodic Hamiltonians is not ported yet.
+are integrated numerically, signals under periodic Hamiltonians use the COMPUTE method, and ensemble and powder
+averages use SpinDynamica's orientation sets.
 
 SpinDynamica is the work of Malcolm H. Levitt and co-authors. Its [terms of use](https://www.spindynamica.soton.ac.uk/about/termsofuse/)
 state that it is open-source and freely available for use, and ask that published work cite
 C. Bengs, M. H. Levitt, *SpinDynamica: Symbolic and numerical magnetic resonance in a Mathematica environment*, Magn. Reson. Chem. (2017), doi:10.1002/mrc.4642. Work that uses SpynDynamica should cite that publication.
 
 Every convention below is the one of SpinDynamica 3.10.2 and is checked against it
-(`tests/spyndynamica/`, 555 reference cases generated from the Mathematica package).
+(`tests/spyndynamica/`, 559 reference cases generated from the Mathematica package).
 
 ## Contents
 
@@ -316,8 +316,26 @@ times, track = trajectory(z, z, [(TimeDependent(sweep, time), 0.2)], points=5)
 print(track.real.round(3))
 ```
 
-The example is a slow frequency sweep through resonance, which inverts the magnetisation. `signal_1d` does not
-take a time-dependent generator yet.
+The example is a slow frequency sweep through resonance, which inverts the magnetisation.
+
+`signal_1d` takes a `TimeDependent` generator and steps through it. For a `Periodic(H, t, period)` generator
+whose period is a whole number of dwell times it uses the COMPUTE method: the propagators of one period give
+the whole signal as a list of peaks, the differences of the Floquet frequencies plus multiples of the
+rotation frequency.
+
+```python
+from spyndynamica import Periodic
+
+rotation = 2 * sp.pi * 1000
+modulated = 2 * sp.pi * (300 + 400 * sp.cos(rotation * time)) * z
+spinning = Periodic(modulated, time, sp.Rational(1, 1000))
+sidebands = signal_1d(spinning, points=64, bandwidth=2 * sp.pi * 8000, line_broadening=2 * np.pi * 5)
+
+for amplitude, omega, _ in sidebands.peaks:
+    print(f"{omega.real / (2 * np.pi):7.0f} Hz   {amplitude.real:7.4f}")
+```
+
+The lines are the centre band at 300 Hz and its spinning sidebands 1 kHz apart.
 
 ## Ensemble and powder averages, tensors
 
@@ -405,6 +423,7 @@ the frame reached by rotating the old one through those Euler angles.
 | `MagnetogyricRatio`, `NuclearSpinQuantumNumber`, `NaturalAbundance` | `magnetogyric_ratio`, `spin_quantum_number`, `natural_abundance` |
 | `LarmorFrequency`, `DirectDipolarCoupling` | `larmor_frequency`, `dipolar_coupling` |
 | `{Function[t, H[t]], τ}` | `(TimeDependent(H, t), τ)` |
+| `PeriodicFunction[t, T, H]`, `SignalCalculationMethod -> "COMPUTE"` | `Periodic(H, t, T)`, `method="compute"` |
 | `EnsembleAverage -> {var, {values..}}` | `ensemble_average(function, values, weights)` |
 | `OrientationsAndWeights["ZCW50"]` | `orientations("ZCW50")` |
 | `OrientationsAndWeights["Step\[Beta]", n]` | `step_beta(n)` |
@@ -440,8 +459,8 @@ operators, the sense of every rotation, the zyz Euler convention and the index o
 - `ft` of an odd number of points without zero filling returns the transform at the stated frequencies;
   SpinDynamica's values sit one point lower on its axis in that case.
 
-**Not ported yet:** the COMPUTE method and signals under periodic or time-dependent Hamiltonians, shaped
-pulses as events of their own, two-dimensional signals, relaxation theory beyond the phenomenological model,
+**Not ported yet:** signals under time-dependent Hamiltonians with relaxation, shaped pulses as events of
+their own, two-dimensional signals, relaxation theory beyond the phenomenological model,
 the random orientation sets, the group theory modules and graphics.
 `porting/spyndynamica/PLAN.md` has the phases, and `porting/spyndynamica/DIVERGENCES.md` lists two documented
 options that SpinDynamica itself ignores.

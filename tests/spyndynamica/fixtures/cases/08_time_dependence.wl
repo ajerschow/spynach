@@ -3,6 +3,11 @@ m[op_] := MatrixRepresentation[op];
 xyz := {opI[1, "x"], opI[1, "y"], opI[1, "z"]};
 rf := Function[t, 2 Pi 50 (opI[1, "x"] Cos[2 Pi 300 t] + opI[1, "y"] Sin[2 Pi 300 t]) + 2 Pi 280 opI[1, "z"]];
 chirp := Function[t, 2 Pi 40 opI[1, "x"] + 2 Pi (-200 + 40000 t) opI[1, "z"]];
+(* two spins under a rotation of 1 kHz: modulated shifts and a modulated homonuclear dipolar coupling *)
+spinning := PeriodicFunction[t, 1/1000,
+   2 Pi (300 + 400 Cos[2 Pi 1000 t] + 150 Cos[4 Pi 1000 t + 1/2]) opI[1, "z"] +
+    2 Pi (-200 + 250 Cos[2 Pi 1000 t + 1]) opI[2, "z"] +
+    2 Pi (120 Cos[2 Pi 1000 t + 3/10] + 60 Cos[4 Pi 1000 t]) (3 opI[1, "z"] . opI[2, "z"] - opI[1] . opI[2])];
 elements[t_] := List @@ t /. {SphericalTensor[_, e_List, ___] :> e};
 flat[set_] := Join[First[#], {Last[#]}] & /@ set;
 cart = {{1, 2, 3}, {4, 5, 6}, {7, 8, 10}};
@@ -30,6 +35,17 @@ symmetric := CartesianToSpherical[2, {{1, 2, 3}, {2, 5, 6}, {3, 6, 10}}];
     "weighted_average_over_offsets" :> TransformationAmplitude[opI[1, "z"] -> xyz,
       {RotationSuperoperator[{Pi/2, "x"}], {offset opI[1, "z"], 0.002}},
       EnsembleAverage -> {offset, {{{2 Pi 50}, 1/2}, {{2 Pi 100}, 1/3}, {{2 Pi 200}, 1/6}}}]
+    }|>,
+ <|"group" -> "periodic", "setup" :> SetSpinSystem[2],
+  "allow" -> {"Signal1D::droplast", "Signal1D::reportscm", "Signal1D::autolb", "Signal1D::matchsampling"}, "cases" -> {
+    "compute_fid" :> N[Expand[Signal1D[{{2 Pi 8000, 65}}, spinning, LineBroadening -> 2 Pi 5,
+        DigitalFrequencyResolution -> False, SignalCalculationMethod -> "COMPUTE"]]],
+    "compute_peaks" :> Signal1D[{{2 Pi 8000, 65}}, spinning, LineBroadening -> 2 Pi 5,
+        DigitalFrequencyResolution -> False, SignalCalculationMethod -> "COMPUTE"][[2, 2]],
+    "direct_fid" :> N[Expand[Signal1D[{{2 Pi 8000, 65}}, spinning, LineBroadening -> 2 Pi 5,
+        SignalCalculationMethod -> "Direct"]]],
+    "automatic_method_fid" :> N[Expand[Signal1D[{{2 Pi 8000, 65}}, spinning, LineBroadening -> 2 Pi 5,
+        DigitalFrequencyResolution -> False]]]
     }|>,
  <|"group" -> "tensors", "setup" :> SetSpinSystem[1], "allow" -> info, "cases" -> {
     "rank_2_rotated" :> elements[TransformSphericalTensor[symmetric, angles]],

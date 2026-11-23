@@ -18,7 +18,8 @@ from typing import Any
 import numpy as np
 import sympy as sp
 
-from spyndynamica.dynamics import _Engine, _state, propagate
+from spyndynamica import backend
+from spyndynamica.dynamics import Periodic, TimeDependent, _Engine, _state, propagate
 from spyndynamica.liouville import rotation_superoperator
 from spyndynamica.operators import Operator
 from spyndynamica.system import SpinSystem
@@ -115,9 +116,18 @@ def signal_1d(
 
     ``method='diagonalization'`` returns the signal as a list of peaks from the eigenvalues of the generator;
     ``'direct'`` propagates step by step and returns the samples; ``'auto'`` diagonalises.
+
+    A :class:`~spyndynamica.TimeDependent` generator is propagated step by step. A
+    :class:`~spyndynamica.Periodic` one uses the COMPUTE method when the dwell time divides its period
+    (``'auto'`` or ``'compute'``): the propagators of one period give the whole signal as a list of peaks.
     """
-    parts = [p for p in ([generator] + (list(background) if isinstance(background, (list, tuple)) else [background]))]
+    varying = generator if isinstance(generator, TimeDependent) else None
+    parts = [None if varying else generator] + (
+        list(background) if isinstance(background, (list, tuple)) else [background]
+    )
     parts = [p for p in parts if p is not None]
+    if varying is not None and system is None:
+        system = varying.operator.system
     if system is None:
         candidates = [p for p in (*parts, initial, observable) if hasattr(p, "system")]
         if not candidates:
@@ -141,8 +151,33 @@ def signal_1d(
     interval = (0.0, None, None, None, None)  # the engine adds the background, which holds every generator here
     if start:
         state = engine.advance(state, interval, float(start))
-    if method not in ("auto", "direct", "diagonalization"):
-        raise ValueError("method must be 'auto', 'direct' or 'diagonalization'.")
+    if method not in ("auto", "direct", "diagonalization", "compute"):
+        raise ValueError("method must be 'auto', 'direct', 'diagonalization' or 'compute'.")
+    if varying is not None:
+        if engine.liouville:
+            raise NotImplementedError("a time-dependent generator with relaxation is not available in signal_1d.")
+        if method == "diagonalization" or (method == "compute" and not isinstance(varying, Periodic)):
+            raise ValueError("a time-dependent generator needs method='direct', or 'compute' when it is Periodic.")
+        constant = engine._hamiltonian(None)
+        function = varying.function(values)
+
+        def minus_i_h(t: float) -> np.ndarray:
+            return -1j * (function(t) + constant)
+
+        period = float(sp.N(sp.sympify(varying.period).subs(values or {}))) if isinstance(varying, Periodic) else None
+        per_period = round(period / step) if period else 0
+        matched = bool(period) and per_period >= 1 and abs(per_period * step - period) < 1e-9 * period
+        if method == "compute" and not matched:
+            raise ValueError("the COMPUTE method needs a dwell time that divides the period.")
+        if method == "direct" or not matched:
+            return _direct_time_dependent(
+                minus_i_h, state, q, norm, float(start), step, points, per_period if matched else 0
+            ).broadened(line_broadening)
+        if start:
+            raise NotImplementedError("the COMPUTE method starts at time zero.")
+        return _compute(minus_i_h, state, q, norm, step, points, per_period).broadened(line_broadening)
+    if method == "compute":
+        raise ValueError("the COMPUTE method needs a Periodic generator.")
     if method == "direct":
         samples = np.empty(points, dtype=complex)
         advance = engine.superpropagator(interval, step) if engine.liouville else engine.unitary(interval, step)
@@ -169,6 +204,56 @@ def signal_1d(
         amplitude = (q.reshape(-1).conj() @ right) * weights / norm
         peaks = np.stack([amplitude, rates.imag.astype(complex), -rates.real.astype(complex)], axis=1)
     return Signal(float(start), step, points, peaks=_merge(peaks)).broadened(line_broadening)
+
+
+def _direct_time_dependent(minus_i_h, state, q, norm, start, step, points, per_period) -> Signal:
+    """Step by step under a time-dependent Hamiltonian; the propagators of one period are reused when
+    ``per_period`` dwell times make a period."""
+    dim = len(q)
+    cache: dict[int, np.ndarray] = {}
+    samples = np.empty(points, dtype=complex)
+    for n in range(points):
+        samples[n] = np.vdot(q, state) / norm
+        key = n % per_period if per_period else n
+        if key not in cache or not per_period:
+            cache[key] = backend.integrate(minus_i_h, dim, start + n * step, start + (n + 1) * step)
+        u = cache[key]
+        state = u @ state @ u.conj().T
+    return Signal(start, step, points, data=samples)
+
+
+def _compute(minus_i_h, state, q, norm, step, points, per_period) -> Signal:
+    """The COMPUTE method (Edén, Lee and Levitt, J. Magn. Reson. A 120, 56 (1996)) for a periodic Hamiltonian.
+
+    The propagators to the ``per_period`` sampling points of one period are calculated once. In the eigenbasis
+    of the propagator of the full period the signal is a sum of lines at the differences of the Floquet
+    frequencies plus multiples of the rotation frequency, with amplitudes from one discrete Fourier transform.
+    """
+    dim = len(q)
+    n = per_period
+    period = n * step
+    partial = [np.eye(dim, dtype=complex)]
+    for j in range(n):
+        partial.append(backend.integrate(minus_i_h, dim, j * step, (j + 1) * step) @ partial[-1])
+    phases, vectors = backend.unitary_eigensystem(partial[n])
+    epsilon = -np.angle(phases) / period  # U(T) = X exp(-i epsilon T) X^+
+    rho = vectors.conj().T @ state @ vectors
+    difference = epsilon[:, None] - epsilon[None, :]
+    table = np.empty((n, dim, dim), dtype=complex)
+    for j in range(n):
+        u = partial[j] @ vectors
+        table[j] = (u.conj().T @ q @ u).conj() * rho * np.exp(1j * difference * j * step)
+    amplitudes = np.fft.fft(table, axis=0) / n  # f(j) = sum_k a_k exp(+2 pi i j k / n) needs the forward transform
+    orders = np.fft.fftfreq(n, d=1.0 / n)
+    rotation = 2 * math.pi / period
+    rows = []
+    for k_index, k in enumerate(orders):
+        a = amplitudes[k_index] / norm
+        omega = -difference + k * rotation
+        rows.append(
+            np.stack([a.reshape(-1), omega.reshape(-1).astype(complex), np.zeros(dim * dim, dtype=complex)], axis=1)
+        )
+    return Signal(0.0, step, points, peaks=_merge(np.concatenate(rows)))
 
 
 def ft(

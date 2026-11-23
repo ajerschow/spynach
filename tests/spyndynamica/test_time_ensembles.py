@@ -7,7 +7,7 @@ import pytest
 import sympy as sp
 
 import spyndynamica as sd
-from spyndynamica import SpinSystem, TimeDependent
+from spyndynamica import Periodic, SpinSystem, TimeDependent
 from tests.spyndynamica import reference
 
 TOL = dict(rtol=0, atol=1e-11)
@@ -137,3 +137,48 @@ def test_spherical_tensors():
         sd.cartesian_to_spherical(2, [1, 2, 3])
     with pytest.raises(ValueError, match="1, 3 or 5"):
         sd.spherical_to_cartesian([1, 2])
+
+
+def test_compute_and_signals_under_time_dependent_hamiltonians():
+    s = SpinSystem(2)
+    i = s.I
+    w = 2 * sp.pi * 1000
+    shift_1 = 300 + 400 * sp.cos(w * T) + 150 * sp.cos(2 * w * T + sp.Rational(1, 2))
+    shift_2 = -200 + 250 * sp.cos(w * T + 1)
+    coupling = 120 * sp.cos(w * T + sp.Rational(3, 10)) + 60 * sp.cos(2 * w * T)
+    h = 2 * sp.pi * (shift_1 * i(1, "z") + shift_2 * i(2, "z") + coupling * (3 * i(1, "z") @ i(2, "z") - s.dot(1, 2)))
+    spinning = Periodic(h, T, sp.Rational(1, 1000))
+    kw = dict(points=65, bandwidth=2 * sp.pi * 8000, line_broadening=2 * math.pi * 5)
+    compute = sd.signal_1d(spinning, **kw)
+    direct = sd.signal_1d(spinning, method="direct", **kw)
+    # the two methods agree to rounding; SpinDynamica to the tolerance of its integrator
+    assert compute.peaks is not None and direct.peaks is None
+    assert np.allclose(compute.values, direct.values, atol=1e-9)
+    assert np.allclose(sd.signal_1d(spinning, method="compute", **kw).values, compute.values, **TOL)
+    for case in ("compute_fid", "direct_fid", "automatic_method_fid"):
+        fid = stored(f"periodic/{case}")
+        assert np.allclose(compute.times, fid[:, 0].real, **TOL)
+        assert np.allclose(compute.values, fid[:, 1], atol=5e-6), case
+    theirs = stored("periodic/compute_peaks")
+    t = compute.times
+    from_their_peaks = (theirs[:, 0, None] * np.exp((1j * theirs[:, 1, None] - theirs[:, 2, None]) * t)).sum(axis=0)
+    assert np.allclose(compute.values, from_their_peaks, atol=5e-6)
+    # every line is a difference of Floquet frequencies plus a multiple of the rotation frequency
+    rotation = 2 * math.pi * 1000
+    base = compute.peaks[:, 1].real % rotation
+    assert len(np.unique(np.round(base, 4))) <= 16 and np.allclose(compute.peaks[:, 2].real, math.pi * 5)
+    # a generator that is not periodic, or a dwell time that does not divide the period, is stepped through
+    plain = sd.signal_1d(TimeDependent(h, T), **kw)
+    assert plain.peaks is None and np.allclose(plain.values, compute.values, atol=1e-9)
+    unmatched = sd.signal_1d(spinning, points=9, dwell=0.00013, line_broadening=None)
+    reference_state = sd.propagate(-s.I(None, "y"), [(TimeDependent(h, T), 0.00013 * 8)])
+    q = (-sp.I / 2 * s.I(None, "-")).numeric()
+    assert np.isclose(unmatched.values[-1], np.vdot(q, reference_state) / np.vdot(q, q), atol=1e-9)
+    with pytest.raises(ValueError, match="divides the period"):
+        sd.signal_1d(spinning, points=9, dwell=0.00013, method="compute")
+    with pytest.raises(ValueError, match="Periodic generator"):
+        sd.signal_1d(h.subs(T, 0), points=9, dwell=0.001, method="compute")
+    with pytest.raises(ValueError, match="needs method='direct'"):
+        sd.signal_1d(TimeDependent(h, T), points=9, dwell=0.001, method="compute")
+    with pytest.raises(NotImplementedError, match="relaxation"):
+        sd.signal_1d(spinning, background=sd.phenomenological_relaxation(s, 1.0), **kw)

@@ -82,6 +82,17 @@ class TimeDependent:
 
 
 @dataclass(frozen=True)
+class Periodic(TimeDependent):
+    """A time-dependent Hamiltonian with the period ``period``: ``H(t + period) = H(t)``.
+
+    As the generator of :func:`~spyndynamica.signal_1d` it selects the COMPUTE method, which needs the dwell
+    time to divide the period. In an event it behaves like :class:`TimeDependent`.
+    """
+
+    period: Any = None
+
+
+@dataclass(frozen=True)
 class Repeat:
     """``events`` repeated ``count`` times."""
 

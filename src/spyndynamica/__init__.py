@@ -15,6 +15,7 @@ that uses this port should cite that publication.
 
 from spyndynamica.dynamics import (
     Delay,
+    Periodic,
     Pulse,
     Repeat,
     TimeDependent,
@@ -77,6 +78,7 @@ from spyndynamica.tensors import cartesian_to_spherical, spherical_to_cartesian,
 __version__ = "0.0.1"
 
 __all__ = [
+    "Periodic",
     "transform_spherical_tensor",
     "step_beta",
     "step_alpha_beta",

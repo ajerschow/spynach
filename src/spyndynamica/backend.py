@@ -37,3 +37,9 @@ def integrate(generator, size: int, start: float, end: float, rtol: float = 1e-1
     if not solution.success:
         raise RuntimeError(f"the integration of the equation of motion failed: {solution.message}")
     return solution.y[:, -1].reshape(size, size)
+
+
+def unitary_eigensystem(u: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    """The eigenvalues and orthonormal eigenvectors of a unitary matrix (also when eigenvalues coincide)."""
+    triangular, vectors = scipy.linalg.schur(u, output="complex")
+    return np.diag(triangular), vectors

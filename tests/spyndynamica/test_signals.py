@@ -175,7 +175,7 @@ def test_signal_objects_and_line_broadening():
     with pytest.raises(ValueError, match="dwell time or the bandwidth"):
         sd.signal_1d(ham, points=8)
     with pytest.raises(ValueError, match="method must be"):
-        sd.signal_1d(ham, points=8, dwell=0.01, method="compute")
+        sd.signal_1d(ham, points=8, dwell=0.01, method="guess")
     with pytest.raises(ValueError, match="give the spin system"):
         sd.signal_1d(None, points=8, dwell=0.01)
 

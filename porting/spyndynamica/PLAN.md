@@ -62,7 +62,7 @@ All of these are covered by a fixture and an independent test.
 
 ## Phases
 
-1. **Reference harness.** Done: generator, loader, 555 cases in eight files, independent checks.
+1. **Reference harness.** Done: generator, loader, 559 cases in eight files, independent checks.
 2. **Symbolic core.** Done (`tests/spyndynamica/test_core.py`): spin systems, kets and bras, the Zeeman and
    singlet-triplet bases, product-operator and spherical-tensor algebra, rotations, closed-form evolution for
    commuting spin-1/2 terms, exact and numeric matrices. Pinned by `01_bases`, `02_operators`, `03_rotations`.
@@ -78,12 +78,12 @@ All of these are covered by a fixture and an independent test.
    broadening, `ft`, the lineshape functions, the isotope table, constants, Larmor frequencies and dipolar
    couplings. Pinned by `06_signals` and `07_tables`. Left out: two-dimensional signals and the
    Hamiltonian constructors beyond what `s.I`, `s.dot` and `s.T` give.
-5. **Time dependence and ensembles.** Partly done (`tests/spyndynamica/test_time_ensembles.py`):
-   time-dependent Hamiltonians as events (`TimeDependent`, integrated by the backend, also with relaxation),
-   `ensemble_average` with optional threads, the tabulated orientation sets and the regular ones, and the
-   spherical tensor conversions and transformation. Pinned by `08_time_dependence`. Open: the COMPUTE method
-   and signals under periodic Hamiltonians, `PeriodicFunction` and reuse of propagators over a period,
-   time-dependent generators in `signal_1d`, the random orientation sets, process-based parallelism.
+5. **Time dependence and ensembles.** Done (`tests/spyndynamica/test_time_ensembles.py`): time-dependent
+   Hamiltonians as events (`TimeDependent`, integrated by the backend, also with relaxation) and in
+   `signal_1d`, the COMPUTE method for `Periodic` Hamiltonians, `ensemble_average` with optional threads, the
+   tabulated orientation sets and the regular ones, and the spherical tensor conversions and transformation.
+   Pinned by `08_time_dependence`. Left out: signals under time-dependent Hamiltonians with relaxation, the
+   random orientation sets, process-based parallelism.
 6. **Performance.** Sparse and Krylov methods, symmetry reduction, GPU, automatic differentiation.
 7. **Advanced modules.** Groups and algebras, polarization, extended Liouville space, 3D graphics.
 8. **Documentation and browser subset.**
