@@ -29,6 +29,7 @@ results computed by it.
 | `src/spyndynamica/interactions.py`, `data/isotopes.json` | isotope table, constants, Larmor frequency, dipolar coupling |
 | `src/spyndynamica/ensembles.py`, `data/orientations.npz` | `ensemble_average`, the orientation sets |
 | `src/spyndynamica/tensors.py` | spherical tensors: conversion and transformation |
+| `src/spyndynamica/states.py` | thermal and polarized states, secularisation, thermalised relaxation, amplitude tables, optimisation |
 | `src/spyndynamica/rotations.py` | Wigner matrices, Clebsch-Gordan coefficients, Euler matrices |
 | `tests/spyndynamica/fixtures/` | the generator, the case files and the reference data from SpinDynamica |
 | `tests/spyndynamica/test_reference_invariants.py` | checks of the reference that do not depend on SpinDynamica |

@@ -72,12 +72,28 @@ from spyndynamica.signals import (
     lorentzian,
     signal_1d,
 )
+from spyndynamica.states import (
+    amplitude_table,
+    maximize_amplitude,
+    polarized,
+    secularize,
+    singlet_polarized,
+    thermal_equilibrium,
+    thermalize,
+)
 from spyndynamica.system import Basis, Bra, Ket, SpinSystem, spins_of
 from spyndynamica.tensors import cartesian_to_spherical, spherical_to_cartesian, transform_spherical_tensor
 
 __version__ = "0.0.1"
 
 __all__ = [
+    "thermalize",
+    "thermal_equilibrium",
+    "singlet_polarized",
+    "secularize",
+    "polarized",
+    "maximize_amplitude",
+    "amplitude_table",
     "Periodic",
     "transform_spherical_tensor",
     "step_beta",

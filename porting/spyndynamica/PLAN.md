@@ -62,7 +62,7 @@ All of these are covered by a fixture and an independent test.
 
 ## Phases
 
-1. **Reference harness.** Done: generator, loader, 559 cases in eight files, independent checks.
+1. **Reference harness.** Done: generator, loader, 583 cases in nine files, independent checks.
 2. **Symbolic core.** Done (`tests/spyndynamica/test_core.py`): spin systems, kets and bras, the Zeeman and
    singlet-triplet bases, product-operator and spherical-tensor algebra, rotations, closed-form evolution for
    commuting spin-1/2 terms, exact and numeric matrices. Pinned by `01_bases`, `02_operators`, `03_rotations`.
@@ -100,6 +100,21 @@ All of these are covered by a fixture and an independent test.
    (`expm_multiply`), 15 s for 10 spins and 385 s for 12. Open: pulses applied spin by spin without a dense
    unitary (the 12-spin time is mostly two dense products), state-vector and restricted-state-space
    propagation, sparse Liouvillians, a GPU or autodiff backend behind `backend.py`, optimisation routines.
+   Direction from the user (2026-11-23): port what SpinDynamica itself contains first, with modest
+   optimisations, and leave advanced numerical techniques to Spynach. The open items above that go beyond
+   SpinDynamica (state-vector and restricted-space propagation, sparse Liouvillians, GPU, autodiff) are
+   shelved; phase 6 is closed as it stands.
+
+   **Parity stage A (the rest of the simulation layer).** Done (`tests/spyndynamica/test_states.py`,
+   `09_states`): `thermal_equilibrium`, `polarized`, `singlet_polarized`, `secularize`, `thermalize`,
+   `amplitude_table`, `maximize_amplitude`. Open: `PulseSequence` with automatic delays, `PhaseShift`,
+   `ShapedPulse`, `RepeatPulseSequence`, `CoherenceOrderFiltration` as an event, `Precalculate`,
+   `InitialTimePoint`, `AdiabaticPropagationSuperoperator`, the signal options `NormalizationFactor` and
+   `CarouselAverage`, two-dimensional `FT`, the random orientation sets, ensemble averages in processes.
+   **Stage B:** the rest of the quantum-mechanics layer (`DefineBasis`, `TransformedBasis`, `Eigenbasis`,
+   `AngularMomentumBasis`, `OperatorProjection`, `DefineOperatorBasis`, `ShiftSuperoperator`,
+   `SphericalComponentFiltrationSuperoperator`, the spherical tensor basis for more than two spins,
+   `AxesToEuler`, quaternions).
 7. **Advanced modules.** Groups and algebras, polarization, extended Liouville space, 3D graphics.
 8. **Documentation and browser subset.**
 

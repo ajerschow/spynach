@@ -15,7 +15,7 @@ state that it is open-source and freely available for use, and ask that publishe
 C. Bengs, M. H. Levitt, *SpinDynamica: Symbolic and numerical magnetic resonance in a Mathematica environment*, Magn. Reson. Chem. (2017), doi:10.1002/mrc.4642. Work that uses SpynDynamica should cite that publication.
 
 Every convention below is the one of SpinDynamica 3.10.2 and is checked against it
-(`tests/spyndynamica/`, 559 reference cases generated from the Mathematica package).
+(`tests/spyndynamica/`, 583 reference cases generated from the Mathematica package).
 
 ## Contents
 
@@ -31,7 +31,8 @@ Every convention below is the one of SpinDynamica 3.10.2 and is checked against 
 10. [Isotopes and interactions](#isotopes-and-interactions)
 11. [Time-dependent Hamiltonians](#time-dependent-hamiltonians)
 12. [Ensemble and powder averages, tensors](#ensemble-and-powder-averages-tensors)
-13. [Coming from SpinDynamica](#coming-from-spindynamica)
+13. [Density operators, secular parts and optimisation](#density-operators-secular-parts-and-optimisation)
+14. [Coming from SpinDynamica](#coming-from-spindynamica)
 
 ## Spin systems and operators
 
@@ -389,6 +390,49 @@ print(spherical_to_cartesian(tilted).real.round(3).tolist())
 The components run from `m = +k` down, and `transform_spherical_tensor(A, (α, β, γ))` gives the components in
 the frame reached by rotating the old one through those Euler angles.
 
+## Density operators, secular parts and optimisation
+
+Thermal equilibrium, polarized and singlet-polarized density operators are built directly. Hamiltonians are in
+rad/s and temperatures in kelvin.
+
+```python
+from spyndynamica import polarized, secularize, singlet_polarized, thermal_equilibrium, thermalize
+
+lab = -2 * sp.pi * 400e6 * I(1, "z") - 2 * sp.pi * 100e6 * I(2, "z")
+print(thermal_equilibrium(lab, 300).amplitude(I(1, "z")))
+print(polarized(s, sp.Rational(1, 2), "z", spins=[1]))
+print(singlet_polarized(s, 1))
+```
+
+`thermal_equilibrium` uses the high-temperature approximation unless `high_temperature=False`.
+`thermalize(R, H, T)` corrects a relaxation superoperator so that it relaxes towards that equilibrium, and
+`secularize` keeps the part of an operator that commutes with the Zeeman interaction, given as a Hamiltonian
+or as one list of spins per isotope:
+
+```python
+dipolar = 3 * I(1, "z") @ I(2, "z") - s.dot(1, 2)
+print(secularize(dipolar, [[1, 2]]))
+print(secularize(dipolar, [[1], [2]]))
+```
+
+`amplitude_table` scans a parameter and `maximize_amplitude` optimises parameters of a sequence, here the flip
+angle and the delay that turn `Iz` into `Ix` under a 100 Hz offset:
+
+```python
+from spyndynamica import amplitude_table, maximize_amplitude
+
+flip, delay = sp.symbols("flip delay", real=True)
+x1, y1, z1 = one.I(1)
+sequence = [Pulse(flip, "x"), (2 * sp.pi * 100 * z1, delay)]
+
+grid, table = amplitude_table(z1, x1, sequence, flip, np.linspace(0, np.pi, 5), values={delay: 0.0025})
+print(table.real.round(3))
+maximum, best = maximize_amplitude(z1, x1, sequence, {flip: 1.0, delay: 0.001}, positive=True)
+print(round(maximum, 6), {str(k): round(v, 5) for k, v in best.items()})
+```
+
+The search is local, as SpinDynamica's is.
+
 ## Coming from SpinDynamica
 
 | SpinDynamica | SpynDynamica |
@@ -443,6 +487,13 @@ the frame reached by rotating the old one through those Euler angles.
 | `OrientationsAndWeights["Step\[Beta]", n]` | `step_beta(n)` |
 | `CartesianToSpherical[2, A]`, `SphericalToCartesian[T]` | `cartesian_to_spherical(2, A)`, `spherical_to_cartesian(T)` |
 | `TransformSphericalTensor[T, {α, β, γ}]` | `transform_spherical_tensor(T, (α, β, γ))` |
+| `ThermalEquilibriumDensityOperator[H, T]` | `thermal_equilibrium(H, T)` |
+| `PolarizedDensityOperator[{1}, {p, "z"}]` | `polarized(s, p, "z", spins=[1])` |
+| `SingletPolarizedDensityOperator[p]` | `singlet_polarized(s, p)` |
+| `Secularize[A, H0]`, `Secularize[A, {{1}, {2}}]` | `secularize(A, H0)`, `secularize(A, [[1], [2]])` |
+| `ThermalizeSuperoperator[R, H, T]` | `thermalize(R, H, T)` |
+| `TransformationAmplitudeTable[ρ -> A, events, {p, a, b, {n}}]` | `amplitude_table(ρ, A, events, p, np.linspace(a, b, n))` |
+| `MaximizeTransformationAmplitude[ρ -> A, events, {{p, p0}}]` | `maximize_amplitude(ρ, A, events, {p: p0})` |
 
 **The same:** the order of the Zeeman and singlet-triplet bases, the phases and normalisation of the tensor
 operators, the sense of every rotation, the zyz Euler convention and the index order of the Wigner matrices.
@@ -471,6 +522,8 @@ operators, the sense of every rotation, the zyz Euler convention and the index o
 - An ensemble average is a function call around any calculation, not an option of each routine. A
   time-dependent Hamiltonian is integrated with relaxation in the background as well, which fails in
   SpinDynamica.
+- `polarized(s, p, "z")` polarizes all spins to the level `p`, as SpinDynamica documents. SpinDynamica's
+  short form `PolarizedDensityOperator[{p, "z"}]` returns the fully polarized state whatever `p` and the axis.
 - `ft` of an odd number of points without zero filling returns the transform at the stated frequencies;
   SpinDynamica's values sit one point lower on its axis in that case.
 

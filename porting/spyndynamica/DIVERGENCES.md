@@ -48,7 +48,22 @@ how the difference was established. The cases that record the SpinDynamica behav
 - **Report to the author:** yes. Together with D3 it affects the default 16-point request when zero filling is
   switched off.
 
+## D5. `PolarizedDensityOperator[{p, axis}]` ignores the level and the axis
+
+- **Documented:** `PolarizedDensityOperator[{p, "z"}]` "generates a density operator with polarization level
+  p along the z-axis for all spins in the current SpinSystem[]".
+- **SpinDynamica does:** for two spins-1/2 it returns the pure state `|αα><αα|` for `{3/10, "z"}`, for
+  `{3/10, "x"}` and for `{1, "z"}` alike. The forms with a list of spins, `[{1}, {p, "z"}]`, and with one
+  entry per spin work: the state is the product of `1/2 + p I_axis`.
+- **Established by:** the stored matrices; cases `09_states: two_half/polarized_all_z`, `polarized_all_x`,
+  `polarized_full`, against `polarized_spin_1_z` and `polarized_each`.
+- **Port:** `polarized(s, p, axis)` is the product of `1/2 + p I_axis` over all spins.
+- **Report to the author:** yes.
+
 ## Limits found while generating the reference data
+
+- `ThermalEquilibriumDensityOperator` and `ThermalizeSuperoperator` return expressions in the symbols `ℏ` and
+  `kB`; the fixtures put in `PhysicalConstantValues`.
 
 - `Signal1D` with `EnsembleAverage` returns a signal of zeros when SpinDynamica runs without the notebook
   front end (messages `FrontEndObject::notavail`, `NDiagonalize::notnummat`, `Trajectory::noprediag`).
