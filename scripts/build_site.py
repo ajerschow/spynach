@@ -80,7 +80,9 @@ SPINACH_CASES = {
     "chirped offset, relaxation and radiation damping: a 4096-point RKMK-DP8 reference and seven methods on ten "
     "grids of 256 to 2048 points",
 }
-SOURCE_PACKAGES = ("spynach", "ctps", "easyspyn")
+SOURCE_PACKAGES = ("spynach", "ctps", "easyspyn", "spyndynamica")
+# data files that only one package ships with its sources (the grids of spynach are fetched on demand)
+SOURCE_EXTRA = {"spyndynamica": {".json", ".npz"}}
 SOURCE_SUFFIXES = {".py", ".txt", ".DSC", ".DTA"}  # .DSC/.DTA: the bundled EPR example file
 
 
@@ -301,7 +303,8 @@ def source_files() -> list[str]:
     out = []
     for package in SOURCE_PACKAGES:
         for path in sorted((ROOT / "src" / package).rglob("*")):
-            if path.suffix in SOURCE_SUFFIXES and "__pycache__" not in path.parts:
+            suffixes = SOURCE_SUFFIXES | SOURCE_EXTRA.get(package, set())
+            if path.suffix in suffixes and "__pycache__" not in path.parts:
                 out.append(path.relative_to(ROOT).as_posix())
     return out
 

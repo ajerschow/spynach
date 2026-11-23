@@ -56,8 +56,8 @@ it installs Spynach from GitHub and runs the project page's two-spin
 example with a plot. It is the one hand-written notebook (it is not
 generated from a guide and is saved without outputs, since Colab runs it);
 keep its example in step with the quick start on `index.html` and in the
-README. `try.html` at the repository root runs Spynach, `easyspyn` and `ctps`
-in the browser (Pyodide, `worker.js`) with NMR, EPR and pathway examples in an
+README. `try.html` at the repository root runs Spynach, `easyspyn`, `ctps` and `spyndynamica`
+in the browser (Pyodide, `worker.js`) with NMR, EPR, pathway and symbolic examples in an
 editor, written into the page itself and run natively by
 `tests/unit/test_playground_examples.py`; see the guide
 [Beyond the port](beyond-the-port.md#spynach-in-the-browser). The project

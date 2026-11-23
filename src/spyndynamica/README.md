@@ -3,7 +3,9 @@
 A Python port in progress of [SpinDynamica](https://www.spindynamica.soton.ac.uk) 3.10.2, Malcolm Levitt's
 Mathematica package for spin dynamics and NMR. It is a separate import inside the Spynach repository: it uses
 NumPy and SymPy only, imports nothing of `spynach`, `easyspyn` or `ctps`, and nothing else imports it
-(`tests/spyndynamica/test_dependency_direction.py`). It is not part of the `spynach` distribution.
+(`tests/spyndynamica/test_dependency_direction.py`). It is not part of the `spynach` distribution. The browser
+playground (`try.html`) fetches its sources next to the other packages and loads SymPy when an example
+imports it; three examples there use it (`ex-sd-inept`, `ex-sd-ab`, `ex-sd-exchange`).
 
 **Status:** the symbolic core (spin systems, operators, rotations, bases, kets, exact matrices), Liouville space
 (operator bases, superoperators), the numeric engine for sequences of time-independent events, signals with

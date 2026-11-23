@@ -10,6 +10,7 @@ relaxation, signals and spectra, time-dependent Hamiltonians, powder averages, c
 [Simulations with SpynDynamica](spyndynamica-simulations.md); operator algebras, permutation symmetry and
 three-dimensional pictures are in [Algebras, symmetry and pictures](spyndynamica-symmetry.md). The table of
 SpinDynamica names and the list of differences are in [Coming from SpinDynamica](coming-from-spindynamica.md).
+The [browser playground](https://ajerschow.github.io/spynach/try.html#ex-sd-inept) runs a product-operator calculation with nothing installed.
 
 SpinDynamica is the work of Malcolm H. Levitt and co-authors. Its [terms of use](https://www.spindynamica.soton.ac.uk/about/termsofuse/)
 state that it is open-source and freely available for use, and ask that published work cite
@@ -173,7 +174,8 @@ st_and_zeeman = product_basis(first_two.singlet_triplet(), third.zeeman, system=
 print(three.dot(1, 2).matrix(st_and_zeeman).diagonal())
 ```
 
-`ket @ bra` is an operator, `bra @ ket` a number and `operator @ ket` a ket. The operators of basis states are
+The objects are of the classes `Operator`, `Ket`, `Bra` and `Basis`. `ket @ bra` is an operator, `bra @ ket` a number and `operator @ ket` a ket. `spins_of(operator)` lists the
+spins that an operator involves. The operators of basis states are
 `s.population(r)`, `s.coherence(r, s)` and `s.single_transition(r, s, 'x')`; `s.permutation([1, 2])` exchanges
 spins.
 
@@ -232,7 +234,8 @@ print(relaxation(I(1, "z")), "|", relaxation(I(1, "+") @ I(2, "z")))
 ```
 
 Besides `commutation` there are `left_multiplication`, `right_multiplication`, `double_commutation`,
-`projection`, `coherence_filter`, `rotation_superoperator` and `permutation_superoperator`, and
+`projection`, `coherence_filter`, `rotation_superoperator`, `rotation_euler_superoperator`,
+`permutation_superoperator` and `unity_superoperator`, and
 `liouvillian(H, relaxation)` is `−i[H, ·]` plus the relaxation. `phenomenological_relaxation` is the
 uncorrelated model for spins-1/2: every `Iz` in a product adds `1/T1` and every `I±` adds `1/T2`.
 
@@ -246,8 +249,9 @@ print(commutation(I(1, "z")).numeric(basis=basis).real.diagonal())
 print(basis.vector(I(1, "x")).T)
 ```
 
-The other bases are `cartesian_product_basis`, `shift_and_polarization_basis`, `zeeman_ket_bra_basis`,
-`singlet_triplet_operator_basis` and `spherical_tensor_basis`.
+The default basis is also available as `shift_and_z_basis`. The other bases are `cartesian_product_basis`,
+`shift_and_polarization_basis`, `zeeman_ket_bra_basis`, `singlet_triplet_operator_basis` and
+`spherical_tensor_basis`. All of them are `OperatorBasis` objects, and a superoperator is a `Superoperator`.
 
 `spherical_tensor_basis` holds the normalised irreducible tensor operators of any spin system, coupled as
 `s.T` couples them; `basis.indices` lists their `(rank, order)`. `spherical_component_filter(s, rank, to,

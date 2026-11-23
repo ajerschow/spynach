@@ -167,7 +167,7 @@ figure.plot figcaption.chord-info { min-height: 4.2em; line-height: 1.45; overfl
 <!-- /site:nav -->
 <header class="head">
   <h1>Try it</h1>
-  <p>Spynach, EasySpyn and ctps running in Pyodide. Pick an NMR, EPR or pathway example, edit it, run it. Every calculation goes to a web worker, so the page stays responsive.</p>
+  <p>Spynach, EasySpyn, ctps and SpynDynamica running in Pyodide. Pick an NMR, EPR, pathway or symbolic example, edit it, run it. Every calculation goes to a web worker, so the page stays responsive.</p>
 </header>
 <div id="status" data-phase="loading">Starting…</div>
 <p class="banner" id="file-warn" hidden>This page needs a web server rooted at the repository, not a file:// address, so the worker and the page scripts can load. Run <code>python3 -m http.server</code> in the repository folder and open <code>http://localhost:8000/try.html</code>.</p>
@@ -1107,6 +1107,101 @@ print(f"ctps {ctps.__version__}: {result.n_enumerated} pathways enumerated, {len
 for row in result.table()[:8]:
     path = " ".join(f"{p:+d}" for p in row["pathway"])
     print(f"{row['rank']:2d}  {path}   total {row['total']:.4f}  pc {row['pc']:.3f}")
+</script>
+
+<script type="text/plain" class="example" id="ex-sd-inept" data-group="Symbolic NMR (SpynDynamica)" data-title="Product operators: INEPT">
+import numpy as np
+import sympy as sp
+from spyndynamica import SpinSystem
+
+# --- Spin system: two weakly coupled spins-1/2 ---
+J_value = 140.0  # GUI: J coupling | Hz | Scalar coupling between the two spins | 1..300
+offset_value = 250.0  # GUI: Offset of spin 1 | Hz | Chemical shift offset of the first spin; the echo refocuses it | -1000..1000
+
+s = SpinSystem(2)
+I = s.I
+Omega, J, tau = sp.symbols("Omega J tau", real=True)
+H = Omega * I(1, "z") + 2 * sp.pi * J * (I(1, "z") @ I(2, "z"))
+
+# 90x on spin 1, then tau - 180y on both spins - tau: exact product-operator algebra
+start = I(1, "z").rotate(sp.pi / 2, "x", spins=[1])
+echo = start.evolve(H, tau).rotate(sp.pi, "y").evolve(H, tau).simplify()
+print("after the echo:      ", echo)
+
+# 90y on spin 1 and 90x on spin 2 turn the antiphase term into magnetisation of spin 2
+inept = echo.rotate(sp.pi / 2, "y", spins=[1]).rotate(sp.pi / 2, "x", spins=[2]).simplify()
+print("after the transfer:  ", inept)
+transfer = sp.simplify(inept.amplitude(2 * I(1, "z") @ I(2, "y")))
+print("amplitude of 2 I1z I2y:", transfer)
+
+# The symbolic amplitude as a function of the delay
+delays = np.linspace(0, 1 / J_value, 200)
+curve = sp.lambdify(tau, transfer.subs({J: J_value, Omega: 2 * np.pi * offset_value}), "numpy")(delays)
+show_spectrum(np.broadcast_to(curve, delays.shape), delays * 1e3, title="INEPT transfer against the delay",
+              xlabel="time tau / ms", ylabel="amplitude of 2 I1z I2y", invert=False)
+</script>
+
+<script type="text/plain" class="example" id="ex-sd-ab" data-group="Symbolic NMR (SpynDynamica)" data-title="Strongly coupled pair: peaks and spectrum">
+import numpy as np
+import sympy as sp
+from spyndynamica import SpinSystem, ft, signal_1d
+
+# --- Spin system: two spins-1/2, offsets and coupling in Hz ---
+offsets = [30.0, -10.0]  # GUI: Offsets | Hz | Resonance offsets of the two spins | -100..100
+J = 12.0  # GUI: J coupling | Hz | Scalar coupling; the roof effect grows with J over the offset difference | 0..40
+
+# --- Acquisition ---
+n_points = 512  # GUI: Points | - | Points of the signal | 64..2048
+bandwidth = 200.0  # GUI: Spectral width | Hz | Sampling rate of the signal | 50..1000
+linewidth = 1.0  # GUI: Line width | Hz | Full width at half height of the Lorentzian lines | 0.1..10
+
+s = SpinSystem(2)
+I = s.I
+H = 2 * sp.pi * (offsets[0] * I(1, "z") + offsets[1] * I(2, "z") + J * s.dot(1, 2))
+
+# Signal1D of SpinDynamica: Iz, a 90 degree pulse, detection of I-; a time-independent Hamiltonian gives a peak list
+fid = signal_1d(H, points=n_points, bandwidth=2 * np.pi * bandwidth, line_broadening=2 * np.pi * linewidth)
+for amplitude, omega, _ in fid.peaks:
+    print(f"{omega.real / (2 * np.pi):8.3f} Hz   amplitude {amplitude.real:.4f}")
+
+frequencies, spectrum = ft(fid)
+show_spectrum(spectrum.real, frequencies, title="AB spectrum from signal_1d", xlabel="frequency / Hz")
+</script>
+
+<script type="text/plain" class="example" id="ex-sd-exchange" data-group="Symbolic NMR (SpynDynamica)" data-title="Two-site exchange in extended Liouville space">
+import numpy as np
+import sympy as sp
+from spyndynamica import ExtendedOperatorBasis, KineticExchange, SiteDependent, SpinSystem, commutation, default_operator_basis
+
+# --- Two sites of one spin-1/2 ---
+shifts = [40.0, -40.0]  # GUI: Site frequencies | Hz | Resonance offsets of the spin at sites A and B | -200..200
+rates = [10.0, 150.0, 400.0, 5000.0]  # GUI: Exchange rates | 1/s | Rate constants of the exchange A to B and back, one spectrum each | 1..100000
+linewidth = 2.0  # GUI: Line width | Hz | Line width without exchange | 0.5..20
+
+s = SpinSystem(1)
+z, minus = s.I(1, "z"), s.I(1, "-")
+operators = default_operator_basis(s)
+sites = ExtendedOperatorBasis(["A", "B"], operators)
+
+# One copy of operator space per site: site-dependent Hamiltonians on the diagonal, the exchange between them
+k = sp.Symbol("k", positive=True)
+hamiltonians = SiteDependent({"A": 2 * sp.pi * shifts[0] * z, "B": 2 * sp.pi * shifts[1] * z})
+generator = -sp.I * commutation(hamiltonians) + KineticExchange(["A", "B"], {("A", "B"): k})
+print(sites.matrix(KineticExchange(["A", "B"], {("A", "B"): k}))[:5, :5])
+
+# The transverse magnetisation of both sites starts equal; its spectrum is a resolvent of the generator
+start = np.array(sites.vector(minus), dtype=complex).ravel()
+frequencies = np.linspace(-120, 120, 481)
+spectra = []
+for rate in rates:
+    L = sites.numeric(generator, {k: rate}) - np.pi * linewidth * np.eye(len(sites))
+    values, vectors = np.linalg.eig(L)
+    weights = (start.conj() @ vectors) * np.linalg.solve(vectors, start)
+    spectra.append(np.real(weights[None, :] / (2j * np.pi * frequencies[:, None] - values[None, :])).sum(axis=1))
+    print(f"k = {rate:g} per s: tallest point at {frequencies[np.argmax(spectra[-1])]:.1f} Hz")
+
+show_spectrum(spectra, frequencies, title="Two-site exchange", xlabel="frequency / Hz",
+              names=[f"k = {rate:g} per s" for rate in rates])
 </script>
 
 <script type="text/plain" class="example" id="ex-pathways" data-group="Relaxation (spynach)" data-title="Cross-relaxation pathways of 11BF4-">

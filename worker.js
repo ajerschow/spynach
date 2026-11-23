@@ -1,4 +1,4 @@
-/* Spynach, easyspyn and ctps in Pyodide. Every simulation runs in this worker, off the page thread.
+/* Spynach, easyspyn, ctps and spyndynamica in Pyodide. Every simulation runs in this worker, off the page thread.
    Pyodide 314 refuses classic workers, so this file is loaded as a module.
    The page must be served over HTTP from the repository root so src/ can be fetched. */
 import { loadPyodide } from "https://cdn.jsdelivr.net/pyodide/v314.0.7/full/pyodide.mjs";
@@ -78,6 +78,25 @@ const SOURCE = [
   "src/easyspyn/spinsystem.py",
   "src/easyspyn/symmetry.py",
   "src/easyspyn/units.py",
+  "src/spyndynamica/__init__.py",
+  "src/spyndynamica/_local.py",
+  "src/spyndynamica/algebras.py",
+  "src/spyndynamica/backend.py",
+  "src/spyndynamica/data/isotopes.json",
+  "src/spyndynamica/data/orientations.npz",
+  "src/spyndynamica/dynamics.py",
+  "src/spyndynamica/ensembles.py",
+  "src/spyndynamica/exchange.py",
+  "src/spyndynamica/graphics.py",
+  "src/spyndynamica/groups.py",
+  "src/spyndynamica/interactions.py",
+  "src/spyndynamica/liouville.py",
+  "src/spyndynamica/operators.py",
+  "src/spyndynamica/rotations.py",
+  "src/spyndynamica/signals.py",
+  "src/spyndynamica/states.py",
+  "src/spyndynamica/system.py",
+  "src/spyndynamica/tensors.py",
 ];
 
 const RUNNER = `
@@ -119,8 +138,9 @@ async def prefetch(code):
         print(f"loaded grid {name} ({len(data)} bytes)")
 
 async def load_packages(code):
-    """SymPy, which the relaxation pathways need, from Pyodide's distribution the first time a run uses it."""
-    if "relaxation_pathways" not in code and "sympy" not in code:
+    """SymPy, which the relaxation pathways and spyndynamica need, from Pyodide's distribution the first time a
+    run uses it."""
+    if "relaxation_pathways" not in code and "sympy" not in code and "spyndynamica" not in code:
         return
     try:
         import sympy  # noqa: F401
@@ -446,7 +466,7 @@ async function mountSources() {
       if (!response.ok) throw new Error("Could not fetch " + rel + " (" + response.status + "). Serve the repository root over HTTP.");
       const dest = "/repo/" + rel;
       mkdirp(dest.slice(0, dest.lastIndexOf("/")));
-      if (/\.(DTA|dta)$/.test(rel)) {
+      if (/\.(DTA|dta|npz)$/.test(rel)) {
         pyodide.FS.writeFile(dest, new Uint8Array(await response.arrayBuffer()));  // binary data file
       } else {
         pyodide.FS.writeFile(dest, await response.text());

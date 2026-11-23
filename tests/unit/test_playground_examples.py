@@ -111,5 +111,7 @@ def test_examples_are_grouped_and_unique():
         "Pathways (ctps)",
         "Relaxation (spynach)",
         "Nonlinear (spynach)",
+        "Symbolic NMR (SpynDynamica)",
     }
+    assert sum(e[1].endswith("(SpynDynamica)") for e in ALL) == 3
     assert sum(e[1].startswith("EPR") for e in ALL) == 12

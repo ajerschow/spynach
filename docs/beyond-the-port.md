@@ -161,7 +161,7 @@ spin under quadrupolar relaxation, beside the contributed Spinach scripts in
 ## Spynach in the browser
 
 [`try.html`](https://ajerschow.github.io/spynach/try.html) on the project site
-runs Spynach, `easyspyn` and `ctps` with nothing installed. The page loads
+runs Spynach, `easyspyn`, `ctps` and `spyndynamica` with nothing installed. The page loads
 [Pyodide](https://pyodide.org/) (Python compiled to WebAssembly) with NumPy,
 SciPy and h5py in a web worker, fetches the sources from the repository, and
 runs the code in its editor; the first load takes a few seconds. The examples

@@ -3,7 +3,9 @@
 The numeric engine of SpynDynamica, the Python port in progress of
 [SpinDynamica](https://www.spindynamica.soton.ac.uk): sequences of pulses and delays with strong coupling and
 relaxation, signals with their Fourier transform, the isotope table, time-dependent and periodic Hamiltonians,
-ensemble and powder averages, density operators, and chemical exchange. The operators, bases and superoperators it works with are
+ensemble and powder averages, density operators, and chemical exchange. Two examples run in the browser
+playground with nothing installed: a [strongly coupled pair](https://ajerschow.github.io/spynach/try.html#ex-sd-ab) and
+[two-site exchange](https://ajerschow.github.io/spynach/try.html#ex-sd-exchange). The operators, bases and superoperators it works with are
 described in [Symbolic spin operators with SpynDynamica](spyndynamica.md);
 the [table of SpinDynamica names](coming-from-spindynamica.md#names) and the list of differences are in
 [Coming from SpinDynamica](coming-from-spindynamica.md).
@@ -83,7 +85,7 @@ print(ten.dimension, signal.real.round(4))
 A `PulseSequence` groups events. It gives its pulses default spins and a common phase shift, and with a total
 `duration` it stretches `Delay("auto")` to fit; several `Delay(("auto", weight))` share the remaining time.
 `ShapedPulse` takes the amplitude, phase and frequency offset as expressions of a local time, and
-`precalculate` stores the propagator of a block for reuse.
+`precalculate` stores the propagator of a block for reuse, as a `Precalculated` event.
 
 ```python
 from spyndynamica import PulseSequence, ShapedPulse, precalculate
@@ -103,7 +105,8 @@ A coherence-order filter is an event like any other superoperator: `coherence_fi
 list. `Pulse` also takes `phase_shift` and `amplitude_factor`, and `amplitudes` takes `start_time` (the time
 at which the sequence starts) and `normalization`.
 
-`trajectory` samples the amplitudes during the sequence. A pulse with `nutation_frequency` or `duration` has a
+`trajectory` samples the amplitudes during the sequence, and `superpropagator` is the propagator of the events
+in Liouville space, the counterpart of `propagator` when relaxation is present. A pulse with `nutation_frequency` or `duration` has a
 finite length, and the background acts during it. Events run from left to right; `order="right_to_left"`
 reverses them for one call.
 
@@ -141,7 +144,9 @@ print("tallest line at", frequencies[np.argmax(spectrum.real)].round(2), "Hz")
 
 The transform is `S(f) = (1/N) Σ s(t_n) exp(−2πi f t_n)`, with the first sample halved and the signal zero
 filled to twice its length (`first_point`, `zero_fill`). `lorentzian`, `absorption`, `dispersion` and
-`gaussian` are the lineshape functions.
+`gaussian` are the lineshape functions. A signal is a `Signal` object, sampled data or a list of peaks;
+`signal.broadened(width)`, or `apply_line_broadening(signal, width)`, applies line broadening afterwards, and
+`ft2` transforms a matrix of samples along both dimensions with the same conventions.
 
 ## Isotopes and interactions
 
@@ -204,8 +209,8 @@ The lines are the centre band at 300 Hz and its spinning sidebands 1 kHz apart.
 
 `ensemble_average(function, samples, weights)` averages whatever the function returns, a number, an array or
 a signal, over the samples. `orientations(name)` gives the Euler angles and weights of SpinDynamica's
-orientation sets (`orientation_schemes()` lists them), and `step_beta` and `step_alpha_beta` build regular
-ones. A powder pattern of an axially symmetric shift anisotropy:
+orientation sets (`orientation_schemes()` lists them), `step_beta` and `step_alpha_beta` build regular
+ones, and `random_orientations(count, seed=...)` draws random ones. A powder pattern of an axially symmetric shift anisotropy:
 
 ```python
 from spyndynamica import ensemble_average, orientations

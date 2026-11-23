@@ -143,10 +143,15 @@ All of these are covered by a fixture and an independent test.
    space, in SpinDynamica or here: a signal under exchange is built from the matrices by hand.
 7. **Advanced modules.** Done as parity stage C (above): groups and algebras, polarization, extended
    Liouville space, 3D graphics.
-8. **Documentation and browser subset** (parity stage D). The guides exist and are split by theme
+8. **Documentation and browser subset** (parity stage D). Done. The guides are split by theme
    (`docs/spyndynamica.md`, `spyndynamica-simulations.md`, `spyndynamica-symmetry.md`,
-   `coming-from-spindynamica.md`); open are a review of the guides as a whole and the subset that runs in
-   the browser playground.
+   `coming-from-spindynamica.md`), and every exported name appears in one of them
+   (`tests/spyndynamica/test_documentation.py`). The browser playground fetches the package with the others
+   (`scripts/build_site.py`, `worker.js`), loads SymPy from Pyodide when an example imports `spyndynamica`,
+   and has three examples that the tests run natively (`tests/unit/test_playground_examples.py`): INEPT by
+   product operators, a strongly coupled pair with `signal_1d`, and two-site exchange in extended Liouville
+   space. The three examples were also run in Pyodide 314 (Python 3.14) under Node with the file list of `worker.js`; the
+   page itself was not opened in a browser.
 
 Do not start a phase before the fixtures of the previous one pass in the port.
 
