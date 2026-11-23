@@ -13,7 +13,18 @@ magnetic resonance in a Mathematica environment", Magn. Reson. Chem. (2017), doi
 that uses this port should cite that publication.
 """
 
-from spyndynamica.dynamics import Delay, Pulse, Repeat, amplitudes, propagate, propagator, superpropagator, trajectory
+from spyndynamica.dynamics import (
+    Delay,
+    Pulse,
+    Repeat,
+    TimeDependent,
+    amplitudes,
+    propagate,
+    propagator,
+    superpropagator,
+    trajectory,
+)
+from spyndynamica.ensembles import ensemble_average, orientation_schemes, orientations, step_alpha_beta, step_beta
 from spyndynamica.interactions import (
     constants,
     dipolar_coupling,
@@ -61,10 +72,20 @@ from spyndynamica.signals import (
     signal_1d,
 )
 from spyndynamica.system import Basis, Bra, Ket, SpinSystem, spins_of
+from spyndynamica.tensors import cartesian_to_spherical, spherical_to_cartesian, transform_spherical_tensor
 
 __version__ = "0.0.1"
 
 __all__ = [
+    "transform_spherical_tensor",
+    "step_beta",
+    "step_alpha_beta",
+    "spherical_to_cartesian",
+    "orientations",
+    "orientation_schemes",
+    "ensemble_average",
+    "cartesian_to_spherical",
+    "TimeDependent",
     "spin_quantum_number",
     "signal_1d",
     "natural_abundance",

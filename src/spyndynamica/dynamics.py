@@ -55,6 +55,33 @@ class Delay:
 
 
 @dataclass(frozen=True)
+class TimeDependent:
+    """A Hamiltonian that depends on time: an operator whose coefficients contain the symbol ``t``.
+
+    Use it as the generator of an event, ``(TimeDependent(H, t), duration)``, or as the generator of a
+    :class:`Delay`. ``t`` is the time since the start of the sequence. The equation of motion is integrated
+    numerically.
+    """
+
+    operator: Operator
+    t: Any
+
+    def function(self, values: Mapping[Any, Any] | None):
+        """``H(t)`` as a function returning a NumPy matrix."""
+        parts = []
+        for key, coefficient in self.operator.terms.items():
+            if values:
+                coefficient = coefficient.subs(values)
+            single = Operator(self.operator.system, {key: sp.S.One}).numeric()
+            parts.append((sp.lambdify(self.t, coefficient, "numpy"), single))
+
+        def hamiltonian(time: float) -> np.ndarray:
+            return sum(complex(f(time)) * matrix for f, matrix in parts)
+
+        return hamiltonian
+
+
+@dataclass(frozen=True)
 class Repeat:
     """``events`` repeated ``count`` times."""
 
@@ -83,7 +110,7 @@ def _expand(events: Iterable[Any]) -> list[Any]:
 
 
 class _Engine:
-    """The events of one call as numeric steps ``(duration, hamiltonian, dissipator, instantaneous)``."""
+    """The events of one call as numeric steps (see :meth:`_step`)."""
 
     def __init__(self, system: SpinSystem, events, background, values, order: str):
         if order not in ("left_to_right", "right_to_left"):
@@ -97,14 +124,14 @@ class _Engine:
         parts = background if isinstance(background, (list, tuple)) else [background]
         self.h0, self.r0 = self._generators(parts)
         self.steps = [self._step(event) for event in events]
-        self.liouville = self.r0 is not None or any(step[2] is not None or step[4] for step in self.steps)
+        self.liouville = self.r0 is not None or any(step[2] is not None or step[4] is not None for step in self.steps)
 
     @staticmethod
     def _is_pair(event: Any) -> bool:
         return (
             isinstance(event, tuple)
             and len(event) == 2
-            and (event[0] is None or isinstance(event[0], (Operator, Superoperator)))
+            and (event[0] is None or isinstance(event[0], (Operator, Superoperator, TimeDependent)))
             and not isinstance(event[1], (Operator, Superoperator, Pulse, Delay, Repeat, tuple, list))
         )
 
@@ -122,7 +149,8 @@ class _Engine:
         return h, r
 
     def _step(self, event: Any):
-        """``(duration, hamiltonian, dissipator, unitary, superoperator)``; the last two are instantaneous."""
+        """``(duration, hamiltonian, dissipator, unitary, superoperator[, hamiltonian(t)])``; the unitary and the
+        superoperator are instantaneous, the function of time is there for a time-dependent Hamiltonian."""
         if isinstance(event, Pulse):
             if event.nutation_frequency is None and event.duration is None:
                 event = rotation_superoperator(self.system, event.flip, event.phase, spins=event.spins)
@@ -148,6 +176,8 @@ class _Engine:
                     return (0.0, None, None, left, None)
             return (0.0, None, None, None, event.numeric(self.values))
         if self._is_pair(event):
+            if isinstance(event[0], TimeDependent):
+                return (_number(event[1], self.values), None, None, None, None, event[0].function(self.values))
             h, r = self._generators([event[0]])
             return (_number(event[1], self.values), h, r, None, None)
         raise TypeError(f"not an event: {event!r}.")
@@ -159,13 +189,21 @@ class _Engine:
                 total = total + part
         return total
 
-    def unitary(self, step, duration: float | None = None) -> np.ndarray:
-        """The Hilbert-space propagator of one step (of part of its duration)."""
+    @staticmethod
+    def time_dependent(step) -> bool:
+        return len(step) > 5
+
+    def unitary(self, step, duration: float | None = None, start: float = 0.0) -> np.ndarray:
+        """The Hilbert-space propagator of one step (of part of its duration, from the time ``start``)."""
         if step[3] is not None:
             return step[3]
-        return backend.unitary(self._hamiltonian(step[1]), step[0] if duration is None else duration)
+        duration = step[0] if duration is None else duration
+        if self.time_dependent(step):
+            h0 = self._hamiltonian(None)
+            return backend.integrate(lambda t: -1j * (step[5](t) + h0), self.dim, start, start + duration)
+        return backend.unitary(self._hamiltonian(step[1]), duration)
 
-    def superpropagator(self, step, duration: float | None = None) -> np.ndarray:
+    def superpropagator(self, step, duration: float | None = None, start: float = 0.0) -> np.ndarray:
         """The propagator of one step on row-flattened density matrices."""
         if step[4] is not None:
             return step[4]
@@ -173,6 +211,16 @@ class _Engine:
             return np.kron(step[3], step[3].conj())
         duration = step[0] if duration is None else duration
         dissipators = [part for part in (step[2], self.r0) if part is not None]
+        if self.time_dependent(step):
+            eye = np.eye(self.dim)
+            h0 = self._hamiltonian(None)
+            constant = sum(dissipators) if dissipators else 0.0
+
+            def generator(t: float) -> np.ndarray:
+                h = step[5](t) + h0
+                return -1j * (np.kron(h, eye) - np.kron(eye, h.T)) + constant
+
+            return backend.integrate(generator, self.dim**2, start, start + duration)
         h = self._hamiltonian(step[1])
         if not dissipators:
             u = backend.unitary(h, duration)
@@ -181,10 +229,10 @@ class _Engine:
         generator = -1j * (np.kron(h, eye) - np.kron(eye, h.T)) + sum(dissipators)
         return backend.exponential(generator, duration)
 
-    def advance(self, rho: np.ndarray, step, duration: float | None = None) -> np.ndarray:
+    def advance(self, rho: np.ndarray, step, duration: float | None = None, start: float = 0.0) -> np.ndarray:
         if self.liouville:
-            return (self.superpropagator(step, duration) @ rho.reshape(-1)).reshape(self.dim, self.dim)
-        u = self.unitary(step, duration)
+            return (self.superpropagator(step, duration, start) @ rho.reshape(-1)).reshape(self.dim, self.dim)
+        u = self.unitary(step, duration, start)
         return u @ rho @ u.conj().T
 
 
@@ -209,18 +257,20 @@ def propagator(events, *, system: SpinSystem | None = None, background=None, val
     engine = _Engine(system or _system(events, background), events, background, values, order)
     if engine.liouville:
         raise ValueError("the events are not unitary; use superpropagator.")
-    out = np.eye(engine.dim, dtype=complex)
+    out, now = np.eye(engine.dim, dtype=complex), 0.0
     for step in engine.steps:
-        out = engine.unitary(step) @ out
+        out = engine.unitary(step, start=now) @ out
+        now += step[0]
     return out
 
 
 def superpropagator(events, *, system: SpinSystem | None = None, background=None, values=None, order="left_to_right"):
     """The propagator of the events in Liouville space, acting on row-flattened density matrices."""
     engine = _Engine(system or _system(events, background), events, background, values, order)
-    out = np.eye(engine.dim**2, dtype=complex)
+    out, now = np.eye(engine.dim**2, dtype=complex), 0.0
     for step in engine.steps:
-        out = engine.superpropagator(step) @ out
+        out = engine.superpropagator(step, start=now) @ out
+        now += step[0]
     return out
 
 
@@ -228,9 +278,10 @@ def propagate(rho, events, *, background=None, values=None, order="left_to_right
     """The density matrix after the events (a NumPy matrix in the Zeeman basis)."""
     system = _system(rho, events, background)
     engine = _Engine(system, events, background, values, order)
-    state = _state(rho, values)
+    state, now = _state(rho, values), 0.0
     for step in engine.steps:
-        state = engine.advance(state, step)
+        state = engine.advance(state, step, start=now)
+        now += step[0]
     return state
 
 
@@ -265,9 +316,13 @@ def trajectory(rho, targets, events, *, points: int = 32, background=None, value
             samples.append(_amplitudes(state, numeric))
             continue
         dt = step[0] / points
-        advance = engine.superpropagator(step, dt) if engine.liouville else engine.unitary(step, dt)
+        fixed = not engine.time_dependent(step)
+        if fixed:
+            advance = engine.superpropagator(step, dt) if engine.liouville else engine.unitary(step, dt)
         for _ in range(points):
-            if engine.liouville:
+            if not fixed:
+                state = engine.advance(state, step, dt, now)
+            elif engine.liouville:
                 state = (advance @ state.reshape(-1)).reshape(engine.dim, engine.dim)
             else:
                 state = advance @ state @ advance.conj().T

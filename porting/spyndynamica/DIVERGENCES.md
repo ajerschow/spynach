@@ -48,6 +48,18 @@ how the difference was established. The cases that record the SpinDynamica behav
 - **Report to the author:** yes. Together with D3 it affects the default 16-point request when zero filling is
   switched off.
 
+## Limits found while generating the reference data
+
+- `Signal1D` with `EnsembleAverage` returns a signal of zeros when SpinDynamica runs without the notebook
+  front end (messages `FrontEndObject::notavail`, `NDiagonalize::notnummat`, `Trajectory::noprediag`).
+  `TransformationAmplitude` with `EnsembleAverage` works. No ensemble-averaged signal is in the fixtures; the
+  port's powder average is checked against the analytic sum instead.
+- A time-dependent Hamiltonian (`Function[t, ...]`) together with a relaxation superoperator as
+  `BackgroundGenerator` fails (`NDSolveValue::dsvar`, `Superoperator::badsop`). The port integrates that case
+  in Liouville space; it is checked against a fine piecewise-constant propagation.
+- SpinDynamica integrates with the default tolerances of `NDSolve`, so its time-dependent results agree with
+  the port to about 5e-8, not to rounding.
+
 ## Approximations that are defaults in SpinDynamica (not followed)
 
 - `DigitalFrequencyResolution -> Automatic` moves every peak of a signal to the nearest point of the frequency

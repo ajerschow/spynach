@@ -7,7 +7,8 @@ NumPy and SymPy only, imports nothing of `spynach`, `easyspyn` or `ctps`, and no
 
 **Status:** the symbolic core (spin systems, operators, rotations, bases, kets, exact matrices), Liouville space
 (operator bases, superoperators), the numeric engine for sequences of time-independent events, signals with
-their Fourier transform, and the isotope data. The guide is
+their Fourier transform, the isotope data, time-dependent Hamiltonians, ensemble averages with the orientation
+sets, and spherical tensors. The guide is
 `docs/spyndynamica.md`; the phases and the conventions are in `porting/spyndynamica/PLAN.md`.
 
 **Licence and credit:** the port is under the MIT licence of this repository (`LICENSE`, which carries a
@@ -26,10 +27,12 @@ results computed by it.
 | `src/spyndynamica/dynamics.py`, `backend.py` | events and propagation; the array backend of the engine |
 | `src/spyndynamica/signals.py` | `signal_1d`, `Signal`, `ft`, lineshapes |
 | `src/spyndynamica/interactions.py`, `data/isotopes.json` | isotope table, constants, Larmor frequency, dipolar coupling |
+| `src/spyndynamica/ensembles.py`, `data/orientations.npz` | `ensemble_average`, the orientation sets |
+| `src/spyndynamica/tensors.py` | spherical tensors: conversion and transformation |
 | `src/spyndynamica/rotations.py` | Wigner matrices, Clebsch-Gordan coefficients, Euler matrices |
 | `tests/spyndynamica/fixtures/` | the generator, the case files and the reference data from SpinDynamica |
 | `tests/spyndynamica/test_reference_invariants.py` | checks of the reference that do not depend on SpinDynamica |
-| `tests/spyndynamica/test_core.py`, `test_liouville_dynamics.py`, `test_signals.py` | the port against the reference |
+| `tests/spyndynamica/test_core.py`, `test_liouville_dynamics.py`, `test_signals.py`, `test_time_ensembles.py` | the port against the reference |
 | `porting/spyndynamica/DIVERGENCES.md` | where SpinDynamica differs from its documentation |
 
 To remove the package, delete `src/spyndynamica`, `tests/spyndynamica`, `porting/spyndynamica`,

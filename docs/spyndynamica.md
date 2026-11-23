@@ -7,14 +7,15 @@ operators and spherical tensor operators with symbolic coefficients, and product
 weak-coupling evolution are exact algebra. Liouville space adds operator bases and superoperators, and a
 numeric engine propagates sequences of pulses and delays with strong coupling and relaxation. Signals come
 with their Fourier transform and lineshapes, and the isotope table is included. Time-dependent Hamiltonians
-and ensemble averages are not ported yet.
+are integrated numerically, and ensemble and powder averages use SpinDynamica's orientation sets. The COMPUTE
+method for periodic Hamiltonians is not ported yet.
 
 SpinDynamica is the work of Malcolm H. Levitt and co-authors. Its [terms of use](https://www.spindynamica.soton.ac.uk/about/termsofuse/)
 state that it is open-source and freely available for use, and ask that published work cite
 C. Bengs, M. H. Levitt, *SpinDynamica: Symbolic and numerical magnetic resonance in a Mathematica environment*, Magn. Reson. Chem. (2017), doi:10.1002/mrc.4642. Work that uses SpynDynamica should cite that publication.
 
 Every convention below is the one of SpinDynamica 3.10.2 and is checked against it
-(`tests/spyndynamica/`, 514 reference cases generated from the Mathematica package).
+(`tests/spyndynamica/`, 555 reference cases generated from the Mathematica package).
 
 ## Contents
 
@@ -28,7 +29,9 @@ Every convention below is the one of SpinDynamica 3.10.2 and is checked against 
 8. [Pulse sequences, strong coupling and relaxation](#pulse-sequences-strong-coupling-and-relaxation)
 9. [Signals and spectra](#signals-and-spectra)
 10. [Isotopes and interactions](#isotopes-and-interactions)
-11. [Coming from SpinDynamica](#coming-from-spindynamica)
+11. [Time-dependent Hamiltonians](#time-dependent-hamiltonians)
+12. [Ensemble and powder averages, tensors](#ensemble-and-powder-averages-tensors)
+13. [Coming from SpinDynamica](#coming-from-spindynamica)
 
 ## Spin systems and operators
 
@@ -294,6 +297,66 @@ print(hd)
 
 The Larmor frequency is `−γ B0` and the dipolar coupling `−(μ0/4π) γ1 γ2 ħ / r³`, both in rad/s.
 
+## Time-dependent Hamiltonians
+
+A Hamiltonian whose coefficients contain a time symbol is wrapped in `TimeDependent(H, t)` and used as the
+generator of an event. `t` is the time since the start of the sequence, and the equation of motion is
+integrated numerically (in Liouville space when relaxation is present).
+
+```python
+from spyndynamica import TimeDependent
+
+one = SpinSystem(1)
+x, y, z = one.I(1)
+time = sp.Symbol("t", real=True)
+sweep = 2 * sp.pi * 40 * x + 2 * sp.pi * (-200 + 2000 * time) * z
+
+print(amplitudes(z, [x, y, z], [(TimeDependent(sweep, time), 0.2)]).real.round(3))
+times, track = trajectory(z, z, [(TimeDependent(sweep, time), 0.2)], points=5)
+print(track.real.round(3))
+```
+
+The example is a slow frequency sweep through resonance, which inverts the magnetisation. `signal_1d` does not
+take a time-dependent generator yet.
+
+## Ensemble and powder averages, tensors
+
+`ensemble_average(function, samples, weights)` averages whatever the function returns, a number, an array or
+a signal, over the samples. `orientations(name)` gives the Euler angles and weights of SpinDynamica's
+orientation sets (`orientation_schemes()` lists them), and `step_beta` and `step_alpha_beta` build regular
+ones. A powder pattern of an axially symmetric shift anisotropy:
+
+```python
+from spyndynamica import ensemble_average, orientations
+
+angles, weights = orientations("ZCW538")
+
+
+def crystallite(alpha, beta, gamma):
+    shift = 2 * np.pi * 500 * (3 * np.cos(beta) ** 2 - 1) / 2
+    return signal_1d(shift * z, points=256, bandwidth=2 * np.pi * 4000, line_broadening=2 * np.pi * 20)
+
+
+powder = ensemble_average(crystallite, angles, weights)
+frequencies, spectrum = ft(powder)
+print(len(angles), "orientations; tallest point at", frequencies[np.argmax(spectrum.real)].round(1), "Hz")
+```
+
+`workers=n` evaluates the samples in `n` threads. An interaction tensor is moved between frames with the
+spherical tensor routines:
+
+```python
+from spyndynamica import cartesian_to_spherical, spherical_to_cartesian, transform_spherical_tensor
+
+principal = cartesian_to_spherical(2, np.diag([-1.0, -1.0, 2.0]))
+tilted = transform_spherical_tensor(principal, (0, np.pi / 2, 0))
+print(principal.real.round(3), tilted.real.round(3))
+print(spherical_to_cartesian(tilted).real.round(3).tolist())
+```
+
+The components run from `m = +k` down, and `transform_spherical_tensor(A, (α, β, γ))` gives the components in
+the frame reached by rotating the old one through those Euler angles.
+
 ## Coming from SpinDynamica
 
 | SpinDynamica | SpynDynamica |
@@ -341,6 +404,12 @@ The Larmor frequency is `−γ B0` and the dipolar coupling `−(μ0/4π) γ1 γ
 | `Lorentzian`, `Absorption`, `Dispersion`, `Gaussian` | `lorentzian`, `absorption`, `dispersion`, `gaussian` |
 | `MagnetogyricRatio`, `NuclearSpinQuantumNumber`, `NaturalAbundance` | `magnetogyric_ratio`, `spin_quantum_number`, `natural_abundance` |
 | `LarmorFrequency`, `DirectDipolarCoupling` | `larmor_frequency`, `dipolar_coupling` |
+| `{Function[t, H[t]], τ}` | `(TimeDependent(H, t), τ)` |
+| `EnsembleAverage -> {var, {values..}}` | `ensemble_average(function, values, weights)` |
+| `OrientationsAndWeights["ZCW50"]` | `orientations("ZCW50")` |
+| `OrientationsAndWeights["Step\[Beta]", n]` | `step_beta(n)` |
+| `CartesianToSpherical[2, A]`, `SphericalToCartesian[T]` | `cartesian_to_spherical(2, A)`, `spherical_to_cartesian(T)` |
+| `TransformSphericalTensor[T, {α, β, γ}]` | `transform_spherical_tensor(T, (α, β, γ))` |
 
 **The same:** the order of the Zeeman and singlet-triplet bases, the phases and normalisation of the tensor
 operators, the sense of every rotation, the zyz Euler convention and the index order of the Wigner matrices.
@@ -365,11 +434,14 @@ operators, the sense of every rotation, the zyz Euler convention and the index o
 - `signal_1d` returns the number of points asked for. SpinDynamica drops the last point of an even request.
 - Peak frequencies are exact. SpinDynamica by default moves every peak to the nearest point of its frequency
   grid (`DigitalFrequencyResolution`), which changes a short signal visibly.
+- An ensemble average is a function call around any calculation, not an option of each routine. A
+  time-dependent Hamiltonian is integrated with relaxation in the background as well, which fails in
+  SpinDynamica.
 - `ft` of an odd number of points without zero filling returns the transform at the stated frequencies;
   SpinDynamica's values sit one point lower on its axis in that case.
 
-**Not ported yet:** time-dependent Hamiltonians, shaped pulses and the COMPUTE method, two-dimensional
-signals, relaxation theory beyond the phenomenological model, ensemble and powder averages, the group theory
-modules and graphics.
+**Not ported yet:** the COMPUTE method and signals under periodic or time-dependent Hamiltonians, shaped
+pulses as events of their own, two-dimensional signals, relaxation theory beyond the phenomenological model,
+the random orientation sets, the group theory modules and graphics.
 `porting/spyndynamica/PLAN.md` has the phases, and `porting/spyndynamica/DIVERGENCES.md` lists two documented
 options that SpinDynamica itself ignores.
