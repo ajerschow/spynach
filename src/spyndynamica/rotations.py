@@ -248,3 +248,52 @@ def quaternion_product(*quaternions: Sequence[Any]) -> np.ndarray:
         out = np.concatenate([[scalar], q[0] * out[1:] + out[0] * q[1:] + np.cross(q[1:], out[1:])])
         out = out / np.linalg.norm(out)
     return out
+
+
+# ====================================================================================== distances and angles
+def distance(a: Any, b: Any) -> float:
+    """The distance between two points (SpinDynamica's ``Distance``)."""
+    return float(np.linalg.norm(_vector(a) - _vector(b)))
+
+
+def subtended_angle(v1: Any, v2: Any, v3: Any = None, v4: Any = None) -> float:
+    """The angle between two directions (SpinDynamica's ``SubtendedAngle``).
+
+    With four points it is the angle between ``v1 − v2`` and ``v4 − v3``; with three, the angle at ``v2`` between
+    the directions to ``v1`` and to ``v3``; with two, the angle between the vectors ``v1`` and ``v2``.
+    """
+    if v3 is None:
+        v1, v2, v3, v4 = v1, (0.0, 0.0, 0.0), (0.0, 0.0, 0.0), v2
+    elif v4 is None:
+        v3, v4 = v2, v3
+    first, second = _unit(_vector(v1) - _vector(v2)), _unit(_vector(v4) - _vector(v3))
+    return float(np.arccos(np.clip(first @ second, -1.0, 1.0)))
+
+
+def bond_angle(v1: Any, v2: Any, v3: Any) -> float:
+    """The angle at ``v2`` between the bonds to ``v1`` and to ``v3`` (SpinDynamica's ``BondAngle``)."""
+    return subtended_angle(v1, v2, v3)
+
+
+def torsion_angle(v1: Any, v2: Any, v3: Any, v4: Any) -> float:
+    """The torsion angle of the chain ``v1 − v2 − v3 − v4`` in ``(−π, π]`` (SpinDynamica's ``TorsionAngle``): the
+    angle of the right-handed rotation about the bond from ``v2`` to ``v3`` that turns the bond to ``v1`` into
+    the direction of the bond to ``v4``, both seen along that bond."""
+    a, b, c, d = (_vector(v) for v in (v1, v2, v3, v4))
+    first, second = _unit(np.cross(b - a, b - c)), _unit(np.cross(c - b, c - d))
+    return float(np.arctan2(np.cross(first, second) @ _unit(c - b), first @ second))
+
+
+def solid_angle(vertices: Sequence[Any]) -> float:
+    """The solid angle that a triangle of three points subtends at the origin, or the sum for the triangles
+    ``(v1, v2, v3)`` and ``(v1, v4, v3)`` of four points (SpinDynamica's ``SolidAngle``)."""
+    points = [_vector(v) for v in vertices]
+    if len(points) == 4:
+        return solid_angle([points[0], points[1], points[2]]) + solid_angle([points[0], points[3], points[2]])
+    if len(points) != 3:
+        raise ValueError("a solid angle is given by three or four points.")
+    a, b, c = points
+    la, lb, lc = (np.linalg.norm(v) for v in points)
+    numerator = abs(a @ np.cross(b, c))
+    denominator = la * lb * lc + (a @ b) * lc + (a @ c) * lb + (b @ c) * la
+    return float(2 * np.arctan2(numerator, denominator))

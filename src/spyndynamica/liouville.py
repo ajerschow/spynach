@@ -433,12 +433,14 @@ def right_multiplication(a: Operator) -> Superoperator:
 
 
 def commutation(a: Operator) -> Superoperator:
-    """``ρ → [a, ρ]``."""
+    """``ρ → [a, ρ]``. Site-dependent operators (``spyndynamica.exchange``) give site-dependent superoperators."""
+    if hasattr(a, "map"):
+        return a.map(commutation)
     return left_multiplication(a) - right_multiplication(a)
 
 
 def double_commutation(a: Operator, b: Operator) -> Superoperator:
-    """``ρ → [a, [b, ρ]]``."""
+    """``ρ → [a, [b, ρ]]``; either operator may be site-dependent."""
     return commutation(a) @ commutation(b)
 
 

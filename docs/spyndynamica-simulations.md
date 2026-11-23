@@ -3,9 +3,10 @@
 The numeric engine of SpynDynamica, the Python port in progress of
 [SpinDynamica](https://www.spindynamica.soton.ac.uk): sequences of pulses and delays with strong coupling and
 relaxation, signals with their Fourier transform, the isotope table, time-dependent and periodic Hamiltonians,
-ensemble and powder averages, and density operators. The operators, bases and superoperators it works with are
-described in [Symbolic spin operators with SpynDynamica](spyndynamica.md), which also has the
-[table of SpinDynamica names](spyndynamica.md#coming-from-spindynamica) and the list of differences.
+ensemble and powder averages, density operators, and chemical exchange. The operators, bases and superoperators it works with are
+described in [Symbolic spin operators with SpynDynamica](spyndynamica.md);
+the [table of SpinDynamica names](coming-from-spindynamica.md#names) and the list of differences are in
+[Coming from SpinDynamica](coming-from-spindynamica.md).
 
 SpinDynamica is the work of Malcolm H. Levitt and co-authors. Work that uses SpynDynamica should cite
 C. Bengs, M. H. Levitt, *SpinDynamica: Symbolic and numerical magnetic resonance in a Mathematica environment*, Magn. Reson. Chem. (2017), doi:10.1002/mrc.4642.
@@ -19,6 +20,7 @@ C. Bengs, M. H. Levitt, *SpinDynamica: Symbolic and numerical magnetic resonance
 5. [Time-dependent Hamiltonians](#time-dependent-hamiltonians)
 6. [Ensemble and powder averages, tensors](#ensemble-and-powder-averages-tensors)
 7. [Density operators, secular parts and optimisation](#density-operators-secular-parts-and-optimisation)
+8. [Chemical exchange](#chemical-exchange)
 
 ## Setup
 
@@ -251,6 +253,18 @@ print(singlet_polarized(s, 1))
 ```
 
 `thermal_equilibrium` uses the high-temperature approximation unless `high_temperature=False`.
+The amplitude of `polarization_level(s, axis, spins)` in a density operator is the mean polarization level
+`<I_axis>/I` of those spins, and that of `singlet_polarization_level(s, pairs)` the singlet polarization
+`−(4/3)<I_j·I_k>`; both serve as observables of `amplitudes` and `trajectory`.
+
+```python
+from spyndynamica import polarization_level, singlet_polarization_level
+
+half_polarized = polarized(s, {1: sp.Rational(1, 2), 2: sp.Rational(1, 10)})
+print(half_polarized.amplitude(polarization_level(s)), half_polarized.amplitude(polarization_level(s, spins=[1])))
+print(singlet_polarized(s, sp.Rational(3, 10)).amplitude(singlet_polarization_level(s)))
+```
+
 `thermalize(R, H, T)` corrects a relaxation superoperator so that it relaxes towards that equilibrium, and
 `secularize` keeps the part of an operator that commutes with the Zeeman interaction, given as a Hamiltonian
 or as one list of spins per isotope:
@@ -278,3 +292,41 @@ print(round(maximum, 6), {str(k): round(v, 5) for k, v in best.items()})
 ```
 
 The search is local, as SpinDynamica's is.
+
+## Chemical exchange
+
+A system that exchanges between sites lives in an extended Liouville space: one copy of operator space per
+site. `SiteDependent({site: operator})` holds one operator, or one superoperator, per site, and takes sums,
+multiples and `@` products site by site. `ExtendedOperatorBasis(sites, basis)` repeats an operator basis for
+every site: `vector` concatenates the vectors of the sites, and `matrix` and `numeric` put the superoperator of
+every site into its diagonal block. `KineticExchange(sites, rates)` is the exchange itself, with
+`rates = {(from, to): k}`; a pair given in one direction has the same rate constant in the other.
+
+```python
+from spyndynamica import ExtendedOperatorBasis, KineticExchange, SiteDependent, commutation, default_operator_basis
+from spyndynamica import kinetic_exchange_matrix
+
+k = sp.Symbol("k", positive=True)
+print(kinetic_exchange_matrix(["A", "B", "C"], {("A", "B"): k, ("B", "C"): 2 * k}))
+
+sites = ExtendedOperatorBasis(["A", "B"], default_operator_basis(one))
+shifts = SiteDependent({"A": 2 * sp.pi * 40 * z, "B": -2 * sp.pi * 40 * z})
+print(sites.vector(SiteDependent({"A": x, "B": 3 * z})).T)
+```
+
+The generator of the exchanging system is the sum of the coherent part of every site and the exchange. Its
+eigenvalues along the transverse magnetisation show the two lines of slow exchange merge into one line at the
+mean frequency when the exchange is fast:
+
+```python
+minus = int(np.argmax(np.abs(np.array(default_operator_basis(one).vector(one.I(1, "-")), dtype=complex))))
+pick = [minus, minus + 4]
+for rate in (10, 150, 30000):
+    generator = sites.numeric(-sp.I * commutation(shifts) + KineticExchange(["A", "B"], {("A", "B"): k}), {k: rate})
+    modes = np.linalg.eigvals(generator[np.ix_(pick, pick)])
+    print(rate, "per s:", np.sort(modes.imag / (2 * np.pi)).round(1), "Hz, widths", (-modes.real / np.pi).round(1), "Hz")
+```
+
+`sites.split(vector)` turns a vector back into the operators of the sites. The simulation routines
+(`propagate`, `signal_1d`) work in the Liouville space of one site; with the matrices above, a signal under
+exchange is a matrix exponential away.

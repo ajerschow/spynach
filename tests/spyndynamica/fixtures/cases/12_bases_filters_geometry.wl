@@ -156,6 +156,17 @@ qa = PolarToQuaternion[{0.3, 0.7, -0.4}]; qb = PolarToQuaternion[{1.3, 0.2, 2.4}
     "quaternions" :> {qa, qb, qc},
     "vector_to_polar" :> VectorToPolar[{1, 2, 3}],
     "vector_to_polar_along_z" :> VectorToPolar[{0, 0, -2}],
-    "polar_to_vector" :> PolarToVector[2, {3/10, 2/5}]
+    "polar_to_vector" :> PolarToVector[2, {3/10, 2/5}],
+    "distance" :> Distance[{1, 2, 3}, {0, 1, 5}],
+    "subtended_angle_of_two_vectors" :> SubtendedAngle[{1, 0, 0}, {1, 1, 0}],
+    "subtended_angle_at_a_point" :> SubtendedAngle[{1, 1/5, 0}, {0, 1/2, 0}, {-3/10, 1, 1/10}],
+    "subtended_angle_of_four_points" :> SubtendedAngle[{1, 1/5, 0}, {0, 0, 0}, {0, 3/2, 0}, {-1/2, 17/10, 4/5}],
+    "bond_angle" :> BondAngle[{1, 1/5, 0}, {0, 0, 0}, {-3/10, 1, 1/10}],
+    "torsion_angle" :> TorsionAngle[{1, 1/5, 0}, {0, 0, 0}, {0, 3/2, 0}, {-1/2, 17/10, 4/5}],
+    "torsion_angle_other_side" :> TorsionAngle[{1, 1/5, 0}, {0, 0, 0}, {0, 3/2, 0}, {-1/2, 17/10, -4/5}],
+    "torsion_angle_trans" :> TorsionAngle[{1, 0, 0}, {0, 0, 0}, {0, 1, 0}, {-1, 1, 0}],
+    "solid_angle_octant" :> SolidAngle[{{1, 0, 0}, {0, 1, 0}, {0, 0, 1}}],
+    "solid_angle" :> N[SolidAngle[{{1, 1/5, 0}, {0, 2, 3/10}, {1/10, 0, 3}}]],
+    "solid_angle_of_four_points_is_not_evaluated" :> (Head[SolidAngle[{{1, 0, 0}, {0, 1, 0}, {-1, 0, 0}, {0, 0, 1}}]] === SolidAngle)
     }|>
  }

@@ -62,7 +62,7 @@ All of these are covered by a fixture and an independent test.
 
 ## Phases
 
-1. **Reference harness.** Done: generator, loader, 752 cases in twelve files, independent checks.
+1. **Reference harness.** Done: generator, loader, 887 cases in fourteen files, independent checks.
 2. **Symbolic core.** Done (`tests/spyndynamica/test_core.py`): spin systems, kets and bras, the Zeeman and
    singlet-triplet bases, product-operator and spherical-tensor algebra, rotations, closed-form evolution for
    commuting spin-1/2 terms, exact and numeric matrices. Pinned by `01_bases`, `02_operators`, `03_rotations`.
@@ -121,11 +121,32 @@ All of these are covered by a fixture and an independent test.
    `spherical_component_filter` (for any spins, checked against the integral over the rotation group),
    `define_basis`, `check_basis`, `product_basis`, `define_operator_basis`, `check_operator_basis`,
    `OperatorBasis.reordered` and `.transformed`, `axis_system`, `axes_to_euler`, `rotate_euler` about an axis
-   system, `polar_rotation_matrix`, `rotate_polar`, the quaternion routines, `vector_to_polar` and
-   `polar_to_vector`. Four divergences were found (D7 to D10). Left out: symbolic axes in `axes_to_euler`,
-   rotation of graphics objects (with the graphics of stage C), incomplete state bases.
-7. **Advanced modules.** Groups and algebras, polarization, extended Liouville space, 3D graphics.
-8. **Documentation and browser subset.**
+   system, `polar_rotation_matrix`, `rotate_polar`, the quaternion routines, `vector_to_polar`,
+   `polar_to_vector`, and `distance`, `bond_angle`, `subtended_angle`, `torsion_angle`, `solid_angle`. Four divergences were found (D7 to D10). Left out: symbolic axes in `axes_to_euler`
+   and incomplete state bases.
+   **Stage C (the advanced modules).** Done (`tests/spyndynamica/test_exchange_algebras_groups.py`,
+   `test_graphics.py`; `13_polarization_exchange_algebras`, `14_graphics`):
+   - *Polarization* (`states.py`): `polarization_level`, `singlet_polarization_level`.
+   - *Extended Liouville space* (`exchange.py`): `SiteDependent` operators and superoperators,
+     `ExtendedOperatorBasis` with `vector`, `matrix`, `numeric` and `split`, `kinetic_exchange_matrix`,
+     `KineticExchange`, and sums of all of these as one matrix. SpinDynamica has the module
+     (`QM/ExtendedLiouville.m`) but does not load it, and several of its operations are unfinished; the
+     fixtures load it explicitly and pin what works.
+   - *Groups and algebras* (`algebras.py`, `groups.py`): `commutant`, `bicommutant`, `lie_algebra`,
+     `abelian_subalgebra`, `is_maximal_abelian`, `inaccessible`, with exact linear algebra;
+     `permutation_group`, `spin_permutation_group`, `symmetry_adapted_basis` (deterministic, for any
+     permutation group of equal spins) and `dual_pairing` (from Schur polynomials, as a dictionary).
+   - *Graphics* (`graphics.py`): `Scene` objects of plain arrays with an optional Plotly figure; `ovaloid`,
+     `ovaloid_radius`, `axes_3d`, `arrow_3d`, `visualize_euler`, `l_shape`, `rotor`, `sphere_and_axes`, and
+     translation and rotation of scenes (SpinDynamica's `RotateEuler` and `RotatePolar` on graphics).
+   Two more divergences were found (D11, D12). The simulation routines do not use the extended Liouville
+   space, in SpinDynamica or here: a signal under exchange is built from the matrices by hand.
+7. **Advanced modules.** Done as parity stage C (above): groups and algebras, polarization, extended
+   Liouville space, 3D graphics.
+8. **Documentation and browser subset** (parity stage D). The guides exist and are split by theme
+   (`docs/spyndynamica.md`, `spyndynamica-simulations.md`, `spyndynamica-symmetry.md`,
+   `coming-from-spindynamica.md`); open are a review of the guides as a whole and the subset that runs in
+   the browser playground.
 
 Do not start a phase before the fixtures of the previous one pass in the port.
 

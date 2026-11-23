@@ -3,8 +3,10 @@
 The symbolic core (spin systems, operators as sums of product and spherical tensor operators with symbolic
 coefficients, rotations, bases, kets, exact matrices), Liouville space (operator bases, superoperators) and
 the numeric engine for sequences of time-independent events, signals with their Fourier transform, and the
-isotope data. See ``docs/spyndynamica.md``, ``docs/spyndynamica-simulations.md`` and
-``porting/spyndynamica/PLAN.md``. The package imports NumPy, SciPy and SymPy only, and nothing of spynach.
+isotope data; chemical exchange, operator algebras, permutation symmetry and three-dimensional pictures. See
+``docs/spyndynamica.md``, ``docs/spyndynamica-simulations.md``, ``docs/spyndynamica-symmetry.md``,
+``docs/coming-from-spindynamica.md`` and ``porting/spyndynamica/PLAN.md``. The package imports NumPy, SciPy and
+SymPy only, and nothing of spynach.
 
 SpinDynamica is the work of Malcolm H. Levitt and co-authors. Its terms of use
 (https://www.spindynamica.soton.ac.uk/about/termsofuse/) state that it is open-source and freely available
@@ -13,6 +15,14 @@ magnetic resonance in a Mathematica environment", Magn. Reson. Chem. (2017), doi
 that uses this port should cite that publication.
 """
 
+from spyndynamica.algebras import (
+    abelian_subalgebra,
+    bicommutant,
+    commutant,
+    inaccessible,
+    is_maximal_abelian,
+    lie_algebra,
+)
 from spyndynamica.dynamics import (
     Delay,
     Periodic,
@@ -37,6 +47,19 @@ from spyndynamica.ensembles import (
     step_alpha_beta,
     step_beta,
 )
+from spyndynamica.exchange import ExtendedOperatorBasis, KineticExchange, SiteDependent, kinetic_exchange_matrix
+from spyndynamica.graphics import (
+    Scene,
+    arrow_3d,
+    axes_3d,
+    l_shape,
+    ovaloid,
+    ovaloid_radius,
+    rotor,
+    sphere_and_axes,
+    visualize_euler,
+)
+from spyndynamica.groups import dual_pairing, permutation_group, spin_permutation_group, symmetry_adapted_basis
 from spyndynamica.interactions import (
     constants,
     dipolar_coupling,
@@ -79,7 +102,9 @@ from spyndynamica.operators import Operator, commutator
 from spyndynamica.rotations import (
     axes_to_euler,
     axis_system,
+    bond_angle,
     clebsch_gordan,
+    distance,
     euler_matrix,
     polar_rotation_matrix,
     polar_to_quaternion,
@@ -89,6 +114,9 @@ from spyndynamica.rotations import (
     quaternion_to_polar,
     rotate_euler,
     rotate_polar,
+    solid_angle,
+    subtended_angle,
+    torsion_angle,
     vector_to_polar,
     wigner_D,
     wigner_d,
@@ -107,8 +135,10 @@ from spyndynamica.signals import (
 from spyndynamica.states import (
     amplitude_table,
     maximize_amplitude,
+    polarization_level,
     polarized,
     secularize,
+    singlet_polarization_level,
     singlet_polarized,
     thermal_equilibrium,
     thermalize,
@@ -129,6 +159,36 @@ from spyndynamica.tensors import cartesian_to_spherical, spherical_to_cartesian,
 __version__ = "0.0.1"
 
 __all__ = [
+    "bond_angle",
+    "distance",
+    "solid_angle",
+    "subtended_angle",
+    "torsion_angle",
+    "Scene",
+    "arrow_3d",
+    "axes_3d",
+    "l_shape",
+    "ovaloid",
+    "ovaloid_radius",
+    "rotor",
+    "sphere_and_axes",
+    "visualize_euler",
+    "ExtendedOperatorBasis",
+    "KineticExchange",
+    "SiteDependent",
+    "abelian_subalgebra",
+    "bicommutant",
+    "commutant",
+    "dual_pairing",
+    "inaccessible",
+    "is_maximal_abelian",
+    "kinetic_exchange_matrix",
+    "lie_algebra",
+    "permutation_group",
+    "polarization_level",
+    "singlet_polarization_level",
+    "spin_permutation_group",
+    "symmetry_adapted_basis",
     "axes_to_euler",
     "axis_system",
     "check_basis",

@@ -2,7 +2,7 @@
 	"spindynamica":"SpinDynamica version SDv3.10.2",
 	"mathematica":"14.0.0 for Mac OS X ARM (64-bit) (December 13, 2023)",
 	"source":"12_bases_filters_geometry.wl",
-	"source_sha256":"bf9990ae8f3e8bb891847b295bfbd46007c2abc722031d2a6c2972ad33fd8c41",
+	"source_sha256":"ee33104620f0306e46ba5948e57932fd0737eb6b0f47b659124005b2c0900951",
 	"setups":{
 		"three_half_tensors":"SetSpinSystem[3]",
 		"half_one_half_tensors":"SetSpinSystem[{{1, 1\/2}, {2, 1}, {3, 1\/2}}]",
@@ -20555,6 +20555,130 @@
 					0.23016197799353733,
 					1.910672978251212
 				]
+			},
+			"messages":[]
+		},
+		"geometry\/distance":{
+			"input":"Distance[{1, 2, 3}, {0, 1, 5}]",
+			"value":{
+				"type":"array",
+				"shape":[],
+				"re":[
+					2.449489742783178
+				],
+				"exact":"Sqrt[6]"
+			},
+			"messages":[]
+		},
+		"geometry\/subtended_angle_of_two_vectors":{
+			"input":"SubtendedAngle[{1, 0, 0}, {1, 1, 0}]",
+			"value":{
+				"type":"array",
+				"shape":[],
+				"re":[
+					0.7853981633974483
+				],
+				"exact":"Pi\/4"
+			},
+			"messages":[]
+		},
+		"geometry\/subtended_angle_at_a_point":{
+			"input":"SubtendedAngle[{1, 1\/5, 0}, {0, 1\/2, 0}, {-3\/10, 1, 1\/10}]",
+			"value":{
+				"type":"array",
+				"shape":[],
+				"re":[
+					2.3870134770261013
+				],
+				"exact":"ArcCos[-9*Sqrt[5\/763]]"
+			},
+			"messages":[]
+		},
+		"geometry\/subtended_angle_of_four_points":{
+			"input":"SubtendedAngle[{1, 1\/5, 0}, {0, 0, 0}, {0, 3\/2, 0}, {-2^(-1), 17\/10, 4\/5}]",
+			"value":{
+				"type":"array",
+				"shape":[],
+				"re":[
+					2.0575225437749345
+				],
+				"exact":"ArcCos[Sqrt[2\/1209] - 25\/Sqrt[2418]]"
+			},
+			"messages":[]
+		},
+		"geometry\/bond_angle":{
+			"input":"BondAngle[{1, 1\/5, 0}, {0, 0, 0}, {-3\/10, 1, 1\/10}]",
+			"value":{
+				"type":"array",
+				"shape":[],
+				"re":[
+					1.6644277746180187
+				],
+				"exact":"ArcCos[-1\/2*Sqrt[5\/143]]"
+			},
+			"messages":[]
+		},
+		"geometry\/torsion_angle":{
+			"input":"TorsionAngle[{1, 1\/5, 0}, {0, 0, 0}, {0, 3\/2, 0}, {-2^(-1), 17\/10, 4\/5}]",
+			"value":{
+				"type":"array",
+				"shape":[],
+				"re":[
+					-2.129395642138459
+				]
+			},
+			"messages":[]
+		},
+		"geometry\/torsion_angle_other_side":{
+			"input":"TorsionAngle[{1, 1\/5, 0}, {0, 0, 0}, {0, 3\/2, 0}, {-2^(-1), 17\/10, -4\/5}]",
+			"value":{
+				"type":"array",
+				"shape":[],
+				"re":[
+					2.129395642138459
+				]
+			},
+			"messages":[]
+		},
+		"geometry\/torsion_angle_trans":{
+			"input":"TorsionAngle[{1, 0, 0}, {0, 0, 0}, {0, 1, 0}, {-1, 1, 0}]",
+			"value":{
+				"type":"array",
+				"shape":[],
+				"re":[
+					3.141592653589793
+				]
+			},
+			"messages":[]
+		},
+		"geometry\/solid_angle_octant":{
+			"input":"SolidAngle[{{1, 0, 0}, {0, 1, 0}, {0, 0, 1}}]",
+			"value":{
+				"type":"array",
+				"shape":[],
+				"re":[
+					1.5707963267948966
+				],
+				"exact":"Pi\/2"
+			},
+			"messages":[]
+		},
+		"geometry\/solid_angle":{
+			"input":"N[SolidAngle[{{1, 1\/5, 0}, {0, 2, 3\/10}, {1\/10, 0, 3}}]]",
+			"value":{
+				"type":"array",
+				"shape":[],
+				"re":[
+					1.229000262878534
+				]
+			},
+			"messages":[]
+		},
+		"geometry\/solid_angle_of_four_points_is_not_evaluated":{
+			"input":"Head[SolidAngle[{{1, 0, 0}, {0, 1, 0}, {-1, 0, 0}, {0, 0, 1}}]] === SolidAngle",
+			"value":{
+				"type":"expr",
+				"text":"True"
 			},
 			"messages":[]
 		}

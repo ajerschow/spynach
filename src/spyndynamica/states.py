@@ -91,6 +91,47 @@ def singlet_polarized(system: SpinSystem, polarization: Any, pairs: Sequence[Any
     return out
 
 
+def polarization_level(system: SpinSystem, axis: Any = "z", spins: Any = None) -> Operator:
+    """The operator whose amplitude in a density operator is the mean polarization level of ``spins`` (default:
+    all) along ``axis`` (SpinDynamica's ``PolarizationLevelOperator``).
+
+    ``ρ.amplitude(polarization_level(s, "z"))`` is the mean of ``<I_z>/I`` over the spins, for a density
+    operator of unit trace. For one spin the operator is ``3 I_axis/((I + 1) d)`` with ``d`` the dimension of
+    the Hilbert space; for several spins these are added. The axis is a component as in ``SpinSystem.I``.
+    """
+    out = system.zero()
+    for index in system._indices(spins):
+        spin, value = system.spins[index]
+        out = out + sp.Integer(3) / ((value + 1) * system.dimension) * system.I(spin, axis)
+    return out
+
+
+def singlet_polarization_level(system: SpinSystem, pairs: Sequence[Any] | None = None) -> Operator:
+    """The operator whose amplitude in a density operator is the mean singlet polarization level of spin-1/2
+    pairs, ``−(4/3) <I_j·I_k>`` (SpinDynamica's ``SingletPolarizationLevelOperator``).
+
+    For one pair the operator is ``−(4/d) I_j·I_k`` with ``d`` the dimension of the Hilbert space; for several
+    pairs, which must not share a spin, these are added. ``pairs`` is one pair or a list of pairs (default:
+    the two spins of a pair).
+    """
+    labels = [label for label, _ in system.spins]
+    if pairs is None:
+        if len(labels) != 2:
+            raise ValueError("give the spin pairs for a system of more than two spins.")
+        pairs = [tuple(labels)]
+    elif not isinstance(pairs[0], (tuple, list)):
+        pairs = [tuple(pairs)]
+    used = [spin for pair in pairs for spin in pair]
+    if any(len(pair) != 2 for pair in pairs) or len(set(used)) != len(used):
+        raise ValueError("the pairs are pairs of distinct spins and do not share spins.")
+    out = system.zero()
+    for a, b in pairs:
+        if any(system.spins[system.index(spin)][1] != sp.Rational(1, 2) for spin in (a, b)):
+            raise ValueError("singlet polarization is defined for pairs of spins-1/2.")
+        out = out - sp.Integer(4) / system.dimension * system.dot(a, b)
+    return out
+
+
 def secularize(operator: Operator, reference: Any, threshold: float | None = None, values=None) -> Operator:
     """The secular part of an operator.
 

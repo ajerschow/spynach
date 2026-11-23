@@ -8,10 +8,13 @@ NumPy and SymPy only, imports nothing of `spynach`, `easyspyn` or `ctps`, and no
 **Status:** the symbolic core (spin systems, operators, rotations, bases, kets, exact matrices), Liouville space
 (operator bases, superoperators), the numeric engine for sequences of time-independent events, signals with
 their Fourier transform, the isotope data, time-dependent Hamiltonians, ensemble averages with the orientation
-sets, spherical tensors, user-defined and product bases, and the geometry of frames (axis systems, Euler
-angles, quaternions). The guides are `docs/spyndynamica.md` (operators, bases, superoperators, frames) and
-`docs/spyndynamica-simulations.md` (the numeric engine); the phases and the conventions are in
-`porting/spyndynamica/PLAN.md`.
+sets, spherical tensors, user-defined and product bases, the geometry of frames (axis systems, Euler
+angles, quaternions), polarization levels, chemical exchange in extended Liouville space, operator algebras,
+spin permutation groups with symmetry-adapted bases, and three-dimensional pictures. The guides are
+`docs/spyndynamica.md` (operators, bases, superoperators, frames), `docs/spyndynamica-simulations.md` (the
+numeric engine, exchange), `docs/spyndynamica-symmetry.md` (algebras, symmetry, pictures) and
+`docs/coming-from-spindynamica.md` (the SpinDynamica names and the differences); the phases and the conventions
+are in `porting/spyndynamica/PLAN.md`.
 
 **Licence and credit:** the port is under the MIT licence of this repository (`LICENSE`, which carries a
 SpinDynamica notice). SpinDynamica names no formal licence; its [terms of use](https://www.spindynamica.soton.ac.uk/about/termsofuse/) state that it is
@@ -32,6 +35,10 @@ results computed by it.
 | `src/spyndynamica/ensembles.py`, `data/orientations.npz` | `ensemble_average`, the orientation sets |
 | `src/spyndynamica/tensors.py` | spherical tensors: conversion and transformation |
 | `src/spyndynamica/states.py` | thermal and polarized states, secularisation, thermalised relaxation, amplitude tables, optimisation |
+| `src/spyndynamica/exchange.py` | extended Liouville space: site-dependent operators and superoperators, kinetic exchange |
+| `src/spyndynamica/algebras.py` | commutants, Lie algebras, abelian subalgebras, accessibility |
+| `src/spyndynamica/groups.py` | spin permutation groups, symmetry-adapted bases, the pairing of permutation and rotation symmetry |
+| `src/spyndynamica/graphics.py` | scenes of surfaces, lines and arrows: ovaloids, axis systems, rotation pictures (Plotly optional) |
 | `src/spyndynamica/rotations.py` | Wigner matrices, Clebsch-Gordan coefficients, Euler and polar rotations, axis systems, quaternions |
 | `tests/spyndynamica/fixtures/` | the generator, the case files and the reference data from SpinDynamica |
 | `tests/spyndynamica/test_reference_invariants.py` | checks of the reference that do not depend on SpinDynamica |
@@ -39,5 +46,5 @@ results computed by it.
 | `porting/spyndynamica/DIVERGENCES.md` | where SpinDynamica differs from its documentation |
 
 To remove the package, delete `src/spyndynamica`, `tests/spyndynamica`, `porting/spyndynamica`,
-`docs/spyndynamica.md` and `docs/spyndynamica-simulations.md` with their notebooks, and the rows that name it in `docs/README.md` and
+the guides `docs/spyndynamica*.md` and `docs/coming-from-spindynamica.md` with their notebooks and figures, and the rows that name it in `docs/README.md` and
 `scripts/build_site.py`.

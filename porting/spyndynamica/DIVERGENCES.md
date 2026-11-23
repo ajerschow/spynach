@@ -132,7 +132,53 @@ how the difference was established. The cases that record the SpinDynamica behav
   and matrices are brackets with its operators.
 - **Report to the author:** yes.
 
+## D11. `SingletPolarizationLevelOperator` refuses separate pairs and accepts pairs that share a spin
+
+- **Documented:** `SingletPolarizationLevelOperator[{{j1,k1},{j2,k2}..}]` "is the operator for the mean level of
+  singlet polarization for the specified spin pairs", and the message `sharedspins` says that "spins may not
+  be shared between different pairs".
+- **SpinDynamica does:** the test is the wrong way round. `[{{1, 2}, {3, 4}}]` gives the message and `$Failed`;
+  `[{{1, 2}, {2, 3}}]` returns the sum of the two pair operators.
+- **Established by:** cases `13_polarization_exchange_algebras: four_half_polarization/separate_pairs_are_rejected`
+  and `pairs_that_share_a_spin`; for separate pairs the amplitude of the summed operator in a density operator
+  with singlet polarization `p` of both pairs is `p` (`test_polarization_levels_of_other_systems`).
+- **Port:** `singlet_polarization_level(s, pairs)` adds the operators of pairs that share no spin and refuses
+  the others.
+- **Report to the author:** yes.
+
+## D12. `SymmetryAdaptedBasis` depends on random numbers and can return kets that are no basis
+
+- **Documented:** `SymmetryAdaptedBasis` "constructs a symmetry-adapted basis of spin states".
+- **SpinDynamica does:** it diagonalises a combination of commuting operators with random integer
+  coefficients, and separates the representations with random real numbers. The kets therefore change with
+  the draw. Out of eleven seeds tried, three gave a wrong result in one of seven cases: two null kets among
+  the eight of three spins-1/2 under the symmetric group (seeds 1 and 4), and a failure with messages for
+  four spins-1/2 under the cyclic group (seed 9); without a seed the symmetric group of four spins failed
+  once. The form with explicit group elements fails for the dihedral group of four spins-1/2 for every seed
+  tried.
+- **Established by:** the norms of the stored kets; case
+  `three_half_groups_other_draw/symmetry_adapted_basis_is_defective` (seed 1) against
+  `three_half_groups/symmetry_adapted_basis` (seed 2, used for all the reference bases).
+- **Port:** `symmetry_adapted_basis` works with highest-weight kets and a fixed seed: the same basis in every
+  session, for any permutation group of equal spins. The tests check orthonormality, the block structure of
+  every group operator, irreducibility, equal matrices for equivalent representations, and the `(J, M)` labels.
+- **Report to the author:** yes.
+
 ## Limits found while generating the reference data
+
+- `QM/ExtendedLiouville.m` (site-dependent operators, kinetic exchange) is in the SpinDynamica folder but
+  `SpinDynamica.m` does not load it; `Needs["QM`ExtendedLiouville`"]` does. Several operations are unfinished
+  there: a power of a `SiteDependentOperator` and its product with an operator on the left give vectors of
+  twice the length, the sum of a superoperator and a `SiteDependentSuperoperator` fails
+  (`CommutationSuperoperator::badplus`), the sum with a `KineticExchangeSuperoperator` and a multiple of the
+  latter are not represented, and `KineticExchangeMatrix` cannot fill in the diagonal for symbolic rate
+  constants (`baddims`). The fixtures pin the vectors, the block matrices and the exchange matrices, which work.
+- `AbelianSubalgebra` can return operators that are not Hermitian (for `{opI["z"]}` of two spins-1/2 one of
+  the three is `|βα><αβ|`), and with a second argument that is not closed under commutation its result need
+  not be abelian.
+- `SpinPermutationGroup` and `SymmetryAdaptedBasis` take spins that are numbered from 1; other labels abort.
+- `SolidAngle[{v1, v2, v3, v4}]`, documented as the sum of two triangles, is defined for Mathematica versions
+  before 12 only and stays unevaluated in later ones. The port has it.
 
 - `opT[{1, 2, 3}, {1, 0}]` returns three operators with the message `opT::multiple`, which says to pick one
   with `opT[interactions, {Lam, M}, index]`. For a list of spins that form fails (`opT::fail`) for any index

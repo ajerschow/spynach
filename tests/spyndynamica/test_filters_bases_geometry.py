@@ -548,3 +548,42 @@ def test_quaternions():
     assert np.allclose(matrix(sd.quaternion_product(QC, QA, QB)), matrix(QC) @ matrix(QA) @ matrix(QB), **TOL)
     with pytest.raises(ValueError, match="needs quaternions"):
         sd.quaternion_product()
+
+
+def test_distances_and_angles():
+    a, b, c, d = [1, 0.2, 0], [0, 0, 0], [0, 1.5, 0], [-0.5, 1.7, 0.8]
+    assert np.isclose(sd.distance([1, 2, 3], [0, 1, 5]), geometry("distance"))
+    assert np.isclose(sd.subtended_angle([1, 0, 0], [1, 1, 0]), geometry("subtended_angle_of_two_vectors"))
+    at_point = sd.subtended_angle(a, [0, 0.5, 0], [-0.3, 1, 0.1])
+    assert np.isclose(at_point, geometry("subtended_angle_at_a_point"))
+    assert np.isclose(sd.subtended_angle(a, b, c, d), geometry("subtended_angle_of_four_points"))
+    assert np.isclose(sd.bond_angle(a, b, [-0.3, 1, 0.1]), geometry("bond_angle"))
+    assert np.isclose(sd.torsion_angle(a, b, c, d), geometry("torsion_angle"))
+    mirrored = [-0.5, 1.7, -0.8]
+    assert np.isclose(sd.torsion_angle(a, b, c, mirrored), geometry("torsion_angle_other_side"))
+    assert np.isclose(sd.torsion_angle([1, 0, 0], b, [0, 1, 0], [-1, 1, 0]), geometry("torsion_angle_trans"))
+    assert np.isclose(sd.solid_angle(np.eye(3)), geometry("solid_angle_octant"))
+    triangle = [[1, 0.2, 0], [0, 2, 0.3], [0.1, 0, 3]]
+    assert np.isclose(sd.solid_angle(triangle), geometry("solid_angle"))
+    # independent: the angle at a point from the scalar product, the torsion as a rotation about the middle bond
+    u, v = np.array(a) - [0, 0.5, 0], np.array([-0.3, 1, 0.1]) - [0, 0.5, 0]
+    assert np.isclose(at_point, np.arccos(u @ v / np.linalg.norm(u) / np.linalg.norm(v)))
+    assert np.isclose(sd.torsion_angle(a, b, c, mirrored), -sd.torsion_angle(a, b, c, d))
+    assert np.isclose(abs(sd.torsion_angle([1, 0, 0], b, [0, 1, 0], [-1, 1, 0])), np.pi)
+    assert np.isclose(sd.torsion_angle([1, 0, 0], b, [0, 1, 0], [1, 1, 0]), 0)
+    axis = np.array([0.0, 1.0, 0.0])  # the bond from b to c
+
+    def across(vector):
+        """The direction of a vector seen along the bond."""
+        rest = np.asarray(vector, dtype=float) - (np.asarray(vector, dtype=float) @ axis) * axis
+        return rest / np.linalg.norm(rest)
+
+    near, far = across(np.array(a) - b), across(np.array(d) - c)
+    assert np.allclose(sd.rotate_polar(near, sd.torsion_angle(a, b, c, d), axis), far)
+    # the eight octants fill the sphere; four points are two triangles (SpinDynamica leaves that form unevaluated)
+    assert np.isclose(8 * sd.solid_angle(np.eye(3)), 4 * np.pi)
+    assert geometry("solid_angle_of_four_points_is_not_evaluated") == "True"
+    square = [[1, 0, 1], [0, 1, 1], [-1, 0, 1], [0, -1, 1]]
+    assert np.isclose(sd.solid_angle(square), 2 * sd.solid_angle(square[:3]))
+    with pytest.raises(ValueError, match="three or four"):
+        sd.solid_angle([[1, 0, 0], [0, 1, 0]])
