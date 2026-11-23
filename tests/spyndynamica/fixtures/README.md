@@ -10,7 +10,7 @@ case, a baseline for the port to beat). The Python tests read `data/` and need n
 SPINDYNAMICA_HOME=<folder that holds SpinDynamica.m> wolframscript -file tests/spyndynamica/fixtures/generate.wls
 ```
 
-It runs without the notebook front end (checked with Mathematica 14.0 and SpinDynamica 3.10.2; about 25 s).
+It runs without the notebook front end (checked with Mathematica 14.0 and SpinDynamica 3.10.2; about a minute and a half).
 From a notebook: `SetEnvironment["SPINDYNAMICA_HOME" -> "..."]; Get["<repo>/tests/spyndynamica/fixtures/generate.wls"]`.
 The SpinDynamica folder is only read. Always regenerate everything in one pass, so that all data comes from
 one SpinDynamica and one Mathematica version, and commit `data/` together with the case files.
@@ -39,6 +39,8 @@ A case file evaluates to a list of groups:
 - `"allow"` lists messages that are informational for the group. Any other message stops the generation.
 - A case that records a behaviour which differs from the documentation is named `..._is_ignored` or similar
   and has an entry in `porting/spyndynamica/DIVERGENCES.md`.
+- A result of `$Failed` cannot be stored. A call that SpinDynamica refuses is recorded through a helper of the
+  case file, `rejected[call]`, which stores `True`; the messages of the call go into the group's `"allow"`.
 
 ## Data format
 

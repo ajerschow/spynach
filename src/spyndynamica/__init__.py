@@ -3,7 +3,7 @@
 The symbolic core (spin systems, operators as sums of product and spherical tensor operators with symbolic
 coefficients, rotations, bases, kets, exact matrices), Liouville space (operator bases, superoperators) and
 the numeric engine for sequences of time-independent events, signals with their Fourier transform, and the
-isotope data. See ``docs/spyndynamica.md`` and
+isotope data. See ``docs/spyndynamica.md``, ``docs/spyndynamica-simulations.md`` and
 ``porting/spyndynamica/PLAN.md``. The package imports NumPy, SciPy and SymPy only, and nothing of spynach.
 
 SpinDynamica is the work of Malcolm H. Levitt and co-authors. Its terms of use
@@ -51,9 +51,11 @@ from spyndynamica.liouville import (
     OperatorBasis,
     Superoperator,
     cartesian_product_basis,
+    check_operator_basis,
     coherence_filter,
     commutation,
     default_operator_basis,
+    define_operator_basis,
     double_commutation,
     left_multiplication,
     lindbladian,
@@ -68,12 +70,29 @@ from spyndynamica.liouville import (
     shift_and_z_basis,
     shift_superoperator,
     singlet_triplet_operator_basis,
+    spherical_component_filter,
     spherical_tensor_basis,
     unity_superoperator,
     zeeman_ket_bra_basis,
 )
 from spyndynamica.operators import Operator, commutator
-from spyndynamica.rotations import clebsch_gordan, euler_matrix, wigner_D, wigner_d
+from spyndynamica.rotations import (
+    axes_to_euler,
+    axis_system,
+    clebsch_gordan,
+    euler_matrix,
+    polar_rotation_matrix,
+    polar_to_quaternion,
+    polar_to_vector,
+    quaternion_product,
+    quaternion_to_euler,
+    quaternion_to_polar,
+    rotate_euler,
+    rotate_polar,
+    vector_to_polar,
+    wigner_D,
+    wigner_d,
+)
 from spyndynamica.signals import (
     Signal,
     absorption,
@@ -94,12 +113,40 @@ from spyndynamica.states import (
     thermal_equilibrium,
     thermalize,
 )
-from spyndynamica.system import Basis, Bra, Ket, SpinSystem, spins_of
+from spyndynamica.system import (
+    Basis,
+    Bra,
+    Ket,
+    SpinSystem,
+    check_basis,
+    define_basis,
+    product_basis,
+    rank_histories,
+    spins_of,
+)
 from spyndynamica.tensors import cartesian_to_spherical, spherical_to_cartesian, transform_spherical_tensor
 
 __version__ = "0.0.1"
 
 __all__ = [
+    "axes_to_euler",
+    "axis_system",
+    "check_basis",
+    "check_operator_basis",
+    "define_basis",
+    "define_operator_basis",
+    "polar_rotation_matrix",
+    "polar_to_quaternion",
+    "polar_to_vector",
+    "product_basis",
+    "quaternion_product",
+    "quaternion_to_euler",
+    "quaternion_to_polar",
+    "rank_histories",
+    "rotate_euler",
+    "rotate_polar",
+    "spherical_component_filter",
+    "vector_to_polar",
     "shift_superoperator",
     "random_orientations",
     "precalculate",

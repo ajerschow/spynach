@@ -71,7 +71,76 @@ how the difference was established. The cases that record the SpinDynamica behav
   `secularize(A, H)` gives: the coherences between non-degenerate eigenstates of `H` removed.
 - **Report to the author:** yes.
 
+## D7. `RotateEuler` about an axis system applies the inverse frame change
+
+- **Documented:** `RotateEuler[obj, {α, β, γ}, {vx, vy, vz}]` "rotates obj by the angle γ about the axis vz,
+  followed by a rotation by the angle β about vy, followed by a rotation through the angle α about vz", and
+  with `{α, β, γ} = AxesToEuler[sys1, sys2]` the call `RotateEuler[sys1, {α, β, γ}, sys1]` superimposes `sys1`
+  on `sys2`.
+- **SpinDynamica does:** with `A` the matrix whose columns are the axes and `R` the Euler rotation matrix, the
+  documented rotation is `A R Aᵀ`; the routine applies `Aᵀ R A`. The documented example does not give `sys2`.
+  Without the third argument (laboratory axes) there is no difference.
+- **Established by:** the product of the three rotations about `vz`, `vy`, `vz` built from Rodrigues' formula,
+  and the superposition of two axis systems (`test_axes_to_euler_and_rotate_euler`); cases
+  `12_bases_filters_geometry: geometry/rotate_euler_about_axes`, `rotate_euler_about_z_only`,
+  `rotate_euler_superimpose_fails` against `system_B`.
+- **Port:** `rotate_euler(obj, angles, axes)` is the documented rotation.
+- **Report to the author:** yes. `AxesToEuler` itself is right.
+
+## D8. `SphericalTensorOperatorBasis` rejects the documented order by rank
+
+- **Documented:** "The option Sorted->True or Sorted->{SphericalRank,CoherenceOrder} may be used to sort the
+  basis, first according to spherical rank and then with respect to coherence order."
+- **SpinDynamica does:** `Sorted -> {SphericalRank, CoherenceOrder}` is refused (`OperatorBasis::invalidsortopt`,
+  the value is missing from the list of allowed ones although the code for it exists), and `True`, `False`,
+  `SphericalRank` and `CoherenceOrder` all give the order by coherence order and then rank.
+- **Established by:** cases `tensor_basis_sorting/rank_then_order_is_rejected`,
+  `spherical_rank_same_as_default`, `unsorted_same_as_default`.
+- **Port:** `spherical_tensor_basis(s, sort="coherence")` is SpinDynamica's order; `sort="rank"` is the
+  documented one.
+- **Report to the author:** yes.
+
+## D9. `SphericalComponentFiltrationSuperoperator` pairs components of different tensors
+
+- **Documented:** the superoperator "for filtering out the spherical component of rank λ with quantum order
+  being transformed from μ1 to μ2".
+- **SpinDynamica does:** it lists the normalised operators of rank λ and order μ2, and those of order μ1, each
+  list put through `Union` (which sorts it), and pairs them by position. The two lists are sorted
+  independently, so when μ1 and μ2 differ and more than one tensor has the rank (three spins-1/2 have three
+  tensors of rank 1 and two of rank 2), component μ1 of one tensor can be sent to component μ2 of another.
+  For two spins-1/2, and whenever μ1 = μ2 in the cases tried, the result is right.
+- **Established by:** the projection `(2λ + 1)/(8π²) ∫ D*(μ2, μ1; Ω) R(Ω) dΩ` over the rotation group,
+  evaluated by exact quadrature (`test_spherical_component_filter_of_three_spins`); cases
+  `three_half_filter/applied_1_1_0`, `applied_2_m2_2` and `applied_2_0_1` differ from it, the other thirteen
+  agree.
+- **Port:** `spherical_component_filter` pairs the two components within each tensor, and is defined for any
+  spins (SpinDynamica: spins-1/2 only).
+- **Report to the author:** yes.
+
+## D10. `DefineOperatorBasis` with an ordering stores the inverse ordering in the transformation matrix
+
+- **Documented:** `DefineOperatorBasis[new, opbasis, superop, ordering]` "defines an operator basis by applying
+  the superoperator to each of the basis operators of opbasis, ordered according to the list ordering".
+- **SpinDynamica does:** `BasisOperators[new]` are as documented, but the stored
+  `OperatorBasisTransformationMatrix[new, opbasis]` is built with the transposed permutation matrix. Vectors
+  and superoperator matrices in the new basis are computed from that matrix, so they belong to the inverse
+  ordering and not to the basis operators. An ordering that is its own inverse (a set of swaps) hides it.
+- **Established by:** the brackets `(B_i | A)` and `(B_i | S B_j)` computed from SpinDynamica's own stored basis
+  operators (`test_defined_operator_bases`); cases `defined_operator_bases/transformation_matrix`,
+  `vector_in_transformed_reordered`, `commutation_in_transformed_reordered` against `transformed_reordered`.
+- **Port:** `basis.reordered(order)` and `basis.transformed(superoperator, order)` return a basis whose vectors
+  and matrices are brackets with its operators.
+- **Report to the author:** yes.
+
 ## Limits found while generating the reference data
+
+- `opT[{1, 2, 3}, {1, 0}]` returns three operators with the message `opT::multiple`, which says to pick one
+  with `opT[interactions, {Lam, M}, index]`. For a list of spins that form fails (`opT::fail`) for any index
+  above 1; it works with the explicit form `opT[{{1, 1}, {2, 1}, {3, 1}}, {1, 0}, 2]`.
+- `DefineOperatorBasis` with an existing basis emits `Set::write` (it appends to an option value that is not a
+  symbol). The basis is defined all the same.
+- A `Ket` is written `Ket[{{1, 1/2}, {2, -1/2}}]`; `Ket[1/2, -1/2]` and `Ket[{1/2, -1/2}]` run into the
+  recursion limit.
 
 - `AngularMomentumBasis` orders its kets in a way that follows no stated rule, and for three spins-1/2 it
   makes a choice within the two `J = 1/2` doublets. The port couples the spins one after the other and

@@ -12,6 +12,7 @@ Author: Alexej Jerschow.
 
 from __future__ import annotations
 
+import warnings
 from collections.abc import Iterable, Mapping, Sequence
 from functools import cached_property
 from itertools import product as cartesian
@@ -19,11 +20,10 @@ from typing import Any
 
 import numpy as np
 import sympy as sp
-from sympy.physics.quantum.cg import CG
 
 from spyndynamica._local import HALF
 from spyndynamica.operators import Operator, rotation_spec
-from spyndynamica.system import SpinSystem
+from spyndynamica.system import SpinSystem, _describe_gram, rank_histories
 
 
 # ====================================================================================== operator bases
@@ -34,14 +34,47 @@ class OperatorBasis:
         self.system = system
         self.name = name
         self.operators = tuple(operators)
-        if len(self.operators) != system.dimension**2:
-            raise ValueError(f"an operator basis of {system!r} has {system.dimension**2} operators.")
+        if not 0 < len(self.operators) <= system.dimension**2:
+            raise ValueError(f"an operator basis of {system!r} has at most {system.dimension**2} operators.")
 
     def __repr__(self) -> str:
         return f"<{self.name} operator basis of {self.system!r}>"
 
     def __len__(self) -> int:
         return len(self.operators)
+
+    @property
+    def complete(self) -> bool:
+        """Whether the basis spans the whole operator space."""
+        return len(self.operators) == self.system.dimension**2
+
+    def check(self) -> str:
+        """``'orthonormal'``, ``'orthogonal, same norm'``, ``'orthogonal, different norms'`` or
+        ``'not orthogonal'`` (SpinDynamica's ``CheckOperatorBasis``)."""
+        return _describe_gram(self.vectors.conj().T @ self.vectors)
+
+    def reordered(self, order: Sequence[int], name: str | None = None) -> OperatorBasis:
+        """The basis with operator ``order[i]`` of this one in place ``i``; ``order`` counts from 0."""
+        order = [int(n) for n in order]
+        if sorted(order) != list(range(len(self))):
+            raise ValueError(f"the order must hold the integers from 0 to {len(self) - 1}, each of them once.")
+        return OperatorBasis(self.system, name or f"reordered {self.name}", [self.operators[n] for n in order])
+
+    def transformed(
+        self, superoperator: Superoperator, order: Sequence[int] | None = None, *, check: bool = True, name=None
+    ) -> OperatorBasis:
+        """The basis of the operators ``superoperator(B)`` of this one, optionally reordered as by
+        :meth:`reordered` (SpinDynamica's ``DefineOperatorBasis[new, basis, superoperator, ordering]``).
+
+        With ``check`` (the default) the superoperator must be unitary, so that the new basis is orthonormal.
+        """
+        if check:
+            matrix = superoperator.numeric(basis=self)
+            if not np.allclose(matrix.conj().T @ matrix, np.eye(len(self)), rtol=0, atol=1e-10):
+                raise ValueError("the superoperator is not unitary (check=False skips the test).")
+        source = self if order is None else self.reordered(order)
+        operators = [superoperator(b) for b in source.operators]
+        return OperatorBasis(self.system, name or f"transformed {self.name}", operators)
 
     @cached_property
     def vectors(self) -> np.ndarray:
@@ -59,6 +92,36 @@ class OperatorBasis:
     def transformation(self, other: OperatorBasis) -> sp.Matrix:
         """``(self_i | other_j)`` (SpinDynamica's ``OperatorBasisTransformationMatrix[self, other]``)."""
         return sp.Matrix(len(self), len(other), lambda i, j: self.operators[i].bracket(other.operators[j]))
+
+
+def check_operator_basis(operators: Sequence[Operator]) -> str:
+    """Whether operators are fit to be an operator basis (SpinDynamica's ``CheckOperatorBasis``):
+    ``'orthonormal'``, ``'orthogonal, same norm'``, ``'orthogonal, different norms'`` or ``'not orthogonal'``."""
+    vectors = np.array([op.numeric().reshape(-1) for op in operators]).T
+    return _describe_gram(vectors.conj().T @ vectors)
+
+
+def define_operator_basis(
+    operators: Sequence[Operator], *, check: bool = True, name: str = "user-defined"
+) -> OperatorBasis:
+    """An operator basis with the given operators (SpinDynamica's ``DefineOperatorBasis``).
+
+    With ``check`` (the default) the operators must be orthonormal under ``(A|B) = Tr(A† B)``. Fewer operators
+    than the operator space has dimensions are accepted, with a warning: matrices in such a basis are
+    projections. To reorder or transform an existing basis use ``basis.reordered`` and ``basis.transformed``.
+    """
+    operators = list(operators)
+    if not operators:
+        raise ValueError("an operator basis needs operators.")
+    if check and (found := check_operator_basis(operators)) != "orthonormal":
+        raise ValueError(f"the operators are {found}; an operator basis is orthonormal (check=False skips the test).")
+    basis = OperatorBasis(operators[0].system, name, operators)
+    if not basis.complete:
+        warnings.warn(
+            "the operator basis is incomplete: matrix representations of superoperator products may be unreliable.",
+            stacklevel=2,
+        )
+    return basis
 
 
 def _half_only(system: SpinSystem, what: str) -> None:
@@ -218,51 +281,58 @@ def singlet_triplet_operator_basis(system: SpinSystem, sort: bool = True) -> Ope
     return OperatorBasis(system, "singlet-triplet", [k[a] @ k[b].dagger() for a, b in pairs])
 
 
-def spherical_tensor_basis(system: SpinSystem, sort: str = "coherence") -> OperatorBasis:
-    """The normalised irreducible spherical tensor operators of one spin or of two spins.
-
-    For two spins the operators of rank ``λ1`` and ``λ2`` are coupled to every total rank. ``sort='coherence'``
-    (the default) orders by coherence order and then rank, ``sort='rank'`` by rank and then order; operators
-    with the same rank and order follow SpinDynamica (by the rank of the first spin, then of the second).
-    """
-    if len(system.spins) > 2:
-        raise NotImplementedError("the spherical tensor operator basis is available for one or two spins.")
+def _tensor_multiplets(system: SpinSystem) -> list[tuple[int, tuple, tuple]]:
+    """Every irreducible tensor of the spin system as ``(rank, scheme, history)``, in SpinDynamica's sequence:
+    the rank of the first spin is the slowest index, and for one set of single-spin ranks the intermediate
+    ranks ascend."""
     labels = [label for label, _ in system.spins]
-    ranges = [range(int(2 * value) + 1) for _, value in system.spins]
-    specs = []
-    for position, ranks in enumerate(cartesian(*ranges)):
-        scheme = tuple((i, k) for i, k in enumerate(ranks) if k)
+    out = []
+    for ranks in cartesian(*(range(int(2 * value) + 1) for _, value in system.spins)):
+        scheme = tuple((labels[i], k) for i, k in enumerate(ranks) if k)
         if len(scheme) < 2:
-            totals = [scheme[0][1]] if scheme else [0]
+            histories: list[tuple[int, ...]] = [(scheme[0][1],) if scheme else (0,)]
         else:
-            totals = range(abs(ranks[0] - ranks[1]), ranks[0] + ranks[1] + 1)
-        specs += [(total, mu, scheme, position) for total in totals for mu in range(total, -total - 1, -1)]
-    first, second = (1, 0) if sort == "coherence" else (0, 1)
-    specs.sort(key=lambda spec: (spec[first], spec[second], spec[3]))
+            histories = rank_histories([k for _, k in scheme])
+        out += [(history[-1], scheme, history) for history in histories]
+    return out
 
-    def build(total: int, mu: int, scheme: tuple, _position: int = 0) -> Operator:
-        if not scheme:
-            return system.unity()
-        if len(scheme) == 1:
-            ((i, k),) = scheme
-            return system.T(labels[i], k, mu)
-        (_, k1), (_, k2) = scheme
-        out = system.zero()
-        for q1 in range(k1, -k1 - 1, -1):
-            q2 = mu - q1
-            if abs(q2) <= k2:
-                c = CG(k1, q1, k2, q2, total, mu).doit()
-                if c != 0:
-                    out = out + c * (system.T(labels[0], k1, q1) @ system.T(labels[1], k2, q2))
-        return out
 
-    operators = []
-    for spec in specs:
-        op = build(*spec)
-        operators.append((op / op.norm()).map_coefficients(sp.radsimp))
-    basis = OperatorBasis(system, "spherical tensor", operators)
-    basis.indices = [(total, mu) for total, mu, _, _ in specs]  # type: ignore[attr-defined]
-    return basis
+def _tensor_component(system: SpinSystem, scheme: tuple, history: tuple, mu: int) -> Operator:
+    """The normalised component ``mu`` of one irreducible tensor."""
+    if not scheme:
+        op = system.unity()
+    elif len(scheme) == 1:
+        op = system.T(scheme[0][0], scheme[0][1], mu)
+    else:
+        op = system._coupled(scheme, history, mu)
+    return (op / op.norm()).map_coefficients(sp.radsimp)
+
+
+def spherical_tensor_basis(system: SpinSystem, sort: str = "coherence") -> OperatorBasis:
+    """The normalised irreducible spherical tensor operators of the spin system.
+
+    Every combination of single-spin ranks is coupled from left to right to every possible total rank (see
+    ``SpinSystem.T``). ``sort='coherence'`` (the default, and SpinDynamica's only order) sorts by coherence
+    order and then by rank, ``sort='rank'`` by rank and then by order. Operators with the same rank and order
+    follow SpinDynamica: by the single-spin ranks with the first spin as the slowest index, then by the
+    intermediate ranks. ``basis.indices`` lists ``(rank, order)``.
+    """
+    if sort not in ("coherence", "rank"):
+        raise ValueError("sort is 'coherence' or 'rank'.")
+    memo = system.__dict__.setdefault("_tensor_bases", {})
+    if sort not in memo:
+        specs = [
+            (rank, mu, position, scheme, history)
+            for position, (rank, scheme, history) in enumerate(_tensor_multiplets(system))
+            for mu in range(rank, -rank - 1, -1)
+        ]
+        first, second = (1, 0) if sort == "coherence" else (0, 1)
+        specs.sort(key=lambda spec: (spec[first], spec[second], spec[2]))
+        operators = [_tensor_component(system, scheme, history, mu) for _, mu, _, scheme, history in specs]
+        basis = OperatorBasis(system, "spherical tensor", operators)
+        basis.indices = [(rank, mu) for rank, mu, *_ in specs]  # type: ignore[attr-defined]
+        memo[sort] = basis
+    return memo[sort]
 
 
 def default_operator_basis(system: SpinSystem) -> OperatorBasis:
@@ -389,6 +459,26 @@ def projection(a: Operator) -> Superoperator:
 def shift_superoperator(to: Operator, source: Operator) -> Superoperator:
     """``|to)(source|`` with both operators normalised: ``ρ → t̂ (ŝ|ρ)`` (SpinDynamica's ``ShiftSuperoperator``)."""
     return Superoperator(to.system, dyads=[(to / to.norm(), source / source.norm())])
+
+
+def spherical_component_filter(system: SpinSystem, rank: int, to: int, source: int | None = None) -> Superoperator:
+    """Takes the component ``source`` of every irreducible tensor of rank ``rank`` to its component ``to`` and
+    removes everything else (SpinDynamica's ``SphericalComponentFiltrationSuperoperator[{rank, to, source}]``).
+
+    It is ``Σ |T(rank, to))(T(rank, source)|`` over the tensors of that rank in the spherical tensor operator
+    basis, which equals ``(2 rank + 1)/(8π²) ∫ D*(to, source; Ω) R(Ω) dΩ`` over all rotations. ``source``
+    defaults to ``to``: the projector onto that component. SpinDynamica has it for spins-1/2 only.
+    """
+    rank, to = int(rank), int(to)
+    source = to if source is None else int(source)
+    if rank < 0 or abs(to) > rank or abs(source) > rank:
+        raise ValueError(f"components {to} and {source} do not belong to rank {rank}.")
+    dyads = [
+        (_tensor_component(system, scheme, history, to), _tensor_component(system, scheme, history, source))
+        for total, scheme, history in _tensor_multiplets(system)
+        if total == rank
+    ]
+    return Superoperator(system, dyads=dyads)
 
 
 def coherence_filter(system: SpinSystem, orders: Iterable[int], spins: Any = None) -> Superoperator:

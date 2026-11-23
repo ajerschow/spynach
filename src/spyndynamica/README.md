@@ -8,8 +8,10 @@ NumPy and SymPy only, imports nothing of `spynach`, `easyspyn` or `ctps`, and no
 **Status:** the symbolic core (spin systems, operators, rotations, bases, kets, exact matrices), Liouville space
 (operator bases, superoperators), the numeric engine for sequences of time-independent events, signals with
 their Fourier transform, the isotope data, time-dependent Hamiltonians, ensemble averages with the orientation
-sets, and spherical tensors. The guide is
-`docs/spyndynamica.md`; the phases and the conventions are in `porting/spyndynamica/PLAN.md`.
+sets, spherical tensors, user-defined and product bases, and the geometry of frames (axis systems, Euler
+angles, quaternions). The guides are `docs/spyndynamica.md` (operators, bases, superoperators, frames) and
+`docs/spyndynamica-simulations.md` (the numeric engine); the phases and the conventions are in
+`porting/spyndynamica/PLAN.md`.
 
 **Licence and credit:** the port is under the MIT licence of this repository (`LICENSE`, which carries a
 SpinDynamica notice). SpinDynamica names no formal licence; its [terms of use](https://www.spindynamica.soton.ac.uk/about/termsofuse/) state that it is
@@ -30,12 +32,12 @@ results computed by it.
 | `src/spyndynamica/ensembles.py`, `data/orientations.npz` | `ensemble_average`, the orientation sets |
 | `src/spyndynamica/tensors.py` | spherical tensors: conversion and transformation |
 | `src/spyndynamica/states.py` | thermal and polarized states, secularisation, thermalised relaxation, amplitude tables, optimisation |
-| `src/spyndynamica/rotations.py` | Wigner matrices, Clebsch-Gordan coefficients, Euler matrices |
+| `src/spyndynamica/rotations.py` | Wigner matrices, Clebsch-Gordan coefficients, Euler and polar rotations, axis systems, quaternions |
 | `tests/spyndynamica/fixtures/` | the generator, the case files and the reference data from SpinDynamica |
 | `tests/spyndynamica/test_reference_invariants.py` | checks of the reference that do not depend on SpinDynamica |
 | `tests/spyndynamica/test_core.py`, `test_liouville_dynamics.py`, `test_signals.py`, `test_time_ensembles.py` | the port against the reference |
 | `porting/spyndynamica/DIVERGENCES.md` | where SpinDynamica differs from its documentation |
 
 To remove the package, delete `src/spyndynamica`, `tests/spyndynamica`, `porting/spyndynamica`,
-`docs/spyndynamica.md` with its notebook, and the rows that name it in `docs/README.md` and
+`docs/spyndynamica.md` and `docs/spyndynamica-simulations.md` with their notebooks, and the rows that name it in `docs/README.md` and
 `scripts/build_site.py`.

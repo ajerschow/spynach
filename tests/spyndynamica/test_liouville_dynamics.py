@@ -242,8 +242,6 @@ def test_superoperator_algebra():
     assert sd.lindbladian(i(1, "-"))(s.unity()).equals(-2 * i(1, "z"))
     with pytest.raises(ValueError, match="spins-1/2"):
         sd.cartesian_product_basis(SpinSystem([1]))
-    with pytest.raises(NotImplementedError, match="one or two spins"):
-        sd.spherical_tensor_basis(SpinSystem(3))
     with pytest.raises(NotImplementedError, match="spins-1/2"):
         sd.phenomenological_relaxation(SpinSystem([1]), 1.0)
     with pytest.raises(ValueError, match="2 T1"):

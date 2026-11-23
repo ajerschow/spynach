@@ -62,7 +62,7 @@ All of these are covered by a fixture and an independent test.
 
 ## Phases
 
-1. **Reference harness.** Done: generator, loader, 627 cases in eleven files, independent checks.
+1. **Reference harness.** Done: generator, loader, 752 cases in twelve files, independent checks.
 2. **Symbolic core.** Done (`tests/spyndynamica/test_core.py`): spin systems, kets and bras, the Zeeman and
    singlet-triplet bases, product-operator and spherical-tensor algebra, rotations, closed-form evolution for
    commuting spin-1/2 terms, exact and numeric matrices. Pinned by `01_bases`, `02_operators`, `03_rotations`.
@@ -71,8 +71,8 @@ All of these are covered by a fixture and an independent test.
    relaxation model, events (`Pulse`, `Delay`, `Repeat`, generator and duration, instantaneous superoperators),
    propagation in Hilbert space or in Liouville space as the events require, transformation amplitudes and
    sampled trajectories. Linear algebra goes through `backend.py`. Pinned by `04_liouville` and
-   `05_propagation`. Left out: the spherical tensor operator basis for more than two spins, SpinDynamica's
-   sequence of the shift-and-z basis for spins above 1/2, and trajectories as interpolating functions.
+   `05_propagation`. Left out: SpinDynamica's sequence of the shift-and-z basis for spins above 1/2, and
+   trajectories as interpolating functions.
 4. **Signals and relaxation.** Done (`tests/spyndynamica/test_signals.py`): `signal_1d` by diagonalisation
    of the Hamiltonian or of the Liouvillian and by direct propagation, `Signal` with peaks or samples, line
    broadening, `ft`, the lineshape functions, the isotope table, constants, Larmor frequencies and dipolar
@@ -112,13 +112,18 @@ All of these are covered by a fixture and an independent test.
    `amplitude_factor`, `normalization`, `start_time`, coherence-order filtration as an event, `ft2`,
    `random_orientations`, ensemble averages in processes. Left out: `CarouselAverage` (γ-COMPUTE), and
    `AdiabaticPropagationSuperoperator`, which SpinDynamica documents as internal.
-   **Stage B (the rest of the quantum-mechanics layer).** Partly done
-   (`tests/spyndynamica/test_bases_operators.py`, `11_bases_and_operators`): `angular_momentum_basis`,
-   `eigenbasis` with a target basis, `Basis.transformed`, `Ket.magnetic_quantum_numbers`,
-   `Operator.normalized`, `Operator.projection`, `shift_superoperator`. Open: `DefineBasis` and `ProductBasis`
-   (a `Basis` can already be built from any ket matrix), `DefineOperatorBasis` (an `OperatorBasis` takes any
-   list of operators), `SphericalComponentFiltrationSuperoperator`, the spherical tensor operator basis for
-   more than two spins, `AxesToEuler`, `RotateEuler` options, quaternions and polar rotations.
+   **Stage B (the rest of the quantum-mechanics layer).** Done
+   (`tests/spyndynamica/test_bases_operators.py`, `test_filters_bases_geometry.py`; `11_bases_and_operators`,
+   `12_bases_filters_geometry`): `angular_momentum_basis`, `eigenbasis` with a target basis,
+   `Basis.transformed`, `Ket.magnetic_quantum_numbers`, `Operator.normalized`, `Operator.projection`,
+   `shift_superoperator`; tensor operators of any number of spins coupled from left to right (`s.T` with
+   `ranks` and `history`, `rank_histories`), the spherical tensor operator basis of any spin system,
+   `spherical_component_filter` (for any spins, checked against the integral over the rotation group),
+   `define_basis`, `check_basis`, `product_basis`, `define_operator_basis`, `check_operator_basis`,
+   `OperatorBasis.reordered` and `.transformed`, `axis_system`, `axes_to_euler`, `rotate_euler` about an axis
+   system, `polar_rotation_matrix`, `rotate_polar`, the quaternion routines, `vector_to_polar` and
+   `polar_to_vector`. Four divergences were found (D7 to D10). Left out: symbolic axes in `axes_to_euler`,
+   rotation of graphics objects (with the graphics of stage C), incomplete state bases.
 7. **Advanced modules.** Groups and algebras, polarization, extended Liouville space, 3D graphics.
 8. **Documentation and browser subset.**
 

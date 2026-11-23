@@ -51,6 +51,7 @@ class SpinSystem:
         self.dimension = int(sp.prod([loc.dim for loc in self.locals]))
         self.identity_term: Term = tuple("e" for _ in pairs)
         self._index = {label: i for i, (label, _) in enumerate(pairs)}
+        self._coupled_cache: dict[tuple, Operator] = {}
 
     def __repr__(self) -> str:
         return "SpinSystem([" + ", ".join(f"({label!r}, {value})" for label, value in self.spins) + "])"
@@ -145,30 +146,73 @@ class SpinSystem:
         """The scalar product ``I_a · I_b``."""
         return sum((self.I(a, c) @ self.I(b, c) for c in "xyz"), self.zero())
 
-    def T(self, spins: Any, k: int, q: int) -> Operator:  # noqa: N802 - the name of the operator
-        """The spherical tensor operator ``T(k, q)`` of one spin, or of a pair of spins (``k`` = 0, 1, 2).
+    def T(  # noqa: N802 - the name of the operator
+        self, spins: Any, k: int, q: int, *, ranks: Sequence[int] | None = None, history: Sequence[int] | None = None
+    ) -> Operator:
+        """The spherical tensor operator ``T(k, q)`` of one spin, or of several spins coupled one after the other.
 
-        The pair operator couples the rank-1 operators of the two spins,
-        ``T(k, q) = Σ <1 q1, 1 q2|k q> T(1, q1) T(1, q2)``.
+        For a list of spins the single-spin operators of rank ``ranks`` (default: rank 1 for every spin) are
+        coupled from left to right with Clebsch-Gordan coefficients,
+        ``T(K, Q) = Σ <K' q', λ q''|K Q> T(K', q') T_spin(λ, q'')``. ``history`` lists the rank after each
+        coupling step (one entry per spin after the first, the last one equal to ``k``); it is needed only when
+        several sequences lead to rank ``k``, and :func:`rank_histories` lists them. For a pair of spins-1/2
+        ``T(0, 0) = −I1·I2/√3`` and ``T(2, 0) = (3 I1z I2z − I1·I2)/√6``.
         """
         k, q = int(k), int(q)
         if abs(q) > k:
             raise ValueError(f"|q| = {abs(q)} exceeds the rank {k}.")
         if isinstance(spins, (list, tuple)):
-            if len(spins) != 2 or k > 2:
-                raise ValueError("a coupled tensor operator takes two spins and a rank of 0, 1 or 2.")
-            a, b = spins
-            total = self.zero()
-            for q1 in (1, 0, -1):
-                q2 = q - q1
-                if abs(q2) <= 1:
-                    total = total + CG(1, q1, 1, q2, k, q).doit() * (self.T(a, 1, q1) @ self.T(b, 1, q2))
-            return total
+            spins = list(spins)
+            ranks = [1] * len(spins) if ranks is None else [int(r) for r in ranks]
+            if len(ranks) != len(spins) or len(set(spins)) != len(spins):
+                raise ValueError("a coupled tensor operator takes distinct spins and one rank per spin.")
+            if len(spins) == 1:
+                if ranks[0] != k:
+                    raise ValueError(f"a single operator of rank {ranks[0]} has no component of rank {k}.")
+                return self.T(spins[0], k, q)
+            possible = [h for h in rank_histories(ranks) if h[-1] == k]
+            if history is None:
+                if len(possible) != 1:
+                    raise ValueError(
+                        f"ranks {ranks} cannot be coupled to rank {k}."
+                        if not possible
+                        else f"ranks {ranks} couple to rank {k} in {len(possible)} ways; history= is one of {possible}."
+                    )
+                history = possible[0]
+            history = tuple(int(h) for h in history)
+            if history not in possible:
+                raise ValueError(f"{history} is not a sequence of ranks that leads to rank {k}; possible: {possible}.")
+            return self._coupled(tuple(zip(spins, ranks)), history, q)
+        if ranks is not None or history is not None:
+            raise ValueError("ranks and history apply to a list of spins.")
         index = self.index(spins)
         loc = self.locals[index]
         if k > 2 * loc.spin:
             raise ValueError(f"a spin {loc.spin} has no tensor operator of rank {k}.")
         return self._single(index, tensor_matrix(loc.spin, k, q))
+
+    def _coupled(self, scheme: tuple, history: tuple, q: int) -> Operator:
+        """Component ``q`` of the operators ``scheme = ((spin, rank), ...)`` coupled from left to right;
+        ``history`` holds the rank after each coupling step."""
+        key = (scheme, history, q)
+        if key not in self._coupled_cache:
+            spin, rank = scheme[-1]
+            total = history[-1]
+            before = scheme[0][1] if len(scheme) == 2 else history[-2]
+            out = self.zero()
+            for q1 in range(before, -before - 1, -1):
+                q2 = q - q1
+                if abs(q2) > rank:
+                    continue
+                c = CG(before, q1, rank, q2, total, q).doit()
+                if c != 0:
+                    if len(scheme) == 2:
+                        left = self.T(scheme[0][0], before, q1)
+                    else:
+                        left = self._coupled(scheme[:-1], history[:-1], q1)
+                    out = out + c * (left @ self.T(spin, rank, q2))
+            self._coupled_cache[key] = out
+        return self._coupled_cache[key]
 
     def _rotation(self, spec: tuple, spins: Any) -> Operator:
         out = self.unity()
@@ -335,6 +379,25 @@ class SpinSystem:
         return Basis(self, "singlet-triplet", sp.Matrix.hstack(*(k.vector for k in kets)), ("S0", "T+1", "T0", "T-1"))
 
 
+def rank_histories(ranks: Sequence[int]) -> list[tuple[int, ...]]:
+    """The sequences of ranks that arise when tensors of ``ranks`` are coupled from left to right.
+
+    Each sequence has one entry per coupling step (the rank after the second tensor, after the third, ...).
+    ``rank_histories([1, 1, 1])`` is ``[(0, 1), (1, 0), (1, 1), (1, 2), (2, 1), (2, 2), (2, 3)]``.
+    """
+    ranks = [int(r) for r in ranks]
+    histories: list[tuple[int, ...]] = [()]
+    current = [ranks[0]]
+    for rank in ranks[1:]:
+        extended, totals = [], []
+        for history, before in zip(histories, current):
+            for total in range(abs(before - rank), before + rank + 1):
+                extended.append((*history, total))
+                totals.append(total)
+        histories, current = extended, totals
+    return histories
+
+
 def _coupled(system: SpinSystem) -> tuple[list[sp.Matrix], list[tuple]]:
     """The kets of the coupled basis: the spins are coupled one after the other with Clebsch-Gordan coefficients."""
     dims = [loc.dim for loc in system.locals]
@@ -407,6 +470,87 @@ class Basis:
     def transformation(self, other: Basis) -> sp.Matrix:
         """The matrix of overlaps ``<self_i|other_j>`` (SpinDynamica's ``BasisTransformationMatrix[self, other]``)."""
         return (self.kets_matrix.H * other.kets_matrix).applyfunc(tidy)
+
+
+def _describe_gram(gram: Any, tolerance: float = 1e-10) -> str:
+    """What a matrix of scalar products says about a set of vectors."""
+    import numpy as np
+
+    gram = np.asarray(gram, dtype=complex)
+    diagonal = np.diag(gram).real
+    if not np.allclose(gram, np.diag(diagonal), rtol=0, atol=tolerance):
+        return "not orthogonal"
+    if np.allclose(diagonal, 1, rtol=0, atol=tolerance):
+        return "orthonormal"
+    if np.allclose(diagonal, diagonal[0], rtol=0, atol=tolerance):
+        return "orthogonal, same norm"
+    return "orthogonal, different norms"
+
+
+def check_basis(kets: Sequence[Ket]) -> str:
+    """Whether kets are fit to be a basis (SpinDynamica's ``CheckBasis``): ``'orthonormal'``,
+    ``'orthogonal, same norm'``, ``'orthogonal, different norms'`` or ``'not orthogonal'``.
+
+    The number of kets is not looked at; SpinDynamica also accepts an orthonormal set that is incomplete.
+    """
+    import numpy as np
+
+    vectors = np.array([sp.N(ket.vector, 30).T.tolist()[0] for ket in kets], dtype=complex).T
+    return _describe_gram(vectors.conj().T @ vectors)
+
+
+def define_basis(
+    kets: Sequence[Ket], labels: Sequence[Any] | None = None, *, check: bool = True, name: str = "user-defined"
+) -> Basis:
+    """A basis with the given kets (SpinDynamica's ``DefineBasis``).
+
+    ``labels`` name the states (default: their numbers from 1). With ``check`` (the default) the kets must be
+    orthonormal. A basis always has as many kets as the Hilbert space has dimensions.
+    """
+    kets = list(kets)
+    if not kets:
+        raise ValueError("a basis needs kets.")
+    system = kets[0].system
+    if len(kets) != system.dimension or any(ket.system is not system for ket in kets):
+        raise ValueError(f"a basis of {system!r} has {system.dimension} kets of that spin system.")
+    if labels is not None and len(labels) != len(kets):
+        raise ValueError("one label per ket is needed.")
+    if check and (found := check_basis(kets)) != "orthonormal":
+        raise ValueError(f"the kets are {found}; a basis is orthonormal (check=False skips the test).")
+    return Basis(system, name, sp.Matrix.hstack(*(ket.vector for ket in kets)), labels)
+
+
+def product_basis(*bases: Basis, system: SpinSystem | None = None, name: str | None = None) -> Basis:
+    """The basis of product kets of bases of separate sets of spins (SpinDynamica's ``ProductBasis``).
+
+    The kets of the first basis change fastest. ``system`` is the spin system of the result: it holds the spins
+    of all the bases, in any order. Without it the spins are joined in the order of the bases.
+    """
+    if not bases:
+        raise ValueError("a product basis needs bases.")
+    joined = [pair for basis in bases for pair in basis.system.spins]
+    labels = [label for label, _ in joined]
+    if len(set(labels)) != len(labels):
+        raise ValueError("the bases of a product basis must not share spins.")
+    if system is None:
+        system = SpinSystem(joined)
+    elif set(system.spins) != set(joined):
+        raise ValueError(f"the spins of the bases, {joined}, are not the spins of {system!r}.")
+    # for every Zeeman state of the result: the number of the matching Zeeman state of every component
+    rows = []
+    for basis in bases:
+        positions = [system.index(label) for label, _ in basis.system.spins]
+        number = {state: n for n, state in enumerate(basis.system.quantum_numbers)}
+        rows.append([number[tuple(state[i] for i in positions)] for state in system.quantum_numbers])
+    columns = []
+    for combo in cartesian(*(range(basis.system.dimension) for basis in reversed(bases))):
+        chosen = tuple(reversed(combo))  # one ket per basis, the first basis fastest
+        column = [
+            sp.Mul(*(basis.kets_matrix[row[n], k] for basis, row, k in zip(bases, rows, chosen)))
+            for n in range(system.dimension)
+        ]
+        columns.append(sp.Matrix(column))
+    return Basis(system, name or "product of " + ", ".join(b.name for b in bases), sp.Matrix.hstack(*columns))
 
 
 class _State:
@@ -501,4 +645,14 @@ def spins_of(operator: Operator) -> list[Any]:
     return [system.spins[i][0] for i in sorted(involved)]
 
 
-__all__ = ["Basis", "Bra", "Ket", "SpinSystem", "spins_of"]
+__all__ = [
+    "Basis",
+    "Bra",
+    "Ket",
+    "SpinSystem",
+    "check_basis",
+    "define_basis",
+    "product_basis",
+    "rank_histories",
+    "spins_of",
+]

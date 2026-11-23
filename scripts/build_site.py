@@ -61,6 +61,7 @@ GROUPS = {
         "distant-dipolar-field",
         "beyond-the-port",
         "spyndynamica",
+        "spyndynamica-simulations",
     ],
 }
 # One line per Spinach comparison case, the only prose in the timing table.
