@@ -6,9 +6,11 @@ Spynach is a Python reimplementation of the Spinach spin dynamics kernel
 (https://spindynamics.org); its `easyspyn` package is a reimplementation of
 EasySpin (https://easyspin.org); its `ctps` package is a port of the
 author's earlier MATLAB (CCCP.m) and C++ (CCCP++) programs for coherence
-pathway selection. This licence derives from the MIT licences of Spinach
-(Ilya Kuprov) and EasySpin (Stefan Stoll and other contributors); both
-notices are reproduced below.
+pathway selection; its `spyndynamica` package is a port of SpinDynamica
+(https://www.spindynamica.soton.ac.uk). This licence derives from the MIT
+licences of Spinach (Ilya Kuprov) and EasySpin (Stefan Stoll and other
+contributors); both notices are reproduced below, followed by the terms of
+use of SpinDynamica.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -62,6 +64,27 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+SpinDynamica
+============
+
+The `spyndynamica` package (src/spyndynamica), its tests and its reference
+data were written by reading SpinDynamica (Malcolm H. Levitt and
+co-authors, https://www.spindynamica.soton.ac.uk), following its
+conventions and comparing with results computed by it. No SpinDynamica
+source code is included. SpinDynamica names no formal licence; its terms of
+use (https://www.spindynamica.soton.ac.uk/about/termsofuse/) state that
+SpinDynamica is open-source and freely available for use, and ask that
+published work cite
+
+    C. Bengs, M. H. Levitt, "SpinDynamica: Symbolic and numerical magnetic
+    resonance in a Mathematica environment", Magn. Reson. Chem. (2017),
+    doi:10.1002/mrc.4642,
+
+and that the authors of any add-on used be credited as well. Work that uses
+`spyndynamica` should cite that publication. Keep this notice with any copy
+or substantial portion of the `spyndynamica` package.
 
 
 Use of AI in the translation

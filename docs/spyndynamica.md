@@ -8,6 +8,10 @@ weak-coupling evolution are exact algebra. Liouville space adds operator bases a
 numeric engine propagates sequences of pulses and delays with strong coupling and relaxation. Signals,
 time-dependent Hamiltonians and ensemble averages are not ported yet.
 
+SpinDynamica is the work of Malcolm H. Levitt and co-authors. Its [terms of use](https://www.spindynamica.soton.ac.uk/about/termsofuse/)
+state that it is open-source and freely available for use, and ask that published work cite
+C. Bengs, M. H. Levitt, *SpinDynamica: Symbolic and numerical magnetic resonance in a Mathematica environment*, Magn. Reson. Chem. (2017), doi:10.1002/mrc.4642. Work that uses SpynDynamica should cite that publication.
+
 Every convention below is the one of SpinDynamica 3.10.2 and is checked against it
 (`tests/spyndynamica/`, 466 reference cases generated from the Mathematica package).
 

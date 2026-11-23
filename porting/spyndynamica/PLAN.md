@@ -15,6 +15,7 @@ replaces the planning handoff; it keeps its phases and records what was found si
 - Algorithms are chosen on their merits. `tests/spyndynamica/fixtures/data/timings.json` is a baseline to beat, not a target,
   and the Mathematica code is not transliterated.
 - No SpinDynamica source in the repository. The source is read from `SPINDYNAMICA_HOME` and never written.
+  Credit SpinDynamica and its publication wherever the port is described (`LICENSE`, the package README, the guide).
 - Symbolic results are checked by their values at fixed parameter points first and by exact matrix
   comparison second. Printed forms are never compared.
 
@@ -62,7 +63,6 @@ All of these are covered by a fixture and an independent test.
 ## Phases
 
 1. **Reference harness.** Done: generator, loader, 466 cases in six files, independent checks.
-   Open: permission from the SpinDynamica author and the licence.
 2. **Symbolic core.** Done (`tests/spyndynamica/test_core.py`): spin systems, kets and bras, the Zeeman and
    singlet-triplet bases, product-operator and spherical-tensor algebra, rotations, closed-form evolution for
    commuting spin-1/2 terms, exact and numeric matrices. Pinned by `01_bases`, `02_operators`, `03_rotations`.
@@ -85,7 +85,10 @@ Do not start a phase before the fixtures of the previous one pass in the port.
 
 ## Open questions
 
-1. Permission of the SpinDynamica author and the licence of the port.
+1. Licence: settled by the user on 2026-11-23. The port is under the repository's MIT licence with a SpinDynamica
+   notice in `LICENSE`, which refers to SpinDynamica's terms of use (https://www.spindynamica.soton.ac.uk/about/termsofuse/):
+   open-source and freely available for use, with a request to cite Bengs and Levitt, doi:10.1002/mrc.4642.
+   The terms name no formal licence and do not mention derived works.
 2. Display conventions: `2 I1x I2z` or SpinDynamica's `I1x•I2z`, and the order of factors in coefficients.
 3. Minimum Python version (3.10 assumed) and packaging.
 4. The tensor operators of a pair of spins above 1/2 follow the same coupling formula as for spins-1/2, and

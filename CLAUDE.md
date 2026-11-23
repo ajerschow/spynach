@@ -10,7 +10,8 @@ profiled Spinach-vs-spynach runs (both sides timed on the host, Spynach also
 runnable here for checks, HTML report).
 `LICENSE` is MIT and carries the Spinach notice: material translated from
 Spinach keeps that attribution, and contributed scripts in `user_ml/` keep
-their author's name.
+their author's name. It also carries the EasySpin notice and a SpinDynamica notice (its terms of use and the
+publication to cite); keep them with the packages they belong to.
 
 `src/spyndynamica` is a port in progress of SpinDynamica (Mathematica): a separate import that uses nothing of
 spynach, with its plan and conventions in `porting/spyndynamica/PLAN.md`, the differences from SpinDynamica in

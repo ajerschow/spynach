@@ -4,6 +4,12 @@ The symbolic core (spin systems, operators as sums of product and spherical tens
 coefficients, rotations, bases, kets, exact matrices), Liouville space (operator bases, superoperators) and
 the numeric engine for sequences of time-independent events. See ``docs/spyndynamica.md`` and
 ``porting/spyndynamica/PLAN.md``. The package imports NumPy, SciPy and SymPy only, and nothing of spynach.
+
+SpinDynamica is the work of Malcolm H. Levitt and co-authors. Its terms of use
+(https://www.spindynamica.soton.ac.uk/about/termsofuse/) state that it is open-source and freely available
+for use and ask that published work cite C. Bengs, M. H. Levitt, "SpinDynamica: Symbolic and numerical
+magnetic resonance in a Mathematica environment", Magn. Reson. Chem. (2017), doi:10.1002/mrc.4642. Work
+that uses this port should cite that publication.
 """
 
 from spyndynamica.dynamics import Delay, Pulse, Repeat, amplitudes, propagate, propagator, superpropagator, trajectory

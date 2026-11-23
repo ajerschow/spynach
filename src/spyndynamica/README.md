@@ -9,8 +9,12 @@ NumPy and SymPy only, imports nothing of `spynach`, `easyspyn` or `ctps`, and no
 (operator bases, superoperators) and the numeric engine for sequences of time-independent events. The guide is
 `docs/spyndynamica.md`; the phases and the conventions are in `porting/spyndynamica/PLAN.md`.
 
-**Licence:** not settled. The SpinDynamica archive carries no licence file, so the port is not released as a
-package until its author has agreed. No SpinDynamica source is in this repository.
+**Licence and credit:** the port is under the MIT licence of this repository (`LICENSE`, which carries a
+SpinDynamica notice). SpinDynamica names no formal licence; its [terms of use](https://www.spindynamica.soton.ac.uk/about/termsofuse/) state that it is
+open-source and freely available for use, and ask that published work cite C. Bengs, M. H. Levitt, *SpinDynamica: Symbolic and numerical magnetic resonance in a Mathematica environment*, Magn. Reson. Chem. (2017), doi:10.1002/mrc.4642,
+and credit the authors of any add-on used. Work that uses `spyndynamica` should cite that publication. No
+SpinDynamica source is in this repository: the port follows SpinDynamica's conventions and is compared with
+results computed by it.
 
 | Path | Content |
 |---|---|

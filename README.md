@@ -379,6 +379,11 @@ package for spectral simulation and analysis in EPR*, J. Magn. Reson. 178,
 42 (2006), and for pulse EPR S. Stoll, R. D. Britt, Phys. Chem. Chem.
 Phys. 11, 6614 (2009).
 
+Results obtained with SpynDynamica (`import spyndynamica`, a port in progress of
+[SpinDynamica](https://www.spindynamica.soton.ac.uk), guide [docs/spyndynamica.md](docs/spyndynamica.md))
+should cite SpinDynamica as its [terms of use](https://www.spindynamica.soton.ac.uk/about/termsofuse/) ask:
+C. Bengs, M. H. Levitt, *SpinDynamica: Symbolic and numerical magnetic resonance in a Mathematica environment*, Magn. Reson. Chem. (2017), doi:10.1002/mrc.4642.
+
 The Spynach and EasySpyn ports should be attributed to this repository,
 <https://github.com/ajerschow/spynach> (`CITATION.cff` gives the citation).
 
