@@ -12,6 +12,12 @@ runnable here for checks, HTML report).
 Spinach keeps that attribution, and contributed scripts in `user_ml/` keep
 their author's name.
 
+`src/spyndynamica` is a port in progress of SpinDynamica (Mathematica): a separate import that uses nothing of
+spynach, with its plan and conventions in `porting/spyndynamica/PLAN.md`, the differences from SpinDynamica in
+`porting/spyndynamica/DIVERGENCES.md`, and its reference fixtures and their generator in
+`tests/spyndynamica/fixtures` (see the README there). SpinDynamica is a reference, not the truth: every
+foundation result also has a check that does not depend on it, and its source is never copied into the repository.
+
 ## Contributions
 
 When applying or reviewing a contribution, follow `CONTRIBUTING.md`: examples that run on the existing kernel
