@@ -181,6 +181,15 @@ class Operator:
         """``sqrt(Tr(A† A))``."""
         return sp.sqrt(self.bracket(self))
 
+    def normalized(self, norm: Any = 1) -> Operator:
+        """The operator scaled to the norm ``norm``, a number or another operator whose norm is taken."""
+        wanted = norm.norm() if isinstance(norm, Operator) else sp.sympify(norm)
+        return self * (wanted / self.norm())
+
+    def projection(self, onto: Operator) -> Operator:
+        """The part of the operator along ``onto``: ``onto (onto|self)/(onto|onto)``."""
+        return onto * (onto.bracket(self) / onto.bracket(onto))
+
     def amplitude(self, target: Operator) -> sp.Expr:
         """How much of ``target`` this operator contains: ``(target|self) / (target|target)``."""
         return sp.simplify(target.bracket(self) / target.bracket(target))

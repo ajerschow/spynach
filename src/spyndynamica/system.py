@@ -287,6 +287,39 @@ class SpinSystem:
         """The Zeeman product basis."""
         return Basis(self, "Zeeman", sp.eye(self.dimension))
 
+    def angular_momentum_basis(self) -> Basis:
+        """The coupled basis: eigenkets of the total angular momentum and of its z component.
+
+        The spins are coupled one after the other with Clebsch-Gordan coefficients. The kets are ordered by
+        ``J`` (descending), then by the intermediate angular momenta, then by ``M`` (descending);
+        ``basis.quantum_numbers`` lists ``(J, M, intermediate J)``. SpinDynamica's ``AngularMomentumBasis`` spans
+        the same ``(J, M)`` subspaces in another order.
+        """
+        vectors, numbers = _coupled(self)
+        basis = Basis(self, "angular momentum", sp.Matrix.hstack(*vectors))
+        basis.quantum_numbers = numbers  # type: ignore[attr-defined]
+        return basis
+
+    def eigenbasis(self, operator: Operator, target: Basis | None = None, values=None) -> Basis:
+        """A basis of eigenkets of a Hermitian operator, by ascending eigenvalue (numeric).
+
+        With ``target`` the eigenkets are put in the order in which they match the kets of that basis best.
+        """
+        import numpy as np
+
+        eigenvalues, vectors = np.linalg.eigh(operator.numeric(values))
+        if target is not None:
+            reference = np.array(target.kets_matrix.evalf(30).tolist(), dtype=complex)
+            overlap = np.abs(reference.conj().T @ vectors)
+            order = []
+            for row in range(len(eigenvalues)):
+                free = [c for c in np.argsort(-overlap[row]) if c not in order]
+                order.append(free[0])
+            eigenvalues, vectors = eigenvalues[order], vectors[:, order]
+        basis = Basis(self, "eigenbasis", sp.Matrix(vectors.tolist()))
+        basis.eigenvalues = eigenvalues  # type: ignore[attr-defined]
+        return basis
+
     def singlet_triplet(self) -> Basis:
         """The singlet-triplet basis of two spins-1/2, in SpinDynamica's order ``S0, T+1, T0, T-1``."""
         if [value for _, value in self.spins] != [HALF, HALF]:
@@ -300,6 +333,40 @@ class SpinSystem:
             self.ket(down, down),
         ]
         return Basis(self, "singlet-triplet", sp.Matrix.hstack(*(k.vector for k in kets)), ("S0", "T+1", "T0", "T-1"))
+
+
+def _coupled(system: SpinSystem) -> tuple[list[sp.Matrix], list[tuple]]:
+    """The kets of the coupled basis: the spins are coupled one after the other with Clebsch-Gordan coefficients."""
+    dims = [loc.dim for loc in system.locals]
+    first = system.spins[0][1]
+    # every state: (J, M, history of intermediate J, vector over the spins coupled so far)
+    states = [(first, first - i, (first,), sp.eye(dims[0])[:, i]) for i in range(dims[0])]
+    for index in range(1, len(dims)):
+        spin = system.spins[index][1]
+        size = states[0][3].shape[0]
+        coupled = []
+        for history in dict.fromkeys(state[2] for state in states):
+            members = {state[1]: state[3] for state in states if state[2] == history}
+            j1 = history[-1]
+            total = j1 + spin
+            while total >= abs(j1 - spin):
+                for step in range(int(2 * total) + 1):
+                    m = total - step
+                    vector = sp.zeros(size * dims[index], 1)
+                    for k in range(dims[index]):
+                        m2 = spin - k
+                        m1 = m - m2
+                        if m1 in members:
+                            c = CG(j1, m1, spin, m2, total, m).doit()
+                            if c != 0:
+                                unit = sp.zeros(dims[index], 1)
+                                unit[k] = 1
+                                vector += c * sp.kronecker_product(unit, members[m1])  # the first spin fastest
+                    coupled.append((total, m, (*history, total), vector))
+                total -= 1
+        states = coupled
+    states.sort(key=lambda state: (-state[0], state[2], -state[1]))
+    return [state[3] for state in states], [(state[0], state[1], state[2]) for state in states]
 
 
 class Basis:
@@ -332,6 +399,10 @@ class Basis:
     @property
     def kets(self) -> list[Ket]:
         return [self.ket(n) for n in self.labels]
+
+    def transformed(self, operator: Operator, name: str | None = None) -> Basis:
+        """The basis whose kets are ``operator`` applied to the kets of this one (``TransformedBasis``)."""
+        return Basis(self.system, name or f"transformed {self.name}", operator.matrix() * self.kets_matrix)
 
     def transformation(self, other: Basis) -> sp.Matrix:
         """The matrix of overlaps ``<self_i|other_j>`` (SpinDynamica's ``BasisTransformationMatrix[self, other]``)."""
@@ -387,6 +458,12 @@ class _State:
 
 class Ket(_State):
     """A state vector, with its components in the Zeeman basis."""
+
+    def magnetic_quantum_numbers(self, spins: Any = None) -> list[sp.Rational]:
+        """The magnetic quantum numbers ``M`` (of all spins, or summed over ``spins``) that the ket contains."""
+        indices = self.system._indices(spins)
+        states = self.system.quantum_numbers
+        return sorted({sum(states[n][i] for i in indices) for n, c in enumerate(self.vector) if c != 0}, reverse=True)
 
     def dagger(self) -> Bra:
         return Bra(self.system, self.vector.conjugate())

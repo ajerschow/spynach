@@ -15,7 +15,7 @@ state that it is open-source and freely available for use, and ask that publishe
 C. Bengs, M. H. Levitt, *SpinDynamica: Symbolic and numerical magnetic resonance in a Mathematica environment*, Magn. Reson. Chem. (2017), doi:10.1002/mrc.4642. Work that uses SpynDynamica should cite that publication.
 
 Every convention below is the one of SpinDynamica 3.10.2 and is checked against it
-(`tests/spyndynamica/`, 603 reference cases generated from the Mathematica package).
+(`tests/spyndynamica/`, 627 reference cases generated from the Mathematica package).
 
 ## Contents
 
@@ -147,6 +147,17 @@ print(st.transformation(s.zeeman))
 up, down = sp.Rational(1, 2), -sp.Rational(1, 2)
 a = s.ket(up, up)
 print(I(1, "-") @ a, "|", a.dagger() @ a, "|", a @ s.ket(down, up).dagger())
+```
+
+Three more bases come from the system or from another basis: `s.angular_momentum_basis()` couples the spins to
+eigenkets of the total angular momentum, `s.eigenbasis(H)` holds the eigenkets of an operator, and
+`basis.transformed(op)` applies an operator to the kets of a basis.
+
+```python
+coupled = s.angular_momentum_basis()
+print(coupled.quantum_numbers)
+print(s.dot(1, 2).matrix(coupled).diagonal())
+print(st.ket("T0").magnetic_quantum_numbers(), I(1, "x").normalized().norm())
 ```
 
 `ket @ bra` is an operator, `bra @ ket` a number and `operator @ ket` a ket. The operators of basis states are
@@ -477,6 +488,11 @@ The search is local, as SpinDynamica's is.
 | `OperatorTrace`, `OperatorNorm`, `CoherenceOrder` | `A.trace()`, `A.norm()`, `A.coherence_orders()` |
 | `ZeemanBasis[]`, `SingletTripletBasis[]` | `s.zeeman`, `s.singlet_triplet()` |
 | `BasisTransformationMatrix[b2, b1]` | `b2.transformation(b1)` |
+| `AngularMomentumBasis[]`, `Eigenbasis[H, TargetBasis -> b]` | `s.angular_momentum_basis()`, `s.eigenbasis(H, target=b)` |
+| `TransformedBasis[op, basis]` | `basis.transformed(op)` |
+| `MagneticQuantumNumber[ket, spins]` | `ket.magnetic_quantum_numbers(spins)` |
+| `NormalizeOperator[A, n]`, `OperatorProjection[A, B]` | `A.normalized(n)`, `A.projection(B)` |
+| `ShiftSuperoperator[B, A]` | `shift_superoperator(B, A)` |
 | `PopulationOperator`, `CoherenceOperator`, `SingleTransitionOperator` | `s.population`, `s.coherence`, `s.single_transition` |
 | `SpinPermutationOperator[{1, 2, 3}]` | `s.permutation([1, 2, 3])` |
 | `Wignerd`, `WignerD`, `CG`, `EulerRotationMatrix` | `wigner_d`, `wigner_D`, `clebsch_gordan`, `euler_matrix` |
@@ -553,6 +569,9 @@ operators, the sense of every rotation, the zyz Euler convention and the index o
   SpinDynamica.
 - `polarized(s, p, "z")` polarizes all spins to the level `p`, as SpinDynamica documents. SpinDynamica's
   short form `PolarizedDensityOperator[{p, "z"}]` returns the fully polarized state whatever `p` and the axis.
+- The coupled basis is ordered by `J`, the intermediate angular momenta and `M`, with Condon-Shortley
+  phases. SpinDynamica's `AngularMomentumBasis` spans the same `(J, M)` subspaces in another order.
+  `A.projection(B)` exists here; SpinDynamica documents `OperatorProjection` but does not implement it.
 - `ft` of an odd number of points without zero filling returns the transform at the stated frequencies;
   SpinDynamica's values sit one point lower on its axis in that case.
 

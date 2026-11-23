@@ -62,7 +62,7 @@ All of these are covered by a fixture and an independent test.
 
 ## Phases
 
-1. **Reference harness.** Done: generator, loader, 603 cases in ten files, independent checks.
+1. **Reference harness.** Done: generator, loader, 627 cases in eleven files, independent checks.
 2. **Symbolic core.** Done (`tests/spyndynamica/test_core.py`): spin systems, kets and bras, the Zeeman and
    singlet-triplet bases, product-operator and spherical-tensor algebra, rotations, closed-form evolution for
    commuting spin-1/2 terms, exact and numeric matrices. Pinned by `01_bases`, `02_operators`, `03_rotations`.
@@ -112,10 +112,13 @@ All of these are covered by a fixture and an independent test.
    `amplitude_factor`, `normalization`, `start_time`, coherence-order filtration as an event, `ft2`,
    `random_orientations`, ensemble averages in processes. Left out: `CarouselAverage` (γ-COMPUTE), and
    `AdiabaticPropagationSuperoperator`, which SpinDynamica documents as internal.
-   **Stage B:** the rest of the quantum-mechanics layer (`DefineBasis`, `TransformedBasis`, `Eigenbasis`,
-   `AngularMomentumBasis`, `OperatorProjection`, `DefineOperatorBasis`, `ShiftSuperoperator`,
-   `SphericalComponentFiltrationSuperoperator`, the spherical tensor basis for more than two spins,
-   `AxesToEuler`, quaternions).
+   **Stage B (the rest of the quantum-mechanics layer).** Partly done
+   (`tests/spyndynamica/test_bases_operators.py`, `11_bases_and_operators`): `angular_momentum_basis`,
+   `eigenbasis` with a target basis, `Basis.transformed`, `Ket.magnetic_quantum_numbers`,
+   `Operator.normalized`, `Operator.projection`, `shift_superoperator`. Open: `DefineBasis` and `ProductBasis`
+   (a `Basis` can already be built from any ket matrix), `DefineOperatorBasis` (an `OperatorBasis` takes any
+   list of operators), `SphericalComponentFiltrationSuperoperator`, the spherical tensor operator basis for
+   more than two spins, `AxesToEuler`, `RotateEuler` options, quaternions and polar rotations.
 7. **Advanced modules.** Groups and algebras, polarization, extended Liouville space, 3D graphics.
 8. **Documentation and browser subset.**
 

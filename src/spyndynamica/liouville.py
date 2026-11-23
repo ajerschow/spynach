@@ -386,6 +386,11 @@ def projection(a: Operator) -> Superoperator:
     return Superoperator(a.system, dyads=[(unit, unit)])
 
 
+def shift_superoperator(to: Operator, source: Operator) -> Superoperator:
+    """``|to)(source|`` with both operators normalised: ``ρ → t̂ (ŝ|ρ)`` (SpinDynamica's ``ShiftSuperoperator``)."""
+    return Superoperator(to.system, dyads=[(to / to.norm(), source / source.norm())])
+
+
 def coherence_filter(system: SpinSystem, orders: Iterable[int], spins: Any = None) -> Superoperator:
     """Keeps the coherence orders ``orders`` (of all spins, or summed over ``spins``) and removes the others."""
     indices = system._indices(spins)

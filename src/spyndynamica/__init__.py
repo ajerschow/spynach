@@ -66,6 +66,7 @@ from spyndynamica.liouville import (
     rotation_superoperator,
     shift_and_polarization_basis,
     shift_and_z_basis,
+    shift_superoperator,
     singlet_triplet_operator_basis,
     spherical_tensor_basis,
     unity_superoperator,
@@ -99,6 +100,7 @@ from spyndynamica.tensors import cartesian_to_spherical, spherical_to_cartesian,
 __version__ = "0.0.1"
 
 __all__ = [
+    "shift_superoperator",
     "random_orientations",
     "precalculate",
     "ft2",

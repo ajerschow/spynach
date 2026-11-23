@@ -60,7 +60,22 @@ how the difference was established. The cases that record the SpinDynamica behav
 - **Port:** `polarized(s, p, axis)` is the product of `1/2 + p I_axis` over all spins.
 - **Report to the author:** yes.
 
+## D6. `OperatorProjection` and `ProjectedMatrixRepresentation` are documented but not implemented
+
+- **Documented:** both have usage messages in `QM/SpinOperators.m`.
+- **SpinDynamica does:** nothing. The package holds no definition of either, and the calls come back
+  unevaluated.
+- **Established by:** a search of the source for the two names (only the usage messages) and the unevaluated
+  results of the generator.
+- **Port:** `A.projection(B)` is `B (B|A)/(B|B)`. The projected matrix representation is what
+  `secularize(A, H)` gives: the coherences between non-degenerate eigenstates of `H` removed.
+- **Report to the author:** yes.
+
 ## Limits found while generating the reference data
+
+- `AngularMomentumBasis` orders its kets in a way that follows no stated rule, and for three spins-1/2 it
+  makes a choice within the two `J = 1/2` doublets. The port couples the spins one after the other and
+  documents its order; the tests compare the `(J, M)` subspaces.
 
 - `ShapedPulse` takes its frequency argument as an offset of the radiofrequency: the Hamiltonian in the frame
   of the pulse gains `−frequency Iz`. The usage text does not state the sign; the fixture

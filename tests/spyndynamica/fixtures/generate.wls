@@ -61,7 +61,8 @@ encode[Symbolic[v_, vars_List]] := With[{w = Normal[v]},
 encode[v_List] := <|"type" -> "list", "items" -> (encode /@ v)|>;
 encode[v_] := <|"type" -> "expr", "text" -> text[v]|>;
 
-unresolvedQ[enc_] := ! FreeQ[enc, s_String /; StringContainsQ[s, "$Failed" | "$Aborted"]] ||
+(* a result that is still a SpinDynamica call (an unevaluated routine) is unresolved as well *)
+unresolvedQ[enc_] := ! FreeQ[enc, s_String /; StringContainsQ[s, "$Failed" | "$Aborted" | "opI[" | "OperatorProduct["]] ||
    (MatchQ[enc, KeyValuePattern["type" -> "symbolic"]] && ! FreeQ[enc["points"], "expr"]);
 
 (* ---------------------------------------------------------------- running *)
