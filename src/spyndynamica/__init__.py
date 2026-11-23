@@ -2,7 +2,8 @@
 
 The symbolic core (spin systems, operators as sums of product and spherical tensor operators with symbolic
 coefficients, rotations, bases, kets, exact matrices), Liouville space (operator bases, superoperators) and
-the numeric engine for sequences of time-independent events. See ``docs/spyndynamica.md`` and
+the numeric engine for sequences of time-independent events, signals with their Fourier transform, and the
+isotope data. See ``docs/spyndynamica.md`` and
 ``porting/spyndynamica/PLAN.md``. The package imports NumPy, SciPy and SymPy only, and nothing of spynach.
 
 SpinDynamica is the work of Malcolm H. Levitt and co-authors. Its terms of use
@@ -13,6 +14,16 @@ that uses this port should cite that publication.
 """
 
 from spyndynamica.dynamics import Delay, Pulse, Repeat, amplitudes, propagate, propagator, superpropagator, trajectory
+from spyndynamica.interactions import (
+    constants,
+    dipolar_coupling,
+    isotope,
+    isotopes,
+    larmor_frequency,
+    magnetogyric_ratio,
+    natural_abundance,
+    spin_quantum_number,
+)
 from spyndynamica.liouville import (
     OperatorBasis,
     Superoperator,
@@ -39,11 +50,37 @@ from spyndynamica.liouville import (
 )
 from spyndynamica.operators import Operator, commutator
 from spyndynamica.rotations import clebsch_gordan, euler_matrix, wigner_D, wigner_d
+from spyndynamica.signals import (
+    Signal,
+    absorption,
+    apply_line_broadening,
+    dispersion,
+    ft,
+    gaussian,
+    lorentzian,
+    signal_1d,
+)
 from spyndynamica.system import Basis, Bra, Ket, SpinSystem, spins_of
 
 __version__ = "0.0.1"
 
 __all__ = [
+    "spin_quantum_number",
+    "signal_1d",
+    "natural_abundance",
+    "magnetogyric_ratio",
+    "lorentzian",
+    "larmor_frequency",
+    "isotopes",
+    "isotope",
+    "gaussian",
+    "ft",
+    "dispersion",
+    "dipolar_coupling",
+    "constants",
+    "apply_line_broadening",
+    "absorption",
+    "Signal",
     "Basis",
     "Bra",
     "Delay",

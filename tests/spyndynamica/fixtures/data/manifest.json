@@ -2,7 +2,7 @@
 	"spindynamica":"SpinDynamica version SDv3.10.2",
 	"mathematica":"14.0.0 for Mac OS X ARM (64-bit) (December 13, 2023)",
 	"system":"Mac OS X ARM (64-bit)",
-	"generated":"2026-11-23T10:28:09",
+	"generated":"2026-11-23T11:02:19",
 	"files":{
 		"01_bases.wl":{
 			"sha256":"51185124310422d4860911547f8959be3756f9d4d415cfa181e92232923cec08",
@@ -23,6 +23,10 @@
 		"05_propagation.wl":{
 			"sha256":"0a8d520044f8e2b0b897a2b672b7457a5c252bf97f805d2897c4bde0f23902f1",
 			"cases":32
+		},
+		"06_signals.wl":{
+			"sha256":"98c982a146f0414ba83cbfd52a4f0dce7ef600d9fe7d3cf4f28ed6f57f9890ec",
+			"cases":48
 		},
 		"07_tables.wl":{
 			"sha256":"d11af51e59b104a6cc909caaded33bc9ed2086c647f9ef023c6011c816bde6af",

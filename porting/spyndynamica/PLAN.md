@@ -62,7 +62,7 @@ All of these are covered by a fixture and an independent test.
 
 ## Phases
 
-1. **Reference harness.** Done: generator, loader, 466 cases in six files, independent checks.
+1. **Reference harness.** Done: generator, loader, 514 cases in seven files, independent checks.
 2. **Symbolic core.** Done (`tests/spyndynamica/test_core.py`): spin systems, kets and bras, the Zeeman and
    singlet-triplet bases, product-operator and spherical-tensor algebra, rotations, closed-form evolution for
    commuting spin-1/2 terms, exact and numeric matrices. Pinned by `01_bases`, `02_operators`, `03_rotations`.
@@ -73,8 +73,11 @@ All of these are covered by a fixture and an independent test.
    sampled trajectories. Linear algebra goes through `backend.py`. Pinned by `04_liouville` and
    `05_propagation`. Left out: the spherical tensor operator basis for more than two spins, SpinDynamica's
    sequence of the shift-and-z basis for spins above 1/2, and trajectories as interpolating functions.
-4. **Signals and relaxation.** `Signal1D`, Fourier transform, lineshapes, interactions. Needs `06_signals`
-   (not written yet; `LineBroadening` must be given explicitly, the automatic value depends on the sampling).
+4. **Signals and relaxation.** Done (`tests/spyndynamica/test_signals.py`): `signal_1d` by diagonalisation
+   of the Hamiltonian or of the Liouvillian and by direct propagation, `Signal` with peaks or samples, line
+   broadening, `ft`, the lineshape functions, the isotope table, constants, Larmor frequencies and dipolar
+   couplings. Pinned by `06_signals` and `07_tables`. Left out: two-dimensional signals and the
+   Hamiltonian constructors beyond what `s.I`, `s.dot` and `s.T` give.
 5. **Time dependence and ensembles.** COMPUTE, the ODE path, tensors, parallel powder averages. The
    orientational sets are summarised in `07_tables`; the full tables need their own export.
 6. **Performance.** Sparse and Krylov methods, symmetry reduction, GPU, automatic differentiation.

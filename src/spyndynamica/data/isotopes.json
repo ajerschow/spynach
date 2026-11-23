@@ -1,0 +1,928 @@
+{
+ "source": "the isotope table and constants of SpinDynamica 3.10.2 (Interactions, PhysicalConstants)",
+ "constants": {
+  "c": 299792458.0,
+  "h": 6.62606957e-34,
+  "hbar": 1.054571726e-34,
+  "mu0": 1.2566370614359173e-06,
+  "epsilon0": 8.85418781762039e-12,
+  "kB": 1.3806488e-23,
+  "Nav": 6.02214129e+23,
+  "e": 1.602176565e-19,
+  "me": 9.109382917074298e-31,
+  "mp": 1.6726217764982766e-27,
+  "mn": 1.6749273518900685e-27
+ },
+ "isotopes": [
+  {
+   "name": "1H",
+   "mass_number": 1,
+   "gamma": 267522128.0,
+   "spin": "1/2",
+   "abundance": 0.999885
+  },
+  {
+   "name": "2H",
+   "mass_number": 2,
+   "gamma": 41066279.1,
+   "spin": "1",
+   "abundance": 0.000115
+  },
+  {
+   "name": "3H",
+   "mass_number": 3,
+   "gamma": 285349779.0,
+   "spin": "1/2",
+   "abundance": 0.0
+  },
+  {
+   "name": "3He",
+   "mass_number": 3,
+   "gamma": -203801587.0,
+   "spin": "1/2",
+   "abundance": 1.37e-06
+  },
+  {
+   "name": "6Li",
+   "mass_number": 6,
+   "gamma": 39371709.0,
+   "spin": "1",
+   "abundance": 0.0759
+  },
+  {
+   "name": "7Li",
+   "mass_number": 7,
+   "gamma": 103977013.0,
+   "spin": "3/2",
+   "abundance": 0.9241
+  },
+  {
+   "name": "9Be",
+   "mass_number": 9,
+   "gamma": -37596660.0,
+   "spin": "3/2",
+   "abundance": 1.0
+  },
+  {
+   "name": "10B",
+   "mass_number": 10,
+   "gamma": 28746786.000000004,
+   "spin": "3",
+   "abundance": 0.19899999999999998
+  },
+  {
+   "name": "11B",
+   "mass_number": 11,
+   "gamma": 85847044.0,
+   "spin": "3/2",
+   "abundance": 0.8009999999999999
+  },
+  {
+   "name": "13C",
+   "mass_number": 13,
+   "gamma": 67282840.0,
+   "spin": "1/2",
+   "abundance": 0.010700000000000001
+  },
+  {
+   "name": "14N",
+   "mass_number": 14,
+   "gamma": 19337792.0,
+   "spin": "1",
+   "abundance": 0.9963200000000001
+  },
+  {
+   "name": "15N",
+   "mass_number": 15,
+   "gamma": -27126180.400000002,
+   "spin": "1/2",
+   "abundance": 0.00368
+  },
+  {
+   "name": "17O",
+   "mass_number": 17,
+   "gamma": -36280800.0,
+   "spin": "5/2",
+   "abundance": 0.00038
+  },
+  {
+   "name": "19F",
+   "mass_number": 19,
+   "gamma": 251814800.0,
+   "spin": "1/2",
+   "abundance": 1.0
+  },
+  {
+   "name": "21Ne",
+   "mass_number": 21,
+   "gamma": -21130800.0,
+   "spin": "3/2",
+   "abundance": 0.0027
+  },
+  {
+   "name": "23Na",
+   "mass_number": 23,
+   "gamma": 70808493.0,
+   "spin": "3/2",
+   "abundance": 1.0
+  },
+  {
+   "name": "25Mg",
+   "mass_number": 25,
+   "gamma": -16388700.0,
+   "spin": "5/2",
+   "abundance": 0.1
+  },
+  {
+   "name": "27Al",
+   "mass_number": 27,
+   "gamma": 69762715.0,
+   "spin": "5/2",
+   "abundance": 1.0
+  },
+  {
+   "name": "29Si",
+   "mass_number": 29,
+   "gamma": -53190000.0,
+   "spin": "1/2",
+   "abundance": 0.046832000000000006
+  },
+  {
+   "name": "31P",
+   "mass_number": 31,
+   "gamma": 108394000.0,
+   "spin": "1/2",
+   "abundance": 1.0
+  },
+  {
+   "name": "33S",
+   "mass_number": 33,
+   "gamma": 20556850.0,
+   "spin": "3/2",
+   "abundance": 0.0076
+  },
+  {
+   "name": "35Cl",
+   "mass_number": 35,
+   "gamma": 26241979.999999996,
+   "spin": "3/2",
+   "abundance": 0.7576999999999999
+  },
+  {
+   "name": "37Cl",
+   "mass_number": 37,
+   "gamma": 21843680.0,
+   "spin": "3/2",
+   "abundance": 0.24230000000000002
+  },
+  {
+   "name": "39K",
+   "mass_number": 39,
+   "gamma": 12500608.0,
+   "spin": "3/2",
+   "abundance": 0.932581
+  },
+  {
+   "name": "40K",
+   "mass_number": 40,
+   "gamma": -15542854.0,
+   "spin": "4",
+   "abundance": 0.00011700000000000001
+  },
+  {
+   "name": "41K",
+   "mass_number": 41,
+   "gamma": 6860680.8,
+   "spin": "3/2",
+   "abundance": 0.067302
+  },
+  {
+   "name": "43Ca",
+   "mass_number": 43,
+   "gamma": -18030690.0,
+   "spin": "7/2",
+   "abundance": 0.00135
+  },
+  {
+   "name": "45Sc",
+   "mass_number": 45,
+   "gamma": 65087973.0,
+   "spin": "7/2",
+   "abundance": 1.0
+  },
+  {
+   "name": "47Ti",
+   "mass_number": 47,
+   "gamma": -15105000.0,
+   "spin": "5/2",
+   "abundance": 0.07440000000000001
+  },
+  {
+   "name": "49Ti",
+   "mass_number": 49,
+   "gamma": -15109500.0,
+   "spin": "7/2",
+   "abundance": 0.0541
+  },
+  {
+   "name": "50V",
+   "mass_number": 50,
+   "gamma": 26706490.0,
+   "spin": "6",
+   "abundance": 0.0025
+  },
+  {
+   "name": "51V",
+   "mass_number": 51,
+   "gamma": 70455117.0,
+   "spin": "7/2",
+   "abundance": 0.9975
+  },
+  {
+   "name": "53Cr",
+   "mass_number": 53,
+   "gamma": -15152000.000000002,
+   "spin": "3/2",
+   "abundance": 0.09501
+  },
+  {
+   "name": "55Mn",
+   "mass_number": 55,
+   "gamma": 66452546.0,
+   "spin": "5/2",
+   "abundance": 1.0
+  },
+  {
+   "name": "57Fe",
+   "mass_number": 57,
+   "gamma": 8680624.0,
+   "spin": "1/2",
+   "abundance": 0.022000000000000002
+  },
+  {
+   "name": "59Co",
+   "mass_number": 59,
+   "gamma": 63320000.0,
+   "spin": "7/2",
+   "abundance": 1.0
+  },
+  {
+   "name": "61Ni",
+   "mass_number": 61,
+   "gamma": -23948000.0,
+   "spin": "3/2",
+   "abundance": 0.011399999999999999
+  },
+  {
+   "name": "63Cu",
+   "mass_number": 63,
+   "gamma": 71117890.0,
+   "spin": "3/2",
+   "abundance": 0.6917
+  },
+  {
+   "name": "65Cu",
+   "mass_number": 65,
+   "gamma": 76043500.0,
+   "spin": "3/2",
+   "abundance": 0.30829999999999996
+  },
+  {
+   "name": "67Zn",
+   "mass_number": 67,
+   "gamma": 16766880.0,
+   "spin": "5/2",
+   "abundance": 0.040999999999999995
+  },
+  {
+   "name": "69Ga",
+   "mass_number": 69,
+   "gamma": 64388550.0,
+   "spin": "3/2",
+   "abundance": 0.60108
+  },
+  {
+   "name": "71Ga",
+   "mass_number": 71,
+   "gamma": 81811710.00000001,
+   "spin": "3/2",
+   "abundance": 0.39892000000000005
+  },
+  {
+   "name": "73Ge",
+   "mass_number": 73,
+   "gamma": -9360303.0,
+   "spin": "9/2",
+   "abundance": 0.07730000000000001
+  },
+  {
+   "name": "75As",
+   "mass_number": 75,
+   "gamma": 45961630.0,
+   "spin": "3/2",
+   "abundance": 1.0
+  },
+  {
+   "name": "77Se",
+   "mass_number": 77,
+   "gamma": 51253857.0,
+   "spin": "1/2",
+   "abundance": 0.0763
+  },
+  {
+   "name": "79Br",
+   "mass_number": 79,
+   "gamma": 67256160.0,
+   "spin": "3/2",
+   "abundance": 0.5069
+  },
+  {
+   "name": "81Br",
+   "mass_number": 81,
+   "gamma": 72497760.0,
+   "spin": "3/2",
+   "abundance": 0.49310000000000004
+  },
+  {
+   "name": "83Kr",
+   "mass_number": 83,
+   "gamma": -10331000.0,
+   "spin": "9/2",
+   "abundance": 0.115
+  },
+  {
+   "name": "85Rb",
+   "mass_number": 85,
+   "gamma": 25927050.0,
+   "spin": "5/2",
+   "abundance": 0.7216500000000001
+  },
+  {
+   "name": "87Rb",
+   "mass_number": 87,
+   "gamma": 87864000.0,
+   "spin": "3/2",
+   "abundance": 0.27835000000000004
+  },
+  {
+   "name": "87Sr",
+   "mass_number": 87,
+   "gamma": -11639375.999999998,
+   "spin": "9/2",
+   "abundance": 0.07
+  },
+  {
+   "name": "89Y",
+   "mass_number": 89,
+   "gamma": -13162791.0,
+   "spin": "1/2",
+   "abundance": 1.0
+  },
+  {
+   "name": "91Zr",
+   "mass_number": 91,
+   "gamma": -24974300.0,
+   "spin": "5/2",
+   "abundance": 0.11220000000000001
+  },
+  {
+   "name": "93Nb",
+   "mass_number": 93,
+   "gamma": 65674000.0,
+   "spin": "9/2",
+   "abundance": 1.0
+  },
+  {
+   "name": "95Mo",
+   "mass_number": 95,
+   "gamma": -17510000.0,
+   "spin": "5/2",
+   "abundance": 0.1592
+  },
+  {
+   "name": "97Mo",
+   "mass_number": 97,
+   "gamma": -17880000.0,
+   "spin": "5/2",
+   "abundance": 0.09550000000000002
+  },
+  {
+   "name": "99Tc",
+   "mass_number": 99,
+   "gamma": 60460000.0,
+   "spin": "9/2",
+   "abundance": 0.0
+  },
+  {
+   "name": "99Ru",
+   "mass_number": 99,
+   "gamma": -12290000.0,
+   "spin": "5/2",
+   "abundance": 0.127
+  },
+  {
+   "name": "101Ru",
+   "mass_number": 101,
+   "gamma": -13770000.0,
+   "spin": "5/2",
+   "abundance": 0.17
+  },
+  {
+   "name": "103Rh",
+   "mass_number": 103,
+   "gamma": -8468000.0,
+   "spin": "1/2",
+   "abundance": 1.0
+  },
+  {
+   "name": "105Pd",
+   "mass_number": 105,
+   "gamma": -12300000.0,
+   "spin": "5/2",
+   "abundance": 0.2233
+  },
+  {
+   "name": "107Ag",
+   "mass_number": 107,
+   "gamma": -10889181.000000002,
+   "spin": "1/2",
+   "abundance": 0.51839
+  },
+  {
+   "name": "109Ag",
+   "mass_number": 109,
+   "gamma": -12518634.0,
+   "spin": "1/2",
+   "abundance": 0.48161000000000004
+  },
+  {
+   "name": "111Cd",
+   "mass_number": 111,
+   "gamma": -56983131.0,
+   "spin": "1/2",
+   "abundance": 0.128
+  },
+  {
+   "name": "113Cd",
+   "mass_number": 113,
+   "gamma": -59609153.0,
+   "spin": "1/2",
+   "abundance": 0.1222
+  },
+  {
+   "name": "113In",
+   "mass_number": 113,
+   "gamma": 58845000.0,
+   "spin": "9/2",
+   "abundance": 0.043
+  },
+  {
+   "name": "115In",
+   "mass_number": 115,
+   "gamma": 58972000.0,
+   "spin": "9/2",
+   "abundance": 0.9570000000000001
+  },
+  {
+   "name": "115Sn",
+   "mass_number": 115,
+   "gamma": -88013000.0,
+   "spin": "1/2",
+   "abundance": 0.0034000000000000002
+  },
+  {
+   "name": "117Sn",
+   "mass_number": 117,
+   "gamma": -95887900.0,
+   "spin": "1/2",
+   "abundance": 0.0768
+  },
+  {
+   "name": "119Sn",
+   "mass_number": 119,
+   "gamma": -100317000.0,
+   "spin": "1/2",
+   "abundance": 0.0859
+  },
+  {
+   "name": "121Sb",
+   "mass_number": 121,
+   "gamma": 64435000.0,
+   "spin": "5/2",
+   "abundance": 0.5736
+  },
+  {
+   "name": "123Sb",
+   "mass_number": 123,
+   "gamma": 34892000.0,
+   "spin": "7/2",
+   "abundance": 0.4264
+  },
+  {
+   "name": "123Te",
+   "mass_number": 123,
+   "gamma": -70590980.0,
+   "spin": "1/2",
+   "abundance": 0.009080000000000001
+  },
+  {
+   "name": "125Te",
+   "mass_number": 125,
+   "gamma": -85108404.0,
+   "spin": "1/2",
+   "abundance": 0.07139000000000001
+  },
+  {
+   "name": "127I",
+   "mass_number": 127,
+   "gamma": 53895730.00000001,
+   "spin": "5/2",
+   "abundance": 1.0
+  },
+  {
+   "name": "129Xe",
+   "mass_number": 129,
+   "gamma": -74521030.0,
+   "spin": "1/2",
+   "abundance": 0.264
+  },
+  {
+   "name": "131Xe",
+   "mass_number": 131,
+   "gamma": 22090760.0,
+   "spin": "3/2",
+   "abundance": 0.212
+  },
+  {
+   "name": "133Cs",
+   "mass_number": 133,
+   "gamma": 35332539.0,
+   "spin": "7/2",
+   "abundance": 1.0
+  },
+  {
+   "name": "135Ba",
+   "mass_number": 135,
+   "gamma": 26575000.000000004,
+   "spin": "3/2",
+   "abundance": 0.06591999999999999
+  },
+  {
+   "name": "137Ba",
+   "mass_number": 137,
+   "gamma": 29929500.0,
+   "spin": "3/2",
+   "abundance": 0.11230000000000001
+  },
+  {
+   "name": "138La",
+   "mass_number": 138,
+   "gamma": 35572390.0,
+   "spin": "5",
+   "abundance": 0.000902
+  },
+  {
+   "name": "139La",
+   "mass_number": 139,
+   "gamma": 38083318.0,
+   "spin": "7/2",
+   "abundance": 0.999098
+  },
+  {
+   "name": "141Pr",
+   "mass_number": 141,
+   "gamma": 81907000.0,
+   "spin": "5/2",
+   "abundance": 1.0
+  },
+  {
+   "name": "143Nd",
+   "mass_number": 143,
+   "gamma": -14570000.0,
+   "spin": "7/2",
+   "abundance": 0.1218
+  },
+  {
+   "name": "145Nd",
+   "mass_number": 145,
+   "gamma": -8980000.0,
+   "spin": "7/2",
+   "abundance": 0.083
+  },
+  {
+   "name": "147Pm",
+   "mass_number": 147,
+   "gamma": 36130000.0,
+   "spin": "7/2",
+   "abundance": 0.0
+  },
+  {
+   "name": "147Sm",
+   "mass_number": 147,
+   "gamma": -11150000.0,
+   "spin": "7/2",
+   "abundance": 0.15
+  },
+  {
+   "name": "149Sm",
+   "mass_number": 149,
+   "gamma": -9192000.0,
+   "spin": "7/2",
+   "abundance": 0.138
+  },
+  {
+   "name": "151Eu",
+   "mass_number": 151,
+   "gamma": 66510000.0,
+   "spin": "5/2",
+   "abundance": 0.478
+  },
+  {
+   "name": "153Eu",
+   "mass_number": 153,
+   "gamma": 29369000.0,
+   "spin": "5/2",
+   "abundance": 0.522
+  },
+  {
+   "name": "155Gd",
+   "mass_number": 155,
+   "gamma": -8213200.000000001,
+   "spin": "3/2",
+   "abundance": 0.14800000000000002
+  },
+  {
+   "name": "157Gd",
+   "mass_number": 157,
+   "gamma": -10769000.0,
+   "spin": "3/2",
+   "abundance": 0.1565
+  },
+  {
+   "name": "159Tb",
+   "mass_number": 159,
+   "gamma": 64310000.0,
+   "spin": "3/2",
+   "abundance": 1.0
+  },
+  {
+   "name": "161Dy",
+   "mass_number": 161,
+   "gamma": -9201000.0,
+   "spin": "5/2",
+   "abundance": 0.189
+  },
+  {
+   "name": "163Dy",
+   "mass_number": 163,
+   "gamma": 12890000.0,
+   "spin": "5/2",
+   "abundance": 0.249
+  },
+  {
+   "name": "165Ho",
+   "mass_number": 165,
+   "gamma": 57100000.0,
+   "spin": "7/2",
+   "abundance": 1.0
+  },
+  {
+   "name": "167Er",
+   "mass_number": 167,
+   "gamma": -7715700.0,
+   "spin": "7/2",
+   "abundance": 0.2295
+  },
+  {
+   "name": "169Tm",
+   "mass_number": 169,
+   "gamma": -22180000.0,
+   "spin": "1/2",
+   "abundance": 1.0
+  },
+  {
+   "name": "171Yb",
+   "mass_number": 171,
+   "gamma": 47288000.0,
+   "spin": "1/2",
+   "abundance": 0.14300000000000002
+  },
+  {
+   "name": "173Yb",
+   "mass_number": 173,
+   "gamma": -13025000.0,
+   "spin": "5/2",
+   "abundance": 0.1612
+  },
+  {
+   "name": "175Lu",
+   "mass_number": 175,
+   "gamma": 30552000.0,
+   "spin": "7/2",
+   "abundance": 0.9741
+  },
+  {
+   "name": "176Lu",
+   "mass_number": 176,
+   "gamma": 21684000.0,
+   "spin": "7",
+   "abundance": 0.0259
+  },
+  {
+   "name": "177Hf",
+   "mass_number": 177,
+   "gamma": 10860000.0,
+   "spin": "7/2",
+   "abundance": 0.18606000000000003
+  },
+  {
+   "name": "179Hf",
+   "mass_number": 179,
+   "gamma": -6821000.0,
+   "spin": "9/2",
+   "abundance": 0.13629
+  },
+  {
+   "name": "181Ta",
+   "mass_number": 181,
+   "gamma": 32437999.999999996,
+   "spin": "7/2",
+   "abundance": 0.99988
+  },
+  {
+   "name": "183W",
+   "mass_number": 183,
+   "gamma": 11282403.0,
+   "spin": "1/2",
+   "abundance": 0.14300000000000002
+  },
+  {
+   "name": "185Re",
+   "mass_number": 185,
+   "gamma": 61057000.0,
+   "spin": "5/2",
+   "abundance": 0.374
+  },
+  {
+   "name": "187Re",
+   "mass_number": 187,
+   "gamma": 61682000.0,
+   "spin": "5/2",
+   "abundance": 0.626
+  },
+  {
+   "name": "187Os",
+   "mass_number": 187,
+   "gamma": 6192895.000000001,
+   "spin": "1/2",
+   "abundance": 0.016
+  },
+  {
+   "name": "189Os",
+   "mass_number": 189,
+   "gamma": 21071300.0,
+   "spin": "3/2",
+   "abundance": 0.161
+  },
+  {
+   "name": "191Ir",
+   "mass_number": 191,
+   "gamma": 4812000.0,
+   "spin": "3/2",
+   "abundance": 0.373
+  },
+  {
+   "name": "193Ir",
+   "mass_number": 193,
+   "gamma": 5227000.000000001,
+   "spin": "3/2",
+   "abundance": 0.627
+  },
+  {
+   "name": "195Pt",
+   "mass_number": 195,
+   "gamma": 58385000.0,
+   "spin": "1/2",
+   "abundance": 0.33799999999999997
+  },
+  {
+   "name": "197Au",
+   "mass_number": 197,
+   "gamma": 4730600.0,
+   "spin": "3/2",
+   "abundance": 1.0
+  },
+  {
+   "name": "199Hg",
+   "mass_number": 199,
+   "gamma": 48457916.0,
+   "spin": "1/2",
+   "abundance": 0.16870000000000002
+  },
+  {
+   "name": "201Hg",
+   "mass_number": 201,
+   "gamma": -17887690.0,
+   "spin": "3/2",
+   "abundance": 0.1318
+  },
+  {
+   "name": "203Tl",
+   "mass_number": 203,
+   "gamma": 155393338.0,
+   "spin": "1/2",
+   "abundance": 0.29524
+  },
+  {
+   "name": "205Tl",
+   "mass_number": 205,
+   "gamma": 156921808.0,
+   "spin": "1/2",
+   "abundance": 0.70476
+  },
+  {
+   "name": "207Pb",
+   "mass_number": 207,
+   "gamma": 55804600.00000001,
+   "spin": "1/2",
+   "abundance": 0.22100000000000003
+  },
+  {
+   "name": "209Bi",
+   "mass_number": 209,
+   "gamma": 43750000.0,
+   "spin": "9/2",
+   "abundance": 1.0
+  },
+  {
+   "name": "209Po",
+   "mass_number": 209,
+   "gamma": 74000000.0,
+   "spin": "1/2",
+   "abundance": 0.0
+  },
+  {
+   "name": "227Ac",
+   "mass_number": 227,
+   "gamma": 35000000.0,
+   "spin": "3/2",
+   "abundance": 0.0
+  },
+  {
+   "name": "229Th",
+   "mass_number": 229,
+   "gamma": 4000000.0,
+   "spin": "5/2",
+   "abundance": 1.0
+  },
+  {
+   "name": "231Pa",
+   "mass_number": 231,
+   "gamma": 32100000.0,
+   "spin": "3/2",
+   "abundance": 1.0
+  },
+  {
+   "name": "235U",
+   "mass_number": 235,
+   "gamma": -5200000.0,
+   "spin": "7/2",
+   "abundance": 0.0072
+  },
+  {
+   "name": "237Np",
+   "mass_number": 237,
+   "gamma": 31000000.0,
+   "spin": "5/2",
+   "abundance": 0.0
+  },
+  {
+   "name": "239Pu",
+   "mass_number": 239,
+   "gamma": 9720000.0,
+   "spin": "1/2",
+   "abundance": 0.0
+  },
+  {
+   "name": "241Am",
+   "mass_number": 241,
+   "gamma": 15400000.0,
+   "spin": "5/2",
+   "abundance": 0.0
+  },
+  {
+   "name": "243Am",
+   "mass_number": 243,
+   "gamma": 15400000.0,
+   "spin": "5/2",
+   "abundance": 0.0
+  },
+  {
+   "name": "247Cm",
+   "mass_number": 247,
+   "gamma": 2000000.0,
+   "spin": "9/2",
+   "abundance": 0.0
+  }
+ ]
+}

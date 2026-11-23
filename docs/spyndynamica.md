@@ -5,15 +5,16 @@ Levitt's Mathematica package. It is a separate import (`import spyndynamica`) th
 nothing of Spynach. This guide covers what exists so far. In the symbolic core, operators are sums of product
 operators and spherical tensor operators with symbolic coefficients, and products, commutators, rotations and
 weak-coupling evolution are exact algebra. Liouville space adds operator bases and superoperators, and a
-numeric engine propagates sequences of pulses and delays with strong coupling and relaxation. Signals,
-time-dependent Hamiltonians and ensemble averages are not ported yet.
+numeric engine propagates sequences of pulses and delays with strong coupling and relaxation. Signals come
+with their Fourier transform and lineshapes, and the isotope table is included. Time-dependent Hamiltonians
+and ensemble averages are not ported yet.
 
 SpinDynamica is the work of Malcolm H. Levitt and co-authors. Its [terms of use](https://www.spindynamica.soton.ac.uk/about/termsofuse/)
 state that it is open-source and freely available for use, and ask that published work cite
 C. Bengs, M. H. Levitt, *SpinDynamica: Symbolic and numerical magnetic resonance in a Mathematica environment*, Magn. Reson. Chem. (2017), doi:10.1002/mrc.4642. Work that uses SpynDynamica should cite that publication.
 
 Every convention below is the one of SpinDynamica 3.10.2 and is checked against it
-(`tests/spyndynamica/`, 466 reference cases generated from the Mathematica package).
+(`tests/spyndynamica/`, 514 reference cases generated from the Mathematica package).
 
 ## Contents
 
@@ -25,7 +26,9 @@ Every convention below is the one of SpinDynamica 3.10.2 and is checked against 
 6. [Spins above 1/2 and tensor operators](#spins-above-12-and-tensor-operators)
 7. [Superoperators and operator bases](#superoperators-and-operator-bases)
 8. [Pulse sequences, strong coupling and relaxation](#pulse-sequences-strong-coupling-and-relaxation)
-9. [Coming from SpinDynamica](#coming-from-spindynamica)
+9. [Signals and spectra](#signals-and-spectra)
+10. [Isotopes and interactions](#isotopes-and-interactions)
+11. [Coming from SpinDynamica](#coming-from-spindynamica)
 
 ## Spin systems and operators
 
@@ -238,6 +241,59 @@ print(times.round(2), np.abs(decay).round(4))
 finite length, and the background acts during it. Events run from left to right; `order="right_to_left"`
 reverses them for one call.
 
+## Signals and spectra
+
+`signal_1d` is SpinDynamica's `Signal1D`: the free-induction decay of a spin system under a Hamiltonian. By
+default the system starts from `Iz` of all spins, a 90° pulse about x prepares it, and the observable is
+`−(i/2) I−` of all spins. The signal is the amplitude `(Q|ρ(t))/(Q|Q)` of the observable `Q`, so it starts at 1
+and a Hamiltonian `ω Iz` gives `exp(+iωt)`.
+
+```python
+from spyndynamica import ft, signal_1d
+
+ab = 2 * sp.pi * 30 * I(1, "z") - 2 * sp.pi * 10 * I(2, "z") + 2 * sp.pi * 12 * s.dot(1, 2)
+fid = signal_1d(ab, points=256, bandwidth=2 * sp.pi * 200, line_broadening=2 * np.pi * 1)
+
+for amplitude, omega, decay in fid.peaks:
+    print(f"{omega.real / (2 * np.pi):8.3f} Hz   amplitude {amplitude.real:.4f}   decay rate {decay.real:.3f} /s")
+print(fid.values[:3].round(4))
+```
+
+Frequencies and line widths are in rad/s. `bandwidth` sets the dwell time `2π / bandwidth`; `dwell` gives it
+directly. For a time-independent Hamiltonian the signal is a list of peaks, one per transition, from which
+`values` are the samples; `method="direct"` propagates step by step instead. `line_broadening` is a full width
+at half height, `"auto"` (the default, 1% of the envelope at the last sample) or `None`. With a relaxation
+superoperator in `background` the Liouvillian is diagonalised and every peak has its own decay rate.
+
+`ft` returns the frequency axis in Hz and the spectrum:
+
+```python
+frequencies, spectrum = ft(fid)
+print(len(frequencies), frequencies[[0, -1]].round(2))
+print("tallest line at", frequencies[np.argmax(spectrum.real)].round(2), "Hz")
+```
+
+The transform is `S(f) = (1/N) Σ s(t_n) exp(−2πi f t_n)`, with the first sample halved and the signal zero
+filled to twice its length (`first_point`, `zero_fill`). `lorentzian`, `absorption`, `dispersion` and
+`gaussian` are the lineshape functions.
+
+## Isotopes and interactions
+
+The isotope table and the constants are SpinDynamica's.
+
+```python
+from spyndynamica import dipolar_coupling, larmor_frequency, magnetogyric_ratio, spin_quantum_number
+
+print(spin_quantum_number("2H"), magnetogyric_ratio("13C"))
+print(larmor_frequency("1H", 9.4) / (2 * np.pi * 1e6), "MHz")
+print(dipolar_coupling("1H", "13C", 1.1e-10) / (2 * np.pi), "Hz")
+
+hd = SpinSystem({"H": spin_quantum_number("1H"), "D": spin_quantum_number("2H")})
+print(hd)
+```
+
+The Larmor frequency is `−γ B0` and the dipolar coupling `−(μ0/4π) γ1 γ2 ħ / r³`, both in rad/s.
+
 ## Coming from SpinDynamica
 
 | SpinDynamica | SpynDynamica |
@@ -276,6 +332,15 @@ reverses them for one call.
 | `Trajectory[ρ -> A, events]` | `trajectory(ρ, A, events)` |
 | `{Pulse[{π/2, "x"}], Delay[τ]}`, `Repeat[events, n]` | `[Pulse(pi/2, "x"), Delay(τ)]`, `Repeat(events, n)` |
 | `$Chronology = "RightToLeft"` | `order="right_to_left"` in the call |
+| `Signal1D[{{ωSW, n}}, H, LineBroadening -> w]` | `signal_1d(H, points=n, bandwidth=ωSW, line_broadening=w)` |
+| `InitialDensityOperator`, `Preparation`, `Observable` | `initial`, `preparation`, `observable` |
+| `SignalCalculationMethod -> "Direct"` | `method="direct"` |
+| `Expand[signal]` | `signal.times`, `signal.values` |
+| `FT[signal]` | `ft(signal)` |
+| `ApplyLineBroadening[signal, LineBroadening -> w]` | `signal.broadened(w)` |
+| `Lorentzian`, `Absorption`, `Dispersion`, `Gaussian` | `lorentzian`, `absorption`, `dispersion`, `gaussian` |
+| `MagnetogyricRatio`, `NuclearSpinQuantumNumber`, `NaturalAbundance` | `magnetogyric_ratio`, `spin_quantum_number`, `natural_abundance` |
+| `LarmorFrequency`, `DirectDipolarCoupling` | `larmor_frequency`, `dipolar_coupling` |
 
 **The same:** the order of the Zeeman and singlet-triplet bases, the phases and normalisation of the tensor
 operators, the sense of every rotation, the zyz Euler convention and the index order of the Wigner matrices.
@@ -297,8 +362,14 @@ operators, the sense of every rotation, the zyz Euler convention and the index o
   only the global `$Chronology` counts.
 - `trajectory` returns sampled values, not interpolating functions.
 - The phenomenological relaxation model is for spins-1/2.
+- `signal_1d` returns the number of points asked for. SpinDynamica drops the last point of an even request.
+- Peak frequencies are exact. SpinDynamica by default moves every peak to the nearest point of its frequency
+  grid (`DigitalFrequencyResolution`), which changes a short signal visibly.
+- `ft` of an odd number of points without zero filling returns the transform at the stated frequencies;
+  SpinDynamica's values sit one point lower on its axis in that case.
 
-**Not ported yet:** time-dependent Hamiltonians and shaped pulses, `Signal1D` and Fourier transforms,
-relaxation theory beyond the phenomenological model, ensemble averages, the group theory modules and graphics.
+**Not ported yet:** time-dependent Hamiltonians, shaped pulses and the COMPUTE method, two-dimensional
+signals, relaxation theory beyond the phenomenological model, ensemble and powder averages, the group theory
+modules and graphics.
 `porting/spyndynamica/PLAN.md` has the phases, and `porting/spyndynamica/DIVERGENCES.md` lists two documented
 options that SpinDynamica itself ignores.

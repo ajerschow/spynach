@@ -26,7 +26,40 @@ how the difference was established. The cases that record the SpinDynamica behav
 - **Port:** the order is an argument of the call (default left to right) and there is no global setting.
 - **Report to the author:** yes.
 
+## D3. `Signal1D` returns an odd number of points for an even request
+
+- **Documented:** `ForceEvenNumberOfPoints -> True` (the default) drops the last point "if the requested
+  number of acquired points is odd", because the fast Fourier transform wants an even number.
+- **SpinDynamica does:** the opposite. A request for 16 points (`{{ωSW, 16}}`, or a time range with 16 samples)
+  gives 15, with the message `Signal1D::droplast`; a request for 17 gives 17.
+- **Established by:** the sampling stored with the signal and the length of its expansion; cases
+  `06_signals: two_half/timing_*` and `points_*`.
+- **Port:** `signal_1d` returns the number of points asked for.
+- **Report to the author:** yes.
+
+## D4. `FT` of an odd number of points without zero filling is shifted by one point
+
+- **SpinDynamica does:** for an odd number of points and `ZeroFill -> False` the frequency axis is symmetric
+  about zero, but every value sits one point too low on it (the value of the highest frequency is at the far
+  end). With zero filling (the default) the number of points is even and the axis is right.
+- **Established by:** the discrete Fourier sum evaluated at the stated frequencies
+  (`test_fourier_transform`); cases `06_signals: fourier/list_odd_length`, `two_half/ab_spectrum_no_zero_fill`.
+- **Port:** `ft` returns the transform at the stated frequencies for every length.
+- **Report to the author:** yes. Together with D3 it affects the default 16-point request when zero filling is
+  switched off.
+
+## Approximations that are defaults in SpinDynamica (not followed)
+
+- `DigitalFrequencyResolution -> Automatic` moves every peak of a signal to the nearest point of the frequency
+  grid before the signal is expanded, for speed. For a 17-point signal of an AB system the peaks move by up
+  to 3 Hz. The port keeps exact frequencies; the fixtures are generated with
+  `DigitalFrequencyResolution -> False`, and the cases `ab_peaks_snapped_to_grid` and
+  `fourier/signal_peaks_expanded` record the default.
+
 ## Conventions that are uneven inside SpinDynamica (followed by the port)
+
+- `Lorentzian[w, {a, w0, λ}]` is `a/(λ + i(w − w0))`, whose imaginary part is minus `Dispersion`. The usage
+  text of `Dispersion` calls `λ` the full width; it is the half width, as for the others.
 
 - `opT` of rank 1 and 2 is defined by formulas (`T(1, 0) = Iz`, `T(2, 0) = (3Iz² − I(I+1))/√6`), whose norm
   depends on the spin. Ranks above 2 come from the Wigner-Eckart theorem with a reduced matrix element chosen
