@@ -15,7 +15,7 @@ state that it is open-source and freely available for use, and ask that publishe
 C. Bengs, M. H. Levitt, *SpinDynamica: Symbolic and numerical magnetic resonance in a Mathematica environment*, Magn. Reson. Chem. (2017), doi:10.1002/mrc.4642. Work that uses SpynDynamica should cite that publication.
 
 Every convention below is the one of SpinDynamica 3.10.2 and is checked against it
-(`tests/spyndynamica/`, 583 reference cases generated from the Mathematica package).
+(`tests/spyndynamica/`, 603 reference cases generated from the Mathematica package).
 
 ## Contents
 
@@ -255,6 +255,29 @@ signal = amplitudes(ten.I(None, "z"), [ten.I(1, "x"), ten.I(1, "y")], [Pulse(sp.
 print(ten.dimension, signal.real.round(4))
 ```
 
+A `PulseSequence` groups events. It gives its pulses default spins and a common phase shift, and with a total
+`duration` it stretches `Delay("auto")` to fit; several `Delay(("auto", weight))` share the remaining time.
+`ShapedPulse` takes the amplitude, phase and frequency offset as expressions of a local time, and
+`precalculate` stores the propagator of a block for reuse.
+
+```python
+from spyndynamica import PulseSequence, ShapedPulse, precalculate
+
+local = sp.Symbol("tau", real=True)
+block = PulseSequence([Pulse(sp.pi / 2, "x"), Delay("auto"), Pulse(sp.pi, "y"), Delay("auto")], duration=0.008)
+print(round(amplitudes(I(1, "z"), I(1, "y"), [block], background=strong).real, 4))
+
+gaussian = ShapedPulse(0.01, 2 * sp.pi * 80 * sp.exp(-((local / 0.002) ** 2)), tau=local, spins=[1])
+print(amplitudes(I(1, "z"), [I(1, "y"), I(1, "z")], [gaussian]).real.round(4))
+
+stored = precalculate([block], background=strong)
+print(round(amplitudes(I(1, "z"), I(1, "y"), [stored, stored], background=strong).real, 4))
+```
+
+A coherence-order filter is an event like any other superoperator: `coherence_filter(s, [-2, 2])` in the
+list. `Pulse` also takes `phase_shift` and `amplitude_factor`, and `amplitudes` takes `start_time` (the time
+at which the sequence starts) and `normalization`.
+
 `trajectory` samples the amplitudes during the sequence. A pulse with `nutation_frequency` or `duration` has a
 finite length, and the background acts during it. Events run from left to right; `order="right_to_left"`
 reverses them for one call.
@@ -470,6 +493,12 @@ The search is local, as SpinDynamica's is.
 | `TransformationAmplitude[ρ -> A, events, BackgroundGenerator -> H]` | `amplitudes(ρ, A, events, background=H)` |
 | `Trajectory[ρ -> A, events]` | `trajectory(ρ, A, events)` |
 | `{Pulse[{π/2, "x"}], Delay[τ]}`, `Repeat[events, n]` | `[Pulse(pi/2, "x"), Delay(τ)]`, `Repeat(events, n)` |
+| `PulseSequence[spins, τ, {.., Delay[Automatic]}, PhaseShift -> φ]` | `PulseSequence([.., Delay("auto")], spins=.., duration=τ, phase_shift=φ)` |
+| `Delay[{Automatic, w}]` | `Delay(("auto", w))` |
+| `ShapedPulse[spins, τp, {τ, {amplitude, phase, frequency}}]` | `ShapedPulse(τp, amplitude, phase, frequency, tau=τ, spins=spins)` |
+| `CoherenceOrderFiltration[{-2, 2}]` | `coherence_filter(s, [-2, 2])` as an event |
+| `Precalculate[events, BackgroundGenerator -> H]` | `precalculate(events, background=H)` |
+| `PhaseShift`, `AmplitudeFactor`, `NormalizationFactor`, `InitialTimePoint` | `phase_shift`, `amplitude_factor`, `normalization`, `start_time` |
 | `$Chronology = "RightToLeft"` | `order="right_to_left"` in the call |
 | `Signal1D[{{ωSW, n}}, H, LineBroadening -> w]` | `signal_1d(H, points=n, bandwidth=ωSW, line_broadening=w)` |
 | `InitialDensityOperator`, `Preparation`, `Observable` | `initial`, `preparation`, `observable` |
@@ -527,8 +556,8 @@ operators, the sense of every rotation, the zyz Euler convention and the index o
 - `ft` of an odd number of points without zero filling returns the transform at the stated frequencies;
   SpinDynamica's values sit one point lower on its axis in that case.
 
-**Not ported yet:** signals under time-dependent Hamiltonians with relaxation, shaped pulses as events of
-their own, two-dimensional signals, relaxation theory beyond the phenomenological model,
-the random orientation sets, the group theory modules and graphics.
+**Not ported yet:** signals under time-dependent Hamiltonians with relaxation, the carousel average
+(`CarouselAverage`, γ-COMPUTE), two-dimensional signals, relaxation theory beyond the phenomenological model,
+the group theory modules and graphics.
 `porting/spyndynamica/PLAN.md` has the phases, and `porting/spyndynamica/DIVERGENCES.md` lists two documented
 options that SpinDynamica itself ignores.

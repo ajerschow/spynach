@@ -104,6 +104,7 @@ def signal_1d(
     line_broadening: Any = "auto",
     method: str = "auto",
     values: Mapping[Any, Any] | None = None,
+    normalization: Any = None,
 ) -> Signal:
     """A free-induction decay (SpinDynamica's ``Signal1D``).
 
@@ -113,6 +114,7 @@ def signal_1d(
     ``preparation`` a list of events (default: a 90° pulse about x; ``None`` for none) and ``observable`` an
     operator or a list of spins (default: all spins), which stands for ``−(i/2) I−`` of those spins.
     ``line_broadening`` is a full width at half height in rad/s, ``'auto'`` (1% at the last sample) or ``None``.
+    The signal is divided by ``normalization`` when one is given.
 
     ``method='diagonalization'`` returns the signal as a list of peaks from the eigenvalues of the generator;
     ``'direct'`` propagates step by step and returns the samples; ``'auto'`` diagonalises.
@@ -146,7 +148,7 @@ def signal_1d(
     if observable is None or isinstance(observable, (list, tuple)):
         observable = -sp.I / 2 * system.I(list(observable) if observable else None, "-")
     q = observable.numeric(values)
-    norm = np.vdot(q, q)
+    norm = np.vdot(q, q) * (1.0 if normalization is None else float(sp.N(sp.sympify(normalization))))
     dim = system.dimension
     interval = (0.0, None, None, None, None)  # the engine adds the background, which holds every generator here
     if start:
@@ -290,6 +292,15 @@ def ft(
     order = np.argsort(index, kind="stable")
     frequencies = index[order] / (total * (dwell or 1.0))
     return frequencies, spectrum[order]
+
+
+def ft2(data: Any, *, zero_fill: int | bool = True, first_point: float = 0.5) -> np.ndarray:
+    """The two-dimensional Fourier transform of a matrix of samples, with the conventions of :func:`ft` along
+    both dimensions."""
+    out = np.array(data, dtype=complex)
+    for axis in (0, 1):
+        out = np.apply_along_axis(lambda row: ft(row, zero_fill=zero_fill, first_point=first_point)[1], axis, out)
+    return out
 
 
 def _lines(lines: Any) -> np.ndarray:

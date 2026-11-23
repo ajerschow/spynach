@@ -17,8 +17,9 @@ Author: Alexej Jerschow.
 
 from __future__ import annotations
 
+import math
 from collections.abc import Iterable, Mapping, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Any
 
 import numpy as np
@@ -38,6 +39,8 @@ class Pulse:
 
     Without ``nutation_frequency`` and ``duration`` the pulse is ideal: an instantaneous rotation. With one of
     them (rad/s, s) it has the duration ``flip / nutation_frequency`` and the background acts during it.
+    ``phase_shift`` is added to the phase. ``amplitude_factor`` scales the radiofrequency field: the flip angle
+    of an ideal pulse, the nutation frequency of a finite one (whose duration stays the nominal one).
     """
 
     flip: Any
@@ -45,14 +48,63 @@ class Pulse:
     spins: Any = None
     nutation_frequency: Any = None
     duration: Any = None
+    phase_shift: Any = 0
+    amplitude_factor: Any = 1
 
 
 @dataclass(frozen=True)
 class Delay:
-    """An interval of ``duration`` (s) under the background, plus ``generator`` if one is given."""
+    """An interval of ``duration`` (s) under the background, plus ``generator`` if one is given.
+
+    Inside a :class:`PulseSequence` with a total duration, ``Delay("auto")`` takes the time that is left, and
+    several ``Delay(("auto", weight))`` share it in the ratio of their weights.
+    """
 
     duration: Any
     generator: Any = None
+
+
+@dataclass(frozen=True)
+class ShapedPulse:
+    """A shaped radiofrequency pulse of ``duration`` on ``spins`` (default: all).
+
+    ``amplitude`` (the nutation frequency in rad/s), ``phase`` and ``frequency`` (an offset of the
+    radiofrequency in rad/s) are expressions in the local time ``tau``, whose origin is at the fraction
+    ``origin`` of the pulse (the centre by default). The field is
+    ``amplitude (Ix cos phase + Iy sin phase) − frequency Iz``, the Hamiltonian in the frame of the pulse.
+    """
+
+    duration: Any
+    amplitude: Any
+    phase: Any = 0
+    frequency: Any = 0
+    tau: Any = None
+    spins: Any = None
+    origin: Any = sp.Rational(1, 2)
+    amplitude_factor: Any = 1
+
+
+@dataclass(frozen=True)
+class PulseSequence:
+    """A list of events as one object (SpinDynamica's ``PulseSequence``).
+
+    ``spins`` are the spins of the pulses that name none, ``phase_shift`` is added to the phase of every
+    pulse, and ``duration`` is the total duration, which the automatic delays fill (see :class:`Delay`).
+    """
+
+    events: Sequence[Any]
+    spins: Any = None
+    duration: Any = None
+    phase_shift: Any = 0
+
+
+@dataclass(frozen=True)
+class Precalculated:
+    """The stored propagator of a set of events, made by :func:`precalculate` and used as one event."""
+
+    matrix: Any
+    unitary: bool
+    duration: float = 0.0
 
 
 @dataclass(frozen=True)
@@ -111,20 +163,76 @@ def _number(value: Any, values: Mapping[Any, Any] | None) -> float:
     return out.real
 
 
-def _expand(events: Iterable[Any]) -> list[Any]:
+_PHASES = {"x": 0, "y": sp.pi / 2, "-x": sp.pi, "-y": 3 * sp.pi / 2}
+
+
+def _shift(pulse: Any, shift: Any, spins: Any) -> Any:
+    """A pulse with the phase shift and the default spins of the sequence it belongs to."""
+    if isinstance(pulse, (Pulse, ShapedPulse)):
+        changes: dict[str, Any] = {}
+        if pulse.spins is None and spins is not None:
+            changes["spins"] = spins
+        if shift != 0:
+            if isinstance(pulse, Pulse):
+                changes["phase_shift"] = pulse.phase_shift + shift
+            else:
+                changes["phase"] = sp.sympify(pulse.phase) + shift
+        return replace(pulse, **changes) if changes else pulse
+    return pulse
+
+
+def _event_duration(event: Any, values: Mapping[Any, Any] | None) -> float:
+    if isinstance(event, Pulse):
+        if event.duration is not None:
+            return _number(event.duration, values)
+        return (
+            _number(event.flip, values) / _number(event.nutation_frequency, values) if event.nutation_frequency else 0.0
+        )
+    if isinstance(event, (Delay, ShapedPulse)):
+        return _number(event.duration, values)
+    if isinstance(event, Precalculated):
+        return event.duration
+    if isinstance(event, tuple) and len(event) == 2:
+        return _number(event[1], values)
+    return 0.0
+
+
+def _expand(events: Iterable[Any], values: Mapping[Any, Any] | None = None) -> list[Any]:
     out: list[Any] = []
     for event in events:
         if isinstance(event, Repeat):
-            out += _expand(event.events) * int(event.count)
+            out += _expand(event.events, values) * int(event.count)
+        elif isinstance(event, PulseSequence):
+            inner = [_shift(e, sp.sympify(event.phase_shift), event.spins) for e in _expand(event.events, values)]
+            automatic = [e for e in inner if isinstance(e, Delay) and not _fixed(e)]
+            if automatic:
+                if event.duration is None:
+                    raise ValueError("automatic delays need the total duration of the pulse sequence.")
+                fixed = sum(_event_duration(e, values) for e in inner if e not in automatic)
+                weights = [1.0 if isinstance(e.duration, str) else float(e.duration[1]) for e in automatic]
+                left = _number(event.duration, values) - fixed
+                if left < -1e-15:
+                    raise ValueError("the events are longer than the total duration of the pulse sequence.")
+                shares = iter(left * w / sum(weights) for w in weights)
+                inner = [
+                    replace(e, duration=next(shares)) if isinstance(e, Delay) and not _fixed(e) else e for e in inner
+                ]
+            out += inner
         else:
             out.append(event)
     return out
 
 
+def _fixed(delay: Delay) -> bool:
+    return not (isinstance(delay.duration, str) or (isinstance(delay.duration, tuple) and delay.duration[0] == "auto"))
+
+
 class _Engine:
     """The events of one call as numeric steps (see :meth:`_step`)."""
 
-    def __init__(self, system: SpinSystem, events, background, values, order: str, sparse: bool = False):
+    def __init__(
+        self, system: SpinSystem, events, background, values, order: str, sparse: bool = False, start_time: float = 0.0
+    ):
         if order not in ("left_to_right", "right_to_left"):
             raise ValueError("order must be 'left_to_right' or 'right_to_left'.")
         self.system = system
@@ -132,12 +240,19 @@ class _Engine:
         self._blocks: dict[int, list] = {}
         self.values = values
         self.dim = system.dimension
-        events = _expand(events if isinstance(events, (list, tuple)) and not self._is_pair(events) else [events])
+        self.start_time = float(start_time)
+        events = _expand(
+            events if isinstance(events, (list, tuple)) and not self._is_pair(events) else [events], values
+        )
         if order == "right_to_left":
             events = events[::-1]
         parts = background if isinstance(background, (list, tuple)) else [background]
         self.h0, self.r0 = self._generators(parts)
-        self.steps = [self._step(event) for event in events]
+        self.steps = []
+        clock = self.start_time
+        for event in events:
+            self.steps.append(self._step(event, clock))
+            clock += self.steps[-1][0]
         self.liouville = self.r0 is not None or any(step[2] is not None or step[4] is not None for step in self.steps)
 
     @staticmethod
@@ -163,12 +278,35 @@ class _Engine:
                 raise TypeError(f"a generator is an operator or a superoperator, not {type(part).__name__}.")
         return h, r
 
-    def _step(self, event: Any):
+    def _step(self, event: Any, clock: float = 0.0):
         """``(duration, hamiltonian, dissipator, unitary, superoperator[, hamiltonian(t)])``; the unitary and the
         superoperator are instantaneous, the function of time is there for a time-dependent Hamiltonian."""
+        if isinstance(event, Precalculated):
+            if event.unitary:
+                return (0.0, None, None, event.matrix, None)
+            return (0.0, None, None, None, event.matrix)
+        if isinstance(event, ShapedPulse):
+            duration = _number(event.duration, self.values)
+            substitute = (lambda e: sp.sympify(e).subs(self.values)) if self.values else sp.sympify
+            factor = substitute(event.amplitude_factor)
+            functions = [
+                sp.lambdify(event.tau, substitute(e), "numpy") for e in (event.amplitude, event.phase, event.frequency)
+            ]
+            ix, iy, iz = (self.system.I(event.spins, c).numeric() for c in "xyz")
+            origin = clock + float(sp.N(event.origin)) * duration
+            scale = float(sp.N(factor))
+
+            def shaped(t: float) -> np.ndarray:
+                tau = t - origin
+                angle = float(functions[1](tau))
+                field = scale * float(functions[0](tau)) * (math.cos(angle) * ix + math.sin(angle) * iy)
+                return field - float(functions[2](tau)) * iz
+
+            return (duration, None, None, None, None, shaped)
         if isinstance(event, Pulse):
+            phase = _PHASES.get(event.phase, event.phase) + sp.sympify(event.phase_shift)
             if event.nutation_frequency is None and event.duration is None:
-                return (0.0, None, None, self._rotation(event), None)
+                return (0.0, None, None, self._rotation(replace(event, phase=phase, phase_shift=0)), None)
             else:
                 flip = _number(event.flip, self.values)
                 if event.duration is not None:
@@ -177,7 +315,7 @@ class _Engine:
                 else:
                     nutation = _number(event.nutation_frequency, self.values)
                     duration = flip / nutation
-                phase = {"x": 0, "y": sp.pi / 2, "-x": sp.pi, "-y": 3 * sp.pi / 2}.get(event.phase, event.phase)
+                nutation = nutation * _number(event.amplitude_factor, self.values)
                 rf = nutation * self.system.I(event.spins, phase).numeric(self.values)
                 return (duration, rf, None, None, None)
         if isinstance(event, Delay):
@@ -201,7 +339,7 @@ class _Engine:
         """The unitary of an ideal pulse, built from the rotation matrices of the single spins."""
         substitute = (lambda a: sp.sympify(a).subs(self.values)) if self.values else sp.sympify
         phase = pulse.phase if isinstance(pulse.phase, str) else substitute(pulse.phase)
-        spec = rotation_spec(substitute(pulse.flip), phase)
+        spec = rotation_spec(substitute(pulse.flip) * substitute(pulse.amplitude_factor), phase)
         indices = set(self.system._indices(pulse.spins))
         out = np.ones((1, 1), dtype=complex)
         for index, loc in enumerate(self.system.locals):
@@ -310,20 +448,24 @@ def superpropagator(events, *, system: SpinSystem | None = None, background=None
 SPARSE_FROM = 128  # the Hilbert-space dimension from which method="auto" uses the sparse path
 
 
-def _engine(system: SpinSystem, events, background, values, order: str, method: str) -> _Engine:
+def _engine(
+    system: SpinSystem, events, background, values, order: str, method: str, start_time: float = 0.0
+) -> _Engine:
     """The engine for a call: sparse when asked for (or large) and the events are plain Hamiltonian evolution."""
     if method not in ("auto", "dense", "sparse"):
         raise ValueError("method must be 'auto', 'dense' or 'sparse'.")
     if method == "sparse" or (method == "auto" and system.dimension >= SPARSE_FROM):
-        engine = _Engine(system, events, background, values, order, sparse=True)
+        engine = _Engine(system, events, background, values, order, sparse=True, start_time=start_time)
         if not engine.liouville and not any(engine.time_dependent(step) for step in engine.steps):
             return engine
         if method == "sparse":
             raise ValueError("the sparse method takes Hamiltonians and ideal pulses only.")
-    return _Engine(system, events, background, values, order)
+    return _Engine(system, events, background, values, order, start_time=start_time)
 
 
-def propagate(rho, events, *, background=None, values=None, order="left_to_right", method="auto") -> np.ndarray:
+def propagate(
+    rho, events, *, background=None, values=None, order="left_to_right", method="auto", start_time: float = 0.0
+) -> np.ndarray:
     """The density matrix after the events (a NumPy matrix in the Zeeman basis).
 
     ``method='dense'`` diagonalises every Hamiltonian as a whole. ``'sparse'`` keeps the Hamiltonians sparse,
@@ -332,8 +474,8 @@ def propagate(rho, events, *, background=None, values=None, order="left_to_right
     the dimension. The sparse method takes Hamiltonians and ideal pulses only.
     """
     system = _system(rho, events, background)
-    engine = _engine(system, events, background, values, order, method)
-    state, now = _state(rho, values), 0.0
+    engine = _engine(system, events, background, values, order, method, start_time)
+    state, now = _state(rho, values), engine.start_time
     for step in engine.steps:
         state = engine.advance(state, step, start=now)
         now += step[0]
@@ -344,10 +486,29 @@ def _amplitudes(state: np.ndarray, targets: Sequence[np.ndarray]) -> np.ndarray:
     return np.array([np.vdot(t, state) / np.vdot(t, t) for t in targets])
 
 
-def amplitudes(rho, targets, events, *, background=None, values=None, order="left_to_right", method="auto"):
-    """The transformation amplitudes ``(target|ρ_final)/(target|target)`` of ``rho`` into one target or a list."""
+def amplitudes(
+    rho,
+    targets,
+    events,
+    *,
+    background=None,
+    values=None,
+    order="left_to_right",
+    method="auto",
+    start_time: float = 0.0,
+    normalization: Any = None,
+):
+    """The transformation amplitudes ``(target|ρ_final)/(target|target)`` of ``rho`` into one target or a list.
+
+    ``start_time`` is the time at which the sequence starts (it matters for time-dependent Hamiltonians), and
+    the result is divided by ``normalization`` when one is given.
+    """
     single = isinstance(targets, Operator)
-    state = propagate(rho, events, background=background, values=values, order=order, method=method)
+    state = propagate(
+        rho, events, background=background, values=values, order=order, method=method, start_time=start_time
+    )
+    if normalization is not None:
+        state = state / _number(normalization, values)
     out = []
     for target in [targets] if single else targets:
         matrix = target.sparse(values)
@@ -389,3 +550,18 @@ def trajectory(rho, targets, events, *, points: int = 32, background=None, value
             samples.append(_amplitudes(state, numeric))
     out = np.array(samples).T
     return np.array(times), (out[0] if single else out)
+
+
+def precalculate(events, *, system: SpinSystem | None = None, background=None, values=None) -> Precalculated:
+    """The propagator of ``events`` as one event that can be reused (SpinDynamica's ``Precalculate``).
+
+    It holds for the background it was calculated with, and it does not advance the time of the sequence.
+    """
+    system = system or _system(events, background)
+    engine = _Engine(system, events, background, values, "left_to_right")
+    duration = sum(step[0] for step in engine.steps)
+    if engine.liouville:
+        return Precalculated(
+            superpropagator(events, system=system, background=background, values=values), False, duration
+        )
+    return Precalculated(propagator(events, system=system, background=background, values=values), True, duration)

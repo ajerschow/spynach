@@ -62,7 +62,7 @@ All of these are covered by a fixture and an independent test.
 
 ## Phases
 
-1. **Reference harness.** Done: generator, loader, 583 cases in nine files, independent checks.
+1. **Reference harness.** Done: generator, loader, 603 cases in ten files, independent checks.
 2. **Symbolic core.** Done (`tests/spyndynamica/test_core.py`): spin systems, kets and bras, the Zeeman and
    singlet-triplet bases, product-operator and spherical-tensor algebra, rotations, closed-form evolution for
    commuting spin-1/2 terms, exact and numeric matrices. Pinned by `01_bases`, `02_operators`, `03_rotations`.
@@ -106,11 +106,12 @@ All of these are covered by a fixture and an independent test.
    shelved; phase 6 is closed as it stands.
 
    **Parity stage A (the rest of the simulation layer).** Done (`tests/spyndynamica/test_states.py`,
-   `09_states`): `thermal_equilibrium`, `polarized`, `singlet_polarized`, `secularize`, `thermalize`,
-   `amplitude_table`, `maximize_amplitude`. Open: `PulseSequence` with automatic delays, `PhaseShift`,
-   `ShapedPulse`, `RepeatPulseSequence`, `CoherenceOrderFiltration` as an event, `Precalculate`,
-   `InitialTimePoint`, `AdiabaticPropagationSuperoperator`, the signal options `NormalizationFactor` and
-   `CarouselAverage`, two-dimensional `FT`, the random orientation sets, ensemble averages in processes.
+   `test_sequences.py`; `09_states`, `10_sequences`): `thermal_equilibrium`, `polarized`, `singlet_polarized`,
+   `secularize`, `thermalize`, `amplitude_table`, `maximize_amplitude`; `PulseSequence` with automatic
+   delays, default spins and a phase shift, `ShapedPulse`, `precalculate`, pulse `phase_shift` and
+   `amplitude_factor`, `normalization`, `start_time`, coherence-order filtration as an event, `ft2`,
+   `random_orientations`, ensemble averages in processes. Left out: `CarouselAverage` (γ-COMPUTE), and
+   `AdiabaticPropagationSuperoperator`, which SpinDynamica documents as internal.
    **Stage B:** the rest of the quantum-mechanics layer (`DefineBasis`, `TransformedBasis`, `Eigenbasis`,
    `AngularMomentumBasis`, `OperatorProjection`, `DefineOperatorBasis`, `ShiftSuperoperator`,
    `SphericalComponentFiltrationSuperoperator`, the spherical tensor basis for more than two spins,

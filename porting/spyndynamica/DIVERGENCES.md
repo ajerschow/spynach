@@ -62,6 +62,12 @@ how the difference was established. The cases that record the SpinDynamica behav
 
 ## Limits found while generating the reference data
 
+- `ShapedPulse` takes its frequency argument as an offset of the radiofrequency: the Hamiltonian in the frame
+  of the pulse gains `−frequency Iz`. The usage text does not state the sign; the fixture
+  `10_sequences: one_half/shaped_pulse_phase_and_frequency` fixes it.
+- `PulseSequence` with a total duration needs the spins as its first argument (`PulseSequence[{1}, τ, {...}]`);
+  without them it reports `PulseSequence::invalspins`.
+
 - `ThermalEquilibriumDensityOperator` and `ThermalizeSuperoperator` return expressions in the symbols `ℏ` and
   `kB`; the fixtures put in `PhysicalConstantValues`.
 

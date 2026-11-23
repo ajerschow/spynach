@@ -10,7 +10,7 @@ Author: Alexej Jerschow.
 from __future__ import annotations
 
 from collections.abc import Callable, Iterable, Sequence
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 from dataclasses import replace
 from functools import cache
 from pathlib import Path
@@ -60,17 +60,43 @@ def step_alpha_beta(alpha_count: int, beta_count: int) -> tuple[np.ndarray, np.n
     return np.stack([a, b, np.zeros_like(a)], axis=1), weights / weights.sum()
 
 
+def random_orientations(count: int, angles: str = "alpha_beta_gamma", seed: int | None = None):
+    """``count`` random orientations with equal weights, uniform over the sphere (SpinDynamica's random sets).
+
+    ``angles`` is ``'beta'``, ``'alpha_beta'`` or ``'alpha_beta_gamma'``: the angles that are drawn; the others
+    are zero.
+    """
+    if angles not in ("beta", "alpha_beta", "alpha_beta_gamma"):
+        raise ValueError("angles is 'beta', 'alpha_beta' or 'alpha_beta_gamma'.")
+    rng = np.random.default_rng(seed)
+    out = np.zeros((count, 3))
+    out[:, 1] = np.arccos(rng.uniform(-1.0, 1.0, count))
+    if angles != "beta":
+        out[:, 0] = rng.uniform(0.0, 2 * np.pi, count)
+    if angles == "alpha_beta_gamma":
+        out[:, 2] = rng.uniform(0.0, 2 * np.pi, count)
+    return out, np.full(count, 1.0 / count)
+
+
+def _call(function: Callable[..., Any], sample: Any):
+    if isinstance(sample, (tuple, list, np.ndarray)):
+        return function(*sample)
+    return function(sample)
+
+
 def ensemble_average(
     function: Callable[..., Any],
     samples: Iterable[Any],
     weights: Sequence[float] | None = None,
     workers: int | None = None,
+    processes: int | None = None,
 ):
     """The weighted average of ``function(sample)`` over the samples (equal weights by default).
 
     A sample that is a tuple or a row of an array is passed as separate arguments. The function may return a
     number, an array or a :class:`~spyndynamica.Signal`; signals are averaged sample by sample. ``workers``
-    runs the evaluations in that many threads.
+    runs the evaluations in that many threads, ``processes`` in that many processes (the function must then
+    be defined at the top level of a module, so that it can be sent to them).
     """
     items = list(samples)
     if not items:
@@ -79,16 +105,14 @@ def ensemble_average(
     if len(w) != len(items):
         raise ValueError("one weight per sample is needed.")
 
-    def call(sample: Any):
-        if isinstance(sample, (tuple, list, np.ndarray)):
-            return function(*sample)
-        return function(sample)
-
-    if workers and workers > 1:
+    if processes and processes > 1:
+        with ProcessPoolExecutor(max_workers=processes) as pool:
+            results = list(pool.map(_call, [function] * len(items), items))
+    elif workers and workers > 1:
         with ThreadPoolExecutor(max_workers=workers) as pool:
-            results = list(pool.map(call, items))
+            results = list(pool.map(lambda item: _call(function, item), items))
     else:
-        results = [call(item) for item in items]
+        results = [_call(function, item) for item in items]
     first = results[0]
     if isinstance(first, Signal):
         data = sum(weight * result.values for weight, result in zip(w, results))

@@ -16,16 +16,27 @@ that uses this port should cite that publication.
 from spyndynamica.dynamics import (
     Delay,
     Periodic,
+    Precalculated,
     Pulse,
+    PulseSequence,
     Repeat,
+    ShapedPulse,
     TimeDependent,
     amplitudes,
+    precalculate,
     propagate,
     propagator,
     superpropagator,
     trajectory,
 )
-from spyndynamica.ensembles import ensemble_average, orientation_schemes, orientations, step_alpha_beta, step_beta
+from spyndynamica.ensembles import (
+    ensemble_average,
+    orientation_schemes,
+    orientations,
+    random_orientations,
+    step_alpha_beta,
+    step_beta,
+)
 from spyndynamica.interactions import (
     constants,
     dipolar_coupling,
@@ -68,6 +79,7 @@ from spyndynamica.signals import (
     apply_line_broadening,
     dispersion,
     ft,
+    ft2,
     gaussian,
     lorentzian,
     signal_1d,
@@ -87,6 +99,12 @@ from spyndynamica.tensors import cartesian_to_spherical, spherical_to_cartesian,
 __version__ = "0.0.1"
 
 __all__ = [
+    "random_orientations",
+    "precalculate",
+    "ft2",
+    "ShapedPulse",
+    "PulseSequence",
+    "Precalculated",
     "thermalize",
     "thermal_equilibrium",
     "singlet_polarized",
