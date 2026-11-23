@@ -33,6 +33,14 @@ how the difference was established. The cases that record the SpinDynamica behav
   so that `T(k, 0)` has unit norm. The ranks are therefore normalised differently. The Racah commutators hold
   for every rank, so rotations are unaffected. The port follows SpinDynamica for all ranks.
 
+- The order of the operator bases that are sorted by coherence order comes from `SortBy`, which breaks ties by
+  Mathematica's canonical order of expressions. For spins-1/2 that reduces to simple rules, which the port
+  follows and which are checked for one, two and three spins. For the shift-and-z basis of spins above 1/2 the
+  basis operators are sums, and the port keeps its own sequence within one coherence order.
+- `PhenomenologicalRelaxationSuperoperator` counts the factors `Iz` and `I±` in the shift-and-z basis
+  operators. For spins above 1/2 those are orthogonalised polynomials, so the count has no clear physical
+  meaning; the port offers the model for spins-1/2 only.
+
 ## Global state to keep in mind (not errors)
 
 - `SetSpinSystem` resets the Hilbert-space basis to the Zeeman basis but leaves the operator basis alone. A

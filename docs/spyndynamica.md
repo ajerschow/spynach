@@ -2,12 +2,14 @@
 
 SpynDynamica is a Python port in progress of [SpinDynamica](https://www.spindynamica.soton.ac.uk), Malcolm
 Levitt's Mathematica package. It is a separate import (`import spyndynamica`) that uses NumPy and SymPy and
-nothing of Spynach. This guide covers what exists so far: the symbolic core. Operators are sums of product
+nothing of Spynach. This guide covers what exists so far. In the symbolic core, operators are sums of product
 operators and spherical tensor operators with symbolic coefficients, and products, commutators, rotations and
-weak-coupling evolution are exact algebra. Propagation in general, signals and relaxation are not ported yet.
+weak-coupling evolution are exact algebra. Liouville space adds operator bases and superoperators, and a
+numeric engine propagates sequences of pulses and delays with strong coupling and relaxation. Signals,
+time-dependent Hamiltonians and ensemble averages are not ported yet.
 
 Every convention below is the one of SpinDynamica 3.10.2 and is checked against it
-(`tests/spyndynamica/`, 456 reference cases generated from the Mathematica package).
+(`tests/spyndynamica/`, 466 reference cases generated from the Mathematica package).
 
 ## Contents
 
@@ -17,7 +19,9 @@ Every convention below is the one of SpinDynamica 3.10.2 and is checked against 
 4. [Matrices and numbers](#matrices-and-numbers)
 5. [Bases, kets and bras](#bases-kets-and-bras)
 6. [Spins above 1/2 and tensor operators](#spins-above-12-and-tensor-operators)
-7. [Coming from SpinDynamica](#coming-from-spindynamica)
+7. [Superoperators and operator bases](#superoperators-and-operator-bases)
+8. [Pulse sequences, strong coupling and relaxation](#pulse-sequences-strong-coupling-and-relaxation)
+9. [Coming from SpinDynamica](#coming-from-spindynamica)
 
 ## Spin systems and operators
 
@@ -164,6 +168,72 @@ print(wigner_d(1, beta))
 print(clebsch_gordan(1, 1, 1, -1, 2, 0), wigner_D(1, 0, sp.pi / 2, 0)[0, 2])
 ```
 
+## Superoperators and operator bases
+
+A superoperator maps operators to operators. It is built from operators, acts exactly, and composes with `@`.
+
+```python
+from spyndynamica import commutation, default_operator_basis, lindbladian, phenomenological_relaxation
+
+print(commutation(I(1, "z"))(I(1, "x")))
+print(lindbladian(I(1, "-"))(s.unity()))
+
+T1, T2 = sp.symbols("T1 T2", positive=True)
+relaxation = phenomenological_relaxation(s, T1, T2)
+print(relaxation(I(1, "z")), "|", relaxation(I(1, "+") @ I(2, "z")))
+```
+
+Besides `commutation` there are `left_multiplication`, `right_multiplication`, `double_commutation`,
+`projection`, `coherence_filter`, `rotation_superoperator` and `permutation_superoperator`, and
+`liouvillian(H, relaxation)` is `−i[H, ·]` plus the relaxation. `phenomenological_relaxation` is the
+uncorrelated model for spins-1/2: every `Iz` in a product adds `1/T1` and every `I±` adds `1/T2`.
+
+A superoperator has a matrix in an operator basis, `S_ij = (B_i | S B_j)`. The default basis is SpinDynamica's
+`ShiftAndZOperatorBasis` sorted by coherence order.
+
+```python
+basis = default_operator_basis(s)
+print([str(b) for b in basis.operators[:4]])
+print(commutation(I(1, "z")).numeric(basis=basis).real.diagonal())
+print(basis.vector(I(1, "x")).T)
+```
+
+The other bases are `cartesian_product_basis`, `shift_and_polarization_basis`, `zeeman_ket_bra_basis`,
+`singlet_triplet_operator_basis` and `spherical_tensor_basis`.
+
+## Pulse sequences, strong coupling and relaxation
+
+The numeric engine takes a list of events. `(H, t)` is evolution under a Hamiltonian for a time,
+`Pulse(flip, phase)` an ideal pulse, `Delay(t)` an interval under the background, `Repeat(events, n)` a loop,
+and a superoperator acts instantaneously. `background` acts during every event with a duration. Strong coupling
+needs no special handling here.
+
+```python
+import numpy as np
+
+from spyndynamica import Delay, Pulse, amplitudes, propagate, trajectory
+
+strong = 2 * sp.pi * 100 * I(1, "z") - 2 * sp.pi * 40 * I(2, "z") + 2 * sp.pi * 7 * s.dot(1, 2)
+echo = [Pulse(sp.pi / 2, "x"), Delay(0.004), Pulse(sp.pi, "y"), Delay(0.004)]
+
+print(amplitudes(I(1, "z"), [I(1, "y"), 2 * I(1, "x") @ I(2, "z")], echo, background=strong).round(4))
+print(propagate(I(1, "z"), echo, background=strong).round(3)[0])
+```
+
+`amplitudes` is SpinDynamica's `TransformationAmplitude`, `propagate` its `NPropagate` (the result is the
+density matrix as a NumPy array), and `propagator` gives the unitary. Symbols in the events get numbers
+through `values`, and a relaxation superoperator in the background switches the engine to Liouville space:
+
+```python
+values = {T1: 2.0, T2: 0.2}
+times, decay = trajectory(I(1, "x"), I(1, "x"), [Delay(0.3)], points=3, background=[strong, relaxation], values=values)
+print(times.round(2), np.abs(decay).round(4))
+```
+
+`trajectory` samples the amplitudes during the sequence. A pulse with `nutation_frequency` or `duration` has a
+finite length, and the background acts during it. Events run from left to right; `order="right_to_left"`
+reverses them for one call.
+
 ## Coming from SpinDynamica
 
 | SpinDynamica | SpynDynamica |
@@ -188,6 +258,20 @@ print(clebsch_gordan(1, 1, 1, -1, 2, 0), wigner_D(1, 0, sp.pi / 2, 0)[0, 2])
 | `PopulationOperator`, `CoherenceOperator`, `SingleTransitionOperator` | `s.population`, `s.coherence`, `s.single_transition` |
 | `SpinPermutationOperator[{1, 2, 3}]` | `s.permutation([1, 2, 3])` |
 | `Wignerd`, `WignerD`, `CG`, `EulerRotationMatrix` | `wigner_d`, `wigner_D`, `clebsch_gordan`, `euler_matrix` |
+| `CommutationSuperoperator[A]`, `Lindbladian[A, B]` | `commutation(A)`, `lindbladian(A, B)` |
+| `DoubleCommutationSuperoperator[A, B]` | `double_commutation(A, B)` |
+| `CoherenceOrderFiltrationSuperoperator[{0}]` | `coherence_filter(s, [0])` |
+| `PhenomenologicalRelaxationSuperoperator[T1, T2]` | `phenomenological_relaxation(s, T1, T2)` |
+| `Liouvillian[H, R]` | `liouvillian(H, R)` |
+| `SuperoperatorMatrixRepresentation[S, opbasis]` | `S.numeric(basis=opbasis)`, `S.matrix(opbasis)` |
+| `OperatorVectorRepresentation[A, opbasis]` | `opbasis.vector(A)` |
+| `CartesianProductOperatorBasis[]` and the others | `cartesian_product_basis(s)` and the others |
+| `NPropagate[events][ρ]` | `propagate(ρ, events)` |
+| `NPropagationOperator[events]` | `propagator(events)` |
+| `TransformationAmplitude[ρ -> A, events, BackgroundGenerator -> H]` | `amplitudes(ρ, A, events, background=H)` |
+| `Trajectory[ρ -> A, events]` | `trajectory(ρ, A, events)` |
+| `{Pulse[{π/2, "x"}], Delay[τ]}`, `Repeat[events, n]` | `[Pulse(pi/2, "x"), Delay(τ)]`, `Repeat(events, n)` |
+| `$Chronology = "RightToLeft"` | `order="right_to_left"` in the call |
 
 **The same:** the order of the Zeeman and singlet-triplet bases, the phases and normalisation of the tensor
 operators, the sense of every rotation, the zyz Euler convention and the index order of the Wigner matrices.
@@ -199,9 +283,18 @@ operators, the sense of every rotation, the zyz Euler convention and the index o
   `ExpressOperator` or `MatrixRepresentation` then resolves.
 - SpinDynamica normalises tensor operators of rank 3 and above differently from ranks 1 and 2; the port
   follows it.
-- Closed-form evolution exists for commuting Hamiltonian terms of spins-1/2 only.
+- Closed-form evolution exists for commuting Hamiltonian terms of spins-1/2 only; everything else goes through
+  the numeric engine.
+- The operator bases hold the same operators in the same order, with one exception: for spins above 1/2 the
+  shift-and-z basis is sorted by coherence order as in SpinDynamica, but the sequence within one order is the
+  port's own (SpinDynamica's comes from Mathematica's sorting of expressions). The spherical tensor basis is
+  available for one or two spins.
+- The order of events is an argument of each call. In SpinDynamica the option `Chronology` has no effect and
+  only the global `$Chronology` counts.
+- `trajectory` returns sampled values, not interpolating functions.
+- The phenomenological relaxation model is for spins-1/2.
 
-**Not ported yet:** Liouville space and superoperators, events and pulse sequences, propagation in general,
-`Signal1D` and Fourier transforms, relaxation, ensemble averages, the group theory modules and graphics.
+**Not ported yet:** time-dependent Hamiltonians and shaped pulses, `Signal1D` and Fourier transforms,
+relaxation theory beyond the phenomenological model, ensemble averages, the group theory modules and graphics.
 `porting/spyndynamica/PLAN.md` has the phases, and `porting/spyndynamica/DIVERGENCES.md` lists two documented
 options that SpinDynamica itself ignores.

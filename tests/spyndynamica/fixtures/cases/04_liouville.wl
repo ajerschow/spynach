@@ -2,6 +2,10 @@
    and the matrix representations of superoperators. *)
 m[op_] := MatrixRepresentation[op];
 basisMatrices[opbasis_] := Normal[m[#]] & /@ BasisOperators[opbasis];
+(* the nonzero elements of the basis operators as rows {operator, row, column, value}, for larger systems *)
+sparseBasis[opbasis_] := Flatten[MapIndexed[
+    Function[{mat, k}, (Join[{First[k]}, #[[1]], {#[[2]]}] &) /@ Most[ArrayRules[SparseArray[mat]]]],
+    basisMatrices[opbasis]], 1];
 (* the operator basis is the second argument; the documented form OperatorBasis -> opbasis is ignored
    (DIVERGENCES.md, D1), which the case option_form_is_ignored records *)
 vector[op_, opbasis_] := OperatorVectorRepresentation[op, opbasis];
@@ -47,6 +51,20 @@ superoperators = {
     "spherical_tensor_indices" :> SphericalTensorIndices[SphericalTensorOperatorBasis[]],
     "transformation_cartesian_from_default" :> OperatorBasisTransformationMatrix[CartesianProductOperatorBasis[], OperatorBasis[]],
     "transformation_spherical_from_cartesian" :> OperatorBasisTransformationMatrix[SphericalTensorOperatorBasis[], CartesianProductOperatorBasis[]]
+    }|>,
+ <|"group" -> "three_half_bases", "setup" :> SetSpinSystem[3], "cases" -> {
+    "default_basis" :> ToString[OperatorBasis[], InputForm],
+    "shift_and_z_default" :> sparseBasis[OperatorBasis[]],
+    "cartesian" :> sparseBasis[CartesianProductOperatorBasis[]],
+    "shift_and_polarization" :> sparseBasis[ShiftAndPolarizationOperatorBasis[]],
+    "zeeman_ket_bra" :> sparseBasis[ZeemanKetBraOperatorBasis[]],
+    "zeeman_ket_bra_sorted" :> sparseBasis[ZeemanKetBraOperatorBasis[Sorted -> True]]
+    }|>,
+ <|"group" -> "spin32_bases", "setup" :> SetSpinSystem[{{1, 3/2}}], "cases" -> {
+    "default_basis" :> ToString[OperatorBasis[], InputForm],
+    "default_basis_operators" :> basisMatrices[OperatorBasis[]],
+    "spherical_tensor" :> basisMatrices[SphericalTensorOperatorBasis[]],
+    "zeeman_ket_bra_sorted" :> basisMatrices[ZeemanKetBraOperatorBasis[Sorted -> True]]
     }|>,
  <|"group" -> "two_half_vectors", "setup" :> SetSpinSystem[2], "cases" -> {
     "I1x_in_cartesian" :> vector[opI[1, "x"], CartesianProductOperatorBasis[]],

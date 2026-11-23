@@ -61,14 +61,18 @@ All of these are covered by a fixture and an independent test.
 
 ## Phases
 
-1. **Reference harness.** Done: generator, loader, 456 cases in six files, independent checks.
+1. **Reference harness.** Done: generator, loader, 466 cases in six files, independent checks.
    Open: permission from the SpinDynamica author and the licence.
 2. **Symbolic core.** Done (`tests/spyndynamica/test_core.py`): spin systems, kets and bras, the Zeeman and
    singlet-triplet bases, product-operator and spherical-tensor algebra, rotations, closed-form evolution for
    commuting spin-1/2 terms, exact and numeric matrices. Pinned by `01_bases`, `02_operators`, `03_rotations`.
-3. **Numeric engine with a backend interface.** Liouville space, superoperators, operator bases, events and
-   sequences, propagation of time-independent events, trajectories and transformation amplitudes. Pinned by
-   `04_liouville` and `05_propagation`.
+3. **Numeric engine with a backend interface.** Done (`tests/spyndynamica/test_liouville_dynamics.py`):
+   operator bases, superoperators as sums of sandwiches and dyads of symbolic operators, the phenomenological
+   relaxation model, events (`Pulse`, `Delay`, `Repeat`, generator and duration, instantaneous superoperators),
+   propagation in Hilbert space or in Liouville space as the events require, transformation amplitudes and
+   sampled trajectories. Linear algebra goes through `backend.py`. Pinned by `04_liouville` and
+   `05_propagation`. Left out: the spherical tensor operator basis for more than two spins, SpinDynamica's
+   sequence of the shift-and-z basis for spins above 1/2, and trajectories as interpolating functions.
 4. **Signals and relaxation.** `Signal1D`, Fourier transform, lineshapes, interactions. Needs `06_signals`
    (not written yet; `LineBroadening` must be given explicitly, the automatic value depends on the sampling).
 5. **Time dependence and ensembles.** COMPUTE, the ODE path, tensors, parallel powder averages. The
