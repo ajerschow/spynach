@@ -22,11 +22,12 @@ from dataclasses import dataclass
 from typing import Any
 
 import numpy as np
+import scipy.sparse
 import sympy as sp
 
 from spyndynamica import backend
-from spyndynamica.liouville import Superoperator, rotation_superoperator
-from spyndynamica.operators import Operator
+from spyndynamica.liouville import Superoperator
+from spyndynamica.operators import Operator, rotation_spec
 from spyndynamica.system import SpinSystem
 
 
@@ -123,10 +124,12 @@ def _expand(events: Iterable[Any]) -> list[Any]:
 class _Engine:
     """The events of one call as numeric steps (see :meth:`_step`)."""
 
-    def __init__(self, system: SpinSystem, events, background, values, order: str):
+    def __init__(self, system: SpinSystem, events, background, values, order: str, sparse: bool = False):
         if order not in ("left_to_right", "right_to_left"):
             raise ValueError("order must be 'left_to_right' or 'right_to_left'.")
         self.system = system
+        self.sparse = sparse
+        self._blocks: dict[int, list] = {}
         self.values = values
         self.dim = system.dimension
         events = _expand(events if isinstance(events, (list, tuple)) and not self._is_pair(events) else [events])
@@ -152,7 +155,8 @@ class _Engine:
             if part is None:
                 continue
             if isinstance(part, Operator):
-                h = part.numeric(self.values) if h is None else h + part.numeric(self.values)
+                matrix = part.sparse(self.values) if self.sparse else part.numeric(self.values)
+                h = matrix if h is None else h + matrix
             elif isinstance(part, Superoperator):
                 r = part.numeric(self.values) if r is None else r + part.numeric(self.values)
             else:
@@ -164,7 +168,7 @@ class _Engine:
         superoperator are instantaneous, the function of time is there for a time-dependent Hamiltonian."""
         if isinstance(event, Pulse):
             if event.nutation_frequency is None and event.duration is None:
-                event = rotation_superoperator(self.system, event.flip, event.phase, spins=event.spins)
+                return (0.0, None, None, self._rotation(event), None)
             else:
                 flip = _number(event.flip, self.values)
                 if event.duration is not None:
@@ -193,12 +197,25 @@ class _Engine:
             return (_number(event[1], self.values), h, r, None, None)
         raise TypeError(f"not an event: {event!r}.")
 
-    def _hamiltonian(self, h: np.ndarray | None) -> np.ndarray:
-        total = np.zeros((self.dim, self.dim), dtype=complex)
-        for part in (h, self.h0):
-            if part is not None:
-                total = total + part
-        return total
+    def _rotation(self, pulse: Pulse) -> np.ndarray:
+        """The unitary of an ideal pulse, built from the rotation matrices of the single spins."""
+        substitute = (lambda a: sp.sympify(a).subs(self.values)) if self.values else sp.sympify
+        phase = pulse.phase if isinstance(pulse.phase, str) else substitute(pulse.phase)
+        spec = rotation_spec(substitute(pulse.flip), phase)
+        indices = set(self.system._indices(pulse.spins))
+        out = np.ones((1, 1), dtype=complex)
+        for index, loc in enumerate(self.system.locals):
+            single = loc.rotation_numeric(spec) if index in indices else np.eye(loc.dim, dtype=complex)
+            out = np.kron(single, out)  # the first spin changes fastest
+        return out
+
+    def _hamiltonian(self, h):
+        parts = [part for part in (h, self.h0) if part is not None]
+        if not parts:
+            if self.sparse:
+                return scipy.sparse.csr_matrix((self.dim, self.dim), dtype=complex)
+            return np.zeros((self.dim, self.dim), dtype=complex)
+        return parts[0] if len(parts) == 1 else parts[0] + parts[1]
 
     @staticmethod
     def time_dependent(step) -> bool:
@@ -243,6 +260,11 @@ class _Engine:
     def advance(self, rho: np.ndarray, step, duration: float | None = None, start: float = 0.0) -> np.ndarray:
         if self.liouville:
             return (self.superpropagator(step, duration, start) @ rho.reshape(-1)).reshape(self.dim, self.dim)
+        if self.sparse and step[3] is None:
+            blocks = self._blocks.get(id(step))
+            if blocks is None:
+                blocks = self._blocks[id(step)] = backend.block_eigensystems(self._hamiltonian(step[1]))
+            return backend.evolve_in_blocks(rho, blocks, step[0] if duration is None else duration)
         u = self.unitary(step, duration, start)
         return u @ rho @ u.conj().T
 
@@ -285,10 +307,32 @@ def superpropagator(events, *, system: SpinSystem | None = None, background=None
     return out
 
 
-def propagate(rho, events, *, background=None, values=None, order="left_to_right") -> np.ndarray:
-    """The density matrix after the events (a NumPy matrix in the Zeeman basis)."""
+SPARSE_FROM = 128  # the Hilbert-space dimension from which method="auto" uses the sparse path
+
+
+def _engine(system: SpinSystem, events, background, values, order: str, method: str) -> _Engine:
+    """The engine for a call: sparse when asked for (or large) and the events are plain Hamiltonian evolution."""
+    if method not in ("auto", "dense", "sparse"):
+        raise ValueError("method must be 'auto', 'dense' or 'sparse'.")
+    if method == "sparse" or (method == "auto" and system.dimension >= SPARSE_FROM):
+        engine = _Engine(system, events, background, values, order, sparse=True)
+        if not engine.liouville and not any(engine.time_dependent(step) for step in engine.steps):
+            return engine
+        if method == "sparse":
+            raise ValueError("the sparse method takes Hamiltonians and ideal pulses only.")
+    return _Engine(system, events, background, values, order)
+
+
+def propagate(rho, events, *, background=None, values=None, order="left_to_right", method="auto") -> np.ndarray:
+    """The density matrix after the events (a NumPy matrix in the Zeeman basis).
+
+    ``method='dense'`` diagonalises every Hamiltonian as a whole. ``'sparse'`` keeps the Hamiltonians sparse,
+    splits each into the blocks that it does not connect (the subspaces of a conserved quantity such as the
+    total ``Iz``) and diagonalises the blocks, which is what large spin systems need. ``'auto'`` chooses by
+    the dimension. The sparse method takes Hamiltonians and ideal pulses only.
+    """
     system = _system(rho, events, background)
-    engine = _Engine(system, events, background, values, order)
+    engine = _engine(system, events, background, values, order, method)
     state, now = _state(rho, values), 0.0
     for step in engine.steps:
         state = engine.advance(state, step, start=now)
@@ -300,12 +344,15 @@ def _amplitudes(state: np.ndarray, targets: Sequence[np.ndarray]) -> np.ndarray:
     return np.array([np.vdot(t, state) / np.vdot(t, t) for t in targets])
 
 
-def amplitudes(rho, targets, events, *, background=None, values=None, order="left_to_right"):
+def amplitudes(rho, targets, events, *, background=None, values=None, order="left_to_right", method="auto"):
     """The transformation amplitudes ``(target|ρ_final)/(target|target)`` of ``rho`` into one target or a list."""
     single = isinstance(targets, Operator)
-    numeric = [t.numeric(values) for t in ([targets] if single else targets)]
-    out = _amplitudes(propagate(rho, events, background=background, values=values, order=order), numeric)
-    return complex(out[0]) if single else out
+    state = propagate(rho, events, background=background, values=values, order=order, method=method)
+    out = []
+    for target in [targets] if single else targets:
+        matrix = target.sparse(values)
+        out.append(matrix.conj().multiply(state).sum() / (np.abs(matrix.data) ** 2).sum())
+    return complex(out[0]) if single else np.array(out)
 
 
 def trajectory(rho, targets, events, *, points: int = 32, background=None, values=None, order="left_to_right"):

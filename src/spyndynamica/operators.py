@@ -15,6 +15,7 @@ from itertools import product as cartesian
 from typing import TYPE_CHECKING, Any
 
 import numpy as np
+import scipy.sparse
 import sympy as sp
 
 from spyndynamica._local import Expansion, Label, tidy
@@ -321,16 +322,21 @@ class Operator:
             out = basis.kets_matrix.H * out * basis.kets_matrix
         return out.applyfunc(tidy)
 
-    def numeric(self, values: Mapping[Any, Any] | None = None, basis: Basis | None = None) -> np.ndarray:
-        """The matrix as a complex NumPy array, with ``values`` substituted for the symbols."""
+    def sparse(self, values: Mapping[Any, Any] | None = None) -> scipy.sparse.csr_matrix:
+        """The matrix in the Zeeman basis as a SciPy sparse matrix, with ``values`` substituted for the symbols."""
         system = self.system
-        out = np.zeros((system.dimension, system.dimension), dtype=complex)
+        out = scipy.sparse.csr_matrix((system.dimension, system.dimension), dtype=complex)
         for key, value in self.terms.items():
             c = complex(sp.N(value.subs(values) if values else value, 30))
-            block = np.ones((1, 1), dtype=complex)
+            block = scipy.sparse.identity(1, dtype=complex, format="csr")
             for loc, label in zip(system.locals, key):
-                block = np.kron(loc.numeric(label), block)  # the first spin changes fastest
-            out += c * block
+                block = scipy.sparse.kron(loc.sparse(label), block, format="csr")  # the first spin changes fastest
+            out = out + c * block
+        return out
+
+    def numeric(self, values: Mapping[Any, Any] | None = None, basis: Basis | None = None) -> np.ndarray:
+        """The matrix as a complex NumPy array, with ``values`` substituted for the symbols."""
+        out = self.sparse(values).toarray()
         if basis is not None:
             v = np.array(basis.kets_matrix.evalf(30).tolist(), dtype=complex)
             out = v.conj().T @ out @ v

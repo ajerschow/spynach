@@ -84,7 +84,22 @@ All of these are covered by a fixture and an independent test.
    tabulated orientation sets and the regular ones, and the spherical tensor conversions and transformation.
    Pinned by `08_time_dependence`. Left out: signals under time-dependent Hamiltonians with relaxation, the
    random orientation sets, process-based parallelism.
-6. **Performance.** Sparse and Krylov methods, symmetry reduction, GPU, automatic differentiation.
+6. **Performance.** Partly done (`tests/spyndynamica/test_performance.py`): matrices are built as sparse
+   Kronecker products (`Operator.sparse`), ideal pulses are built numerically from single-spin rotation
+   matrices and never expanded symbolically, and `method="sparse"` (automatic from dimension 128) splits every
+   sparse Hamiltonian into the blocks it does not connect and diagonalises those. Measured on a chain of
+   spins-1/2 with shifts and nearest-neighbour couplings, a pulse and one evolution interval (4 threads):
+
+   | spins | before | dense | sparse blocks |
+   |---|---|---|---|
+   | 8 | 0.21 s | 0.06 s | 0.04 s |
+   | 10 | 7.1 s | 0.76 s | 0.16 s |
+   | 12 | not run | not run | 6.0 s |
+
+   Tried and dropped: applying the exponential to the full density matrix with Krylov steps
+   (`expm_multiply`), 15 s for 10 spins and 385 s for 12. Open: pulses applied spin by spin without a dense
+   unitary (the 12-spin time is mostly two dense products), state-vector and restricted-state-space
+   propagation, sparse Liouvillians, a GPU or autodiff backend behind `backend.py`, optimisation routines.
 7. **Advanced modules.** Groups and algebras, polarization, extended Liouville space, 3D graphics.
 8. **Documentation and browser subset.**
 

@@ -240,6 +240,20 @@ times, decay = trajectory(I(1, "x"), I(1, "x"), [Delay(0.3)], points=3, backgrou
 print(times.round(2), np.abs(decay).round(4))
 ```
 
+For larger spin systems the engine keeps the Hamiltonians sparse and diagonalises them block by block: a
+Hamiltonian that conserves a quantity such as the total `Iz` falls into independent blocks, which are found
+automatically. `method="auto"` (the default) does this from a Hilbert-space dimension of 128 on; `"dense"` and
+`"sparse"` force one or the other.
+
+```python
+ten = SpinSystem(10)
+chain = sum((2 * sp.pi * 100 * j * ten.I(j, "z") for j in range(1, 11)), ten.zero())
+chain = chain + sum((2 * sp.pi * 7 * ten.dot(j, j + 1) for j in range(1, 10)), ten.zero())
+
+signal = amplitudes(ten.I(None, "z"), [ten.I(1, "x"), ten.I(1, "y")], [Pulse(sp.pi / 2, "x"), (chain, 0.01)])
+print(ten.dimension, signal.real.round(4))
+```
+
 `trajectory` samples the amplitudes during the sequence. A pulse with `nutation_frequency` or `duration` has a
 finite length, and the background acts during it. Events run from left to right; `order="right_to_left"`
 reverses them for one call.
@@ -449,6 +463,7 @@ operators, the sense of every rotation, the zyz Euler convention and the index o
 - The order of events is an argument of each call. In SpinDynamica the option `Chronology` has no effect and
   only the global `$Chronology` counts.
 - `trajectory` returns sampled values, not interpolating functions.
+- Large systems are handled by block diagonalisation of sparse Hamiltonians, chosen automatically.
 - The phenomenological relaxation model is for spins-1/2.
 - `signal_1d` returns the number of points asked for. SpinDynamica drops the last point of an even request.
 - Peak frequencies are exact. SpinDynamica by default moves every peak to the nearest point of its frequency

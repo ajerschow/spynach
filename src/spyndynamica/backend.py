@@ -11,6 +11,8 @@ from __future__ import annotations
 import numpy as np
 import scipy.integrate
 import scipy.linalg
+import scipy.sparse
+import scipy.sparse.csgraph
 
 xp = np
 
@@ -43,3 +45,28 @@ def unitary_eigensystem(u: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     """The eigenvalues and orthonormal eigenvectors of a unitary matrix (also when eigenvalues coincide)."""
     triangular, vectors = scipy.linalg.schur(u, output="complex")
     return np.diag(triangular), vectors
+
+
+def block_eigensystems(hamiltonian) -> list[tuple[np.ndarray, np.ndarray, np.ndarray]]:
+    """A sparse Hermitian matrix split into the blocks it does not connect: ``(indices, eigenvalues, eigenvectors)``
+    of every block. A conserved quantity that is diagonal in the basis (the total ``Iz``) shows as such blocks."""
+    hamiltonian = scipy.sparse.csr_matrix(hamiltonian)
+    count, labels = scipy.sparse.csgraph.connected_components(hamiltonian, directed=False)
+    blocks = []
+    for label in range(count):
+        indices = np.flatnonzero(labels == label)
+        values, vectors = np.linalg.eigh(hamiltonian[indices][:, indices].toarray())
+        blocks.append((indices, values, vectors))
+    return blocks
+
+
+def evolve_in_blocks(rho: np.ndarray, blocks, time: float) -> np.ndarray:
+    """``exp(−iHt) ρ exp(+iHt)`` from the block eigensystems of ``H``."""
+    out = np.empty_like(rho)
+    phased = [(indices, vectors, np.exp(-1j * values * time)) for indices, values, vectors in blocks]
+    for rows, left, left_phase in phased:
+        partial = left.conj().T @ rho[rows]  # the rows of this block, all columns
+        for columns, right, right_phase in phased:
+            inner = (partial[:, columns] @ right) * left_phase[:, None] * right_phase.conj()[None, :]
+            out[np.ix_(rows, columns)] = left @ inner @ right.conj().T
+    return out

@@ -19,6 +19,7 @@ from functools import cache
 from typing import Any
 
 import numpy as np
+import scipy.sparse
 import sympy as sp
 from sympy.physics.quantum.cg import CG
 from sympy.physics.quantum.spin import Rotation
@@ -149,6 +150,7 @@ class Local:
         self._adjoints = {label: mat.H for label, mat in self.matrices.items()}
         self._products: dict[tuple[Label, Label], Expansion] = {}
         self._numeric: dict[Label, np.ndarray] = {}
+        self._sparse: dict[Label, scipy.sparse.csr_matrix] = {}
 
     def expand(self, matrix: sp.Matrix) -> Expansion:
         """A matrix of this spin as a sum of basis operators."""
@@ -189,6 +191,15 @@ class Local:
         if label not in self._numeric:
             self._numeric[label] = np.array(self.matrices[label].evalf(30).tolist(), dtype=complex)
         return self._numeric[label]
+
+    def sparse(self, label: Label) -> scipy.sparse.csr_matrix:
+        if label not in self._sparse:
+            self._sparse[label] = scipy.sparse.csr_matrix(self.numeric(label))
+        return self._sparse[label]
+
+    def rotation_numeric(self, rotation: tuple) -> np.ndarray:
+        """The matrix of the rotation operator of this spin as a NumPy array (the angles must be numbers)."""
+        return np.array(rotation_matrix(self.spin, rotation).evalf(30).tolist(), dtype=complex)
 
     @cache  # noqa: B019
     def rotation_images(self, rotation: tuple) -> dict[Label, Expansion]:
