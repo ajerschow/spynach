@@ -9,7 +9,8 @@ imports it; three examples there use it (`ex-sd-inept`, `ex-sd-ab`, `ex-sd-excha
 
 **Status:** the symbolic core (spin systems, operators, rotations, bases, kets, exact matrices), Liouville space
 (operator bases, superoperators), the numeric engine for sequences of time-independent events, signals with
-their Fourier transform, the isotope data, time-dependent Hamiltonians, ensemble averages with the orientation
+their Fourier transform in one and two dimensions, the isotope data, time-dependent and periodic Hamiltonians
+(with relaxation and the carousel average), ensemble averages with the orientation
 sets, spherical tensors, user-defined and product bases, the geometry of frames (axis systems, Euler
 angles, quaternions), polarization levels, chemical exchange in extended Liouville space, operator algebras,
 spin permutation groups with symmetry-adapted bases, and three-dimensional pictures. The guides are
@@ -32,7 +33,7 @@ results computed by it.
 | `src/spyndynamica/system.py` | `SpinSystem`, `Basis`, `Ket`, `Bra` |
 | `src/spyndynamica/liouville.py` | `OperatorBasis` and the named bases, `Superoperator` and its constructors |
 | `src/spyndynamica/dynamics.py`, `backend.py` | events and propagation; the array backend of the engine |
-| `src/spyndynamica/signals.py` | `signal_1d`, `Signal`, `ft`, lineshapes |
+| `src/spyndynamica/signals.py` | `signal_1d` (with COMPUTE and the carousel average), `Signal`, `ft`, `ft2`, reflection and combination of spectra, lineshapes |
 | `src/spyndynamica/interactions.py`, `data/isotopes.json` | isotope table, constants, Larmor frequency, dipolar coupling |
 | `src/spyndynamica/ensembles.py`, `data/orientations.npz` | `ensemble_average`, the orientation sets |
 | `src/spyndynamica/tensors.py` | spherical tensors: conversion and transformation |

@@ -18,11 +18,12 @@ C. Bengs, M. H. Levitt, *SpinDynamica: Symbolic and numerical magnetic resonance
 1. [Setup](#setup)
 2. [Pulse sequences, strong coupling and relaxation](#pulse-sequences-strong-coupling-and-relaxation)
 3. [Signals and spectra](#signals-and-spectra)
-4. [Isotopes and interactions](#isotopes-and-interactions)
-5. [Time-dependent Hamiltonians](#time-dependent-hamiltonians)
-6. [Ensemble and powder averages, tensors](#ensemble-and-powder-averages-tensors)
-7. [Density operators, secular parts and optimisation](#density-operators-secular-parts-and-optimisation)
-8. [Chemical exchange](#chemical-exchange)
+4. [Two-dimensional spectra](#two-dimensional-spectra)
+5. [Isotopes and interactions](#isotopes-and-interactions)
+6. [Time-dependent Hamiltonians](#time-dependent-hamiltonians)
+7. [Ensemble and powder averages, tensors](#ensemble-and-powder-averages-tensors)
+8. [Density operators, secular parts and optimisation](#density-operators-secular-parts-and-optimisation)
+9. [Chemical exchange](#chemical-exchange)
 
 ## Setup
 
@@ -145,8 +146,60 @@ print("tallest line at", frequencies[np.argmax(spectrum.real)].round(2), "Hz")
 The transform is `S(f) = (1/N) Σ s(t_n) exp(−2πi f t_n)`, with the first sample halved and the signal zero
 filled to twice its length (`first_point`, `zero_fill`). `lorentzian`, `absorption`, `dispersion` and
 `gaussian` are the lineshape functions. A signal is a `Signal` object, sampled data or a list of peaks;
-`signal.broadened(width)`, or `apply_line_broadening(signal, width)`, applies line broadening afterwards, and
-`ft2` transforms a matrix of samples along both dimensions with the same conventions.
+`signal.broadened(width)`, or `apply_line_broadening(signal, width)`, applies line broadening afterwards.
+`frequency_axis(points, dwell, zero_fill)` is the frequency axis alone, and `combine_data(datasets, weights)`
+adds up arrays or signals with weights (their mean without weights); signals that hold peaks give a signal
+with all the weighted peaks.
+
+## Two-dimensional spectra
+
+SpinDynamica has no routine for a two-dimensional signal, and neither has the port: the signal is a matrix
+that a loop over the evolution time fills, one free-induction decay per row. `ft2` transforms it along both
+dimensions with the conventions of `ft`. The rows belong to the indirect dimension `t1` and the columns to
+the direct one `t2`; `zero_fill` and `first_point` take one value or a pair `(direct, indirect)`.
+
+The example is the strongly coupled pair of the last section. Its magnetisation precesses for `t1`, and what
+is left along x, or along y, is detected. The two data sets are modulated in `t1` by a cosine and by a sine;
+their combinations `cosine ± i sine` are the antiecho and the echo signal, with opposite frequencies in `t1`.
+
+```python
+from spyndynamica import combine_complementary_spectra, frequency_axis, ft2, reflect_spectrum
+
+points, dwell, width = 64, 0.005, 2 * np.pi * 2
+x_total, y_total = I(None, "x"), I(None, "y")
+detected = signal_1d(ab, points=points, dwell=dwell, line_broadening=width).values
+t1 = dwell * np.arange(points)
+left = np.array([amplitudes(x_total, [x_total, y_total], [(ab, t)]).real for t in t1])
+left = left * np.exp(-width / 2 * t1)[:, None]
+cosine, sine = left[:, 0, None] * detected, left[:, 1, None] * detected
+
+antiecho, echo = ft2(cosine + 1j * sine), ft2(cosine - 1j * sine)
+absorption = combine_complementary_spectra(antiecho, echo)
+print(absorption.shape, np.allclose(absorption, (antiecho + reflect_spectrum(echo)) / 2))
+```
+
+Each of the two spectra alone has peaks with a phase twist, absorption mixed with dispersion.
+`reflect_spectrum` reflects a spectrum about zero frequency, a two-dimensional one about `ω1 = 0`, and
+`combine_complementary_spectra(first, second)` is half the sum of the first spectrum and the reflected
+second one: the twist cancels and the real part is in pure absorption.
+
+```python
+import plotly.graph_objects as go
+
+# a plotly map of the real part, with the frequency axes of the two dimensions
+axis = frequency_axis(points, dwell)
+figure = go.Figure(go.Heatmap(x=axis, y=axis, z=absorption.real, colorscale="Blues", zmin=0, colorbar=dict(title="Re")))
+figure.update_xaxes(title="direct dimension / Hz", range=[-30, 50])
+figure.update_yaxes(title="indirect dimension / Hz", range=[-30, 50])
+figure.update_layout(width=520, height=460, margin=dict(l=60, r=20, t=20, b=50), template="plotly_white")
+figure
+```
+
+![Pure-absorption two-dimensional spectrum of a strongly coupled pair](figures/spyndynamica-simulations-absorption.png)
+
+Every transition of the pair appears at its own frequency in both dimensions. The detected signal is the same
+for every row here, so there are no cross peaks with a sign pattern; a sequence with a mixing pulse fills the
+matrix row by row with `signal_1d(..., initial=state)` in the same way.
 
 ## Isotopes and interactions
 
@@ -204,6 +257,42 @@ for amplitude, omega, _ in sidebands.peaks:
 ```
 
 The lines are the centre band at 300 Hz and its spinning sidebands 1 kHz apart.
+
+The amplitudes above belong to one position of the rotor at the start of the acquisition: they carry a
+phase, and here one sideband in two is negative. `carousel=True` averages the signal over the start of the acquisition within the period, in steps
+of the dwell time (SpinDynamica's `CarouselAverage`, "γ-COMPUTE"). For a rotating sample that is the average
+over the rotor angle γ of a powder, and it costs no more than one signal: the sidebands of this single spin
+become real and positive, and they add up to 1.
+
+```python
+averaged = signal_1d(spinning, points=64, bandwidth=2 * sp.pi * 8000, line_broadening=2 * np.pi * 5, carousel=True)
+
+for amplitude, omega, _ in averaged.peaks:
+    print(f"{omega.real / (2 * np.pi):7.0f} Hz   {amplitude.real:7.4f}")
+print(round(averaged.peaks[:, 0].sum().real, 6))
+```
+
+The average holds only when the state at the start of the acquisition does not depend on γ, as after an ideal
+pulse; `signal_1d` warns when the preparation has a finite duration. It needs the COMPUTE method, so a
+`Periodic` generator and a dwell time that divides the period.
+
+Relaxation goes in as `background`, with every method. The periodic case is then solved by COMPUTE in
+Liouville space, and each line comes back with its own decay rate, the third column of `peaks`:
+
+```python
+relaxing = signal_1d(
+    spinning,
+    points=64,
+    bandwidth=2 * sp.pi * 8000,
+    background=phenomenological_relaxation(one, 0.5, 0.02),
+    line_broadening=None,
+    carousel=True,
+)
+print(relaxing.peaks[:, 2].real.round(3))
+```
+
+Every line decays at `1/T2`, 50 per second here. `start=...` begins the acquisition later; the generator acts
+from time zero.
 
 ## Ensemble and powder averages, tensors
 
@@ -329,7 +418,9 @@ pick = [minus, minus + 4]
 for rate in (10, 150, 30000):
     generator = sites.numeric(-sp.I * commutation(shifts) + KineticExchange(["A", "B"], {("A", "B"): k}), {k: rate})
     modes = np.linalg.eigvals(generator[np.ix_(pick, pick)])
-    print(rate, "per s:", np.sort(modes.imag / (2 * np.pi)).round(1), "Hz, widths", (-modes.real / np.pi).round(1), "Hz")
+    print(
+        rate, "per s:", np.sort(modes.imag / (2 * np.pi)).round(1), "Hz, widths", (-modes.real / np.pi).round(1), "Hz"
+    )
 ```
 
 `sites.split(vector)` turns a vector back into the operators of the sites. The simulation routines

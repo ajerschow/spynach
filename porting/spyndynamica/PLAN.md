@@ -62,7 +62,7 @@ All of these are covered by a fixture and an independent test.
 
 ## Phases
 
-1. **Reference harness.** Done: generator, loader, 887 cases in fourteen files, independent checks.
+1. **Reference harness.** Done: generator, loader, 941 cases in seventeen files, independent checks.
 2. **Symbolic core.** Done (`tests/spyndynamica/test_core.py`): spin systems, kets and bras, the Zeeman and
    singlet-triplet bases, product-operator and spherical-tensor algebra, rotations, closed-form evolution for
    commuting spin-1/2 terms, exact and numeric matrices. Pinned by `01_bases`, `02_operators`, `03_rotations`.
@@ -76,14 +76,14 @@ All of these are covered by a fixture and an independent test.
 4. **Signals and relaxation.** Done (`tests/spyndynamica/test_signals.py`): `signal_1d` by diagonalisation
    of the Hamiltonian or of the Liouvillian and by direct propagation, `Signal` with peaks or samples, line
    broadening, `ft`, the lineshape functions, the isotope table, constants, Larmor frequencies and dipolar
-   couplings. Pinned by `06_signals` and `07_tables`. Left out: two-dimensional signals and the
-   Hamiltonian constructors beyond what `s.I`, `s.dot` and `s.T` give.
+   couplings. Pinned by `06_signals` and `07_tables`. SpinDynamica has no routine for a
+   two-dimensional signal; its routines for two-dimensional data came with stage E.
 5. **Time dependence and ensembles.** Done (`tests/spyndynamica/test_time_ensembles.py`): time-dependent
    Hamiltonians as events (`TimeDependent`, integrated by the backend, also with relaxation) and in
    `signal_1d`, the COMPUTE method for `Periodic` Hamiltonians, `ensemble_average` with optional threads, the
    tabulated orientation sets and the regular ones, and the spherical tensor conversions and transformation.
-   Pinned by `08_time_dependence`. Left out: signals under time-dependent Hamiltonians with relaxation, the
-   random orientation sets, process-based parallelism.
+   Pinned by `08_time_dependence`. The random orientation sets and process-based parallelism came with
+   parity stage A, signals under time-dependent Hamiltonians with relaxation with stage E.
 6. **Performance.** Partly done (`tests/spyndynamica/test_performance.py`): matrices are built as sparse
    Kronecker products (`Operator.sparse`), ideal pulses are built numerically from single-spin rotation
    matrices and never expanded symbolically, and `method="sparse"` (automatic from dimension 128) splits every
@@ -110,7 +110,7 @@ All of these are covered by a fixture and an independent test.
    `secularize`, `thermalize`, `amplitude_table`, `maximize_amplitude`; `PulseSequence` with automatic
    delays, default spins and a phase shift, `ShapedPulse`, `precalculate`, pulse `phase_shift` and
    `amplitude_factor`, `normalization`, `start_time`, coherence-order filtration as an event, `ft2`,
-   `random_orientations`, ensemble averages in processes. Left out: `CarouselAverage` (γ-COMPUTE), and
+   `random_orientations`, ensemble averages in processes. Left out:
    `AdiabaticPropagationSuperoperator`, which SpinDynamica documents as internal.
    **Stage B (the rest of the quantum-mechanics layer).** Done
    (`tests/spyndynamica/test_bases_operators.py`, `test_filters_bases_geometry.py`; `11_bases_and_operators`,
@@ -122,8 +122,8 @@ All of these are covered by a fixture and an independent test.
    `define_basis`, `check_basis`, `product_basis`, `define_operator_basis`, `check_operator_basis`,
    `OperatorBasis.reordered` and `.transformed`, `axis_system`, `axes_to_euler`, `rotate_euler` about an axis
    system, `polar_rotation_matrix`, `rotate_polar`, the quaternion routines, `vector_to_polar`,
-   `polar_to_vector`, and `distance`, `bond_angle`, `subtended_angle`, `torsion_angle`, `solid_angle`. Four divergences were found (D7 to D10). Left out: symbolic axes in `axes_to_euler`
-   and incomplete state bases.
+   `polar_to_vector`, and `distance`, `bond_angle`, `subtended_angle`, `torsion_angle`, `solid_angle`. Four divergences were found (D7 to D10). Left out: incomplete state bases (symbolic
+   axes in `axes_to_euler` came with stage E).
    **Stage C (the advanced modules).** Done (`tests/spyndynamica/test_exchange_algebras_groups.py`,
    `test_graphics.py`; `13_polarization_exchange_algebras`, `14_graphics`):
    - *Polarization* (`states.py`): `polarization_level`, `singlet_polarization_level`.
@@ -152,6 +152,27 @@ All of these are covered by a fixture and an independent test.
    product operators, a strongly coupled pair with `signal_1d`, and two-site exchange in extended Liouville
    space. The three examples were also run in Pyodide 314 (Python 3.14) under Node with the file list of `worker.js`; the
    page itself was not opened in a browser.
+
+9. **The rest of the "not ported" list** (parity stage E). Done (`tests/spyndynamica/test_carousel_relaxation.py`,
+   `test_two_dimensional.py`, `test_symbolic_axes.py`; `15_carousel_relaxation`, `16_two_dimensional`,
+   `17_symbolic_axes`):
+   - *Carousel average*: `signal_1d(..., carousel=True)`, the γ-COMPUTE average over the start of the
+     acquisition within the period, in Hilbert space and in Liouville space. Checked against the explicit
+     average of step-by-step signals with shifted Hamiltonians and against Bessel-function sidebands.
+   - *Signals under time-dependent Hamiltonians with relaxation*: the step-by-step method and COMPUTE in
+     Liouville space, with `background` relaxation; an acquisition that starts later (`start`) now evolves
+     under the time-dependent generator from time zero, also for COMPUTE.
+   - *Two-dimensional data*: `ft2` with options per dimension, `frequency_axis`, `reflect_spectrum`,
+     `combine_complementary_spectra`, `combine_data`. SpinDynamica has no two-dimensional signal routine.
+   - *Symbolic axes*: `axis_system` and `axes_to_euler` with symbols, valid in the first quadrant as in
+     SpinDynamica.
+   - *Relaxation theory*: nothing to port; SpinDynamica has the phenomenological model only.
+
+   Two more divergences were found: D13 (the COMPUTE method is normalised differently from the other
+   methods) and D14 (embedded frequency coordinates of two-dimensional data).
+   Still left out, none of it asked for: trajectories as interpolating functions, the internal
+   `AdiabaticPropagationSuperoperator`, `CorrelatedEigensystems`, `TransformationAmplitudeBounds`, the
+   shift-and-z sequence for spins above 1/2, incomplete state bases, embedded coordinates.
 
 Do not start a phase before the fixtures of the previous one pass in the port.
 

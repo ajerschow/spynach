@@ -17,7 +17,7 @@ state that it is open-source and freely available for use, and ask that publishe
 C. Bengs, M. H. Levitt, *SpinDynamica: Symbolic and numerical magnetic resonance in a Mathematica environment*, Magn. Reson. Chem. (2017), doi:10.1002/mrc.4642. Work that uses SpynDynamica should cite that publication.
 
 Every convention below is the one of SpinDynamica 3.10.2 and is checked against it
-(`tests/spyndynamica/`, 887 reference cases generated from the Mathematica package).
+(`tests/spyndynamica/`, 941 reference cases generated from the Mathematica package).
 
 ## Contents
 
@@ -164,7 +164,12 @@ kets of the first basis change fastest, and `system` is the spin system of the r
 from spyndynamica import define_basis, product_basis
 
 k = s.ket
-triplets_first = [k(up, up), (k(up, down) + k(down, up)) / sp.sqrt(2), k(down, down), (k(up, down) - k(down, up)) / sp.sqrt(2)]
+triplets_first = [
+    k(up, up),
+    (k(up, down) + k(down, up)) / sp.sqrt(2),
+    k(down, down),
+    (k(up, down) - k(down, up)) / sp.sqrt(2),
+]
 mine = define_basis(triplets_first, labels=["T+", "T0", "T-", "S"])
 print(s.dot(1, 2).matrix(mine).diagonal(), "|", mine.ket("S"))
 
@@ -283,7 +288,7 @@ print(turned.vector(I(1, "x")).T)
 
 ## Axis systems, Euler angles and quaternions
 
-These routines work with numbers. `axis_system` builds a right-handed orthonormal set of axes, as the rows of
+`axis_system` builds a right-handed orthonormal set of axes, as the rows of
 an array, from a z axis, from an x and a z axis (the x axis of the result lies in their plane) or from all
 three. `axes_to_euler(system2, system1)` gives the Euler angles of the rotation `Rz(α) Ry(β) Rz(γ)` that
 brings every axis of the first argument onto the corresponding axis of the second (default: the laboratory
@@ -301,6 +306,19 @@ omega = axes_to_euler(principal, molecular)
 print(np.round(omega, 4))
 print(np.allclose(rotate_euler(principal, omega, principal), molecular))
 ```
+
+Axes may contain symbols. The angles then are SymPy expressions that hold for symbols between 0 and π/2, the
+range SpinDynamica assumes: an angle that is a sum of the symbols and a multiple of π/2 comes out in that
+form, any other as an inverse tangent or cosine.
+
+```python
+theta, phi = sp.symbols("theta phi")
+print(axes_to_euler([sp.sin(theta) * sp.cos(phi), sp.sin(theta) * sp.sin(phi), sp.cos(theta)]))
+print(axes_to_euler([[sp.cos(phi), sp.sin(phi), 0], [0, 0, 1]]))
+```
+
+A single vector stands for the z axis of a system. The second line is a system turned by `φ` about z: it is
+brought back by `−φ`. The other routines of this section work with numbers.
 
 `rotate_euler(vectors, angles)` rotates about the laboratory axes; with a third argument it rotates about the
 axes of that system, by `γ` about its z axis, then by `β` about its y axis, then by `α` about its z axis.

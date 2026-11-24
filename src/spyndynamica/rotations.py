@@ -10,6 +10,8 @@ Author: Alexej Jerschow.
 
 from __future__ import annotations
 
+import itertools
+import math
 from collections.abc import Sequence
 from typing import Any
 
@@ -98,11 +100,17 @@ def axis_system(*axes: Any) -> np.ndarray:
     axis and ``z``; ``axis_system(x, z)`` has its first axis in the plane of ``x`` and ``z``;
     ``axis_system(x, y, z)`` normalises three vectors that already are a right-handed orthogonal set. Without
     arguments it is the laboratory system. A list of one to three vectors is taken as these arguments.
+
+    Vectors whose components contain symbols give a SymPy matrix. The symbols are taken as positive, and the
+    special positions that a number would be tested for (a null vector, parallel vectors, a wrong hand) are
+    taken not to occur.
     """
     if len(axes) == 1 and np.ndim(axes[0]) == 2:
         axes = tuple(axes[0])
     if not axes:
         return np.eye(3)
+    if _symbolic(axes):
+        return _symbolic_axis_system(axes)
     if len(axes) == 1:
         z = _vector(axes[0])
         if not z.any():
@@ -128,6 +136,86 @@ def axis_system(*axes: Any) -> np.ndarray:
     raise ValueError("an axis system is given by one, two or three vectors.")
 
 
+def _symbolic(obj: Any) -> bool:
+    """Whether a nested list of components contains a symbol."""
+    if isinstance(obj, (list, tuple, np.ndarray)):
+        return any(_symbolic(item) for item in obj)
+    return isinstance(obj, sp.Basic) and bool(obj.free_symbols)
+
+
+def _positive(expr: Any) -> Any:
+    """The expression with its symbols declared positive, and the map back to the symbols it came with."""
+    expr = sp.sympify(expr)
+    forward = {x: sp.Dummy(x.name, positive=True) for x in expr.free_symbols}
+    return expr.subs(forward), {dummy: x for x, dummy in forward.items()}
+
+
+def _symbolic_unit(vector: sp.Matrix) -> sp.Matrix:
+    return (vector / sp.sqrt(sp.trigsimp(vector.dot(vector)))).applyfunc(sp.trigsimp)
+
+
+def _symbolic_axis_system(axes: Sequence[Any]) -> sp.Matrix:
+    """:func:`axis_system` for components with symbols: the same constructions, without the special cases."""
+    whole, back = _positive(sp.Matrix([list(axis) for axis in axes]))
+    rows = [whole.row(k).T for k in range(whole.rows)]
+    if len(rows) == 3:
+        system = [_symbolic_unit(row) for row in rows]
+    elif len(rows) in (1, 2):
+        x = sp.Matrix([1, 0, 0]) if len(rows) == 1 else rows[0]
+        z = _symbolic_unit(rows[-1])
+        y = _symbolic_unit(z.cross(x))
+        system = [y.cross(z).applyfunc(sp.trigsimp), y, z]
+    else:
+        raise ValueError("an axis system is given by one, two or three vectors.")
+    return sp.Matrix([list(axis) for axis in system]).subs(back)
+
+
+def _first_quadrant(expr: sp.Expr) -> sp.Expr:
+    """An angle simplified for symbols between 0 and π/2, the range SpinDynamica assumes for symbolic axes.
+
+    The expression is compared at points of that range with the sums ``c π + Σ ± symbol`` (``c`` a multiple of
+    1/2); the first one that agrees everywhere is returned, otherwise the expression itself.
+    """
+    symbols = sorted(expr.free_symbols, key=lambda x: x.name)
+    if not symbols:
+        return sp.nsimplify(expr, [sp.pi]) if expr.is_number else expr
+    if len(symbols) > 5:
+        return expr
+    points = np.random.default_rng(0).uniform(0.05, math.pi / 2 - 0.05, size=(8, len(symbols)))
+    values = np.array([complex(sp.lambdify(symbols, expr, "numpy")(*point)) for point in points])
+    if not np.allclose(values.imag, 0, atol=1e-12):
+        return expr
+    signs = np.array(list(itertools.product((0, 1, -1), repeat=len(symbols))))
+    signs = signs[np.argsort(np.abs(signs).sum(axis=1), kind="stable")]  # the shortest sum first
+    for sign in signs:
+        rest = values.real - points @ sign
+        if np.allclose(rest, rest[0], atol=1e-9):
+            constant = sp.nsimplify(rest[0] / math.pi, rational=True, tolerance=1e-9)
+            if constant.q <= 2:
+                return constant * sp.pi + sum(int(c) * x for c, x in zip(sign, symbols))
+    if isinstance(expr, sp.atan2):
+        # drop the factors that the two arguments share and that are positive at every point
+        y, x = (sp.together(sp.nsimplify(arg, rational=True)) for arg in expr.args)
+        y, x = sp.numer(y) * sp.denom(x), sp.numer(x) * sp.denom(y)
+        common = sp.gcd(y, x)
+        positive = sp.lambdify(symbols, [*(sp.denom(sp.together(arg)) for arg in expr.args), common], "numpy")
+        if all(min(np.real(positive(*point))) > 0 for point in points):
+            return sp.atan2(sp.factor(sp.cancel(y / common)), sp.factor(sp.cancel(x / common)))
+    return expr
+
+
+def _symbolic_matrix_to_euler(m: sp.Matrix) -> tuple[sp.Expr, sp.Expr, sp.Expr]:
+    """:func:`_matrix_to_euler` for a matrix with symbols; the β of 0 or π is recognised when it is exact."""
+    m = m.applyfunc(sp.trigsimp)
+    if sp.simplify(m[2, 2] - 1) == 0:
+        angles = (sp.atan2(-m[0, 1], m[0, 0]), sp.S.Zero, sp.S.Zero)
+    elif sp.simplify(m[2, 2] + 1) == 0:
+        angles = (sp.atan2(-m[0, 1], -m[0, 0]), sp.pi, sp.S.Zero)
+    else:
+        angles = (sp.atan2(m[1, 2], m[0, 2]), sp.acos(m[2, 2]), sp.atan2(m[2, 1], -m[2, 0]))
+    return tuple(_first_quadrant(sp.sympify(angle)) for angle in angles)  # type: ignore[return-value]
+
+
 def _round_angle(angle: float) -> float:
     """The angle brought into ``[−π, π)``, as SpinDynamica returns Euler angles."""
     return float(np.mod(angle + np.pi, 2 * np.pi) - np.pi)
@@ -147,10 +235,12 @@ def _matrix_to_euler(m: np.ndarray) -> tuple[float, float, float]:
 def _as_system(system: Any) -> np.ndarray:
     if system is None:
         return np.eye(3)
+    if _symbolic(system):
+        return axis_system(system) if not isinstance(system[0], (list, tuple, np.ndarray)) else axis_system(*system)
     return axis_system(system) if np.ndim(system) == 1 else axis_system(*system)
 
 
-def axes_to_euler(system2: Any = None, system1: Any = None) -> tuple[float, float, float]:
+def axes_to_euler(system2: Any = None, system1: Any = None) -> tuple[Any, Any, Any]:
     """The Euler angles ``(α, β, γ)`` of the rotation that brings every axis of ``system2`` onto the
     corresponding axis of ``system1`` (SpinDynamica's ``AxesToEuler``).
 
@@ -158,8 +248,14 @@ def axes_to_euler(system2: Any = None, system1: Any = None) -> tuple[float, floa
     (its z axis) or a list of one to three vectors as for :func:`axis_system`; ``system1`` defaults to the
     laboratory system. With the principal axis system of an interaction as ``system2`` and a reference frame
     as ``system1`` these are the angles used in spherical tensor expressions of the Hamiltonian. The angles
-    are numbers in ``[−π, π)``; symbolic axes are not supported.
+    are numbers in ``[−π, π)``.
+
+    Axes whose components contain symbols give SymPy expressions that hold for symbols between 0 and π/2, as
+    in SpinDynamica: an angle that is a sum of the symbols and a multiple of π/2 in that range is returned in
+    that form (``π − γ``), any other as the inverse trigonometric expression of the rotation matrix.
     """
+    if _symbolic([system2, system1]):
+        return _symbolic_matrix_to_euler(sp.Matrix(_as_system(system2)) * sp.Matrix(_as_system(system1)).T)
     return _matrix_to_euler(_as_system(system2) @ _as_system(system1).T)
 
 

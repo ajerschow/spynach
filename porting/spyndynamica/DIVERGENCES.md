@@ -164,6 +164,39 @@ how the difference was established. The cases that record the SpinDynamica behav
   every group operator, irreducibility, equal matrices for equivalent representations, and the `(J, M)` labels.
 - **Report to the author:** yes.
 
+## D13. `Signal1D` by the COMPUTE method is normalised differently from the other methods
+
+- **Documented:** `Signal1D` returns the amplitude of the observable in the density operator,
+  `(Q|ρ(t)) / (Q|Q)`, whatever the calculation method. With the default settings the signal starts at 1.
+- **SpinDynamica does:** in Hilbert space the COMPUTE method divides by `Norm[Q]^2 Log[2, dimension]`, where
+  `Norm` of a matrix is its largest singular value and not the norm of the operator. That product equals
+  `(Q|Q)` for the default observable of one, two or three spins-1/2 and for one spin observed out of one or
+  two, and differs otherwise: four spins-1/2 start at 4/3, one spin observed out of four at twice the value
+  of the "Direct" method, a single spin-1 at 1.26. In Liouville space (with relaxation, or with
+  `UseHilbertSpaceWhenPossible -> False`) it divides by `(Q|Q) Log[2, dimension]`: the signal of `N`
+  spins-1/2 is smaller by the factor `N`, with and without `CarouselAverage`.
+- **Established by:** the "Direct" method of SpinDynamica itself and the first point of the signal; cases
+  `15_carousel_relaxation: normalization/*`, and `relaxation/*` and `carousel/fid_in_liouville_space`, which
+  are half of the port's values (`test_compute_signals_are_normalised_like_the_other_methods`,
+  `test_periodic_hamiltonian_with_relaxation`).
+- **Port:** every method divides by `(Q|Q)`; COMPUTE, the step-by-step method and the explicit average over
+  the start of the acquisition agree to rounding.
+- **Report to the author:** yes.
+
+## D14. `FT` embeds frequency coordinates of two-dimensional data that are divided by both sampling rates
+
+- **Documented:** with `EmbedCoordinates -> True` the output of `FT` has "frequency coordinates instead of
+  time coordinates"; the sampling frequency is in Hz.
+- **SpinDynamica does:** for two-dimensional data every point comes back as `{f1/(sw1 sw2), f2/(sw1 sw2),
+  value}`, with `sw1` and `sw2` the two sampling rates. For sampling intervals of 0.1 s and 0.05 s the first
+  coordinates are -0.0125 and -0.0333 where the frequencies are -2.5 Hz and -6.67 Hz. One-dimensional data
+  get their frequencies in Hz.
+- **Established by:** the frequency axis of the one-dimensional transform and the sum that defines the
+  transform; cases `16_two_dimensional: transform/sample_intervals`, `sample_intervals_zero_filled` and
+  `triples` (`test_frequency_axes`).
+- **Port:** the spectrum is a matrix and `frequency_axis` gives the axis of each dimension in Hz.
+- **Report to the author:** yes.
+
 ## Limits found while generating the reference data
 
 - `QM/ExtendedLiouville.m` (site-dependent operators, kinetic exchange) is in the SpinDynamica folder but
@@ -205,9 +238,20 @@ how the difference was established. The cases that record the SpinDynamica behav
   front end (messages `FrontEndObject::notavail`, `NDiagonalize::notnummat`, `Trajectory::noprediag`).
   `TransformationAmplitude` with `EnsembleAverage` works. No ensemble-averaged signal is in the fixtures; the
   port's powder average is checked against the analytic sum instead.
-- A time-dependent Hamiltonian (`Function[t, ...]`) together with a relaxation superoperator as
-  `BackgroundGenerator` fails (`NDSolveValue::dsvar`, `Superoperator::badsop`). The port integrates that case
-  in Liouville space; it is checked against a fine piecewise-constant propagation.
+- A time-dependent Hamiltonian (`Function[t, ...]` or `PeriodicFunction`) together with a relaxation
+  superoperator as `BackgroundGenerator` fails, in `NPropagate` and in `Signal1D` (`NDSolveValue::dsvar`,
+  `Superoperator::badsop`). What works is the Liouvillian as the time-dependent generator,
+  `PeriodicFunction[t, T, Liouvillian[H, R]]`, with the COMPUTE method; the "Direct" method fails for it
+  (`Piecewise::pairs`, `Transpose::nmtx`). The port takes the relaxation as `background` with every method;
+  it is checked against a fine piecewise-constant propagation and, for signals, against the events of the
+  engine sample by sample.
+- `CombineData` with `EmbedCoordinates -> True` refuses data of more than two points
+  (`CombineData::embcoordbaddim`: it tests the first dimension of the data where the last is meant), and
+  `CombineData` of signals with peaks builds a new signal with default options, so the peak frequencies move
+  to the frequency grid even when the signals that went in had `DigitalFrequencyResolution -> False`.
+  `CombineComplementarySpectra` is documented with a list of two spectra and defined for two arguments; the
+  list form stays unevaluated. `ReflectSpectrum` stays unevaluated for an odd number of points, and for a
+  matrix with three columns or fewer, which it takes for a list of coordinates.
 - SpinDynamica integrates with the default tolerances of `NDSolve`, so its time-dependent results agree with
   the port to about 5e-8, not to rounding.
 

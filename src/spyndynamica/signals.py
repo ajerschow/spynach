@@ -11,6 +11,7 @@ Author: Alexej Jerschow.
 from __future__ import annotations
 
 import math
+import warnings
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, replace
 from typing import Any
@@ -105,6 +106,7 @@ def signal_1d(
     method: str = "auto",
     values: Mapping[Any, Any] | None = None,
     normalization: Any = None,
+    carousel: bool = False,
 ) -> Signal:
     """A free-induction decay (SpinDynamica's ``Signal1D``).
 
@@ -122,6 +124,12 @@ def signal_1d(
     A :class:`~spyndynamica.TimeDependent` generator is propagated step by step. A
     :class:`~spyndynamica.Periodic` one uses the COMPUTE method when the dwell time divides its period
     (``'auto'`` or ``'compute'``): the propagators of one period give the whole signal as a list of peaks.
+    Both work with relaxation in ``background``, in Liouville space.
+
+    ``carousel=True`` (SpinDynamica's ``CarouselAverage``, "γ-COMPUTE") averages the signal of the COMPUTE
+    method over the time within the period at which the acquisition starts, in steps of the dwell time. For a
+    rotating sample that is the average over the angle γ of the rotor, provided the state at the start of the
+    acquisition does not depend on γ.
     """
     varying = generator if isinstance(generator, TimeDependent) else None
     parts = [None if varying else generator] + (
@@ -151,33 +159,57 @@ def signal_1d(
     norm = np.vdot(q, q) * (1.0 if normalization is None else float(sp.N(sp.sympify(normalization))))
     dim = system.dimension
     interval = (0.0, None, None, None, None)  # the engine adds the background, which holds every generator here
-    if start:
+    if start and varying is None:
         state = engine.advance(state, interval, float(start))
     if method not in ("auto", "direct", "diagonalization", "compute"):
         raise ValueError("method must be 'auto', 'direct', 'diagonalization' or 'compute'.")
+    if carousel and (method == "direct" or method == "diagonalization" or not isinstance(varying, Periodic)):
+        raise ValueError("carousel=True needs the COMPUTE method: a Periodic generator and method 'auto' or 'compute'.")
     if varying is not None:
-        if engine.liouville:
-            raise NotImplementedError("a time-dependent generator with relaxation is not available in signal_1d.")
         if method == "diagonalization" or (method == "compute" and not isinstance(varying, Periodic)):
             raise ValueError("a time-dependent generator needs method='direct', or 'compute' when it is Periodic.")
         constant = engine._hamiltonian(None)
         function = varying.function(values)
+        if engine.liouville:
+            eye = np.eye(dim)
+            size = dim * dim
 
-        def minus_i_h(t: float) -> np.ndarray:
-            return -1j * (function(t) + constant)
+            def generate(t: float) -> np.ndarray:
+                h = function(t) + constant
+                return -1j * (np.kron(h, eye) - np.kron(eye, h.T)) + engine.r0
+        else:
+            size = dim
+
+            def generate(t: float) -> np.ndarray:
+                return -1j * (function(t) + constant)
 
         period = float(sp.N(sp.sympify(varying.period).subs(values or {}))) if isinstance(varying, Periodic) else None
         per_period = round(period / step) if period else 0
         matched = bool(period) and per_period >= 1 and abs(per_period * step - period) < 1e-9 * period
-        if method == "compute" and not matched:
+        if (method == "compute" or carousel) and not matched:
             raise ValueError("the COMPUTE method needs a dwell time that divides the period.")
+        t0 = float(start)
+        if t0:
+            first = backend.integrate(generate, size, 0.0, t0)
+            state = (
+                (first @ state.reshape(-1)).reshape(dim, dim) if engine.liouville else first @ state @ first.conj().T
+            )
         if method == "direct" or not matched:
-            return _direct_time_dependent(
-                minus_i_h, state, q, norm, float(start), step, points, per_period if matched else 0
-            ).broadened(line_broadening)
-        if start:
-            raise NotImplementedError("the COMPUTE method starts at time zero.")
-        return _compute(minus_i_h, state, q, norm, step, points, per_period).broadened(line_broadening)
+            signal = _direct_time_dependent(
+                generate, size, state, q, norm, t0, step, points, per_period if matched else 0
+            )
+            return signal.broadened(line_broadening)
+        if carousel and preparation and _duration(system, preparation, values) > 0:
+            warnings.warn(
+                "the preparation has a finite duration: the carousel average holds only when the state at the "
+                "start of the acquisition does not depend on the rotor angle.",
+                stacklevel=2,
+            )
+        partial = [np.eye(size, dtype=complex)]
+        for j in range(per_period):
+            partial.append(backend.integrate(generate, size, t0 + j * step, t0 + (j + 1) * step) @ partial[-1])
+        compute = _compute_liouville if engine.liouville else _compute
+        return compute(partial, state, q, norm, t0, step, points, carousel).broadened(line_broadening)
     if method == "compute":
         raise ValueError("the COMPUTE method needs a Periodic generator.")
     if method == "direct":
@@ -208,54 +240,106 @@ def signal_1d(
     return Signal(float(start), step, points, peaks=_merge(peaks)).broadened(line_broadening)
 
 
-def _direct_time_dependent(minus_i_h, state, q, norm, start, step, points, per_period) -> Signal:
-    """Step by step under a time-dependent Hamiltonian; the propagators of one period are reused when
-    ``per_period`` dwell times make a period."""
-    dim = len(q)
+def _duration(system: SpinSystem, events: Any, values: Mapping[Any, Any] | None) -> float:
+    """The total duration of a list of events."""
+    return sum(step[0] for step in _Engine(system, events, [], values, "left_to_right").steps)
+
+
+def _direct_time_dependent(generate, size, state, q, norm, start, step, points, per_period) -> Signal:
+    """Step by step under a time-dependent generator, in Hilbert space (``size`` the dimension of the states) or
+    in Liouville space (its square); the propagators of one period are reused when ``per_period`` dwell times
+    make a period."""
+    hilbert = size == len(q)
     cache: dict[int, np.ndarray] = {}
     samples = np.empty(points, dtype=complex)
     for n in range(points):
         samples[n] = np.vdot(q, state) / norm
         key = n % per_period if per_period else n
         if key not in cache or not per_period:
-            cache[key] = backend.integrate(minus_i_h, dim, start + n * step, start + (n + 1) * step)
+            cache[key] = backend.integrate(generate, size, start + n * step, start + (n + 1) * step)
         u = cache[key]
-        state = u @ state @ u.conj().T
+        state = u @ state @ u.conj().T if hilbert else (u @ state.reshape(-1)).reshape(state.shape)
     return Signal(start, step, points, data=samples)
 
 
-def _compute(minus_i_h, state, q, norm, step, points, per_period) -> Signal:
+def _orders(n: int, period: float) -> np.ndarray:
+    """The sideband frequencies in the order of the discrete Fourier transform of ``n`` points."""
+    return np.fft.fftfreq(n, d=1.0 / n) * 2 * math.pi / period
+
+
+def _compute(partial, state, q, norm, start, step, points, carousel) -> Signal:
     """The COMPUTE method (Edén, Lee and Levitt, J. Magn. Reson. A 120, 56 (1996)) for a periodic Hamiltonian.
 
-    The propagators to the ``per_period`` sampling points of one period are calculated once. In the eigenbasis
-    of the propagator of the full period the signal is a sum of lines at the differences of the Floquet
-    frequencies plus multiples of the rotation frequency, with amplitudes from one discrete Fourier transform.
+    ``partial`` holds the propagators from the start of the acquisition to the ``n`` sampling points of one
+    period and to its end. In the eigenbasis of the propagator of the full period the signal is a sum of lines
+    at the differences of the Floquet frequencies plus multiples of the rotation frequency, with amplitudes
+    from one discrete Fourier transform.
+
+    With ``carousel`` the signal is averaged over the ``n`` sampling points of the period as the start of the
+    acquisition (Hohwy, Bildsøe and Nielsen, J. Magn. Reson. 136, 6 (1999)): the transformed density operator
+    becomes periodic like the observable, and the average is the correlation of the two, a product of their
+    Fourier coefficients.
     """
     dim = len(q)
-    n = per_period
+    n = len(partial) - 1
     period = n * step
-    partial = [np.eye(dim, dtype=complex)]
-    for j in range(n):
-        partial.append(backend.integrate(minus_i_h, dim, j * step, (j + 1) * step) @ partial[-1])
     phases, vectors = backend.unitary_eigensystem(partial[n])
     epsilon = -np.angle(phases) / period  # U(T) = X exp(-i epsilon T) X^+
-    rho = vectors.conj().T @ state @ vectors
     difference = epsilon[:, None] - epsilon[None, :]
-    table = np.empty((n, dim, dim), dtype=complex)
+    observed = np.empty((n, dim, dim), dtype=complex)
+    excited = np.empty((n, dim, dim), dtype=complex)
     for j in range(n):
         u = partial[j] @ vectors
-        table[j] = (u.conj().T @ q @ u).conj() * rho * np.exp(1j * difference * j * step)
-    amplitudes = np.fft.fft(table, axis=0) / n  # f(j) = sum_k a_k exp(+2 pi i j k / n) needs the forward transform
-    orders = np.fft.fftfreq(n, d=1.0 / n)
-    rotation = 2 * math.pi / period
+        modulation = np.exp(1j * difference * j * step)
+        observed[j] = (u.conj().T @ q @ u).conj() * modulation
+        excited[j] = (u.conj().T @ state @ u) / modulation
+    # f(j) = sum_k a_k exp(+2 pi i j k / n) needs the forward transform
+    amplitudes = np.fft.fft(observed, axis=0) / n
+    if carousel:
+        # the average over the start j0 of q(j0 + m) r(j0) is sum_k q_k r_(-k) exp(2 pi i m k / n)
+        amplitudes = amplitudes * np.roll(np.fft.fft(excited, axis=0)[::-1], 1, axis=0) / n
+    else:
+        amplitudes = amplitudes * excited[0]
     rows = []
-    for k_index, k in enumerate(orders):
-        a = amplitudes[k_index] / norm
-        omega = -difference + k * rotation
+    for a, sideband in zip(amplitudes, _orders(n, period)):
+        omega = -difference + sideband
         rows.append(
-            np.stack([a.reshape(-1), omega.reshape(-1).astype(complex), np.zeros(dim * dim, dtype=complex)], axis=1)
+            np.stack(
+                [a.reshape(-1) / norm, omega.reshape(-1).astype(complex), np.zeros(dim * dim, dtype=complex)], axis=1
+            )
         )
-    return Signal(0.0, step, points, peaks=_merge(np.concatenate(rows)))
+    return Signal(start, step, points, peaks=_merge(np.concatenate(rows)))
+
+
+def _compute_liouville(partial, state, q, norm, start, step, points, carousel) -> Signal:
+    """The COMPUTE method in Liouville space, for a periodic Hamiltonian with relaxation.
+
+    ``partial`` holds the propagators of row-flattened density matrices. The propagator of the full period has
+    the eigenvalues ``exp(z T)``, with right eigenvectors ``X``; a line has the frequency ``Im z`` plus a
+    multiple of the rotation frequency and the decay rate ``−Re z``.
+    """
+    n = len(partial) - 1
+    period = n * step
+    multipliers, right = np.linalg.eig(partial[n])
+    if np.linalg.cond(right) > 1e12:
+        raise RuntimeError("the propagator of one period has no usable eigenvectors: use method='direct'.")
+    z = np.log(multipliers) / period
+    rho = state.reshape(-1)
+    bra = q.reshape(-1).conj()
+    index = np.arange(n)[:, None] * step
+    observed = np.array([bra @ partial[j] @ right for j in range(n)]) * np.exp(-z[None, :] * index)
+    amplitudes = np.fft.fft(observed, axis=0) / n
+    if carousel:
+        back = np.array([np.linalg.solve(partial[j] @ right, rho) for j in range(n)])  # X^-1 A_j^-1 rho
+        excited = back * np.exp(z[None, :] * index)
+        amplitudes = amplitudes * np.roll(np.fft.fft(excited, axis=0)[::-1], 1, axis=0) / n
+    else:
+        amplitudes = amplitudes * np.linalg.solve(right, rho)[None, :]
+    rows = [
+        np.stack([a / norm, (z.imag + sideband).astype(complex), (-z.real).astype(complex)], axis=1)
+        for a, sideband in zip(amplitudes, _orders(n, period))
+    ]
+    return Signal(start, step, points, peaks=_merge(np.concatenate(rows)))
 
 
 def ft(
@@ -284,23 +368,101 @@ def ft(
     count = len(data)
     data = data.copy()
     data[0] *= first_point
-    factor = 2 if zero_fill is True else (1 if zero_fill is False else int(zero_fill))
-    total = count * factor
-    spectrum = np.fft.fft(data, n=total) / count
+    total = count * _fill(zero_fill)
     index = np.arange(total)
-    index = np.where(index > total // 2, index - total, index)
-    order = np.argsort(index, kind="stable")
-    frequencies = index[order] / (total * (dwell or 1.0))
-    return frequencies, spectrum[order]
+    order = np.argsort(np.where(index > total // 2, index - total, index), kind="stable")
+    return frequency_axis(count, dwell, zero_fill), (np.fft.fft(data, n=total) / count)[order]
 
 
-def ft2(data: Any, *, zero_fill: int | bool = True, first_point: float = 0.5) -> np.ndarray:
+def frequency_axis(points: int, dwell: float | None = None, zero_fill: int | bool = True) -> np.ndarray:
+    """The frequencies (Hz, ascending) of the spectrum that :func:`ft` or :func:`ft2` makes of ``points``
+    samples ``dwell`` apart; in units of the sampling rate when no ``dwell`` is given."""
+    total = points * _fill(zero_fill)
+    index = np.arange(total)
+    index = np.sort(np.where(index > total // 2, index - total, index))
+    return index / (total * (dwell or 1.0))
+
+
+def _fill(zero_fill: int | bool) -> int:
+    factor = 2 if zero_fill is True else (1 if zero_fill is False else int(zero_fill))
+    if factor < 1:
+        raise ValueError("zero_fill is True, False or a whole number from 1.")
+    return factor
+
+
+def _pair(value: Any) -> tuple[Any, Any]:
+    return tuple(value) if isinstance(value, (tuple, list)) else (value, value)
+
+
+def ft2(data: Any, *, zero_fill: Any = True, first_point: Any = 0.5) -> np.ndarray:
     """The two-dimensional Fourier transform of a matrix of samples, with the conventions of :func:`ft` along
-    both dimensions."""
+    both dimensions.
+
+    The rows belong to the indirect dimension (``t1``) and the columns to the direct one (``t2``):
+    ``data[j, k] = s(t1_j, t2_k)``. ``zero_fill`` and ``first_point`` are one value for both dimensions or a
+    pair ``(direct, indirect)``, in SpinDynamica's order. :func:`frequency_axis` gives the two frequency axes.
+    """
     out = np.array(data, dtype=complex)
-    for axis in (0, 1):
-        out = np.apply_along_axis(lambda row: ft(row, zero_fill=zero_fill, first_point=first_point)[1], axis, out)
+    if out.ndim != 2:
+        raise ValueError("ft2 takes a matrix of samples.")
+    fills, factors = _pair(zero_fill), _pair(first_point)
+    for axis, fill, factor in ((1, fills[0], factors[0]), (0, fills[1], factors[1])):
+        out = np.apply_along_axis(lambda row, f=fill, p=factor: ft(row, zero_fill=f, first_point=p)[1], axis, out)
     return out
+
+
+def reflect_spectrum(spectrum: Any) -> np.ndarray:
+    """A spectrum reflected about zero frequency (SpinDynamica's ``ReflectSpectrum``).
+
+    A two-dimensional spectrum is reflected about ``ω1 = 0``, the zero of the indirect dimension (the rows).
+    With an even number of points the frequency axis of :func:`ft` has one positive point more than negative
+    ones; that last point stays where it is.
+    """
+    out = np.asarray(spectrum)
+    if out.ndim not in (1, 2):
+        raise ValueError("a spectrum is a list or a matrix of values.")
+    reflected = out[::-1]
+    return np.roll(reflected, -1, axis=0) if len(out) % 2 == 0 else reflected.copy()
+
+
+def combine_complementary_spectra(first: Any, second: Any) -> np.ndarray:
+    """Half the sum of ``first`` and the reflection of ``second`` about ``ω1 = 0``
+    (SpinDynamica's ``CombineComplementarySpectra``).
+
+    Two spectra whose peaks have opposite ``ω1`` frequencies and the same real amplitudes, as the echo and
+    antiecho parts of a two-dimensional experiment, give a spectrum in pure absorption.
+    """
+    return combine_data([first, reflect_spectrum(second)])
+
+
+def combine_data(datasets: Sequence[Any], weights: Sequence[Any] | None = None) -> Any:
+    """The linear combination of data sets with the ``weights`` (SpinDynamica's ``CombineData``); their mean
+    when no weights are given.
+
+    The data sets are arrays of one shape, or signals with the same sampling. Signals that all hold peaks
+    give a signal with the weighted peaks of all of them; otherwise the samples are combined.
+    """
+    datasets = list(datasets)
+    if not datasets:
+        raise ValueError("there is nothing to combine.")
+    weights = [1 / len(datasets)] * len(datasets) if weights is None else [complex(sp.N(w)) for w in weights]
+    if len(weights) != len(datasets):
+        raise ValueError("the number of weights must be the number of data sets.")
+    if any(isinstance(d, Signal) for d in datasets):
+        if not all(isinstance(d, Signal) for d in datasets):
+            raise ValueError("signals combine with signals, arrays with arrays.")
+        head = datasets[0]
+        sampling = {(round(d.start, 15), round(d.dwell, 15), d.points) for d in datasets}
+        if len(sampling) != 1:
+            raise ValueError("the signals must have the same start, dwell time and number of points.")
+        if all(d.peaks is not None for d in datasets):
+            peaks = [np.array(d.peaks, dtype=complex) * np.array([w, 1, 1]) for d, w in zip(datasets, weights)]
+            return Signal(head.start, head.dwell, head.points, peaks=_merge(np.concatenate(peaks)))
+        return Signal(head.start, head.dwell, head.points, data=sum(w * d.values for d, w in zip(datasets, weights)))
+    arrays = [np.asarray(d) for d in datasets]
+    if len({a.shape for a in arrays}) != 1:
+        raise ValueError("the data sets have different shapes and cannot be combined.")
+    return sum(w * a for a, w in zip(arrays, weights))
 
 
 def _lines(lines: Any) -> np.ndarray:

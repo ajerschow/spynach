@@ -87,12 +87,19 @@ print(commutator(I(1, "x"), I(1, "y")), "|", I(1, "x").rotate(sp.pi / 2, "y", sp
 | `SignalCalculationMethod -> "Direct"` | `method="direct"` |
 | `Expand[signal]` | `signal.times`, `signal.values` |
 | `FT[signal]` | `ft(signal)` |
+| `FT[matrix, EmbedCoordinates -> False, ZeroFill -> {zd, zi}, FirstPointMultiplicationFactor -> {fd, fi}]` | `ft2(matrix, zero_fill=(zd, zi), first_point=(fd, fi))` |
+| `FT[data, SampleInterval -> δt]` (embedded frequency coordinates) | `frequency_axis(points, δt, zero_fill)` next to the spectrum |
+| `ReflectSpectrum[spectrum]` | `reflect_spectrum(spectrum)` |
+| `CombineComplementarySpectra[spec1, spec2]` | `combine_complementary_spectra(spec1, spec2)` |
+| `CombineData[{data1, data2}, {w1, w2}]` | `combine_data([data1, data2], [w1, w2])` |
 | `ApplyLineBroadening[signal, LineBroadening -> w]` | `signal.broadened(w)` |
 | `Lorentzian`, `Absorption`, `Dispersion`, `Gaussian` | `lorentzian`, `absorption`, `dispersion`, `gaussian` |
 | `MagnetogyricRatio`, `NuclearSpinQuantumNumber`, `NaturalAbundance` | `magnetogyric_ratio`, `spin_quantum_number`, `natural_abundance` |
 | `LarmorFrequency`, `DirectDipolarCoupling` | `larmor_frequency`, `dipolar_coupling` |
 | `{Function[t, H[t]], τ}` | `(TimeDependent(H, t), τ)` |
 | `PeriodicFunction[t, T, H]`, `SignalCalculationMethod -> "COMPUTE"` | `Periodic(H, t, T)`, `method="compute"` |
+| `CarouselAverage -> True` | `carousel=True` |
+| `PeriodicFunction[t, T, Liouvillian[H, R]]` | `Periodic(H, t, T)` with `background=R` |
 | `EnsembleAverage -> {var, {values..}}` | `ensemble_average(function, values, weights)` |
 | `OrientationsAndWeights["ZCW50"]` | `orientations("ZCW50")` |
 | `OrientationsAndWeights["Step\[Beta]", n]` | `step_beta(n)` |
@@ -160,8 +167,9 @@ operators, the sense of every rotation, the zyz Euler convention and the index o
 - `rotate_euler(v, angles, axes)` rotates about the axes of `axes` as documented. SpinDynamica applies the
   inverse arrangement of the frame change, and the example in its own usage text (turning one axis system onto
   another) does not hold there.
-- The geometry routines take numbers. SpinDynamica's `AxesToEuler` also takes symbolic angles, which it assumes
-  to lie in the first quadrant.
+- The geometry routines take numbers, except `axis_system` and `axes_to_euler`, which also take axes with
+  symbols. Like SpinDynamica's `AxesToEuler`, the symbolic angles hold for symbols between 0 and π/2; an angle
+  that SpinDynamica writes as `−π + ArcTan[Sec[θ] Tan[φ]]` comes out as `atan2(−sin φ, −cos φ cos θ)`.
 - `singlet_polarization_level` adds up pairs that do not share spins. SpinDynamica refuses exactly those and
   accepts pairs that share a spin.
 - The extended Liouville space (`SiteDependent`, `ExtendedOperatorBasis`, `KineticExchange`) is a module that
@@ -188,8 +196,13 @@ operators, the sense of every rotation, the zyz Euler convention and the index o
 - Peak frequencies are exact. SpinDynamica by default moves every peak to the nearest point of its frequency
   grid (`DigitalFrequencyResolution`), which changes a short signal visibly.
 - An ensemble average is a function call around any calculation, not an option of each routine. A
-  time-dependent Hamiltonian is integrated with relaxation in the background as well, which fails in
-  SpinDynamica.
+  time-dependent Hamiltonian is integrated with relaxation in the background as well, in events and in
+  `signal_1d` with every method. In SpinDynamica that fails; there the periodic generator has to be the
+  Liouvillian, and only the COMPUTE method takes it.
+- A signal by the COMPUTE method is divided by `(Q|Q)` like every other signal, so the methods agree.
+  SpinDynamica's COMPUTE signals carry another factor that depends on the spin system and the observable:
+  4/3 for the default observable of four spins-1/2, and `1/N` for `N` spins-1/2 in Liouville space, that is
+  with relaxation.
 - `polarized(s, p, "z")` polarizes all spins to the level `p`, as SpinDynamica documents. SpinDynamica's
   short form `PolarizedDensityOperator[{p, "z"}]` returns the fully polarized state whatever `p` and the axis.
 - The coupled basis is ordered by `J`, the intermediate angular momenta and `M`, with Condon-Shortley
@@ -197,11 +210,22 @@ operators, the sense of every rotation, the zyz Euler convention and the index o
   `A.projection(B)` exists here; SpinDynamica documents `OperatorProjection` but does not implement it.
 - `ft` of an odd number of points without zero filling returns the transform at the stated frequencies;
   SpinDynamica's values sit one point lower on its axis in that case.
+- Two-dimensional data are matrices with the indirect dimension along the rows, and their frequency axes come
+  from `frequency_axis`. SpinDynamica can embed the coordinates in the data; the frequencies it embeds in
+  two-dimensional spectra are divided by the product of the two sampling rates. `reflect_spectrum` also takes
+  an odd number of points, and `combine_data` keeps the frequencies of the peaks of signals, which
+  SpinDynamica moves to its frequency grid again.
 
 ## Not ported yet
 
-**Not ported yet:** signals under time-dependent Hamiltonians with relaxation, the carousel average
-(`CarouselAverage`, γ-COMPUTE), two-dimensional signals, relaxation theory beyond the phenomenological model,
-and symbolic axes in `axes_to_euler`.
+Nothing of the list that stood here is left. Two of its entries had no counterpart to port: SpinDynamica has
+no routine for a two-dimensional signal, only the transform, the reflection and the combination of
+two-dimensional data, which are ported; and it has no relaxation theory beyond
+`PhenomenologicalRelaxationSuperoperator`. Redfield theory is in Spynach ([Relaxation](relaxation.md)).
+
+**Not ported:** trajectories as interpolating functions (`TrajectoryFunction`; `trajectory` returns samples),
+the internal `AdiabaticPropagationSuperoperator`, `CorrelatedEigensystems` and `TransformationAmplitudeBounds`,
+SpinDynamica's sequence of the shift-and-z basis for spins above 1/2, incomplete state bases, and data with
+embedded time or frequency coordinates (the axes are separate arrays here).
 `porting/spyndynamica/PLAN.md` has the phases, and `porting/spyndynamica/DIVERGENCES.md` lists every case found
 in which SpinDynamica does something else than it documents.

@@ -180,5 +180,3 @@ def test_compute_and_signals_under_time_dependent_hamiltonians():
         sd.signal_1d(h.subs(T, 0), points=9, dwell=0.001, method="compute")
     with pytest.raises(ValueError, match="needs method='direct'"):
         sd.signal_1d(TimeDependent(h, T), points=9, dwell=0.001, method="compute")
-    with pytest.raises(NotImplementedError, match="relaxation"):
-        sd.signal_1d(spinning, background=sd.phenomenological_relaxation(s, 1.0), **kw)
