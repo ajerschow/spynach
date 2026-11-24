@@ -106,7 +106,8 @@ A coherence-order filter is an event like any other superoperator: `coherence_fi
 list. `Pulse` also takes `phase_shift` and `amplitude_factor`, and `amplitudes` takes `start_time` (the time
 at which the sequence starts) and `normalization`.
 
-`trajectory` samples the amplitudes during the sequence, and `superpropagator` is the propagator of the events
+`trajectory` samples the amplitudes during the sequence
+([`trajectory_function`](spyndynamica-adiabatic.md#trajectories-as-functions-of-time) gives them at any time), and `superpropagator` is the propagator of the events
 in Liouville space, the counterpart of `propagator` when relaxation is present. A pulse with `nutation_frequency` or `duration` has a
 finite length, and the background acts during it. Events run from left to right; `order="right_to_left"`
 reverses them for one call.
@@ -196,6 +197,10 @@ figure
 ```
 
 ![Pure-absorption two-dimensional spectrum of a strongly coupled pair](figures/spyndynamica-simulations-absorption.png)
+
+`embed_coordinates(values, axis1, axis2)` puts data and axes into rows `(x1, x2, value)`, the form SpinDynamica
+uses for data with coordinates, `split_coordinates` takes them apart again, and `ft_coordinates(rows)`
+transforms rows with times into rows with frequencies in Hz.
 
 Every transition of the pair appears at its own frequency in both dimensions. The detected signal is the same
 for every row here, so there are no cross peaks with a sign pattern; a sequence with a mixing pulse fills the

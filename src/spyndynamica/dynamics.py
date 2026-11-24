@@ -146,6 +146,29 @@ class Periodic(TimeDependent):
 
 
 @dataclass(frozen=True)
+class Adiabatic:
+    """An event under a time-dependent Hamiltonian that the spin system follows adiabatically (SpinDynamica's
+    ``PropagationMethod -> Adiabatic``).
+
+    The equation of motion is not integrated. The eigenstates of ``generator`` (a :class:`TimeDependent`
+    Hamiltonian) are followed from the start to the end of ``duration`` on a grid of ``sampling`` equal steps
+    (or at the times of a list, counted from the start of the event), and the population of every eigenstate
+    at the start goes to the eigenstate it turns into. With ``delete_coherences`` (the default) the
+    coherences between eigenstates are dropped, also those of the initial state. Without it they are kept
+    with their phase: the integral of the difference of the two eigenvalues plus the geometric phase.
+
+    The result is right when the Hamiltonian changes slowly on the scale of the gaps between its
+    eigenvalues, and it costs one diagonalisation per grid point however long the event lasts. Relaxation
+    during the event is not available.
+    """
+
+    generator: TimeDependent
+    duration: Any
+    sampling: Any = 100
+    delete_coherences: bool = True
+
+
+@dataclass(frozen=True)
 class Repeat:
     """``events`` repeated ``count`` times."""
 
@@ -188,7 +211,7 @@ def _event_duration(event: Any, values: Mapping[Any, Any] | None) -> float:
         return (
             _number(event.flip, values) / _number(event.nutation_frequency, values) if event.nutation_frequency else 0.0
         )
-    if isinstance(event, (Delay, ShapedPulse)):
+    if isinstance(event, (Delay, ShapedPulse, Adiabatic)):
         return _number(event.duration, values)
     if isinstance(event, Precalculated):
         return event.duration
@@ -253,7 +276,9 @@ class _Engine:
         for event in events:
             self.steps.append(self._step(event, clock))
             clock += self.steps[-1][0]
-        self.liouville = self.r0 is not None or any(step[2] is not None or step[4] is not None for step in self.steps)
+        self.liouville = self.r0 is not None or any(
+            step[2] is not None or step[4] is not None or (self.adiabatic(step) and step[6][2]) for step in self.steps
+        )
 
     @staticmethod
     def _is_pair(event: Any) -> bool:
@@ -318,6 +343,26 @@ class _Engine:
                 nutation = nutation * _number(event.amplitude_factor, self.values)
                 rf = nutation * self.system.I(event.spins, phase).numeric(self.values)
                 return (duration, rf, None, None, None)
+        if isinstance(event, Adiabatic):
+            if not isinstance(event.generator, TimeDependent):
+                raise TypeError("an adiabatic event takes a TimeDependent Hamiltonian.")
+            duration = _number(event.duration, self.values)
+            if isinstance(event.sampling, (list, tuple, np.ndarray)):
+                grid = clock + np.array([_number(t, self.values) for t in event.sampling])
+                if (
+                    len(grid) < 2
+                    or np.any(np.diff(grid) <= 0)
+                    or grid[0] < clock
+                    or grid[-1] > clock + duration * (1 + 1e-12)
+                ):
+                    raise ValueError("the sampling times ascend from the start of the event to its end.")
+                spacing = None
+            else:
+                if int(event.sampling) < 1:
+                    raise ValueError("an adiabatic event is sampled in one step or more.")
+                grid, spacing = None, duration / int(event.sampling)
+            adiabatic = (grid, spacing, bool(event.delete_coherences))
+            return (duration, None, None, None, None, event.generator.function(self.values), adiabatic)
         if isinstance(event, Delay):
             event = (event.generator, event.duration)
         if isinstance(event, Superoperator):
@@ -359,11 +404,35 @@ class _Engine:
     def time_dependent(step) -> bool:
         return len(step) > 5
 
+    @staticmethod
+    def adiabatic(step) -> bool:
+        return len(step) > 6
+
+    def _transport(self, step, start: float, duration: float):
+        """The eigenvectors at the two ends of part of an adiabatic step and the phase of every state."""
+        grid, spacing, _ = step[6]
+        if self.r0 is not None:
+            raise NotImplementedError("an adiabatic event takes no relaxation.")
+        end = start + duration
+        if grid is None:
+            times = np.linspace(start, end, max(1, math.ceil(duration / spacing - 1e-9)) + 1)
+        else:
+            inside = grid[(grid > start + 1e-12 * max(1.0, abs(end))) & (grid < end - 1e-12 * max(1.0, abs(end)))]
+            times = np.concatenate([[start], inside, [end]])
+        h0 = self._hamiltonian(None)
+        initial, final, energies = backend.adiabatic_transport([step[5](t) + h0 for t in times])
+        return initial, final, backend.integrate_samples(energies, times)
+
     def unitary(self, step, duration: float | None = None, start: float = 0.0) -> np.ndarray:
         """The Hilbert-space propagator of one step (of part of its duration, from the time ``start``)."""
         if step[3] is not None:
             return step[3]
         duration = step[0] if duration is None else duration
+        if self.adiabatic(step):
+            if duration == 0:
+                return np.eye(self.dim, dtype=complex)
+            initial, final, phases = self._transport(step, start, duration)
+            return (final * np.exp(-1j * phases)[None, :]) @ initial.conj().T
         if self.time_dependent(step):
             h0 = self._hamiltonian(None)
             return backend.integrate(lambda t: -1j * (step[5](t) + h0), self.dim, start, start + duration)
@@ -376,6 +445,15 @@ class _Engine:
         if step[3] is not None:
             return np.kron(step[3], step[3].conj())
         duration = step[0] if duration is None else duration
+        if self.adiabatic(step):
+            if not step[6][2] or duration == 0:
+                u = self.unitary(step, duration, start)
+                return np.kron(u, u.conj())
+            initial, final, _ = self._transport(step, start, duration)
+            # the population of every eigenstate at the start goes to the eigenstate it has become
+            arrive = np.einsum("ak,bk->kab", final, final.conj()).reshape(self.dim, -1)
+            leave = np.einsum("ak,bk->kab", initial.conj(), initial).reshape(self.dim, -1)
+            return arrive.T @ leave
         dissipators = [part for part in (step[2], self.r0) if part is not None]
         if self.time_dependent(step):
             eye = np.eye(self.dim)
@@ -411,6 +489,10 @@ def _system(*candidates: Any) -> SpinSystem:
     for candidate in candidates:
         if isinstance(candidate, (Operator, Superoperator)):
             return candidate.system
+        if isinstance(candidate, TimeDependent):
+            return candidate.operator.system
+        if isinstance(candidate, Adiabatic):
+            return _system(candidate.generator)
         if isinstance(candidate, (list, tuple)):
             try:
                 return _system(*candidate)
@@ -550,6 +632,92 @@ def trajectory(rho, targets, events, *, points: int = 32, background=None, value
             samples.append(_amplitudes(state, numeric))
     out = np.array(samples).T
     return np.array(times), (out[0] if single else out)
+
+
+class OperatorTrajectoryFunction:
+    """The density matrix during a sequence of events, as a function of the time since its start
+    (SpinDynamica's ``OperatorTrajectoryFunction``, from ``NPropagate`` with ``Continuous -> True``).
+
+    ``function(t)`` is the density matrix at the time ``t`` (a NumPy matrix in the Zeeman basis), or a stack of
+    them for an array of times; ``function.range`` is ``(0, total duration)``. The values are exact at every
+    time and not interpolated: the state at the start of the event that contains ``t`` is propagated to ``t``.
+    At the time of an instantaneous event (a pulse) the value is the one after it.
+    """
+
+    def __init__(self, rho, events, *, background=None, values=None, order="left_to_right"):
+        system = _system(rho, events, background)
+        self._engine = _Engine(system, events, background, values, order)
+        state, now = _state(rho, values), 0.0
+        self._starts, self._ends, self._states = [], [], [state]
+        for step in self._engine.steps:
+            state = self._engine.advance(state, step, start=now)
+            self._starts.append(now)
+            now += step[0]
+            self._ends.append(now)
+            self._states.append(state)
+        self.range = (0.0, now)
+
+    def _at(self, time: float) -> np.ndarray:
+        total = self.range[1]
+        slack = 1e-12 * max(1.0, total)
+        if not -slack <= time <= total + slack:
+            raise ValueError(f"the time {time} lies outside the events, which last from 0 to {total}.")
+        time = min(max(time, 0.0), total)
+        done = int(np.searchsorted(self._ends, time, side="right"))  # the events that are over at this time
+        state = self._states[done]
+        if done < len(self._starts) and time > self._starts[done]:
+            start = self._starts[done]
+            state = self._engine.advance(state, self._engine.steps[done], time - start, start)
+        return state
+
+    def __call__(self, time: Any) -> np.ndarray:
+        if np.ndim(time) == 0:
+            return self._at(float(time))
+        return np.array([self._at(float(t)) for t in np.asarray(time).reshape(-1)])
+
+
+class TrajectoryFunction:
+    """The amplitudes of one or several operators during a sequence of events, as a function of the time since
+    its start (SpinDynamica's ``TrajectoryFunction``, the result of ``Trajectory``).
+
+    ``function(t)`` is the amplitude ``(target|ρ(t))/(target|target)`` for one target, or an array with one
+    entry per target for a list; an array of times gives one more axis, the last. ``function.range`` is
+    ``(0, total duration)``. See :class:`OperatorTrajectoryFunction` for how the values are obtained.
+    """
+
+    def __init__(
+        self, rho, targets, events, *, background=None, values=None, order="left_to_right", normalization=None
+    ):
+        self._single = isinstance(targets, Operator)
+        self._targets = [t.numeric(values) for t in ([targets] if self._single else targets)]
+        self._state = OperatorTrajectoryFunction(rho, events, background=background, values=values, order=order)
+        self._scale = 1.0 if normalization is None else _number(normalization, values)
+        self.range = self._state.range
+
+    def __call__(self, time: Any) -> Any:
+        if np.ndim(time) == 0:
+            out = _amplitudes(self._state(time), self._targets) / self._scale
+            return out[0] if self._single else out
+        out = np.array([_amplitudes(state, self._targets) for state in self._state(time)]).T / self._scale
+        return out[0] if self._single else out
+
+
+def trajectory_function(
+    rho, targets, events, *, background=None, values=None, order="left_to_right", normalization=None
+) -> TrajectoryFunction:
+    """The amplitudes of ``targets`` during the events as a function of time (SpinDynamica's ``Trajectory``):
+    a :class:`TrajectoryFunction`. :func:`trajectory` returns samples on a fixed grid instead."""
+    return TrajectoryFunction(
+        rho, targets, events, background=background, values=values, order=order, normalization=normalization
+    )
+
+
+def operator_trajectory_function(
+    rho, events, *, background=None, values=None, order="left_to_right"
+) -> OperatorTrajectoryFunction:
+    """The density matrix during the events as a function of time (SpinDynamica's ``NPropagate`` with
+    ``Continuous -> True``): an :class:`OperatorTrajectoryFunction`."""
+    return OperatorTrajectoryFunction(rho, events, background=background, values=values, order=order)
 
 
 def precalculate(events, *, system: SpinSystem | None = None, background=None, values=None) -> Precalculated:

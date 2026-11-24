@@ -15,7 +15,8 @@ sets, spherical tensors, user-defined and product bases, the geometry of frames 
 angles, quaternions), polarization levels, chemical exchange in extended Liouville space, operator algebras,
 spin permutation groups with symmetry-adapted bases, and three-dimensional pictures. The guides are
 `docs/spyndynamica.md` (operators, bases, superoperators, frames), `docs/spyndynamica-simulations.md` (the
-numeric engine, exchange), `docs/spyndynamica-symmetry.md` (algebras, symmetry, pictures) and
+numeric engine, exchange), `docs/spyndynamica-symmetry.md` (algebras, symmetry, pictures), `docs/spyndynamica-adiabatic.md` (trajectory
+functions, level diagrams, adiabatic events) and
 `docs/coming-from-spindynamica.md` (the SpinDynamica names and the differences); the phases and the conventions
 are in `porting/spyndynamica/PLAN.md`.
 
@@ -38,6 +39,7 @@ results computed by it.
 | `src/spyndynamica/ensembles.py`, `data/orientations.npz` | `ensemble_average`, the orientation sets |
 | `src/spyndynamica/tensors.py` | spherical tensors: conversion and transformation |
 | `src/spyndynamica/states.py` | thermal and polarized states, secularisation, thermalised relaxation, amplitude tables, optimisation |
+| `src/spyndynamica/analysis.py` | bounds on transformation amplitudes, eigensystems followed along a parameter |
 | `src/spyndynamica/exchange.py` | extended Liouville space: site-dependent operators and superoperators, kinetic exchange |
 | `src/spyndynamica/algebras.py` | commutants, Lie algebras, abelian subalgebras, accessibility |
 | `src/spyndynamica/groups.py` | spin permutation groups, symmetry-adapted bases, the pairing of permutation and rotation symmetry |

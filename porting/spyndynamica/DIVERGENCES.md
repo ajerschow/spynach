@@ -197,6 +197,24 @@ how the difference was established. The cases that record the SpinDynamica behav
 - **Port:** the spectrum is a matrix and `frequency_axis` gives the axis of each dimension in Hz.
 - **Report to the author:** yes.
 
+## D15. `CorrelatedEigensystems` with a parameter fails for every input
+
+- **Documented:** `CorrelatedEigensystems[G(x), {x, xa, xb, δx}]`, with `{x, xa, xb, {nx}}` or `{x, {x1, ...}}`,
+  for an operator, a superoperator or a matrix that depends on `x`; the usage text gives
+  `CorrelatedEigensystems[B opI["z"] + 2π×5 opI[1].opI[2], {B, 0, 1, 0.2}]` as an example.
+- **SpinDynamica does:** all these forms return `$Failed` with the message `CorrelatedEigensystems::parAssigned`
+  ("The parameter should be an unassigned symbol"), whatever the symbol. The test counts the result of
+  `UnassignedSymbols[x]`, and that routine ends with a semicolon after its last expression, so it returns
+  `Null` for every argument. Only the form with a list of numeric matrices works, and the adiabatic events,
+  which call the routine behind that test.
+- **Established by:** cases `18_analysis_adiabatic: correlated/with_parameter_is_rejected` and
+  `matrix_with_parameter_is_rejected`; `correlated/internal_eigenvalues` enters behind the test with the tags
+  SpinDynamica passes internally and returns the eigenvalues that the port finds
+  (`test_correlated_eigensystems`, which also checks every eigenpair against its matrix).
+- **Port:** `correlated_eigensystems(generator, parameter, values)` for operators, superoperators and matrices,
+  and for a list of matrices.
+- **Report to the author:** yes (one character in `General/Miscellaneous.m`).
+
 ## Limits found while generating the reference data
 
 - `QM/ExtendedLiouville.m` (site-dependent operators, kinetic exchange) is in the SpinDynamica folder but
@@ -252,6 +270,17 @@ how the difference was established. The cases that record the SpinDynamica behav
   `CombineComplementarySpectra` is documented with a list of two spectra and defined for two arguments; the
   list form stays unevaluated. `ReflectSpectrum` stays unevaluated for an odd number of points, and for a
   matrix with three columns or fewer, which it takes for a list of coordinates.
+- `TransformationAmplitudeBounds` reads `NormalizationFactor` and returns the same bounds whatever its value
+  (`18_analysis_adiabatic: bounds/normalization_factor`, the bounds for a factor of 2 are those without it).
+- An adiabatic event needs `EventSampling -> {N}`; the documented `EventSampling -> N` aborts the evaluation
+  (`NPropagate::wrongevsampling`). Its phases with `DeleteCoherences -> False` come from interpolating
+  functions of the eigenvalues, so they agree with the port's spline integral to about 5e-6.
+- `DefineBasis` with fewer kets than dimensions warns (`CheckBasis::incomplete`) and defines the basis;
+  `MatrixRepresentation` in it then runs into `$RecursionLimit`. No such basis is in the fixtures.
+- The sequence of `ShiftAndZOperatorBasis` within one coherence order is that of `SortBy`, which falls back
+  on Mathematica's canonical order of the operator expressions. For spins above 1/2 the operators are sums
+  with irrational coefficients, and the sequence follows no rule of the spin system
+  (`20_shift_and_z_order`).
 - SpinDynamica integrates with the default tolerances of `NDSolve`, so its time-dependent results agree with
   the port to about 5e-8, not to rounding.
 

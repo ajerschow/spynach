@@ -382,7 +382,8 @@ Phys. 11, 6614 (2009).
 Results obtained with SpynDynamica (`import spyndynamica`, a port in progress of
 [SpinDynamica](https://www.spindynamica.soton.ac.uk), guides [docs/spyndynamica.md](docs/spyndynamica.md),
 [docs/spyndynamica-simulations.md](docs/spyndynamica-simulations.md),
-[docs/spyndynamica-symmetry.md](docs/spyndynamica-symmetry.md) and
+[docs/spyndynamica-symmetry.md](docs/spyndynamica-symmetry.md),
+[docs/spyndynamica-adiabatic.md](docs/spyndynamica-adiabatic.md) and
 [docs/coming-from-spindynamica.md](docs/coming-from-spindynamica.md))
 should cite SpinDynamica as its [terms of use](https://www.spindynamica.soton.ac.uk/about/termsofuse/) ask:
 C. Bengs, M. H. Levitt, *SpinDynamica: Symbolic and numerical magnetic resonance in a Mathematica environment*, Magn. Reson. Chem. (2017), doi:10.1002/mrc.4642.

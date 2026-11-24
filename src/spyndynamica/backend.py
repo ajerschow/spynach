@@ -8,9 +8,13 @@ Author: Alexej Jerschow.
 
 from __future__ import annotations
 
+from collections.abc import Sequence
+
 import numpy as np
 import scipy.integrate
+import scipy.interpolate
 import scipy.linalg
+import scipy.optimize
 import scipy.sparse
 import scipy.sparse.csgraph
 
@@ -70,3 +74,53 @@ def evolve_in_blocks(rho: np.ndarray, blocks, time: float) -> np.ndarray:
             inner = (partial[:, columns] @ right) * left_phase[:, None] * right_phase.conj()[None, :]
             out[np.ix_(rows, columns)] = left @ inner @ right.conj().T
     return out
+
+
+def correlate(values: np.ndarray, vectors: np.ndarray, next_values: np.ndarray, next_vectors: np.ndarray) -> np.ndarray:
+    """The order that pairs the eigenstates of one matrix with those of the next along a parameter.
+
+    ``order[k]`` is the index of the next eigenstate that continues state ``k``. The eigenvectors are the
+    columns. A pair scores by the overlap of the vectors and by the closeness of the real and of the imaginary
+    parts of the eigenvalues, each scaled to the largest value in its row as in SpinDynamica; the assignment
+    with the highest total score is taken.
+    """
+
+    def scaled(table: np.ndarray) -> np.ndarray:
+        return table / (table.max(axis=1, keepdims=True) + 1e-10)
+
+    difference = values[:, None] - next_values[None, :]
+    overlap = np.abs(vectors.conj().T @ next_vectors)
+    score = 2 - scaled(np.abs(difference.real)) - scaled(np.abs(difference.imag)) + scaled(overlap)
+    rows, columns = scipy.optimize.linear_sum_assignment(score, maximize=True)
+    order = np.empty(len(values), dtype=int)
+    order[rows] = columns
+    return order
+
+
+def adiabatic_transport(hamiltonians: Sequence[np.ndarray]):
+    """The eigenstates of a Hamiltonian followed along a time grid: ``(initial, final, energies)``.
+
+    ``initial`` and ``final`` hold the eigenvectors at the first and at the last time as columns, state ``k`` of
+    one continuing into state ``k`` of the other, with the phase of every vector chosen so that it has a real
+    positive overlap with its predecessor (parallel transport, which carries the geometric phase).
+    ``energies[i, k]`` is the eigenvalue of state ``k`` at time ``i``.
+    """
+    values, vectors = np.linalg.eigh(hamiltonians[0])
+    initial, energies = vectors, [values]
+    for hamiltonian in hamiltonians[1:]:
+        next_values, next_vectors = np.linalg.eigh(hamiltonian)
+        order = correlate(values, vectors, next_values, next_vectors)
+        next_values, next_vectors = next_values[order], next_vectors[:, order]
+        overlap = (vectors.conj() * next_vectors).sum(axis=0)
+        vectors = next_vectors * np.exp(-1j * np.angle(overlap))[None, :]
+        values = next_values
+        energies.append(values)
+    return initial, vectors, np.array(energies)
+
+
+def integrate_samples(samples: np.ndarray, times: Sequence[float]) -> np.ndarray:
+    """The integral over time of sampled functions (one per column), through a cubic spline."""
+    times = np.asarray(times, dtype=float)
+    if len(times) < 4:
+        return np.trapezoid(samples, times, axis=0)
+    return scipy.interpolate.CubicSpline(times, samples, axis=0).integrate(times[0], times[-1])

@@ -81,6 +81,7 @@ const SOURCE = [
   "src/spyndynamica/__init__.py",
   "src/spyndynamica/_local.py",
   "src/spyndynamica/algebras.py",
+  "src/spyndynamica/analysis.py",
   "src/spyndynamica/backend.py",
   "src/spyndynamica/data/isotopes.json",
   "src/spyndynamica/data/orientations.npz",

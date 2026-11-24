@@ -8,7 +8,9 @@ weak-coupling evolution are exact algebra; operator bases and superoperators com
 Euler angles and quaternions describe frames. The numeric engine (pulse sequences with strong coupling and
 relaxation, signals and spectra, time-dependent Hamiltonians, powder averages, chemical exchange) is in
 [Simulations with SpynDynamica](spyndynamica-simulations.md); operator algebras, permutation symmetry and
-three-dimensional pictures are in [Algebras, symmetry and pictures](spyndynamica-symmetry.md). The table of
+three-dimensional pictures are in [Algebras, symmetry and pictures](spyndynamica-symmetry.md); trajectories
+as functions of time, level diagrams and adiabatic events are in
+[Trajectories, level diagrams and adiabatic events](spyndynamica-adiabatic.md). The table of
 SpinDynamica names and the list of differences are in [Coming from SpinDynamica](coming-from-spindynamica.md).
 The [browser playground](https://ajerschow.github.io/spynach/try.html#ex-sd-inept) runs a product-operator calculation with nothing installed.
 
@@ -17,7 +19,7 @@ state that it is open-source and freely available for use, and ask that publishe
 C. Bengs, M. H. Levitt, *SpinDynamica: Symbolic and numerical magnetic resonance in a Mathematica environment*, Magn. Reson. Chem. (2017), doi:10.1002/mrc.4642. Work that uses SpynDynamica should cite that publication.
 
 Every convention below is the one of SpinDynamica 3.10.2 and is checked against it
-(`tests/spyndynamica/`, 941 reference cases generated from the Mathematica package).
+(`tests/spyndynamica/`, 976 reference cases generated from the Mathematica package).
 
 ## Contents
 

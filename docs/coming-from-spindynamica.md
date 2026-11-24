@@ -3,8 +3,9 @@
 SpynDynamica (`import spyndynamica`) is a Python port in progress of
 [SpinDynamica](https://www.spindynamica.soton.ac.uk) 3.10.2, Malcolm Levitt's Mathematica package. This page
 lists the SpinDynamica names with their counterparts, what is the same, what differs, and what is not ported.
-The guides are [Symbolic spin operators](spyndynamica.md), [Simulations](spyndynamica-simulations.md) and
-[Algebras, symmetry and pictures](spyndynamica-symmetry.md).
+The guides are [Symbolic spin operators](spyndynamica.md), [Simulations](spyndynamica-simulations.md),
+[Algebras, symmetry and pictures](spyndynamica-symmetry.md) and
+[Trajectories, level diagrams and adiabatic events](spyndynamica-adiabatic.md).
 
 The examples on this page use two spins-1/2:
 
@@ -73,7 +74,13 @@ print(commutator(I(1, "x"), I(1, "y")), "|", I(1, "x").rotate(sp.pi / 2, "y", sp
 | `NPropagate[events][ρ]` | `propagate(ρ, events)` |
 | `NPropagationOperator[events]` | `propagator(events)` |
 | `TransformationAmplitude[ρ -> A, events, BackgroundGenerator -> H]` | `amplitudes(ρ, A, events, background=H)` |
-| `Trajectory[ρ -> A, events]` | `trajectory(ρ, A, events)` |
+| `Trajectory[ρ -> A, events]` | `trajectory_function(ρ, A, events)`; samples on a grid: `trajectory(ρ, A, events)` |
+| `NPropagate[events, Continuous -> True][ρ]` | `operator_trajectory_function(ρ, events)` |
+| `{H, τ, PropagationMethod -> Adiabatic, EventSampling -> {n}}` | `Adiabatic(TimeDependent(H, t), τ, sampling=n)` |
+| `DeleteCoherences -> False` | `delete_coherences=False` |
+| `TransformationAmplitudeBounds[ρ -> A]` | `amplitude_bounds(ρ, A)` |
+| `CorrelatedEigensystems[H, {x, {x1, x2, ...}}]` | `correlated_eigensystems(H, x, [x1, x2, ...])` |
+| data with `EmbedCoordinates -> True` | `embed_coordinates`, `split_coordinates`, `ft_coordinates` |
 | `{Pulse[{π/2, "x"}], Delay[τ]}`, `Repeat[events, n]` | `[Pulse(pi/2, "x"), Delay(τ)]`, `Repeat(events, n)` |
 | `PulseSequence[spins, τ, {.., Delay[Automatic]}, PhaseShift -> φ]` | `PulseSequence([.., Delay("auto")], spins=.., duration=τ, phase_shift=φ)` |
 | `Delay[{Automatic, w}]` | `Delay(("auto", w))` |
@@ -189,7 +196,15 @@ operators, the sense of every rotation, the zyz Euler convention and the index o
   SpinDynamica returns graphics. Colours, fonts and the placing of labels are the port's own.
 - The order of events is an argument of each call. In SpinDynamica the option `Chronology` has no effect and
   only the global `$Chronology` counts.
-- `trajectory` returns sampled values, not interpolating functions.
+- `trajectory` returns sampled values. `trajectory_function` and `operator_trajectory_function` return
+  functions of time that are exact at every time, where SpinDynamica interpolates.
+- `Adiabatic` is an event of its own and takes any `TimeDependent` Hamiltonian. SpinDynamica needs a
+  Hamiltonian with one time-dependent factor, documents `EventSampling -> N` but accepts `{N}` only, and takes
+  the times of a sampling list as absolute; here they count from the start of the event.
+- `correlated_eigensystems` returns arrays of eigenvalues and eigenvectors and starts with the eigenvalues in
+  ascending order. In SpinDynamica 3.10.2 every call of `CorrelatedEigensystems` with a parameter fails; only
+  a list of matrices is accepted. `amplitude_bounds` divides by `normalization`, which SpinDynamica's
+  `TransformationAmplitudeBounds` reads and does not use.
 - Large systems are handled by block diagonalisation of sparse Hamiltonians, chosen automatically.
 - The phenomenological relaxation model is for spins-1/2.
 - `signal_1d` returns the number of points asked for. SpinDynamica drops the last point of an even request.
@@ -218,14 +233,22 @@ operators, the sense of every rotation, the zyz Euler convention and the index o
 
 ## Not ported yet
 
-Nothing of the list that stood here is left. Two of its entries had no counterpart to port: SpinDynamica has
-no routine for a two-dimensional signal, only the transform, the reflection and the combination of
-two-dimensional data, which are ported; and it has no relaxation theory beyond
-`PhenomenologicalRelaxationSuperoperator`. Redfield theory is in Spynach ([Relaxation](relaxation.md)).
+What the earlier versions of this list named is ported. Three entries had no counterpart to port:
 
-**Not ported:** trajectories as interpolating functions (`TrajectoryFunction`; `trajectory` returns samples),
-the internal `AdiabaticPropagationSuperoperator`, `CorrelatedEigensystems` and `TransformationAmplitudeBounds`,
-SpinDynamica's sequence of the shift-and-z basis for spins above 1/2, incomplete state bases, and data with
-embedded time or frequency coordinates (the axes are separate arrays here).
+- SpinDynamica has no routine for a two-dimensional signal, only the transform, the reflection and the
+  combination of two-dimensional data, which are ported.
+- It has no relaxation theory beyond `PhenomenologicalRelaxationSuperoperator`. Redfield theory is in Spynach
+  ([Relaxation](relaxation.md)).
+- A state basis with fewer kets than the Hilbert space has dimensions is accepted by `DefineBasis` with a
+  warning, and matrix representations in it then end in a recursion error. `check_basis` judges such a set,
+  as SpinDynamica's `CheckBasis` does, and `define_basis` refuses it.
+
+**Not ported:** SpinDynamica's sequence of the shift-and-z basis within one coherence order for spins above
+1/2. It is the order in which Mathematica sorts the operator expressions (for a spin 2 the five operators of
+order zero come as the cubic, the linear and the quadratic polynomial of `Iz`, unity, the quartic one), which
+no rule of the spin system reproduces. The port has the same operators in every coherence order
+(`tests/spyndynamica/test_analysis_adiabatic.py`), and `basis.reordered(order)` gives any sequence. Also left
+out are the options that only steer SpinDynamica's internals (`UseHilbertSpaceWhenPossible`,
+`UseMatrixExpWhenPossible` and the like).
 `porting/spyndynamica/PLAN.md` has the phases, and `porting/spyndynamica/DIVERGENCES.md` lists every case found
 in which SpinDynamica does something else than it documents.

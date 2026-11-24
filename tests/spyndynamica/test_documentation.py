@@ -6,7 +6,13 @@ from pathlib import Path
 import spyndynamica as sd
 
 DOCS = Path(__file__).resolve().parents[2] / "docs"
-GUIDES = ("spyndynamica.md", "spyndynamica-simulations.md", "spyndynamica-symmetry.md", "coming-from-spindynamica.md")
+GUIDES = (
+    "spyndynamica.md",
+    "spyndynamica-simulations.md",
+    "spyndynamica-symmetry.md",
+    "spyndynamica-adiabatic.md",
+    "coming-from-spindynamica.md",
+)
 
 
 def test_every_exported_name_is_in_a_guide():

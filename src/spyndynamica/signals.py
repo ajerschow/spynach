@@ -411,6 +411,62 @@ def ft2(data: Any, *, zero_fill: Any = True, first_point: Any = 0.5) -> np.ndarr
     return out
 
 
+def embed_coordinates(values: Any, *axes: Any) -> np.ndarray:
+    """Data with their coordinates as rows ``(x, value)`` or ``(x1, x2, value)``, the form in which
+    SpinDynamica passes data with ``EmbedCoordinates -> True``.
+
+    ``axes`` are the times or frequencies of each dimension of ``values``; for a matrix the first axis belongs
+    to the rows (the indirect dimension) and changes slowest. The result is a complex array.
+    """
+    values = np.asarray(values, dtype=complex)
+    if len(axes) != values.ndim or any(len(axis) != size for axis, size in zip(axes, values.shape)):
+        raise ValueError("one axis per dimension of the data is needed, each as long as that dimension.")
+    mesh = np.meshgrid(*(np.asarray(axis, dtype=float) for axis in axes), indexing="ij")
+    return np.stack([*(m.reshape(-1) for m in mesh), values.reshape(-1)], axis=1)
+
+
+def split_coordinates(rows: Any) -> tuple[np.ndarray, ...]:
+    """The axes and the values of data with embedded coordinates: ``(x, values)`` for rows ``(x, value)``,
+    ``(x1, x2, values)`` with a matrix of values for rows ``(x1, x2, value)``. The inverse of
+    :func:`embed_coordinates`; the rows must be a full grid in that order."""
+    rows = np.asarray(rows, dtype=complex)
+    if rows.ndim != 2 or rows.shape[1] not in (2, 3):
+        raise ValueError("data with coordinates are rows (x, value) or (x1, x2, value).")
+    axes = [np.unique(rows[:, k].real) for k in range(rows.shape[1] - 1)]
+    shape = tuple(len(axis) for axis in axes)
+    if int(np.prod(shape)) != len(rows):
+        raise ValueError("the coordinates are not a full grid.")
+    values = rows[:, -1].reshape(shape)
+    if not np.allclose(embed_coordinates(values, *axes)[:, :-1], rows[:, :-1]):
+        raise ValueError("the rows are not in the order of a grid with ascending coordinates.")
+    return (*axes, values)
+
+
+def ft_coordinates(rows: Any, *, zero_fill: Any = True, first_point: Any = 0.5) -> np.ndarray:
+    """The Fourier transform of data with embedded time coordinates, as data with embedded frequencies
+    (SpinDynamica's ``FT`` with ``EmbedCoordinates -> True``).
+
+    Rows ``(t, value)`` give rows ``(f, value)``, rows ``(t1, t2, value)`` rows ``(f1, f2, value)``, with the
+    sampling intervals read from the times, which must be evenly spaced, and the frequencies in Hz. The
+    options are those of :func:`ft` and :func:`ft2`.
+    """
+    *axes, values = split_coordinates(rows)
+    dwells = []
+    for axis in axes:
+        steps = np.diff(axis)
+        if len(axis) < 2 or not np.allclose(steps, steps[0]):
+            raise ValueError("the times must be evenly spaced, with two or more points per dimension.")
+        dwells.append(float(steps[0]))
+    if len(axes) == 1:
+        frequencies, spectrum = ft(values, dwell=dwells[0], zero_fill=zero_fill, first_point=first_point)
+        return embed_coordinates(spectrum, frequencies)
+    fills = _pair(zero_fill)
+    spectrum = ft2(values, zero_fill=zero_fill, first_point=first_point)
+    indirect = frequency_axis(len(axes[0]), dwells[0], fills[1])
+    direct = frequency_axis(len(axes[1]), dwells[1], fills[0])
+    return embed_coordinates(spectrum, indirect, direct)
+
+
 def reflect_spectrum(spectrum: Any) -> np.ndarray:
     """A spectrum reflected about zero frequency (SpinDynamica's ``ReflectSpectrum``).
 

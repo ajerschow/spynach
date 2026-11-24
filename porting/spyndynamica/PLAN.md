@@ -62,7 +62,7 @@ All of these are covered by a fixture and an independent test.
 
 ## Phases
 
-1. **Reference harness.** Done: generator, loader, 941 cases in seventeen files, independent checks.
+1. **Reference harness.** Done: generator, loader, 976 cases in twenty files, independent checks.
 2. **Symbolic core.** Done (`tests/spyndynamica/test_core.py`): spin systems, kets and bras, the Zeeman and
    singlet-triplet bases, product-operator and spherical-tensor algebra, rotations, closed-form evolution for
    commuting spin-1/2 terms, exact and numeric matrices. Pinned by `01_bases`, `02_operators`, `03_rotations`.
@@ -170,9 +170,22 @@ All of these are covered by a fixture and an independent test.
 
    Two more divergences were found: D13 (the COMPUTE method is normalised differently from the other
    methods) and D14 (embedded frequency coordinates of two-dimensional data).
-   Still left out, none of it asked for: trajectories as interpolating functions, the internal
-   `AdiabaticPropagationSuperoperator`, `CorrelatedEigensystems`, `TransformationAmplitudeBounds`, the
-   shift-and-z sequence for spins above 1/2, incomplete state bases, embedded coordinates.
+10. **The rest of the list** (parity stage F). Done (`tests/spyndynamica/test_analysis_adiabatic.py`;
+   `18_analysis_adiabatic`, `19_trajectory_functions`, `20_shift_and_z_order`; guide
+   `docs/spyndynamica-adiabatic.md`):
+   - *Trajectory functions* (`dynamics.py`): `trajectory_function`, `operator_trajectory_function`, exact at
+     every time.
+   - *Adiabatic events* (`dynamics.py`, `backend.py`): `Adiabatic(generator, duration, sampling,
+     delete_coherences)`, with eigenstates followed by overlap and parallel transport and the dynamic phase
+     from a spline integral. Checked against the integrated equation of motion for slower and slower sweeps.
+   - *Analysis* (`analysis.py`): `amplitude_bounds`, `correlated_eigensystems`.
+   - *Embedded coordinates* (`signals.py`): `embed_coordinates`, `split_coordinates`, `ft_coordinates`.
+   - *Nothing to port:* incomplete state bases (they do not work in SpinDynamica).
+   - *Not portable:* the sequence of the shift-and-z basis within one coherence order for spins above 1/2
+     (Mathematica's sorting of expressions); the port's basis is checked to hold the same operators in every
+     coherence order.
+
+   One more divergence was found: D15 (`CorrelatedEigensystems` with a parameter always fails).
 
 Do not start a phase before the fixtures of the previous one pass in the port.
 

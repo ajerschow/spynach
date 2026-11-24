@@ -63,6 +63,7 @@ GROUPS = {
         "spyndynamica",
         "spyndynamica-simulations",
         "spyndynamica-symmetry",
+        "spyndynamica-adiabatic",
         "coming-from-spindynamica",
     ],
 }
