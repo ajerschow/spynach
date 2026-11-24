@@ -95,7 +95,7 @@ footer { border-top: 1px solid var(--line); padding-block: 1.6rem; font-size: 0.
 @media (prefers-reduced-motion: no-preference) { a, .btn { transition: color 120ms ease, filter 120ms ease; } }
 
 /* Landing page: product cards, the why strip, the install block */
-.cards.products { grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); margin-top: 0.5rem; }
+.cards.products { grid-template-columns: repeat(auto-fit, minmax(22rem, 1fr)); margin-top: 0.5rem; }
 .card .eyebrow { margin-bottom: -0.2rem; }
 .card .covers { font-size: 0.92rem; }
 .card .links { display: flex; flex-wrap: wrap; gap: 0.4rem 1rem; margin-top: auto; font-size: 0.95rem; }

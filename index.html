@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Spynach</title>
-<meta name="description" content="Spin dynamics in Python: the Spinach kernel and EasySpin's simulators, reimplemented and verified against the originals, with coherence transfer pathway tools and a browser playground.">
+<meta name="description" content="Spin dynamics in Python: Spinach, EasySpin, and SpinDynamica ports to Python, verified against the originals, with coherence transfer pathway tools and a browser playground.">
 <!-- site:head -->
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="assets/favicon-32.png" type="image/png" sizes="32x32">
@@ -12,7 +12,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Spynach">
 <meta property="og:title" content="Spynach">
-<meta property="og:description" content="Spin dynamics in Python: the Spinach kernel and EasySpin's simulators, reimplemented and verified against the originals, with coherence transfer pathway tools and a browser playground.">
+<meta property="og:description" content="Spin dynamics in Python: Spinach, EasySpin, and SpinDynamica ports to Python, verified against the originals, with coherence transfer pathway tools and a browser playground.">
 <meta property="og:url" content="https://ajerschow.github.io/spynach/">
 <meta property="og:image" content="https://ajerschow.github.io/spynach/assets/social-card.png">
 <meta property="og:image:width" content="1200">
@@ -20,7 +20,7 @@
 <meta property="og:image:alt" content="Spynach: spin dynamics in Python, with a halftone spiral of coloured dots">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Spynach">
-<meta name="twitter:description" content="Spin dynamics in Python: the Spinach kernel and EasySpin's simulators, reimplemented and verified against the originals, with coherence transfer pathway tools and a browser playground.">
+<meta name="twitter:description" content="Spin dynamics in Python: Spinach, EasySpin, and SpinDynamica ports to Python, verified against the originals, with coherence transfer pathway tools and a browser playground.">
 <meta name="twitter:image" content="https://ajerschow.github.io/spynach/assets/social-card.png">
 <!-- /site:head -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -34,9 +34,10 @@
 
 <!-- site:nav -->
 <nav class="top" aria-label="Site">
-  <a class="brand" href="index.html" aria-current="page">Spynach</a>
+  <a class="brand" href="index.html" aria-current="page">Spynach &middot; EasySpyn &middot; SpynDynamica</a>
   <a href="spinach.html">Spinach port</a>
   <a href="easyspin.html">EasySpin port</a>
+  <a href="spindynamica.html">SpinDynamica port</a>
   <a href="extras.html">Extras</a>
   <a href="docs.html">Documentation</a>
   <a href="try.html">Try it</a>
@@ -47,7 +48,7 @@
 <div class="hero">
   <div>
     <h1>Spynach</h1>
-    <p class="lede">Spin dynamics in Python: the Spinach kernel and EasySpin's simulators, reimplemented and verified against the originals.</p>
+    <p class="lede">Spin dynamics in Python: Spinach, EasySpin, and SpinDynamica ports to Python, verified against the originals.</p>
     <div class="actions">
       <a class="btn primary" href="try.html">Try it in the browser</a>
       <a class="btn" href="https://github.com/ajerschow/spynach/blob/main/docs/hilbert-space.md">Start with the first guide</a>
@@ -64,23 +65,27 @@
   <div>
     <span class="eyebrow">Nothing to install</span>
     <h2>Run it in your browser</h2>
-    <p>The <a href="try.html">playground</a> runs Spynach, easyspyn and ctps in your browser with Pyodide: edit an NMR, EPR or pathway example and plot it. Or open a notebook in the cloud.</p>
+    <p>The <a href="try.html">playground</a> runs Spynach, EasySpyn, SpynDynamica and ctps in your browser with Pyodide: edit an NMR, EPR, symbolic or pathway example and plot it. Or open a notebook in the cloud.</p>
     <div class="actions">
       <a class="btn primary" href="try.html">Try it in the browser</a>
       <a class="btn" href="https://colab.research.google.com/github/ajerschow/spynach/blob/main/docs/colab/easyspyn-quick-start.ipynb">Colab: EPR</a>
       <a class="btn" href="https://colab.research.google.com/github/ajerschow/spynach/blob/main/docs/colab/quick-start.ipynb">Colab: NMR</a>
+      <a class="btn" href="https://colab.research.google.com/github/ajerschow/spynach/blob/main/docs/colab/spyndynamica-quick-start.ipynb">Colab: SpynDynamica</a>
       <a class="btn" href="https://mybinder.org/v2/gh/ajerschow/spynach/main?urlpath=lab/tree/docs/notebooks/">Binder</a>
     </div>
   </div>
   <div>
     <span class="eyebrow">Quick install</span>
     <h2>Python 3.11 or newer</h2>
-<pre><code># EPR: EasySpin's simulators
+<pre><code># NMR: ported as Spynach (including ctps)
+pip install spynach
+
+# EPR: ported as EasySpyn simulators
 pip install easyspyn
 
-# NMR: Spinach's kernel (and ctps)
-pip install spynach</code></pre>
-    <p>Both are on PyPI and install Numba, which speeds up their kernels; <code>pip install "spynach[epr]"</code> installs the two together, and Spynach also provides <code>ctps</code>. <a href="#install">More install options</a></p>
+# Symbolic: SpynDynamica, the SpinDynamica port
+pip install spyndynamica</code></pre>
+    <p>All three are on PyPI as separate distributions. Spynach and EasySpyn install Numba, which speeds up their kernels; SpynDynamica needs NumPy, SciPy and SymPy only. <a href="#install">More install options</a></p>
   </div>
 </div>
 
@@ -100,9 +105,16 @@ pip install spynach</code></pre>
     <div class="links"><a href="easyspin.html">About the port</a> <a href="https://github.com/ajerschow/spynach/blob/main/docs/easyspyn.md">First guide</a> <a href="try.html#ex-epr-pepper">Run an example</a></div>
   </div>
   <div class="card">
+    <span class="eyebrow">SpinDynamica port</span>
+    <h3>spyndynamica</h3>
+    <p><a href="https://www.spindynamica.soton.ac.uk">SpinDynamica</a>'s symbolic and numerical spin dynamics in Python, with SpinDynamica's conventions: operators with SymPy coefficients, spins numbered from 1.</p>
+    <p class="covers">Product and spherical tensor operators, rotations and closed-form evolution, bases and superoperators, pulse sequences, signals and spectra, COMPUTE, adiabatic events, chemical exchange, symmetry and Lie algebras. Verified against SpinDynamica 3.10.2 on 976 reference cases.</p>
+    <div class="links"><a href="spindynamica.html">About the port</a> <a href="https://github.com/ajerschow/spynach/blob/main/docs/spyndynamica.md">First guide</a> <a href="try.html#ex-sd-cosy">Run an example</a></div>
+  </div>
+  <div class="card">
     <span class="eyebrow">Extras</span>
     <h3>ctps and tooling</h3>
-    <p>What originated here: coherence transfer pathway selection with phase cycles, gradients and non-ideal pulses, cogwheel cycle search, relaxation pathways resolved by mechanism, and the verification tooling behind both ports.</p>
+    <p>What originated here: coherence transfer pathway selection with phase cycles, gradients and non-ideal pulses, cogwheel cycle search, relaxation pathways resolved by mechanism, and the verification tooling behind the ports.</p>
     <p class="covers">Every pathway a sequence allows, ranked and drawn in an interactive explorer; parity harnesses and timed comparisons against MATLAB; executable guides; this browser playground.</p>
     <div class="links"><a href="extras.html">What is here</a> <a href="https://github.com/ajerschow/spynach/blob/main/docs/ctps.md">ctps guide</a> <a href="try.html#ex-ctps">Run an example</a></div>
   </div>
@@ -110,21 +122,22 @@ pip install spynach</code></pre>
 
 <div class="why">
   <p><b>No MATLAB licence needed.</b> Pip-installable packages that slot into the scientific Python stack, run on any machine, in Colab, or in this browser.</p>
-  <p><b>Verified, not eyeballed.</b> Every ported stage is compared with reference data computed by Spinach or EasySpin itself, with tolerances that are stated, measured and published.</p>
+  <p><b>Verified, not eyeballed.</b> Every ported stage is compared with reference data computed by Spinach, EasySpin or SpinDynamica itself, with tolerances that are stated, measured and published.</p>
   <p><b>Readable kernels, ready for accelerators.</b> The algorithms in plain Python with NumPy and SciPy, hot loops behind one backend adapter, and documentation whose code runs in the test suite.</p>
 </div>
 
 <section id="install">
   <header><span class="eyebrow">Install</span><h2>Install</h2></header>
   <div>
-    <p>Python 3.11 or newer. <code>pip install easyspyn</code> installs the EPR package alone and <code>pip install spynach</code> the NMR package with <code>ctps</code>, both from PyPI as separate distributions (<code>spynach[epr]</code> adds easyspyn); Numba comes with both, threading the sparse kernels of Spynach and compiling EasySpyn's (<code>SPYNACH_NUMBA=0</code> and <code>EASYSPYN_NUMBA=0</code> switch it off); the <code>docs</code> and <code>test</code> extras add the notebooks and the test suite.</p>
-<pre><code>pip install easyspyn
-
-# Spynach with ctps
+    <p>Python 3.11 or newer. The three packages are separate distributions on PyPI: <code>spynach</code> is the NMR package with <code>ctps</code>, <code>easyspyn</code> the EPR package, <code>spyndynamica</code> the symbolic one (<code>spynach[epr]</code> installs the first two together). Numba comes with Spynach and EasySpyn, threading the sparse kernels of Spynach and compiling EasySpyn's (<code>SPYNACH_NUMBA=0</code> and <code>EASYSPYN_NUMBA=0</code> switch it off); SpynDynamica needs NumPy, SciPy and SymPy, and its <code>plot</code> extra adds Plotly for the three-dimensional pictures. The <code>docs</code> and <code>test</code> extras of the repository add the notebooks and the test suite.</p>
+<pre><code># NMR: ported as Spynach (including ctps)
 pip install spynach
 
-# Spynach and easyspyn together
-pip install "spynach[epr]"
+# EPR: ported as EasySpyn simulators
+pip install easyspyn
+
+# Symbolic: SpynDynamica, the SpinDynamica port
+pip install spyndynamica
 
 # the development version, from GitHub
 pip install "spynach @ git+https://github.com/ajerschow/spynach.git"
@@ -132,16 +145,16 @@ pip install "spynach @ git+https://github.com/ajerschow/spynach.git"
 # or, for the notebooks and tests
 git clone https://github.com/ajerschow/spynach.git
 cd spynach &amp;&amp; pip install -e ".[docs,test,fast]"</code></pre>
-    <p>The first guide of each port starts from an installed package: <a href="https://github.com/ajerschow/spynach/blob/main/docs/hilbert-space.md">Hilbert space</a> for Spinach users, <a href="https://github.com/ajerschow/spynach/blob/main/docs/easyspyn.md">EPR spin systems with easyspyn</a> for EasySpin users. Nothing to install: the <a href="try.html">playground</a> runs both ports in Pyodide, and the Colab notebooks (<a href="https://colab.research.google.com/github/ajerschow/spynach/blob/main/docs/colab/easyspyn-quick-start.ipynb">EPR</a>, <a href="https://colab.research.google.com/github/ajerschow/spynach/blob/main/docs/colab/quick-start.ipynb">NMR</a>) or <a href="https://mybinder.org/v2/gh/ajerschow/spynach/main?urlpath=lab/tree/docs/notebooks/">Binder</a> run the guides' notebooks in the cloud. In a container whose CPU quota is below its visible core count, set <code>OPENBLAS_NUM_THREADS</code> to the quota.</p>
+    <p>The first guide of each port starts from an installed package: <a href="https://github.com/ajerschow/spynach/blob/main/docs/hilbert-space.md">Hilbert space</a> for Spinach users, <a href="https://github.com/ajerschow/spynach/blob/main/docs/easyspyn.md">EPR spin systems with easyspyn</a> for EasySpin users, <a href="https://github.com/ajerschow/spynach/blob/main/docs/spyndynamica.md">Symbolic spin operators</a> for SpinDynamica users. Nothing to install: the <a href="try.html">playground</a> runs the three ports in Pyodide, and the Colab notebooks (<a href="https://colab.research.google.com/github/ajerschow/spynach/blob/main/docs/colab/easyspyn-quick-start.ipynb">EPR</a>, <a href="https://colab.research.google.com/github/ajerschow/spynach/blob/main/docs/colab/quick-start.ipynb">NMR</a>, <a href="https://colab.research.google.com/github/ajerschow/spynach/blob/main/docs/colab/spyndynamica-quick-start.ipynb">SpynDynamica</a>) or <a href="https://mybinder.org/v2/gh/ajerschow/spynach/main?urlpath=lab/tree/docs/notebooks/">Binder</a> run the guides' notebooks in the cloud. In a container whose CPU quota is below its visible core count, set <code>OPENBLAS_NUM_THREADS</code> to the quota.</p>
   </div>
 </section>
 
 <section id="credits">
   <header><span class="eyebrow">Credits</span><h2>With thanks</h2></header>
   <div>
-    <p>Spynach derives from <a href="https://spindynamics.org">Spinach</a> 2.13 (<a href="https://www.weizmann.ac.il/chembiophys/kuprov/">Ilya Kuprov</a> and co-workers, MIT licence) and EasySpyn from <a href="https://easyspin.org">EasySpin</a> 6.0.15 (<a href="https://stoll.chem.washington.edu/">Stefan Stoll</a> and co-workers, MIT licence); both attributions are kept in <a href="https://github.com/ajerschow/spynach/blob/main/LICENSE">LICENSE</a>. The translation from MATLAB to Python was carried out largely by an AI coding agent working under the direction of <a href="https://wp.nyu.edu/jerschow/">Alexej Jerschow</a>, who set the goals and reviewed the results; correctness rests on the test suites against the originals' reference data.</p>
+    <p>Spynach derives from <a href="https://spindynamics.org">Spinach</a> 2.13 (<a href="https://www.weizmann.ac.il/chembiophys/kuprov/">Ilya Kuprov</a> and co-workers, MIT licence) and EasySpyn from <a href="https://easyspin.org">EasySpin</a> 6.0.15 (<a href="https://stoll.chem.washington.edu/">Stefan Stoll</a> and co-workers, MIT licence); SpynDynamica follows <a href="https://www.spindynamica.soton.ac.uk">SpinDynamica</a> 3.10.2 (<a href="https://www.southampton.ac.uk/chemistry/about/staff/mhl.page">Malcolm Levitt</a> and co-workers, open-source and freely available by its terms of use); the three attributions are kept in <a href="https://github.com/ajerschow/spynach/blob/main/LICENSE">LICENSE</a>. The translation to Python was carried out largely by an AI coding agent working under the direction of <a href="https://wp.nyu.edu/jerschow/">Alexej Jerschow</a>, who set the goals and reviewed the results; correctness rests on the test suites against the originals' reference data. Thanks to <a href="https://www.southampton.ac.uk/chemistry/about/staff/mhl.page">Malcolm Levitt</a>, Christian Bengs and others for the development of <a href="https://www.spindynamica.soton.ac.uk">SpinDynamica</a>.</p>
     <p>Grateful to Claude for the amazing work, and to <a href="https://www.weizmann.ac.il/chembiophys/kuprov/">Ilya Kuprov</a> for encouragement and for suggesting the catchy name.</p>
-    <p><b>How the developers of the originals are credited.</b> Spynach and EasySpyn keep the function names of Spinach and EasySpin, so that scripts map line by line, and credit the people behind the originals where the code is: in the docstring of each translated function (<code>help(spynach.propagator)</code>), in a block at the top of each module, and in two generated tables of function against author, <a href="https://github.com/ajerschow/spynach/blob/main/docs/spinach-credits.md">Spinach authors</a> and <a href="https://github.com/ajerschow/spynach/blob/main/docs/easyspin-credits.md">EasySpin authors</a>. Spinach lists the authors of each function in its header, and these are given by name. EasySpin's headers name no authors, so each EasySpyn function names the people who authored commits to the original file up to release 6.0.15, and any author its source names, such as John D'Errico for the Jacobian estimator; that list shows who changed a file, not who wrote which algorithm. Both lists are generated from the originals by scripts in the repository and checked by tests, and the licence keeps the original notices. Corrections and missing names are welcome as issues on GitHub.</p>
+    <p><b>How the developers of the originals are credited.</b> Spynach and EasySpyn keep the function names of Spinach and EasySpin, so that scripts map line by line, and credit the people behind the originals where the code is: in the docstring of each translated function (<code>help(spynach.propagator)</code>), in a block at the top of each module, and in two generated tables of function against author, <a href="https://github.com/ajerschow/spynach/blob/main/docs/spinach-credits.md">Spinach authors</a> and <a href="https://github.com/ajerschow/spynach/blob/main/docs/easyspin-credits.md">EasySpin authors</a>. Spinach lists the authors of each function in its header, and these are given by name. EasySpin's headers name no authors, so each EasySpyn function names the people who authored commits to the original file up to release 6.0.15, and any author its source names, such as John D'Errico for the Jacobian estimator; that list shows who changed a file, not who wrote which algorithm. Both lists are generated from the originals by scripts in the repository and checked by tests, and the licence keeps the original notices. SpinDynamica's source files name no authors, so SpynDynamica credits it as a whole, as its <a href="https://www.spindynamica.soton.ac.uk/about/programmers/">programmers page</a> does: programmed mainly by Malcolm Levitt, with additional code and assistance by Jyrki Rantaharju (speed enhancements), Andreas Brinkmann (parallelization and powder averaging) and Soumya Singha Roy (isotope data), and with Christian Bengs, co-author of its publication, for the adiabatic tools and the S(n)/SO(3) dual pairing. Work that uses SpynDynamica should cite C. Bengs, M. H. Levitt, <i>Magn. Reson. Chem.</i> (2017), <a href="https://doi.org/10.1002/mrc.4642">doi:10.1002/mrc.4642</a>, as SpinDynamica's <a href="https://www.spindynamica.soton.ac.uk/about/termsofuse/">terms of use</a> ask; the details are on the <a href="spindynamica.html#credits">SpinDynamica port</a> page. Corrections and missing names are welcome as issues on GitHub.</p>
     <p><b>Contributors:</b> Florin Teleanu, for the Spinach scripts in <a href="https://github.com/ajerschow/spynach/tree/main/user_ml">user_ml/</a> that became comparison cases, for the figure above, and for the <a href="https://github.com/ajerschow/spynach/blob/main/src/spynach/pathways.py">relaxation pathway analysis</a> module, which splits relaxation rates by mechanism and draws them as a chord diagram (<a href="https://github.com/ajerschow/spynach/blob/main/docs/relaxation-pathways.md">guide</a>, <a href="try.html#ex-pathways">try it in the browser</a>); <a href="https://github.com/mzaiss">Moritz Zaiss</a> (MRsources), for the <a href="try.html">browser playground</a>. The list is kept in the <a href="https://github.com/ajerschow/spynach#contributors">README</a>.</p>
   </div>
 </section>

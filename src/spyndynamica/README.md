@@ -29,6 +29,15 @@ and credit the authors of any add-on used. Work that uses `spyndynamica` should 
 SpinDynamica source is in this repository: the port follows SpinDynamica's conventions and is compared with
 results computed by it.
 
+**Who wrote SpinDynamica:** it is programmed mainly by Malcolm Levitt, with additional code and assistance by
+Jyrki Rantaharju (speed enhancements), Andreas Brinkmann (parallelization and powder averaging) and Soumya
+Singha Roy (isotope data), as its [programmers page](https://www.spindynamica.soton.ac.uk/about/programmers/)
+says; Christian Bengs contributed code to release 3.0, is co-author of the publication, and is named by the
+site as the author of the adiabatic tools and the S(n)/SO(3) dual pairing. The source files name no authors,
+so the port credits SpinDynamica as a whole and not function by function. Two data files are SpinDynamica's:
+the isotope table with the constants (`data/isotopes.json`) and the tabulated orientation sets
+(`data/orientations.npz`).
+
 | Path | Content |
 |---|---|
 | `src/spyndynamica/_local.py` | the operator basis of one spin: labels, exact matrices, products, rotations |

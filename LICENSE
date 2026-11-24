@@ -70,12 +70,28 @@ SpinDynamica
 ============
 
 The `spyndynamica` package (src/spyndynamica), its tests and its reference
-data were written by reading SpinDynamica (Malcolm H. Levitt and
-co-authors, https://www.spindynamica.soton.ac.uk), following its
-conventions and comparing with results computed by it. No SpinDynamica
-source code is included. SpinDynamica names no formal licence; its terms of
-use (https://www.spindynamica.soton.ac.uk/about/termsofuse/) state that
-SpinDynamica is open-source and freely available for use, and ask that
+data were written by reading SpinDynamica 3.10.2
+(https://www.spindynamica.soton.ac.uk), following its conventions and
+comparing with results computed by it. No SpinDynamica source code is
+included. Two data files of the package are taken from SpinDynamica: the
+isotope table and physical constants (src/spyndynamica/data/isotopes.json)
+and the tabulated orientational sampling sets
+(src/spyndynamica/data/orientations.npz). The reference data of the tests
+(tests/spyndynamica/fixtures/data) are results computed by SpinDynamica.
+
+SpinDynamica is, in the words of its site
+(https://www.spindynamica.soton.ac.uk/about/programmers/), programmed
+mainly by Malcolm Levitt, with additional code and assistance by Jyrki
+Rantaharju (speed enhancements), Andreas Brinkmann (parallelization and
+powder averaging) and Soumya Singha Roy (isotope data). Christian Bengs
+contributed code to its release 3.0 and is co-author of its publication;
+the site names him as the author of AdiabaticTools and of the S(n)/SO(3)
+dual pairing, subjects that release 3.10.2 covers and that are ported.
+
+SpinDynamica names no formal licence and carries no copyright notice to
+reproduce. Its terms of use
+(https://www.spindynamica.soton.ac.uk/about/termsofuse/) state that
+"SpinDynamica is open-source and freely available for use", and ask that
 published work cite
 
     C. Bengs, M. H. Levitt, "SpinDynamica: Symbolic and numerical magnetic
@@ -83,16 +99,19 @@ published work cite
     doi:10.1002/mrc.4642,
 
 and that the authors of any add-on used be credited as well. Work that uses
-`spyndynamica` should cite that publication. Keep this notice with any copy
-or substantial portion of the `spyndynamica` package.
+`spyndynamica` should cite that publication. The MIT permission above is
+given by the author of the port for the port; it does not replace
+SpinDynamica's own terms for what is SpinDynamica's. Keep this notice with
+any copy or substantial portion of the `spyndynamica` package.
 
 
 Use of AI in the translation
 ============================
 
-The translation of Spinach from MATLAB to Python was carried out largely by
+The translation of Spinach and EasySpin from MATLAB and the port of
+SpinDynamica from Mathematica to Python were carried out largely by
 an AI coding agent (Claude, Anthropic) working under the direction of
 Alexej Jerschow, who set the goals, reviewed the results and holds the
 copyright above. Commits made by the agent are marked as such in the git
-history. Correctness rests on the test suite, which compares Spynach with
-reference data computed by Spinach, not on the method of authorship.
+history. Correctness rests on the test suites, which compare each port with
+reference data computed by its original, not on the method of authorship.

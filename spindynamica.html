@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Spynach: the SpinDynamica port</title>
+<meta name="description" content="SpynDynamica: SpinDynamica's symbolic and numerical spin dynamics in Python, with SymPy operators and a numeric engine, verified against SpinDynamica 3.10.2.">
+<!-- site:head -->
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="assets/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Spynach">
+<meta property="og:title" content="Spynach: the SpinDynamica port">
+<meta property="og:description" content="SpynDynamica: SpinDynamica's symbolic and numerical spin dynamics in Python, with SymPy operators and a numeric engine, verified against SpinDynamica 3.10.2.">
+<meta property="og:url" content="https://ajerschow.github.io/spynach/spindynamica.html">
+<meta property="og:image" content="https://ajerschow.github.io/spynach/assets/social-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Spynach: spin dynamics in Python, with a halftone spiral of coloured dots">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Spynach: the SpinDynamica port">
+<meta name="twitter:description" content="SpynDynamica: SpinDynamica's symbolic and numerical spin dynamics in Python, with SymPy operators and a numeric engine, verified against SpinDynamica 3.10.2.">
+<meta name="twitter:image" content="https://ajerschow.github.io/spynach/assets/social-card.png">
+<!-- /site:head -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/site.css">
+<script src="assets/theme.js"></script>
+</head>
+<body>
+<div class="wrap">
+
+<!-- site:nav -->
+<nav class="top" aria-label="Site">
+  <a class="brand" href="index.html">Spynach &middot; EasySpyn &middot; SpynDynamica</a>
+  <a href="spinach.html">Spinach port</a>
+  <a href="easyspin.html">EasySpin port</a>
+  <a href="spindynamica.html" aria-current="page">SpinDynamica port</a>
+  <a href="extras.html">Extras</a>
+  <a href="docs.html">Documentation</a>
+  <a href="try.html">Try it</a>
+  <a href="https://github.com/ajerschow/spynach">GitHub</a>
+</nav>
+<!-- /site:nav -->
+
+<div class="lede-page">
+  <span class="eyebrow">SpinDynamica port</span>
+  <h1>SpinDynamica's symbolic spin dynamics in Python</h1>
+  <p class="lede"><code>spyndynamica</code> ports <a href="https://www.spindynamica.soton.ac.uk">SpinDynamica</a> 3.10.2, the Mathematica package for spin dynamics by Malcolm Levitt and co-workers: spin operators as sums of product and spherical tensor operators with symbolic coefficients, and a numeric engine for sequences of pulses and delays. The results are compared with SpinDynamica's own output, and each has a check that does not depend on it.</p>
+  <div class="actions">
+    <a class="btn primary" href="https://github.com/ajerschow/spynach/blob/main/docs/spyndynamica.md">Start with the first guide</a>
+    <a class="btn" href="https://github.com/ajerschow/spynach/blob/main/docs/coming-from-spindynamica.md">Coming from SpinDynamica</a>
+    <a class="btn" href="try.html#ex-sd-cosy">Run product operators through COSY in the browser</a>
+  </div>
+  <p class="quick-line">Install: <code>pip install spyndynamica</code> (PyPI). No install needed: <a href="try.html#ex-sd-cosy">run an example in the browser</a>, or open the <a href="https://colab.research.google.com/github/ajerschow/spynach/blob/main/docs/colab/spyndynamica-quick-start.ipynb">Colab notebook</a>.</p>
+</div>
+
+<section id="about">
+  <header><span class="eyebrow">Package</span><h2>A package of its own</h2></header>
+  <div>
+    <p><code>spyndynamica</code> lives in the same repository as Spynach and EasySpyn and uses none of their code: it needs NumPy, SciPy and SymPy, is installed on its own, and has its own version number. Symbolic results are SymPy expressions, so they simplify, substitute, differentiate and print as LaTeX like any other; numeric results are NumPy arrays.</p>
+    <p>The port was written by reading SpinDynamica 3.10.2, following its conventions and comparing with what it computes. No SpinDynamica source code is part of it, and only what the release contains was ported, not the add-on packages distributed beside it. SpinDynamica names no formal licence; its <a href="https://www.spindynamica.soton.ac.uk/about/termsofuse/">terms of use</a> say it is open-source and freely available for use, and that notice is kept in <a href="https://github.com/ajerschow/spynach/blob/main/LICENSE">LICENSE</a>.</p>
+  </div>
+</section>
+
+<section id="scope">
+  <header><span class="eyebrow">Scope</span><h2>What is ported</h2></header>
+  <div>
+    <div class="figures">
+      <figure><img src="docs/figures/spyndynamica-simulations-absorption.png" alt="A two-dimensional pure-absorption spectrum computed with spyndynamica" loading="lazy"><figcaption>Signals in one and two dimensions with their Fourier transforms; here a pure-absorption 2D spectrum from two complementary data sets.</figcaption></figure>
+      <figure><img src="docs/figures/spyndynamica-adiabatic-levels.png" alt="Energy levels of a spin pair followed along a parameter of the Hamiltonian" loading="lazy"><figcaption>Eigenvalues followed along a parameter of the Hamiltonian, with the eigenstates correlated through the crossings.</figcaption></figure>
+      <figure><img src="docs/figures/spyndynamica-symmetry-ovaloid.png" alt="Ovaloid picture of a second-rank tensor" loading="lazy"><figcaption>Three-dimensional pictures of tensors, axis systems and rotations.</figcaption></figure>
+    </div>
+    <ul class="plain">
+      <li><b>Operators.</b> Spin systems of any spin quantum numbers, product and spherical tensor operators, commutators, rotations by axis or Euler angles, closed-form evolution; the Zeeman, singlet-triplet, coupled and user-defined bases, kets and bras, exact and numeric matrices.</li>
+      <li><b>Liouville space.</b> Operator bases, superoperators, phenomenological relaxation, coherence-order and spherical-rank filters.</li>
+      <li><b>The numeric engine.</b> Pulses, delays, shaped pulses and pulse sequences, time-dependent and periodic Hamiltonians, adiabatic events, trajectories, the COMPUTE method with the carousel average, ensemble and powder averages.</li>
+      <li><b>States and exchange.</b> Density operators and polarization levels, chemical exchange in extended Liouville space, bounds on transformation amplitudes.</li>
+      <li><b>Symmetry.</b> Commutants, Lie algebras generated by Hamiltonians, spin permutation groups and symmetry-adapted bases.</li>
+    </ul>
+    <h3>Not ported</h3>
+    <p>The order in which SpinDynamica lists the shift-and-z operator basis within one coherence order for spins above 1/2 (the port has the same operators per coherence order, in its own order), the options that only steer SpinDynamica's internals, and the add-on packages. The guide <a href="https://github.com/ajerschow/spynach/blob/main/docs/coming-from-spindynamica.md">Coming from SpinDynamica</a> keeps the list current.</p>
+  </div>
+</section>
+
+<section id="conventions">
+  <header><span class="eyebrow">Conventions</span><h2>What carries over, what differs</h2></header>
+  <div>
+    <ul class="plain">
+      <li><b>SpinDynamica's conventions.</b> Spins are numbered from 1, operators are written as in SpinDynamica (<code>I(1, "x")</code> for <i>I</i><sub>1x</sub>), and signs, phases, rotation and Euler-angle conventions are SpinDynamica's.</li>
+      <li><b>Python names.</b> <code>signal_1d</code> for <code>Signal1D</code>, options as keyword arguments, products of operators on different spins with <code>@</code>. The table of names is in the comparison guide.</li>
+      <li><b>Documented behaviour.</b> Where SpinDynamica 3.10.2 does something else than it documents, the port follows the documentation and records the case: fifteen so far, in <a href="https://github.com/ajerschow/spynach/blob/main/porting/spyndynamica/DIVERGENCES.md">DIVERGENCES.md</a>.</li>
+      <li><b>Separate from Spynach.</b> Large spin systems, restricted bases and Redfield theory are Spynach's territory; SpynDynamica is for symbolic work and small systems.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="quick-start">
+  <header><span class="eyebrow">Quick start</span><h2>A coupled spin pair, symbolically</h2></header>
+  <div>
+    <p>After <code>pip install spyndynamica</code>: a 90° pulse on the first spin, then free evolution under the chemical shift and the coupling, and the amplitude of the antiphase term.</p>
+<pre><code>import sympy as sp
+from spyndynamica import SpinSystem
+
+s = SpinSystem(2)
+I = s.I
+Omega, J, t = sp.symbols("Omega J t", real=True)
+H = Omega * I(1, "z") + 2 * sp.pi * J * (I(1, "z") @ I(2, "z"))
+
+rho = I(1, "z").rotate(sp.pi / 2, "x", spins=[1]).evolve(H, t)
+print(rho)
+print(rho.amplitude(2 * I(1, "x") @ I(2, "z")))   # sin(pi*J*t)*cos(Omega*t)</code></pre>
+    <p>In the <a href="try.html">browser playground</a> the symbolic examples run cell by cell with typeset results: <a href="try.html#ex-sd-cosy">product operators through COSY</a>, <a href="try.html#ex-sd-singlet">the singlet-triplet basis</a>, <a href="try.html#ex-sd-relaxation">dipolar relaxation from double commutators</a>, <a href="try.html#ex-sd-dqf">an amplitude against a flip angle</a>, <a href="try.html#ex-sd-bounds">bounds on a transfer</a> and <a href="try.html#ex-sd-wahuha">the average Hamiltonian of WAHUHA</a>. Three numeric ones have a form of parameters: <a href="try.html#ex-sd-inept">INEPT</a>, <a href="try.html#ex-sd-ab">an AB spectrum</a> and <a href="try.html#ex-sd-exchange">chemical exchange</a>.</p>
+  </div>
+</section>
+
+<section id="parity">
+  <header><span class="eyebrow">Verification</span><h2>Parity with SpinDynamica</h2></header>
+  <div>
+    <p>Reference data are written by SpinDynamica itself: case files run headless under <code>wolframscript</code> and save each result, 976 cases in twenty files, and the tests rebuild every case and compare. Symbolic results are compared as expressions, numeric ones to the precision of the calculation.</p>
+    <p>SpinDynamica is the reference, not the truth: every foundation result also has a check that does not depend on it, such as a commutation relation, a closed form or a sum rule. That is how the divergences were found. The fixtures and their generator are described in <a href="https://github.com/ajerschow/spynach/blob/main/tests/spyndynamica/fixtures/README.md">tests/spyndynamica/fixtures</a>.</p>
+  </div>
+</section>
+
+<section id="credits">
+  <header><span class="eyebrow">Credits</span><h2>Who wrote SpinDynamica, and how to cite it</h2></header>
+  <div>
+    <p>SpinDynamica is programmed mainly by <a href="https://www.southampton.ac.uk/chemistry/about/staff/mhl.page">Malcolm Levitt</a>. Its <a href="https://www.spindynamica.soton.ac.uk/about/programmers/">programmers page</a> names additional code and assistance by Jyrki Rantaharju (speed enhancements), Andreas Brinkmann (parallelization and powder averaging) and Soumya Singha Roy (isotope data); Christian Bengs contributed code to the 3.0 release, is co-author of the publication and administers the site. The site also lists add-ons with their authors, among them AdiabaticTools and the S(n)/SO(3) dual pairing by Christian Bengs; release 3.10.2 has adiabatic events and a dual pairing function, and the port of those is credited to him as well. The source files name no authors, so beyond this the port credits SpinDynamica as a whole and not function by function. Corrections and missing names are welcome as issues on GitHub.</p>
+    <p>Work that uses SpynDynamica should cite, as SpinDynamica's terms of use ask: C. Bengs, M. H. Levitt, <i>SpinDynamica: Symbolic and numerical magnetic resonance in a Mathematica environment</i>, Magn. Reson. Chem. (2017), <a href="https://doi.org/10.1002/mrc.4642">doi:10.1002/mrc.4642</a>. The terms also ask that the authors of any add-on used be credited.</p>
+  </div>
+</section>
+
+<footer>
+  <span>MIT License.</span>
+  <span>Alexej Jerschow, New York University.</span>
+  <a href="https://github.com/ajerschow/spynach/blob/main/HANDOFF.md">Design decisions</a>
+  <a href="https://github.com/ajerschow/spynach/blob/main/porting/ROADMAP.md">Roadmap</a>
+  <a href="https://github.com/ajerschow/spynach">Source</a>
+</footer>
+
+</div>
+</body>
+</html>

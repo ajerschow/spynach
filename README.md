@@ -20,6 +20,7 @@ runs Spynach, `easyspyn` and `ctps` in the browser through Pyodide
 (Pyodide; NMR, EPR and pathway examples you can edit), or open a notebook in the cloud:
 [![Open in Colab: EPR](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ajerschow/spynach/blob/main/docs/colab/easyspyn-quick-start.ipynb)
 [![Open in Colab: NMR](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ajerschow/spynach/blob/main/docs/colab/quick-start.ipynb)
+[![Open in Colab: SpynDynamica](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ajerschow/spynach/blob/main/docs/colab/spyndynamica-quick-start.ipynb)
 [![Launch Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/ajerschow/spynach/main?urlpath=lab/tree/docs/notebooks/)
 
 **Install (Python 3.11 or newer):**
@@ -27,7 +28,8 @@ runs Spynach, `easyspyn` and `ctps` in the browser through Pyodide
 ```
 pip install spynach    # NMR: Spinach's kernel, from PyPI (installs Numba; also provides ctps)
 pip install easyspyn   # EPR: EasySpin's simulators, from PyPI (its own distribution, installs Numba)
-pip install "spynach[epr]"   # both
+pip install spyndynamica   # symbolic calculations: the SpinDynamica port, from PyPI (its own distribution)
+pip install "spynach[epr]"   # spynach and easyspyn together
 ```
 
 ```python
@@ -388,6 +390,7 @@ Results obtained with SpynDynamica (`import spyndynamica`, a port in progress of
 [docs/coming-from-spindynamica.md](docs/coming-from-spindynamica.md))
 should cite SpinDynamica as its [terms of use](https://www.spindynamica.soton.ac.uk/about/termsofuse/) ask:
 C. Bengs, M. H. Levitt, *SpinDynamica: Symbolic and numerical magnetic resonance in a Mathematica environment*, Magn. Reson. Chem. (2017), doi:10.1002/mrc.4642.
+SpinDynamica is programmed mainly by Malcolm Levitt, with additional code and assistance by Jyrki Rantaharju (speed enhancements), Andreas Brinkmann (parallelization and powder averaging) and Soumya Singha Roy (isotope data), as its [programmers page](https://www.spindynamica.soton.ac.uk/about/programmers/) says; Christian Bengs contributed code to release 3.0, is co-author of its publication, and is named by the site as the author of the adiabatic tools and the S(n)/SO(3) dual pairing. Its source files name no authors, so the port credits SpinDynamica as a whole. The isotope table and the tabulated orientation sets of the package are SpinDynamica's.
 
 The Spynach and EasySpyn ports should be attributed to this repository,
 <https://github.com/ajerschow/spynach> (`CITATION.cff` gives the citation).

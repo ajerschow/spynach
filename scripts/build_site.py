@@ -1,7 +1,7 @@
 """Rewrites the generated spans of the project site from the data they come from.
 
 The site is hand-written HTML at the repository root (index, spinach, easyspin,
-extras, docs, try), served by GitHub Pages as is. The parts that are data rather
+spindynamica, extras, docs, try), served by GitHub Pages as is. The parts that are data rather
 than prose sit between HTML-comment markers and are rewritten by this script:
 
     <!-- site:nav --> ... <!-- /site:nav -->                  the top navigation of every page
@@ -31,10 +31,13 @@ GITHUB = "https://github.com/ajerschow/spynach"
 NBVIEWER = "https://nbviewer.org/github/ajerschow/spynach/blob/main/docs/notebooks"
 
 SITE = "https://ajerschow.github.io/spynach/"
-PAGES = ("index.html", "spinach.html", "easyspin.html", "extras.html", "docs.html", "try.html")
+PAGES = ("index.html", "spinach.html", "easyspin.html", "spindynamica.html", "extras.html", "docs.html", "try.html")
+# The three packages, as the first item of every page's navigation.
+BRAND = "Spynach &middot; EasySpyn &middot; SpynDynamica"
 NAV = (
     ("spinach.html", "Spinach port"),
     ("easyspin.html", "EasySpin port"),
+    ("spindynamica.html", "SpinDynamica port"),
     ("extras.html", "Extras"),
     ("docs.html", "Documentation"),
     ("try.html", "Try it"),
@@ -60,6 +63,8 @@ GROUPS = {
         "radiation-damping",
         "distant-dipolar-field",
         "beyond-the-port",
+    ],
+    "spindynamica": [
         "spyndynamica",
         "spyndynamica-simulations",
         "spyndynamica-symmetry",
@@ -107,7 +112,7 @@ def span(text: str, name: str, body: str, path: str) -> str:
 # ---------------------------------------------------------------- navigation
 def render_nav(page: str) -> str:
     current = ' aria-current="page"' if page == "index.html" else ""
-    items = [f'  <a class="brand" href="index.html"{current}>Spynach</a>']
+    items = [f'  <a class="brand" href="index.html"{current}>{BRAND}</a>']
     for href, label in NAV:
         current = ' aria-current="page"' if href == page else ""
         items.append(f'  <a href="{href}"{current}>{label}</a>')

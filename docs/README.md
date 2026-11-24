@@ -51,6 +51,9 @@ case, tolerance and measured difference of the parity suite, written by
 paragraph on the project page; regenerate it after adding fixtures or
 parity tests.
 
+[`colab/easyspyn-quick-start.ipynb`](colab/easyspyn-quick-start.ipynb) and
+[`colab/spyndynamica-quick-start.ipynb`](colab/spyndynamica-quick-start.ipynb) are the same kind of
+notebook for EasySpyn and SpynDynamica, installing from PyPI.
 [`colab/quick-start.ipynb`](colab/quick-start.ipynb) is a stand-alone
 notebook for [Google Colab](https://colab.research.google.com/github/ajerschow/spynach/blob/main/docs/colab/quick-start.ipynb):
 it installs Spynach from GitHub and runs the project page's two-spin

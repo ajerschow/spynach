@@ -56,7 +56,13 @@ early release; corrections and bug reports are welcome on GitHub.
   adiabatic events)
 - Figures of the three-dimensional pictures need Plotly: `pip install "spyndynamica[plot]"`
 
-Credit and citation: SpinDynamica is the work of Malcolm H. Levitt and co-authors. Its
+Credit and citation: SpinDynamica is programmed mainly by Malcolm Levitt, with additional code and assistance by Jyrki Rantaharju
+(speed enhancements), Andreas Brinkmann (parallelization and powder averaging) and Soumya Singha Roy (isotope
+data), as its [programmers page](https://www.spindynamica.soton.ac.uk/about/programmers/) says; Christian Bengs
+contributed code to release 3.0, is co-author of its publication, and is named by the site as the author of the
+adiabatic tools and the S(n)/SO(3) dual pairing. Its source files name no authors, so the port credits
+SpinDynamica as a whole. The isotope table and the tabulated orientation sets of the package are SpinDynamica's.
+Its
 [terms of use](https://www.spindynamica.soton.ac.uk/about/termsofuse/) state that it is open-source and freely
 available for use, and ask that published work cite C. Bengs, M. H. Levitt, *SpinDynamica: Symbolic and
 numerical magnetic resonance in a Mathematica environment*, Magn. Reson. Chem. (2017), doi:10.1002/mrc.4642.
