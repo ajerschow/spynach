@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "spyndynamica"
-version = "0.1.0"  # keep equal to spyndynamica.__version__ (tests/spyndynamica/test_packaging.py); own numbering
+version = "0.1.1"  # keep equal to spyndynamica.__version__ (tests/spyndynamica/test_packaging.py); own numbering
 description = "SpinDynamica in Python (SpynDynamica): symbolic and numerical spin dynamics for NMR"
 readme = "README.md"
 license = "MIT"
