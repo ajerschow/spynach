@@ -1282,10 +1282,10 @@ H
 # %% The Hamiltonian in the Zeeman basis
 H.matrix()
 
-# %% The singlet-triplet basis: its kets written in Zeeman kets
+# %% The singlet-triplet basis: the kets S0, T+1, T0 and T-1 written in Zeeman kets
 basis = s.singlet_triplet()
-for name, ket in zip(basis.names, basis.kets):
-    print(f"{name:>4} = {ket}")
+print(basis.names)
+tuple(basis.kets)
 
 # %% The same Hamiltonian in that basis: the coupling is diagonal, Delta connects the singlet and T0 only
 H.matrix(basis)

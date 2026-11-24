@@ -390,3 +390,18 @@ def test_kets_bras_and_input_checks():
         s.T(1, 2, 0)
     with pytest.raises(ValueError, match="same quantum number"):
         named.permutation(["H", "D"])
+
+
+def test_kets_and_bras_have_a_latex_form():
+    s = SpinSystem(2)
+    up_down = s.ket(sp.Rational(1, 2), -sp.Rational(1, 2))
+    assert up_down._repr_latex_() == r"$\left|\frac{1}{2}, - \frac{1}{2}\right\rangle$"
+    assert up_down.dagger()._repr_latex_() == r"$\left\langle\frac{1}{2}, - \frac{1}{2}\right|$"
+    singlet = s.singlet_triplet().kets[0]
+    text = singlet._repr_latex_()
+    assert text.count(r"\rangle") == 2 and r"\sqrt{2}" in text and " - " in text and text.count("$") == 2
+    assert (-up_down)._repr_latex_().startswith(r"$-\left|")
+    a = sp.Symbol("a")
+    assert r"\left(a + 1\right)\," in ((a + 1) * up_down)._repr_latex_()
+    assert (up_down - up_down)._repr_latex_() == "$0$"
+    assert SpinSystem([(1, 1)]).ket(0)._repr_latex_() == r"$\left|0\right\rangle$"

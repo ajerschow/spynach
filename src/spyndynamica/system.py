@@ -599,6 +599,22 @@ class _State:
                 parts.append(name if value == 1 else f"({value})*{name}")
         return " + ".join(parts) or "0"
 
+    def _latex(self, left: str, right: str) -> str:
+        """The LaTeX form, which notebooks and the browser playground typeset."""
+        parts = []
+        for value, state in zip(self.vector, self.system.quantum_numbers):
+            if value == 0:
+                continue
+            name = left + ", ".join(sp.latex(m) for m in state) + right
+            if value == 1:
+                parts.append(name)
+            elif value == -1:
+                parts.append(f"-{name}")
+            else:
+                coefficient = sp.latex(value)
+                parts.append((rf"\left({coefficient}\right)" if value.is_Add else coefficient) + r"\," + name)
+        return "$" + (" + ".join(parts).replace("+ -", "- ") or "0") + "$"
+
 
 class Ket(_State):
     """A state vector, with its components in the Zeeman basis."""
@@ -620,6 +636,9 @@ class Ket(_State):
     def __repr__(self) -> str:
         return self._text("|", ">")
 
+    def _repr_latex_(self) -> str:
+        return self._latex(r"\left|", r"\right\rangle")
+
 
 class Bra(_State):
     """The adjoint of a ket; ``vector`` holds the conjugated components."""
@@ -636,6 +655,9 @@ class Bra(_State):
 
     def __repr__(self) -> str:
         return self._text("<", "|")
+
+    def _repr_latex_(self) -> str:
+        return self._latex(r"\left\langle", r"\right|")
 
 
 def spins_of(operator: Operator) -> list[Any]:

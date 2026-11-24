@@ -201,7 +201,8 @@ print(s.from_matrix(I(1, "x").matrix() * I(2, "z").matrix()))
 ## Bases, kets and bras
 
 `s.zeeman` and `s.singlet_triplet()` are bases; the second is for two spins-1/2, in SpinDynamica's order
-`S0, T+1, T0, T-1`. A matrix can be taken in either, and states are numbered from 1 or named.
+`S0, T+1, T0, T-1`. A matrix can be taken in either, and states are numbered from 1 or named. In a notebook
+and in the browser playground a ket or a bra is typeset, like an operator.
 
 ```python
 st = s.singlet_triplet()

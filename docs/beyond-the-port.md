@@ -200,8 +200,8 @@ powder_fid = spynach.powder(csa_system, spynach.acquire, powder_pars, "nmr")
 The symbolic examples of `spyndynamica` are written in cells, like a notebook. A
 line `# %% title` starts a cell; each cell can be edited and run on its own (its
 arrow, or Shift+Enter), the cells share their variables, and the value of the
-last line of a cell is shown under it, typeset with KaTeX when it is an operator
-or a SymPy expression. **Run** starts with a new namespace and runs every cell,
+last line of a cell is shown under it, typeset with KaTeX when it is an operator,
+a ket or a SymPy expression. **Run** starts with a new namespace and runs every cell,
 and a cell that is run on its own first runs the cells before it that were
 edited or have not run yet. The source stays one script: **Prefer code** shows
 it in the plain editor, and the tests run it as such. Examples of this kind are
