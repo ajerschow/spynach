@@ -1,8 +1,9 @@
 # Symbolic spin operators with SpynDynamica
 
 SpynDynamica is a Python port in progress of [SpinDynamica](https://www.spindynamica.soton.ac.uk), Malcolm
-Levitt's Mathematica package. It is a separate import (`import spyndynamica`) that uses NumPy and SymPy and
-nothing of Spynach. This guide covers the symbolic core and Liouville space: operators are sums of product
+Levitt's Mathematica package. It is a separate import (`import spyndynamica`) that uses NumPy, SciPy and SymPy and
+nothing of Spynach, and it is packaged as its own distribution (`pip install spyndynamica` once the first
+release is on PyPI; from a clone of the repository, `PYTHONPATH=src`). This guide covers the symbolic core and Liouville space: operators are sums of product
 operators and spherical tensor operators with symbolic coefficients, and products, commutators, rotations and
 weak-coupling evolution are exact algebra; operator bases and superoperators come on top, and axis systems,
 Euler angles and quaternions describe frames. The numeric engine (pulse sequences with strong coupling and

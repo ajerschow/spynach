@@ -41,7 +41,8 @@ dev = ["spynach[test]", "spynach[symbolic]", "ruff>=0.14"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
-# easyspyn is its own PyPI distribution (packaging/easyspyn); spynach does not import it
+# easyspyn is its own PyPI distribution (packaging/easyspyn); spynach does not import it. spyndynamica is another
+# (packaging/spyndynamica), with its own version
 include = ["spynach*", "ctps*"]
 
 [tool.setuptools.package-data]

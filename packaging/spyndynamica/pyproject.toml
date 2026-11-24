@@ -1,0 +1,40 @@
+# The PyPI distribution "spyndynamica": SpynDynamica, the Python port of SpinDynamica in this repository. Built
+# from a staged copy of src/spyndynamica by scripts/build_spyndynamica.py.
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "spyndynamica"
+version = "0.1.0"  # keep equal to spyndynamica.__version__ (tests/spyndynamica/test_packaging.py); own numbering
+description = "SpinDynamica in Python (SpynDynamica): symbolic and numerical spin dynamics for NMR"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{name = "Alexej Jerschow"}]
+requires-python = ">=3.11"
+dependencies = ["numpy>=1.26", "scipy>=1.11", "sympy>=1.12"]
+keywords = ["NMR", "spin dynamics", "SpinDynamica", "product operators", "symbolic", "simulation"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Chemistry",
+    "Topic :: Scientific/Engineering :: Physics",
+]
+
+[project.optional-dependencies]
+plot = ["plotly>=6"]  # figures of the three-dimensional pictures (Scene.figure)
+test = ["pytest>=8"]
+
+[project.urls]
+Homepage = "https://ajerschow.github.io/spynach/"
+Documentation = "https://github.com/ajerschow/spynach/blob/main/docs/spyndynamica.md"
+Source = "https://github.com/ajerschow/spynach"
+Changelog = "https://github.com/ajerschow/spynach/blob/main/CHANGELOG.md"
+
+[tool.setuptools]
+packages = ["spyndynamica"]
+
+[tool.setuptools.package-data]
+spyndynamica = ["data/*.json", "data/*.npz"]

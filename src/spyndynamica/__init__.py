@@ -169,7 +169,7 @@ from spyndynamica.system import (
 )
 from spyndynamica.tensors import cartesian_to_spherical, spherical_to_cartesian, transform_spherical_tensor
 
-__version__ = "0.0.1"
+__version__ = "0.1.0"
 
 __all__ = [
     "bond_angle",

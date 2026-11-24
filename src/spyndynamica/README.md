@@ -3,7 +3,7 @@
 A Python port in progress of [SpinDynamica](https://www.spindynamica.soton.ac.uk) 3.10.2, Malcolm Levitt's
 Mathematica package for spin dynamics and NMR. It is a separate import inside the Spynach repository: it uses
 NumPy and SymPy only, imports nothing of `spynach`, `easyspyn` or `ctps`, and nothing else imports it
-(`tests/spyndynamica/test_dependency_direction.py`). It is not part of the `spynach` distribution. The browser
+(`tests/spyndynamica/test_dependency_direction.py`). It is not part of the `spynach` distribution: it has its own, `spyndynamica` (see "On PyPI" below). The browser
 playground (`try.html`) fetches its sources next to the other packages and loads SymPy when an example
 imports it; nine examples there use it: three with a form of parameters (`ex-sd-inept`, `ex-sd-ab`,
 `ex-sd-exchange`) and six symbolic ones in notebook-style cells with typeset results (`ex-sd-cosy`,
@@ -55,3 +55,25 @@ results computed by it.
 To remove the package, delete `src/spyndynamica`, `tests/spyndynamica`, `porting/spyndynamica`,
 the guides `docs/spyndynamica*.md` and `docs/coming-from-spindynamica.md` with their notebooks and figures, and the rows that name it in `docs/README.md` and
 `scripts/build_site.py`.
+
+## On PyPI
+
+SpynDynamica is packaged as the PyPI distribution `spyndynamica` (`pip install spyndynamica` once the first
+release is out; the import name is the same). It needs NumPy, SciPy and SymPy; `spyndynamica[plot]` adds Plotly
+for the figures of the three-dimensional pictures. `python scripts/build_spyndynamica.py` builds it into
+`dist/spyndynamica/` from a staged copy of this package, `packaging/spyndynamica/` (project file and the README
+shown on PyPI) and the repository `LICENSE`. The version has its own numbering, apart from Spynach's:
+`packaging/spyndynamica/pyproject.toml` and `__version__` here are kept equal by
+`tests/spyndynamica/test_packaging.py`, which also checks the dependencies against the imports and the data
+files against the package.
+
+Releases go out from GitHub through PyPI's Trusted Publishing, with no token: publishing a GitHub release tagged
+`spyndynamica-vX.Y.Z` (the version in `packaging/spyndynamica/pyproject.toml`) runs
+`.github/workflows/publish-spyndynamica.yml`. It builds that commit, installs the wheel on its own (without
+Spynach) and runs `tests/spyndynamica` against the installed package, and, once the reviewer of the `pypi`
+environment approves, uploads it. "Run workflow" builds and tests without uploading. One-time setup: a pending
+publisher on PyPI (project `spyndynamica`, owner `ajerschow`, repository `spynach`, workflow
+`publish-spyndynamica.yml`, environment `pypi`); the environment `pypi` of the repository is the one the other
+two workflows use. The releases of Spynach (`vX.Y.Z`) and of EasySpyn (`easyspyn-vX.Y.Z`) do not start it. A
+version can be uploaded only once: bump it in `packaging/spyndynamica/pyproject.toml` and in `__init__.py`
+before the next release.

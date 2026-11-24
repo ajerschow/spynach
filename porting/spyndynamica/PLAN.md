@@ -197,6 +197,12 @@ All of these are covered by a fixture and an independent test.
    Node. Not done: the page in a browser (see the report of that session). JupyterLite for whole guides was
    considered and left for later.
 
+12. **PyPI distribution.** Prepared, not published: `packaging/spyndynamica/` (project file, README),
+   `scripts/build_spyndynamica.py`, `.github/workflows/publish-spyndynamica.yml` (release tag
+   `spyndynamica-vX.Y.Z`), version 0.1.0 with its own numbering, checked by
+   `tests/spyndynamica/test_packaging.py`. The wheel was built, installed into a clean environment and passed
+   `tests/spyndynamica` there. Left for the owner: the pending publisher on PyPI and the first release.
+
 Do not start a phase before the fixtures of the previous one pass in the port.
 
 ## Open questions

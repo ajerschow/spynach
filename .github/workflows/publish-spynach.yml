@@ -1,7 +1,8 @@
 # Publishes Spynach to PyPI as "spynach" with Trusted Publishing (no token): when a GitHub release tagged vX.Y.Z is
 # published, build the distribution from that commit, test it, and upload it after the reviewer of the "pypi"
 # environment approves. "Run workflow" (workflow_dispatch) builds and tests only. The release tag must equal the
-# version in pyproject.toml. EasySpyn has its own workflow (publish-easyspyn.yml, tags easyspyn-vX.Y.Z).
+# version in pyproject.toml. EasySpyn has its own workflow (publish-easyspyn.yml, tags easyspyn-vX.Y.Z),
+# and so has SpynDynamica (publish-spyndynamica.yml, tags spyndynamica-vX.Y.Z).
 #
 # PyPI side (once): publisher of project spynach, owner ajerschow, repository spynach,
 # workflow publish-spynach.yml, environment pypi.
