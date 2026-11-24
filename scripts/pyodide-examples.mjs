@@ -1,7 +1,8 @@
 // Runs the playground examples of try.html in Pyodide under Node, the same 32-bit WebAssembly build the browser
 // uses: NumPy's index type is int32 there, so an int64 array passed as repeat counts or bincount indices fails
 // in the browser only (use np.intp). Mounts the repository's src/ into the Pyodide file system, loads NumPy and
-// SciPy from the Pyodide CDN (cached in node_modules), and executes each example with stub show_* helpers.
+// SciPy and SymPy from the Pyodide CDN (cached in node_modules), and executes each example with stub show_*
+// helpers. An example in cells (lines "# %%") runs as the one script that its cells make.
 //
 //     cd /tmp/pyodide-check && npm init -y && npm install pyodide        # once, outside the repository
 //     node /path/to/spynach/scripts/pyodide-examples.mjs /path/to/spynach [example id ...]
@@ -21,7 +22,7 @@ const page = readFileSync(root + "/try.html", "utf8");
 const blocks = [...page.matchAll(/<script type="text\/plain" class="example" id="([\w-]+)"([^>]*)>\n([\s\S]*?)<\/script>/g)];
 
 const pyodide = await loadPyodide();
-await pyodide.loadPackage(["numpy", "scipy"]);
+await pyodide.loadPackage(["numpy", "scipy", "sympy"]);  // SymPy: the spyndynamica and pathway examples
 pyodide.FS.mkdir("/repo");
 pyodide.FS.mount(pyodide.FS.filesystems.NODEFS, { root: root }, "/repo");
 await pyodide.runPythonAsync(`
@@ -33,6 +34,7 @@ calls = []
 def show_spectrum(y, x=None, **kw): calls.append(("line", np.asarray(getattr(y, "spec", y)).shape))
 def show_fid(fid, sweep, **kw): calls.append(("fid", np.asarray(fid).shape))
 def show_image(z, x=None, y=None, **kw): calls.append(("image", np.asarray(z).shape))
+def show_pathways(pathways, **kw): calls.append(("chord", len(pathways.operators)))
 `);
 
 let failed = 0;
@@ -44,7 +46,8 @@ for (const [, id, attrs, code] of blocks) {
   try {
     await pyodide.runPythonAsync(`
 calls.clear()
-ns = {"__name__": "__main__", "show_spectrum": show_spectrum, "show_fid": show_fid, "show_image": show_image}
+ns = {"__name__": "__main__", "show_spectrum": show_spectrum, "show_fid": show_fid, "show_image": show_image,
+      "show_pathways": show_pathways}
 import io, contextlib
 buf = io.StringIO()
 with contextlib.redirect_stdout(buf):

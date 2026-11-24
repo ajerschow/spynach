@@ -98,6 +98,8 @@ def test_runner_executes_example(example, js_stubs, tmp_path):
         assert chord["ribbons"] and chord["arcs"] and chord["title"].startswith("11BF4-")
         assert {"outline", "hover", "colour"} <= set(chord["ribbons"][0])
         return
+    if "# %%" in code:
+        return  # an example in cells shows the values of its cells; a plot is optional
     assert js_stubs.lines or js_stubs.images, f"{example_id} drew nothing"
     for line in js_stubs.lines:
         assert line["series"] and all(n == line["n"] for _, n in line["series"])
@@ -120,3 +122,50 @@ def test_runner_plots_leftover_spectrum_and_spectrum_objects(js_stubs, tmp_path)
     )
     _, error = run_example(code, tmp_path)
     assert error == "" and js_stubs.lines[-1]["invert"] is False and js_stubs.lines[-1]["n"] == 64
+
+
+def run_cell(code: str, ns: dict, tmp_path: Path, *, reset: bool = False, context: str = "") -> tuple[str, str]:
+    """One cell through the runner, in the globals `ns` that Pyodide keeps from run to run."""
+    ns.update({"USER_CODE": code, "RUN_ID": 1, "RUN_ERROR": "", "RUN_CELL": True, "RUN_RESET": reset})
+    ns["RUN_CONTEXT"] = context
+    compiled = compile(runner_source(tmp_path), "<runner>", "exec", flags=ast.PyCF_ALLOW_TOP_LEVEL_AWAIT)
+    result = eval(compiled, ns)
+    if asyncio.iscoroutine(result):
+        asyncio.run(result)
+    return ns["RUN_VALUE"], ns["RUN_ERROR"]
+
+
+def test_runner_keeps_the_namespace_from_cell_to_cell(js_stubs, tmp_path):
+    ns: dict = {}
+    value, error = run_cell("import sympy as sp\nx = sp.Symbol('x')\ny = 3", ns, tmp_path, reset=True)
+    assert (value, error) == ("", "")  # no last expression, nothing shown
+    value, error = run_cell("x**2 + y", ns, tmp_path)
+    shown = json.loads(value)
+    assert error == "" and shown["text"] == "x**2 + 3" and shown["latex"].endswith("x^{2} + 3")
+    assert "$" not in shown["latex"]
+    value, error = run_cell("[y, 'text']", ns, tmp_path)
+    assert json.loads(value) == {"text": "[3, 'text']"}  # nothing to typeset: the repr
+    value, error = run_cell("print(y)\nNone", ns, tmp_path)
+    assert (value, error) == ("", "")
+    # an error names the cell and leaves the namespace as it was
+    value, error = run_cell("z = 1\nundefined_name", ns, tmp_path)
+    assert value == "" and "NameError" in error and "<cell>" in error
+    assert json.loads(run_cell("z + y", ns, tmp_path)[0])["text"] == "4"
+    # a plot from a cell goes through the same helpers; no leftover-spectrum plot is made for a cell
+    run_cell("import numpy as np\nspectrum = np.ones(4)\nshow_spectrum(np.arange(4.0), title='a')", ns, tmp_path)
+    assert len(js_stubs.lines) == 1
+    # a reset starts a new namespace
+    value, error = run_cell("y", ns, tmp_path, reset=True)
+    assert value == "" and "NameError" in error
+
+
+def test_runner_typesets_operators_and_rows_of_them(js_stubs, tmp_path):
+    ns: dict = {}
+    setup = "import sympy as sp\nfrom spyndynamica import SpinSystem\ns = SpinSystem(2)\nI = s.I"
+    assert run_cell(setup, ns, tmp_path, reset=True, context="spyndynamica") == ("", "")
+    shown = json.loads(run_cell("2 * I(1, 'z') @ I(2, 'y')", ns, tmp_path)[0])
+    assert shown["text"] == "2*I1z I2y" and "I_{1z}" in shown["latex"] and "$" not in shown["latex"]
+    row = json.loads(run_cell("(I(1, 'x'), sp.pi / 2)", ns, tmp_path)[0])
+    assert row["latex"].count("quad") == 1 and "I_{1x}" in row["latex"] and "\\pi" in row["latex"]
+    matrix = json.loads(run_cell("I(1, 'z').matrix()", ns, tmp_path)[0])
+    assert "matrix" in matrix["latex"]

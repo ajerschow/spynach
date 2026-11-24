@@ -87,6 +87,8 @@ def test_example_runs_and_draws(example, capsys):
     if example_id == "ex-ctps":
         assert not recorder.calls and "pathways enumerated" in printed
         return
+    if "# %%" in code:
+        return  # an example in cells shows the values of its cells; a plot is optional (test_playground_cells.py)
     assert recorder.calls, f"{example_id} drew nothing"
     if example_id == "ex-pathways":
         assert [call["kind"] for call in recorder.calls] == ["chord"] and recorder.calls[0]["ribbons"] > 0
@@ -113,5 +115,5 @@ def test_examples_are_grouped_and_unique():
         "Nonlinear (spynach)",
         "Symbolic NMR (SpynDynamica)",
     }
-    assert sum(e[1].endswith("(SpynDynamica)") for e in ALL) == 3
+    assert sum(e[1].endswith("(SpynDynamica)") for e in ALL) == 9
     assert sum(e[1].startswith("EPR") for e in ALL) == 12

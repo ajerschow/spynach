@@ -101,6 +101,7 @@ const SOURCE = [
 ];
 
 const RUNNER = `
+import ast
 import json
 import os
 import re
@@ -115,6 +116,44 @@ from pyodide.http import pyfetch
 
 state = {"called": False}
 RUN_ERROR = ""
+RUN_VALUE = ""
+
+def _latex(value):
+    """The LaTeX form of a value that has one (an operator, a ket, a SymPy expression or matrix), else None."""
+    method = getattr(value, "_repr_latex_", None)
+    if callable(method):
+        text = method()
+        if isinstance(text, str) and text:
+            return text.strip().strip("$").strip()
+    if type(value).__module__.split(".")[0] == "sympy":
+        import sympy
+
+        return sympy.latex(value)
+    return None
+
+def display_value(value):
+    """What the page shows under a cell for the value of its last line: JSON with "text" and, when the value can
+    be typeset, "latex". A list or tuple of values that can all be typeset is shown as one row."""
+    if value is None:
+        return ""
+    latex = _latex(value)
+    if latex is None and isinstance(value, (list, tuple)) and value:
+        parts = [_latex(item) for item in value]
+        if all(part is not None for part in parts):
+            latex = ("," + chr(92) + "quad ").join(parts)  # chr(92): no backslash in this JavaScript string
+    shown = {"text": str(value) if latex is not None else repr(value)}
+    if latex is not None:
+        shown["latex"] = latex
+    return json.dumps(shown)
+
+def run_cell(code, ns):
+    """One cell in the namespace of the notebook; the value of a last line that is an expression is returned."""
+    tree = ast.parse(code, "<cell>")
+    last = None
+    if tree.body and isinstance(tree.body[-1], ast.Expr):
+        last = ast.Expression(tree.body.pop().value)
+    exec(compile(tree, "<cell>", "exec"), ns, ns)
+    return None if last is None else eval(compile(last, "<cell>", "eval"), ns, ns)
 
 async def prefetch(code):
     names = set(re.findall(r"""["']((?:leb_|rep_|icos_)[A-Za-z0-9_]+|single_crystal)["']""", code))
@@ -326,17 +365,28 @@ if not getattr(spynach.powder, "_counts_orientations", False):
     spynach.powder._counts_orientations = True
     spynach.singlerot._counts_orientations = True
 
+# A cell of the cell view runs in a namespace that lasts from cell to cell (RUN_CELL; RUN_RESET starts a new one,
+# RUN_CONTEXT is the whole source, which says what to fetch). Everything else is one run of the whole editor.
 try:
-    await prefetch(USER_CODE)
-    await load_packages(USER_CODE)
-    ns = {
+    context = globals().get("RUN_CONTEXT") or USER_CODE
+    await prefetch(context)
+    await load_packages(context)
+    helpers = {
         "__name__": "__main__",
         "show_spectrum": show_spectrum,
         "show_fid": show_fid,
         "show_image": show_image,
         "show_pathways": show_pathways,
     }
-    exec(compile(USER_CODE, "<editor>", "exec"), ns, ns)
+    if globals().get("RUN_CELL"):
+        if globals().get("RUN_RESET") or "CELL_NS" not in globals():
+            CELL_NS = {}
+        CELL_NS.update(helpers)
+        RUN_VALUE = display_value(run_cell(USER_CODE, CELL_NS))
+        state["called"] = True
+    ns = helpers
+    if not globals().get("RUN_CELL"):
+        exec(compile(USER_CODE, "<editor>", "exec"), ns, ns)
     if not state["called"]:
         if "spectrum" in ns:
             show_spectrum(
@@ -517,7 +567,13 @@ async function handle(message) {
     pyodide.globals.set("USER_CODE", message.code);
     pyodide.globals.set("RUN_ID", id);
     pyodide.globals.set("RUN_ERROR", "");
+    pyodide.globals.set("RUN_CELL", Boolean(message.cell));
+    pyodide.globals.set("RUN_RESET", Boolean(message.reset));
+    pyodide.globals.set("RUN_CONTEXT", String(message.context || ""));
     await pyodide.runPythonAsync(RUNNER, { dedent: false });
+    const valueProxy = pyodide.globals.get("RUN_VALUE");
+    const value = valueProxy ? String(valueProxy) : "";
+    if (valueProxy && typeof valueProxy.destroy === "function") valueProxy.destroy();
     const errProxy = pyodide.globals.get("RUN_ERROR");
     const error = errProxy ? String(errProxy) : "";
     if (errProxy && typeof errProxy.destroy === "function") errProxy.destroy();
@@ -526,7 +582,7 @@ async function handle(message) {
       for (const key of ["x", "y", "z"]) if (plot[key]) transfer.push(plot[key].buffer);
       if (plot.series) for (const series of plot.series) if (series.y) transfer.push(series.y.buffer);
     }
-    post({ type: "result", id, plots: bucket, error }, transfer);
+    post({ type: "result", id, plots: bucket, error, value }, transfer);
   } catch (err) {
     post({ type: "error", id, message: String((err && err.message) || err) });
   }

@@ -29,6 +29,8 @@
 <link rel="stylesheet" href="assets/site.css">
 <script src="assets/theme.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/plotly.js-cartesian-dist-min@4.1.2/plotly-cartesian.min.js" defer></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" defer></script>
 <style>
 /* The playground's own rules; the tokens, type and navigation come from assets/site.css. */
 html, body { height: 100%; }
@@ -114,6 +116,32 @@ figure.plot figcaption.chord-info { min-height: 4.2em; line-height: 1.45; overfl
 }
 .head p, .hint { max-width: none; }
 .btn.stale { box-shadow: 0 0 0 2px var(--accent-ink); }
+/* The cell view: an example written in cells (lines "# %% title") runs cell by cell in one column, with the
+   value of the last line of every cell typeset under it. */
+.app.cells { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; }
+.app.cells .editor { grid-column: 1; grid-row: 1; }
+.app.cells #plots { display: none; }
+.app.cells #console { grid-column: 1; grid-row: 2; height: 3.6rem; margin-top: 8px; border-radius: 8px; }
+#cells { flex: 1; min-height: 0; overflow: auto; padding: 0.7rem 0.8rem 1rem; display: grid; gap: 0.75rem; align-content: start; }
+.cell { border: 1px solid var(--line); border-radius: 6px; background: var(--bg); min-width: 0; }
+.cell.running { border-color: var(--accent); }
+.cell.stale .cell-out { opacity: 0.45; }
+.cell-bar { display: flex; align-items: center; gap: 0.6rem; padding: 0.3rem 0.5rem 0.3rem 0.7rem; border-bottom: 1px solid var(--line); }
+.cell-bar .count { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); min-width: 2.2rem; }
+.cell-bar .title { flex: 1; font-weight: 600; font-size: 0.92rem; overflow-wrap: anywhere; }
+.cell-bar .btn { padding: 0.15rem 0.6rem; font-size: 0.82rem; }
+.cell textarea { display: block; width: 100%; min-height: 0; flex: none; overflow-x: auto; overflow-y: hidden; padding: 0.55rem 0.7rem; }
+.cell-out { padding: 0 0.7rem; display: grid; gap: 0.4rem; min-width: 0; }
+.cell-out:not(:empty) { padding-block: 0.55rem; border-top: 1px dashed var(--line); }
+.cell-out pre { margin: 0; font-family: var(--mono); font-size: 0.8rem; line-height: 1.45; white-space: pre-wrap; overflow-wrap: anywhere; }
+.cell-out pre.err { color: #a33b32; }
+.cell-out .value { overflow-x: auto; overflow-y: hidden; padding: 0.15rem 0; font-size: 1.02rem; }
+.cell-out .value .katex-display { margin: 0.2rem 0; text-align: left; }
+.cell-out .value .katex-display > .katex { text-align: left; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .cell-out pre.err { color: #f0a8a2; }
+}
+:root[data-theme="dark"] .cell-out pre.err { color: #f0a8a2; }
 #params { overflow: auto; padding: 0.5rem 0.9rem 0.7rem; display: grid; gap: 0.15rem; align-content: start; }
 #params { flex: 1; border-bottom: 0; }
 #params h3 { overflow-wrap: anywhere; margin: 0.7rem 0 0.1rem; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent-ink); font-weight: 600; }
@@ -186,8 +214,9 @@ figure.plot figcaption.chord-info { min-height: 4.2em; line-height: 1.45; overfl
       </div>
     </div>
     <div id="params" aria-label="Parameters" hidden></div>
+    <div id="cells" aria-label="Cells" hidden></div>
     <textarea id="editor" spellcheck="false" wrap="off" aria-label="Python source"></textarea>
-    <p class="hint">Ctrl+Enter runs. Press <b>i</b> for help.</p>
+    <p class="hint" id="hint">Ctrl+Enter runs. Press <b>i</b> for help.</p>
   </section>
   <div id="plots"><p class="empty">The spectrum will land here.</p></div>
   <div id="console" role="log" aria-live="polite"></div>
@@ -204,6 +233,7 @@ figure.plot figcaption.chord-info { min-height: 4.2em; line-height: 1.45; overfl
     <li><b>Plots.</b> Drag a box or use the wheel to zoom, double-click or the home icon to reset, the icons pan and autoscale; hovering reads values, a click on a legend entry hides that trace, and the camera icon saves a PNG. The plots are drawn with plotly.js, like the figures of the notebooks.</li>
     <li><b>Run times.</b> The 12800-orientation powder is the slow one, about a minute; the 1600-point powder, magic-angle spinning and the fit take a few seconds. Grid names such as <code>leb_2ang_rank_17</code> are loaded from <code>src/spynach/grids</code>.</li>
     <li><b>Links.</b> A link such as <code>try.html#ex-epr-hyscore</code> opens and runs one example. <code>?view=code</code> opens the code instead of the form.</li>
+    <li><b>Cells.</b> The symbolic examples are written in cells, which start at a line <code># %% title</code>. Each cell can be edited and run on its own (the arrow, or Shift+Enter); the cells share their variables, and the value of the last line of a cell is shown under it, typeset when it is an operator or a SymPy expression. <b>Run</b> and Ctrl+Enter start afresh and run every cell. <b>Prefer code</b> shows the same source as one script.</li>
     <li><b>Prefer GUI.</b> The playground opens with the main settings of an example as a form, with units and a description for each, and <b>Prefer code</b> goes back; an edit in the form rewrites the number in the code, and an edit in the code updates the form, and a parameter the code no longer uses is greyed out.</li>
     <li><b>Restore example.</b> If you rewrite the code until no parameter lines are left, <b>Restore example</b> brings the original and its form back, as does reloading the page.</li>
   </ul>
@@ -1204,6 +1234,210 @@ show_spectrum(spectra, frequencies, title="Two-site exchange", xlabel="frequency
               names=[f"k = {rate:g} per s" for rate in rates])
 </script>
 
+<script type="text/plain" class="example" id="ex-sd-cosy" data-group="Symbolic NMR (SpynDynamica)" data-title="Cells: product operators through COSY">
+# %% Two weakly coupled spins-1/2
+import sympy as sp
+from spyndynamica import SpinSystem
+
+s = SpinSystem(2)
+I = s.I
+omega1, omega2, J, t1 = sp.symbols("omega1 omega2 J t1", real=True)
+H = omega1 * I(1, "z") + omega2 * I(2, "z") + 2 * sp.pi * J * (I(1, "z") @ I(2, "z"))
+H
+
+# %% A 90° pulse about x on spin 1
+start = I(1, "z").rotate(sp.pi / 2, "x", spins=[1])
+start
+
+# %% Free evolution for t1: shift and coupling in closed form
+evolved = start.evolve(H, t1).simplify()
+evolved
+
+# %% The mixing pulse, 90° about x on both spins
+mixed = evolved.rotate(sp.pi / 2, "x").simplify()
+mixed
+
+# %% Diagonal peak and cross peak: amplitudes of two product operators
+diagonal = sp.simplify(mixed.amplitude(I(1, "x")))
+cross = sp.simplify(mixed.amplitude(2 * I(1, "z") @ I(2, "y")))
+(diagonal, cross)
+
+# %% The cross peak is antiphase on spin 2: it evolves into observable magnetisation of spin 2
+t2 = sp.Symbol("t2", real=True)
+detected = (2 * I(1, "z") @ I(2, "y")).evolve(H, t2).simplify()
+sp.simplify(detected.amplitude(I(2, "x")))
+</script>
+
+<script type="text/plain" class="example" id="ex-sd-singlet" data-group="Symbolic NMR (SpynDynamica)" data-title="Cells: singlet-triplet basis">
+# %% A pair of spins: difference of Larmor frequencies Delta, coupling J
+import sympy as sp
+from spyndynamica import SpinSystem
+
+s = SpinSystem(2)
+I = s.I
+Delta, J = sp.symbols("Delta J", real=True)
+H = Delta * (I(1, "z") - I(2, "z")) / 2 + 2 * sp.pi * J * s.dot(1, 2)
+H
+
+# %% The Hamiltonian in the Zeeman basis
+H.matrix()
+
+# %% The singlet-triplet basis: its kets written in Zeeman kets
+basis = s.singlet_triplet()
+for name, ket in zip(basis.names, basis.kets):
+    print(f"{name:>4} = {ket}")
+
+# %% The same Hamiltonian in that basis: the coupling is diagonal, Delta connects the singlet and T0 only
+H.matrix(basis)
+
+# %% Singlet order I1·I2 is diagonal: -3/4 on the singlet, 1/4 on the triplet states
+s.dot(1, 2).matrix(basis)
+
+# %% The projector onto the singlet state as a sum of product operators
+singlet = s.projector(basis.kets[0])
+singlet
+
+# %% Magnetisation has no singlet order, and the difference of the two magnetisations is a singlet-triplet coherence
+(I(None, "z").amplitude(s.dot(1, 2)), (I(1, "z") - I(2, "z")).matrix(basis))
+</script>
+
+<script type="text/plain" class="example" id="ex-sd-relaxation" data-group="Symbolic NMR (SpynDynamica)" data-title="Cells: double commutators, dipolar relaxation">
+# %% Two like spins and the rank-2 tensor operators of their dipolar coupling
+import sympy as sp
+from spyndynamica import SpinSystem
+
+s = SpinSystem(2)
+I = s.I
+T = {q: s.T([1, 2], 2, q) for q in range(-2, 3)}
+(T[0], T[1], T[2])
+
+# %% The relaxation superoperator as a sum of double commutators
+# The component q oscillates at q times the Larmor frequency, so it is weighted by the spectral density
+# J0, J1 or J2 at zero, one or two times that frequency; b is the dipolar coupling constant.
+J0, J1, J2, b = sp.symbols("J0 J1 J2 b", positive=True)
+density = {0: J0, 1: J1, 2: J2}
+
+def relax(operator):
+    out = s.zero()
+    for q, tensor in T.items():
+        out = out - b**2 * density[abs(q)] * tensor.commutator(tensor.dagger().commutator(operator))
+    return out.simplify()
+
+relax(I(1, "z"))
+
+# %% The Solomon equations: auto-relaxation and cross-relaxation rate of the longitudinal magnetisation
+auto = sp.factor(-relax(I(1, "z")).amplitude(I(1, "z")))
+cross = sp.factor(-relax(I(1, "z")).amplitude(I(2, "z")))
+(auto, cross)
+
+# %% Transverse magnetisation
+relax(I(1, "x"))
+
+# %% Two-spin order relaxes by the single-quantum density only
+relax(2 * I(1, "z") @ I(2, "z"))
+
+# %% Singlet order does not relax by the dipolar coupling inside the pair
+relax(s.dot(1, 2))
+</script>
+
+<script type="text/plain" class="example" id="ex-sd-dqf" data-group="Symbolic NMR (SpynDynamica)" data-title="Cells: an amplitude against a flip angle">
+# %% Excitation of double-quantum coherence: 90° - tau - beta
+import numpy as np
+import sympy as sp
+from spyndynamica import SpinSystem
+
+s = SpinSystem(2)
+I = s.I
+J, tau, beta = sp.symbols("J tau beta", real=True)
+H = 2 * sp.pi * J * (I(1, "z") @ I(2, "z"))
+antiphase = I(None, "z").rotate(sp.pi / 2, "x").evolve(H, tau).simplify()
+antiphase
+
+# %% The second pulse with a symbolic flip angle
+rho = antiphase.rotate(beta, "x").simplify()
+rho
+
+# %% The amplitude of double-quantum coherence, 2 I1x I2y + 2 I1y I2x
+double_quantum = 2 * I(1, "x") @ I(2, "y") + 2 * I(1, "y") @ I(2, "x")
+amplitude = sp.simplify(rho.amplitude(double_quantum))
+amplitude
+
+# %% A double-quantum filter keeps the terms of coherence order +2 and -2
+from spyndynamica import coherence_filter
+
+coherence_filter(s, [-2, 2])(rho).simplify()
+
+# %% The amplitude against the flip angle, at tau = 1/(2J)
+angles = np.linspace(0, 180, 181)
+curve = sp.lambdify(beta, amplitude.subs(tau, 1 / (2 * J)), "numpy")(np.radians(angles))
+show_spectrum(np.broadcast_to(curve, angles.shape), angles, title="Double-quantum amplitude against the flip angle",
+              xlabel="flip angle beta / degrees", ylabel="amplitude", invert=False)
+</script>
+
+<script type="text/plain" class="example" id="ex-sd-bounds" data-group="Symbolic NMR (SpynDynamica)" data-title="Cells: bounds on a transfer">
+# %% What can unitary evolution reach? The eigenvalues of the density operator set the limit
+import sympy as sp
+from spyndynamica import SpinSystem, amplitude_bounds
+
+s = SpinSystem(2)
+I = s.I
+amplitude_bounds(I(1, "z"), I(2, "z"))
+
+# %% INEPT reaches its bound: the full magnetisation of spin 1 arrives as antiphase magnetisation of spin 2
+J, tau = sp.symbols("J tau", real=True)
+H = 2 * sp.pi * J * (I(1, "z") @ I(2, "z"))
+target = 2 * I(1, "z") @ I(2, "y")
+after = I(1, "z").rotate(sp.pi / 2, "x", spins=[1]).evolve(H, tau).rotate(sp.pi / 2, "y", spins=[1]).rotate(sp.pi / 2, "x", spins=[2])
+transfer = sp.simplify(after.amplitude(target))
+print("bounds:", amplitude_bounds(I(1, "z"), target))
+(transfer, transfer.subs(tau, 1 / (2 * J)))
+
+# %% Singlet order from the magnetisation of one spin: at most 2/3
+amplitude_bounds(I(1, "z"), s.dot(1, 2))
+
+# %% ... and from the magnetisation of both spins, twice that
+amplitude_bounds(I(None, "z"), s.dot(1, 2))
+
+# %% Three spins: the magnetisation of all three into three-spin order
+three = SpinSystem(3)
+K = three.I
+amplitude_bounds(K(None, "z"), 4 * K(1, "z") @ K(2, "z") @ K(3, "z"))
+</script>
+
+<script type="text/plain" class="example" id="ex-sd-wahuha" data-group="Symbolic NMR (SpynDynamica)" data-title="Cells: average Hamiltonian of WAHUHA">
+# %% The dipolar Hamiltonian of a pair and a chemical shift
+import sympy as sp
+from spyndynamica import SpinSystem
+
+s = SpinSystem(2)
+I = s.I
+d, delta = sp.symbols("d delta", real=True)
+dipolar = d * (3 * I(1, "z") @ I(2, "z") - s.dot(1, 2))
+shift = delta * I(None, "z")
+dipolar
+
+# %% The toggling frames of WAHUHA: the 90° pulses turn z into y and into x
+frames = [dipolar, dipolar.rotate(sp.pi / 2, "x").simplify(), dipolar.rotate(sp.pi / 2, "y").simplify()]
+(frames[1], frames[2])
+
+# %% The cycle tau - 2 tau - 2 tau - tau spends equal times in the three frames: the dipolar coupling averages to zero
+average = ((2 * frames[0] + 2 * frames[1] + 2 * frames[2]) / 6).simplify()
+average
+
+# %% The chemical shift survives, along a tilted axis
+shifts = [shift, shift.rotate(sp.pi / 2, "x").simplify(), shift.rotate(sp.pi / 2, "y").simplify()]
+average_shift = ((2 * shifts[0] + 2 * shifts[1] + 2 * shifts[2]) / 6).simplify()
+average_shift
+
+# %% Its size against the full shift: the scaling factor 1/sqrt(3)
+sp.sqrt(sp.simplify(average_shift.bracket(average_shift) / shift.bracket(shift)))
+
+# %% Only 90° pulses do this: the average for pulses of another flip angle theta
+theta = sp.Symbol("theta", real=True)
+tilted = (2 * dipolar + 2 * dipolar.rotate(theta, "x") + 2 * dipolar.rotate(theta, "y")) / 6
+tilted.simplify()
+</script>
+
 <script type="text/plain" class="example" id="ex-pathways" data-group="Relaxation (spynach)" data-title="Cross-relaxation pathways of 11BF4-">
 import numpy as np
 import spynach
@@ -2099,6 +2333,7 @@ show_spectrum(spectrum, axis, title=f"CSA powder, {grid}", xlabel=xlabel)
 
 <script type="module">
 import { parseParams, setParam, validate } from "./assets/playground-params.js";
+import { hasCells, joinCells, splitCells } from "./assets/playground-cells.js";
 
 const statusEl = document.querySelector("#status");
 const editor = document.querySelector("#editor");
@@ -2108,6 +2343,9 @@ const stopBtn = document.querySelector("#stop");
 const plotsEl = document.querySelector("#plots");
 const consoleEl = document.querySelector("#console");
 const examples = [...document.querySelectorAll("script.example")];
+const cellsEl = document.querySelector("#cells");
+const appEl = document.querySelector(".app");
+const hintEl = document.querySelector("#hint");
 const helpDialog = document.querySelector("#help-dialog");
 document.querySelector("#help").addEventListener("click", () => helpDialog.showModal());
 helpDialog.addEventListener("click", (event) => { if (event.target === helpDialog) helpDialog.close(); });
@@ -2150,7 +2388,9 @@ function loadExample(id) {
   editor.value = exampleSource(id);
   dirty = false;
   defaults = new Map(parseParams(editor.value).map((p) => [p.name, p]));
-  refreshParams();
+  // At once and not after a timeout: a run may follow in the same turn, and it asks which view is shown
+  clearTimeout(paramTimer);
+  renderParams();
 }
 
 // The Parameters view: a form generated from the "GUI:" comments of the source (assets/playground-params.js).
@@ -2160,6 +2400,7 @@ const toggleBtn = document.querySelector("#view-toggle");
 const paramsEl = document.querySelector("#params");
 let defaults = new Map();
 let mode = "params";
+let cellPref = "cells";   // an example written in cells opens in cells unless "code" was chosen for such examples
 let liveUpdate = false;
 let pendingRun = false;
 let paramTimer = null;
@@ -2170,10 +2411,198 @@ function currentExample() {
 }
 
 // The preference is "params" (the default) or "code"; an example without parameters always shows its code and has no toggle
+// An example written in cells shows them in place of the form; "code" is the same source as one script
 function applyMode(shown) {
-  paramsEl.hidden = shown === "code";
-  editor.hidden = shown === "params";
-  toggleBtn.textContent = shown === "params" ? "Prefer code" : "Prefer GUI";
+  const written = hasCells(editor.value);
+  const inCells = written && cellPref !== "code";
+  appEl.classList.toggle("cells", inCells);
+  cellsEl.hidden = !inCells;
+  paramsEl.hidden = inCells || shown === "code";
+  editor.hidden = inCells || shown === "params";
+  if (written) toggleBtn.textContent = inCells ? "Prefer code" : "Prefer cells";
+  else toggleBtn.textContent = shown === "params" ? "Prefer code" : "Prefer GUI";
+  hintEl.innerHTML = inCells
+    ? "Shift+Enter runs a cell, Ctrl+Enter runs all. Press <b>i</b> for help."
+    : "Ctrl+Enter runs. Press <b>i</b> for help.";
+  if (inCells) buildCells();
+}
+
+function cellView() {
+  return !cellsEl.hidden;
+}
+
+// The cell view (assets/playground-cells.js). The source in the editor stays the only state: the cells are
+// built from it, and an edit of a cell writes the joined cells back.
+let cells = [];          // {title, input, node, out, count, plots}
+let cellsSource = null;  // the source the cells were built from
+let cellQueue = [];      // indices of the cells still to run
+let runningCell = null;  // index of the cell the worker is running
+let cleanCells = 0;      // cells [0, cleanCells) have run in the worker's namespace and were not edited since
+let cellsStarted = 0;
+
+function fitCell(input) {
+  input.rows = Math.max(1, input.value.split("\n").length);
+}
+
+function writeCells() {
+  editor.value = joinCells(cells.map((cell) => ({ title: cell.title, code: cell.input.value })));
+  cellsSource = editor.value;
+}
+
+function markStale(from) {
+  cleanCells = Math.min(cleanCells, from);
+  cells.forEach((cell, index) => cell.node.classList.toggle("stale", index >= cleanCells && cell.out.childElementCount > 0));
+}
+
+function buildCells() {
+  if (cellsSource === editor.value && cells.length) return;
+  cellsSource = editor.value;
+  cellQueue = [];
+  cleanCells = 0;
+  cells = splitCells(editor.value).map((part, index) => {
+    const node = document.createElement("div");
+    node.className = "cell";
+    const bar = document.createElement("div");
+    bar.className = "cell-bar";
+    const count = document.createElement("span");
+    count.className = "count";
+    count.textContent = "[" + (index + 1) + "]";
+    const title = document.createElement("span");
+    title.className = "title";
+    title.textContent = part.title;
+    const go = document.createElement("button");
+    go.type = "button";
+    go.className = "btn";
+    go.textContent = "\u25B6";
+    go.title = "Run this cell (Shift+Enter)";
+    go.setAttribute("aria-label", "Run cell " + (index + 1));
+    bar.append(count, title, go);
+    const input = document.createElement("textarea");
+    input.spellcheck = false;
+    input.wrap = "off";
+    input.setAttribute("aria-label", "Python source of cell " + (index + 1));
+    input.value = part.code;
+    fitCell(input);
+    const out = document.createElement("div");
+    out.className = "cell-out";
+    node.append(bar, input, out);
+    const cell = { title: part.title, input, node, out, plots: null };
+    go.addEventListener("click", () => { autoRun = false; runCells(index); });
+    input.addEventListener("input", () => {
+      fitCell(input);
+      writeCells();
+      dirty = true;
+      autoRun = false;
+      markStale(index);
+    });
+    input.addEventListener("keydown", (event) => {
+      if (event.key === "Tab") {
+        event.preventDefault();
+        input.setRangeText("    ", input.selectionStart, input.selectionEnd, "end");
+        input.dispatchEvent(new Event("input"));
+      } else if (event.key === "Enter" && event.shiftKey) {
+        event.preventDefault();
+        autoRun = false;
+        runCells(index);
+        if (cells[index + 1]) cells[index + 1].input.focus();
+      } else if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
+        event.preventDefault();
+        if (!runBtn.disabled) run();
+      }
+    });
+    return cell;
+  });
+  cellsEl.replaceChildren(...cells.map((cell) => cell.node));
+}
+
+// Runs the cell `upTo` after every cell before it that has not run yet or was edited; without an argument all
+// cells run in a new namespace.
+function runCells(upTo) {
+  const phase = statusEl.dataset.phase;
+  if (!worker || phase === "fatal" || phase === "running" || phase === "loading") return;
+  const all = upTo === undefined;
+  const last = all ? cells.length - 1 : upTo;
+  const first = all ? 0 : Math.min(cleanCells, upTo);
+  cellQueue = [];
+  for (let index = first; index <= last; index += 1) cellQueue.push(index);
+  if (!cellQueue.length) return;
+  if (all) cleanCells = 0;
+  cellsStarted = performance.now();
+  consoleEl.textContent = "";
+  if (versionNote) log(versionNote + "\n");
+  runBtn.classList.remove("stale");
+  runBtn.title = "";
+  nextCell(all);
+}
+
+function nextCell(reset) {
+  const index = cellQueue.shift();
+  const cell = cells[index];
+  runningCell = index;
+  runId += 1;
+  startedAt = performance.now();
+  progressNote = "";
+  cell.out.replaceChildren();
+  cell.plots = null;
+  cell.node.classList.remove("stale");
+  cell.node.classList.add("running");
+  setPhase("running", "Running cell " + (index + 1) + " of " + cells.length + "…");
+  startClock();
+  worker.postMessage({ type: "run", id: runId, code: cell.input.value, cell: true, reset: Boolean(reset), context: editor.value });
+}
+
+function cellText(cell, text, cls) {
+  let pre = cell.out.lastElementChild;
+  if (!pre || pre.tagName !== "PRE" || pre.className !== (cls || "")) {
+    pre = document.createElement("pre");
+    if (cls) pre.className = cls;
+    cell.out.appendChild(pre);
+  }
+  pre.textContent += text;
+}
+
+function showValue(cell, raw) {
+  if (!raw) return;
+  let value = null;
+  try { value = JSON.parse(raw); } catch (e) { return; }
+  if (value.latex && typeof katex !== "undefined") {
+    const box = document.createElement("div");
+    box.className = "value";
+    box.title = value.text || "";
+    try {
+      katex.render(value.latex, box, { displayMode: true, throwOnError: true });
+      cell.out.appendChild(box);
+      return;
+    } catch (e) { /* not typeset: shown as text below */ }
+  }
+  cellText(cell, (value.text || "") + "\n", "result");
+}
+
+function finishCell(msg) {
+  const index = runningCell;
+  const cell = cells[index];
+  runningCell = null;
+  if (!cell) return;
+  cell.node.classList.remove("running");
+  if (msg.type === "result" && !msg.error) {
+    showValue(cell, msg.value);
+    if (msg.plots && msg.plots.length) {
+      cell.plots = msg.plots;
+      const figures = document.createElement("div");
+      figures.className = "figures";
+      cell.out.appendChild(figures);
+      renderInto(figures, msg.plots);
+    }
+    cleanCells = Math.max(cleanCells, index + 1);
+    if (cellQueue.length) { nextCell(false); return; }
+    const seconds = ((performance.now() - cellsStarted) / 1000).toFixed(1);
+    log("Finished in " + seconds + " s.\n");
+    setPhase("done", "Finished in " + seconds + " s");
+    return;
+  }
+  cellQueue = [];
+  cellText(cell, (msg.error || msg.message || "The cell failed") + "\n", "err");
+  setPhase("error", "Cell " + (index + 1) + " failed");
 }
 
 function setMode(next) {
@@ -2190,6 +2619,12 @@ function fieldValue(param, inputs) {
 }
 
 function renderParams() {
+  if (hasCells(editor.value)) {
+    paramsEl.replaceChildren();
+    toggleBtn.hidden = false;
+    applyMode(mode);
+    return;
+  }
   const params = parseParams(editor.value);
   const none = params.length === 0;
   // An example that had parameters keeps the toggle, so that the way back is findable after a big rewrite
@@ -2449,7 +2884,7 @@ function bootWorker() {
   if (worker) worker.terminate();
   stopClock();
   setPhase("loading", "Loading Pyodide…");
-  worker = new Worker("worker.js?v=3", { type: "module" });
+  worker = new Worker("worker.js?v=4", { type: "module" });
   worker.onmessage = onWorker;
   worker.onerror = (event) => {
     setPhase("fatal", "The worker failed to start");
@@ -2480,10 +2915,14 @@ function onWorker(event) {
     showProgress();
     return;
   }
-  if (msg.type === "stdout") { log(msg.text); return; }
-  if (msg.type === "stderr") { log(msg.text, "err"); return; }
+  if (msg.type === "stdout" || msg.type === "stderr") {
+    if (runningCell !== null && cells[runningCell]) cellText(cells[runningCell], msg.text, msg.type === "stderr" ? "err" : "");
+    else log(msg.text, msg.type === "stderr" ? "err" : undefined);
+    return;
+  }
   if (msg.id !== runId) return;
   stopClock();
+  if (runningCell !== null && msg.type !== "fatal") { finishCell(msg); return; }
   if (msg.type === "result") {
     const seconds = ((performance.now() - startedAt) / 1000).toFixed(1);
     render(msg.plots || []);
@@ -2506,6 +2945,7 @@ function onWorker(event) {
 function run() {
   const phase = statusEl.dataset.phase;
   if (!worker || phase === "fatal" || phase === "running") return;
+  if (cellView()) { runCells(); return; }
   runId += 1;
   startedAt = performance.now();
   progressNote = "";
@@ -2523,6 +2963,13 @@ function run() {
 function stop() {
   autoRun = false;
   runId += 1;
+  if (runningCell !== null && cells[runningCell]) {
+    cells[runningCell].node.classList.remove("running");
+    cellText(cells[runningCell], "Stopped.\n", "err");
+  }
+  runningCell = null;
+  cellQueue = [];
+  markStale(0);  // the new worker starts with an empty namespace
   log("\nStopped.\n", "err");
   bootWorker();
 }
@@ -2544,7 +2991,12 @@ editor.addEventListener("input", () => {
   clearTimeout(paramTimer);
   paramTimer = setTimeout(renderParams, 250);
 });
-toggleBtn.addEventListener("click", () => setMode(mode === "params" ? "code" : "params"));
+toggleBtn.addEventListener("click", () => {
+  if (!hasCells(editor.value)) { setMode(mode === "params" ? "code" : "params"); return; }
+  cellPref = cellPref === "code" ? "cells" : "code";
+  try { localStorage.setItem("playground-cells", cellPref); } catch (e) { /* private window: not remembered */ }
+  applyMode(mode);
+});
 editor.addEventListener("keydown", (event) => {
   if (event.key === "Tab") {
     event.preventDefault();
@@ -2559,7 +3011,13 @@ editor.addEventListener("keydown", (event) => {
 });
 runBtn.addEventListener("click", () => { autoRun = false; run(); });
 stopBtn.addEventListener("click", stop);
-document.addEventListener("themechange", () => { if (lastPlots) render(lastPlots); });   // assets/theme.js
+document.addEventListener("themechange", () => {   // assets/theme.js
+  if (lastPlots) render(lastPlots);
+  for (const cell of cells) {
+    const figures = cell.out.querySelector(".figures");
+    if (cell.plots && figures) renderInto(figures, cell.plots);
+  }
+});
 
 function css(name, fallback) {
   const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
@@ -2874,10 +3332,16 @@ function render(plots) {
     plotsEl.appendChild(empty);
     return;
   }
+  renderInto(plotsEl, plots);
+}
+
+// Draws the plots into a container: the pane on the right, or the output of a cell
+function renderInto(container, plots) {
+  container.replaceChildren();
   for (const plot of plots) {
     const figure = document.createElement("figure");
     figure.className = "plot";
-    plotsEl.appendChild(figure);
+    container.appendChild(figure);
     if (plot.kind === "chord") {
       drawChord(figure, plot);
       continue;
@@ -2896,7 +3360,7 @@ function render(plots) {
       continue;
     }
     div.className = "plotly";
-    const width = plotsEl.clientWidth || 640;
+    const width = container.clientWidth || 640;
     const height = plot.kind === "image" ? Math.round(Math.min(Math.max(width * 0.85, 320), 620)) : 300;
     const legend = traces.some((trace) => trace.showlegend !== false && trace.name);
     const config = { ...PLOTLY_CONFIG, toImageButtonOptions: { format: "png", scale: 2, filename: slug(plot.title) } };
@@ -2911,6 +3375,9 @@ exampleSel.dataset.current = first;
 try {
   const stored = new URLSearchParams(location.search).get("view") || localStorage.getItem("playground-mode");
   if (["code", "params"].includes(stored)) mode = stored;
+  const view = new URLSearchParams(location.search).get("view");
+  const cellsStored = view === "code" ? "code" : view ? "cells" : localStorage.getItem("playground-cells");
+  if (["code", "cells"].includes(cellsStored)) cellPref = cellsStored;
 } catch (e) { /* not remembered */ }
 loadExample(first);
 bootWorker();

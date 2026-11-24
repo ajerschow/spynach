@@ -12,7 +12,13 @@ three-dimensional pictures are in [Algebras, symmetry and pictures](spyndynamica
 as functions of time, level diagrams and adiabatic events are in
 [Trajectories, level diagrams and adiabatic events](spyndynamica-adiabatic.md). The table of
 SpinDynamica names and the list of differences are in [Coming from SpinDynamica](coming-from-spindynamica.md).
-The [browser playground](https://ajerschow.github.io/spynach/try.html#ex-sd-inept) runs a product-operator calculation with nothing installed.
+The [browser playground](https://ajerschow.github.io/spynach/try.html#ex-sd-cosy) runs product-operator
+calculations in notebook-style cells with nothing installed: [COSY](https://ajerschow.github.io/spynach/try.html#ex-sd-cosy),
+the [singlet-triplet basis](https://ajerschow.github.io/spynach/try.html#ex-sd-singlet),
+[dipolar relaxation](https://ajerschow.github.io/spynach/try.html#ex-sd-relaxation),
+a [flip-angle dependence](https://ajerschow.github.io/spynach/try.html#ex-sd-dqf),
+[bounds on a transfer](https://ajerschow.github.io/spynach/try.html#ex-sd-bounds) and
+[WAHUHA](https://ajerschow.github.io/spynach/try.html#ex-sd-wahuha).
 
 SpinDynamica is the work of Malcolm H. Levitt and co-authors. Its [terms of use](https://www.spindynamica.soton.ac.uk/about/termsofuse/)
 state that it is open-source and freely available for use, and ask that published work cite
@@ -116,6 +122,67 @@ print(inept.amplitude(2 * I(1, "z") @ I(2, "y")))
 
 A Hamiltonian whose terms do not commute (strong coupling) raises `NotImplementedError`: that case belongs to
 the numeric engine ([Simulations with SpynDynamica](spyndynamica-simulations.md)).
+
+The same algebra answers questions that are usually worked out by hand. Each of the three below is also an
+example of the browser playground, cell by cell.
+
+**A flip angle.** After `90° - τ` the coupled pair is in antiphase, and a second pulse of flip angle `β` turns
+part of it into double-quantum coherence
+([playground](https://ajerschow.github.io/spynach/try.html#ex-sd-dqf)):
+
+```python
+beta = sp.Symbol("beta", real=True)
+coupling = 2 * sp.pi * J * (I(1, "z") @ I(2, "z"))
+excited = I(None, "z").rotate(sp.pi / 2, "x").evolve(coupling, tau).rotate(beta, "x")
+double_quantum = 2 * I(1, "x") @ I(2, "y") + 2 * I(1, "y") @ I(2, "x")
+print(sp.simplify(excited.amplitude(double_quantum)))
+```
+
+**Relaxation by double commutators.** The dipolar coupling of two like spins relaxes an operator `Q` by
+`−b² Σq J(qω) [T2q, [T2q†, Q]]`, with the spectral density at `q` times the Larmor frequency. For the
+longitudinal magnetisation of one spin the sum gives the Solomon equations, and for singlet order it gives
+nothing ([playground](https://ajerschow.github.io/spynach/try.html#ex-sd-relaxation)):
+
+```python
+J0, J1, J2, b = sp.symbols("J0 J1 J2 b", positive=True)
+density = {0: J0, 1: J1, 2: J2}
+tensors = {q: s.T([1, 2], 2, q) for q in range(-2, 3)}
+
+
+def relax(operator):
+    out = s.zero()
+    for q, tensor in tensors.items():
+        out = out - b**2 * density[abs(q)] * tensor.commutator(tensor.dagger().commutator(operator))
+    return out.simplify()
+
+
+print(relax(I(1, "z")))
+print(sp.factor(-relax(I(1, "z")).amplitude(I(1, "z"))), sp.factor(-relax(I(1, "z")).amplitude(I(2, "z"))))
+print(relax(s.dot(1, 2)))
+```
+
+The first rate is the auto-relaxation rate, proportional to `J0 + 3 J1 + 6 J2`, the second the
+cross-relaxation rate, proportional to `6 J2 − J0`.
+
+**An average Hamiltonian.** The pulses of WAHUHA turn the z axis of the toggling frame into y and into x for
+equal times. The dipolar coupling averages to zero, and the chemical shift is scaled by `1/√3`
+([playground](https://ajerschow.github.io/spynach/try.html#ex-sd-wahuha)):
+
+```python
+d, delta = sp.symbols("d delta", real=True)
+dipolar = d * (3 * I(1, "z") @ I(2, "z") - s.dot(1, 2))
+shift = delta * I(None, "z")
+
+
+def average(operator):
+    frames = [operator, operator.rotate(sp.pi / 2, "x"), operator.rotate(sp.pi / 2, "y")]
+    return ((frames[0] + frames[1] + frames[2]) / 3).simplify()
+
+
+print(average(dipolar))
+print(average(shift))
+print(sp.sqrt(sp.simplify(average(shift).bracket(average(shift)) / shift.bracket(shift))))
+```
 
 ## Matrices and numbers
 

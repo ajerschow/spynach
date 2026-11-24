@@ -5,7 +5,9 @@ Mathematica package for spin dynamics and NMR. It is a separate import inside th
 NumPy and SymPy only, imports nothing of `spynach`, `easyspyn` or `ctps`, and nothing else imports it
 (`tests/spyndynamica/test_dependency_direction.py`). It is not part of the `spynach` distribution. The browser
 playground (`try.html`) fetches its sources next to the other packages and loads SymPy when an example
-imports it; three examples there use it (`ex-sd-inept`, `ex-sd-ab`, `ex-sd-exchange`).
+imports it; nine examples there use it: three with a form of parameters (`ex-sd-inept`, `ex-sd-ab`,
+`ex-sd-exchange`) and six symbolic ones in notebook-style cells with typeset results (`ex-sd-cosy`,
+`ex-sd-singlet`, `ex-sd-relaxation`, `ex-sd-dqf`, `ex-sd-bounds`, `ex-sd-wahuha`).
 
 **Status:** the symbolic core (spin systems, operators, rotations, bases, kets, exact matrices), Liouville space
 (operator bases, superoperators), the numeric engine for sequences of time-independent events, signals with

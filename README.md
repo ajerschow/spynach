@@ -302,7 +302,8 @@ span is stale. The parity paragraph of `spinach.html` comes from
 served by Pages; guides and notebooks link to GitHub and nbviewer. The
 playground's examples are written into `try.html` and run natively by
 `tests/unit/test_playground_examples.py` and through the worker's Python
-runner by `tests/unit/test_playground_runner.py`; `scripts/pyodide-examples.mjs`
+runner by `tests/unit/test_playground_runner.py` (examples in cells also cell by
+cell, `tests/unit/test_playground_cells.py`); `scripts/pyodide-examples.mjs`
 runs them in Pyodide itself under Node (`npm install pyodide` in a scratch
 directory), which is the only way to catch what differs in 32-bit WebAssembly:
 NumPy's index type is int32 there, so integer arrays used as repeat counts or

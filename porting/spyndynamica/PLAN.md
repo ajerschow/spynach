@@ -187,6 +187,16 @@ All of these are covered by a fixture and an independent test.
 
    One more divergence was found: D15 (`CorrelatedEigensystems` with a parameter always fails).
 
+11. **Cell view of the playground.** Done. Examples written in cells (`# %% title`) run cell by cell in one
+   namespace of the worker, with the value of the last line of a cell typeset by KaTeX
+   (`assets/playground-cells.js`, the cell mode of the runner in `worker.js`, `try.html`), and six symbolic
+   examples use it: COSY, the singlet-triplet basis, dipolar relaxation from double commutators, an
+   amplitude against a flip angle, bounds on a transfer, the average Hamiltonian of WAHUHA. Tested natively
+   (`tests/unit/test_playground_cells.py`, `test_playground_runner.py`), in Pyodide under Node
+   (`scripts/pyodide-examples.mjs`, which now loads SymPy), and the LaTeX of every cell with KaTeX under
+   Node. Not done: the page in a browser (see the report of that session). JupyterLite for whole guides was
+   considered and left for later.
+
 Do not start a phase before the fixtures of the previous one pass in the port.
 
 ## Open questions
